@@ -1,0 +1,36 @@
+project:
+  type: website
+
+website:
+  title: "Geriatrics Evidence Synthesis"
+  navbar:
+    background: primary
+    search: true
+    pinned: true
+    left:
+      - href: index.qmd
+        text: Home
+      - text: Preop
+        menu:
+          - href: kq1.html
+            text: "KQ1 Expanded Preoperative Screening"
+          - href: kq2.html
+            text: "KQ2 Prehabilitation"
+      - text: Periop
+        menu:
+          - href: kq5.html
+            text: "KQ5 Potentially Inappropriate Medications"
+      - text: Appendix
+        menu:
+          - href: evidence_tables.html
+            text: "Study-level evidence tables"
+      - about.qmd
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+
+editor: visual
+

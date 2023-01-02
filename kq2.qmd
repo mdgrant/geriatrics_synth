@@ -1,0 +1,6 @@
+---
+title: "kq2"
+editor: visual
+---
+
+## KQ2

@@ -1,0 +1,124 @@
+---
+title: "Evidence Tables"
+editor: visual
+toc-title: "Outline"
+toc-location: "left"
+tbl-cap-location: "top"
+page-layout: full
+css: styles.css
+navbar:
+    background: primary
+    search: true
+    pinned: true
+tables:
+      style: Table
+      caption:
+        pre: "Table "
+        sep: " -- "
+bibliography: "bib/allrefs.bib"
+csl: jama.csl
+link-citations: no
+nocite: '@*'
+---
+
+<!-- setup -------------------------------------------- (2022-12-24 16:56) @ --->
+```{r, file = "code/readfiles_geri_2022-11-16.R"}
+#| include: false
+```
+
+```{r evidenceTables}
+# incl excl enrolled summary
+evidence_tables <- study_char_dat |> 
+  select(refid, study, n_enroll, include, exclude, results, design_f_lab, year, author, comment) |> 
+  mutate(
+    study = glue("<span><a id='{refid}'></a></span>{study}"),
+    include = firstup(include),
+    exclude = firstup(exclude),
+    results = firstup(results),
+    results = if_else(!str_detect(results, "\\.$"), paste0(results, "."), results),
+    include = if_else(!str_detect(include, "\\.$"), paste0(include, "."), include),
+    exclude = if_else(!str_detect(exclude, "\\.$"), paste0(exclude, "."), exclude),
+    incl_excl = paste0("**Include:** ", include, "<br/>", "**Exclude:** ", exclude),
+    incl_excl = str_replace(incl_excl, "NA", " Not specified."),
+  ) |> 
+  replace_na(list(comment = "")) |> 
+  select(-c(author))
+
+# trial refids
+trial_refid <- study_char_dat |> 
+  filter(design_f %in% c("rct", "nr_trial", "cluster", "crossover")) |> 
+  pull(refid)
+  
+# quasi experimental refids
+quasi_refid <- study_char_dat |> 
+  filter(design_f %in% c("quasi_exp")) |> 
+  pull(refid)
+
+# observational refids
+obs_refid <- study_char_dat |> 
+  filter(!design_f %in% c("rct", "nr_trial", "cluster", "crossover", "quasi_exp")) |> 
+  pull(refid)
+
+# add design to study_arm_dat for convenience
+study_arm_dat <- left_join(study_arm_dat, study_char_dat |> select(refid, design_f), by = "refid") |> 
+  relocate(design_f, .after = refid) 
+
+```
+
+## Key Question 5
+
+```{r}
+kq5_refid <- study_char_dat |>
+  filter(!is.na(kq5_inapp_meds)) |> 
+  arrange(design_f) |> 
+  pull(refid)
+
+# trials rct nrct
+study_arm_dat_trial <- study_arm_dat |> 
+  filter((refid %in% kq5_refid) & (refid %in% trial_refid))
+
+view_rec(study_arm_dat, 742)
+
+evidence_tables |>
+  filter(refid %in% kq5_refid) |>
+  arrange(design_f_lab, study) |>
+  select(study, n_enroll, incl_excl, results, comment, design_f_lab) |>
+  group_by(design_f_lab) |>
+  gt(id = "one") |> 
+  cols_label(
+    study = "Study",
+    n_enroll = "Enrolled",
+    incl_excl = "Inclusion/Exclusion Criteria",
+    results = "Results",
+    comment = "Note"
+  ) |> 
+  cols_width(
+    study ~ "80px",
+    n_enroll ~ "50px",
+    incl_excl ~ "300px",
+    results ~ "300px",
+    comment ~ "150px"
+  ) |> 
+    cols_align(
+    align = "left",
+    columns = study
+  ) |>
+  cols_align(
+    align = "center",
+    columns = n_enroll
+  ) |>
+  tab_style(
+    style = cell_text(size = "12px"),
+    locations = cells_body(columns = everything())) |> 
+  fmt_markdown(columns = c(study, incl_excl)) |> 
+    tab_style(
+    style = "vertical-align:top",
+    locations = cells_body(columns = everything())
+  ) |> 
+  gt_theme_mg()
+
+```
+
+# References {#references}
+
+
