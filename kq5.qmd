@@ -132,7 +132,7 @@ reactable(
     rank3 = colDef(name = "Rank 3", width = 80, headerClass = "header", align = "center"),
     rank4 = colDef(name = "Rank 4", width = 80, headerClass = "header", align = "center"),
     rank5 = colDef(name = "Rank 5", width = 80, headerClass = "header", align = "center"),
-    any_top_5 = colDef(name = "Top 5", align = "center", width = 96, cell = function(value) {
+    any_top_5 = colDef(name = "Any", align = "center", width = 96, cell = function(value) {
       width <- value * 6.8
       bar_chart(value, width = width, fill = "#B22215", background = "#e1e1e1")
     })
