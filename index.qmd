@@ -2,6 +2,8 @@
 title: "Evidence Synthesis"
 ---
 
-Working documents not to be cited or referenced.
+Draft materials. Not to be cited.
+
+Corrections, suggestions for additions, or comments can be sent to [Mark Grant](mailto:m.grant@asahq.org).
 
 [The current protocol can be found here.](https://mdgrant.github.io/geriatrics_pp/intro.html)
