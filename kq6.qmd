@@ -19,7 +19,7 @@ nocite: '@*'
 
 ## Key Question
 
-Among \[geriatric\] patients 65 years or older undergoing surgery and anesthesia, do dexmedetomidine, ketamine, ramelteon, or melatonin administered during the perioperative period decrease the risk of postoperative delirium or other adverse cognitive outcomes? @11129
+Among \[geriatric\] patients 65 years or older undergoing surgery and anesthesia, do dexmedetomidine, ketamine, ramelteon, or melatonin administered during the perioperative period decrease the risk of postoperative delirium or other adverse cognitive outcomes?
 
 <!-- setup -------------------------------------------- (2022-12-24 16:56) @ --->
 
