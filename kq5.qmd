@@ -13,7 +13,7 @@ tables:
         sep: " -- "
 bibliography: "bib/kq5.bib"
 csl: jama.csl
-link-citations: no
+link-citations: yes
 nocite: '@*'
 ---
 
@@ -100,7 +100,7 @@ reactable(
 
 ## Causal Model
 
-<font size = 4> `r figure_ref()` Causal model for the relationship between potentially inappropriate medications and outcomes. Potential mediators include anesthetics, other drugs, pain, hypotension, clinical instability, infection, electrolytes, and sleep deprivation.</font>
+<font size = 4> `r figure_ref()` Causal model for the relationship between potentially inappropriate medications and outcomes. Potential mediators include anesthetics, other drugs, pain, hypotension, clinical instability, infection, electrolytes, and sleep deprivation. </font>
 
 ![](assets/pim_dag.png){fig-align="center" width="8in"}
 
@@ -153,7 +153,7 @@ included_dat <- study_char_dat |>
   rename_with(~ gsub("surg_", "", .x, fixed = TRUE)) |>
   mutate(across(various:other, ~ gsub("surg_", "", .x, fixed = TRUE)),
     ortho_any = ifelse(if_any(contains("ortho"), ~ !is.na(.x)), "ortho", NA),
-    opth = ifelse(str_detect(other_desc, "[Cc]ataract"), "optho", opth),
+    opth = ifelse(str_detect(other_desc, "[Cc]ataract") | !is.na(opth), "ophtho", opth),
     gi = ifelse(!is.na(colorectal) | !is.na(gi_other) | !is.na(abdominal), "GI/Abdominal", NA),
     across(c(various, cardiac, colorectal, gyn, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, thoracic, urol, vasc, other), ~ firstup(.x)),
   ) |>
@@ -218,6 +218,4 @@ view_rec(742, temp)
 
 **Key question**<br/> **Included Studies**<br/> Table 1. Number of included studies according to age and design.<br/> *Design, centers, country, surgery*<br/> **Outcomes**<br/>  *Patient-reported*<br/>     Outcome One<br/>     DAG if relevant<br/>     Relevant characteristics table(s) of studies<br/>     Results<br/>     Pooled<br/>  *Clinical*<br/>     Outcome One<br/>     DAG if relevant<br/>     Relevant characteristics table(s) of studies<br/>     Results<br/>     Pooled<br/>     Synthesis other<br/> **Study/Participant Detail**<br/>     *Study Characteristics*<br/>     *Patient Characteristics*<br/> **Funding and Conflict of Interest**<br/> **Risk of Bias**<br/> **References**
 
-[outline](obsidian://open?vault=z_obsidian_asa&file=analysis%20outline)
-
-##  {#references}
+## References {#references}

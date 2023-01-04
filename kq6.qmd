@@ -19,7 +19,7 @@ nocite: '@*'
 
 ## Key Question
 
-Among \[geriatric\] patients 65 years or older undergoing surgery and anesthesia, do dexmedetomidine, ketamine, ramelteon, or melatonin administered during the perioperative period decrease the risk of postoperative delirium or other adverse cognitive outcomes?
+Among \[geriatric\] patients 65 years or older undergoing surgery and anesthesia, do dexmedetomidine, ketamine, ramelteon, or melatonin administered during the perioperative period decrease the risk of postoperative delirium or other adverse cognitive outcomes? @11129
 
 <!-- setup -------------------------------------------- (2022-12-24 16:56) @ --->
 
@@ -53,7 +53,6 @@ library(reactablefmtr)
 library(htmltools)
 
 outcome_dat <- rankings("KQ6")
-
 ```
 
 ```{r}
@@ -145,11 +144,11 @@ included_dat <- study_char_dat |>
   rename_with(~ gsub("surg_", "", .x, fixed = TRUE)) |>
   mutate(across(various:other, ~ gsub("surg_", "", .x, fixed = TRUE)),
     ortho_any = ifelse(if_any(contains("ortho"), ~ !is.na(.x)), "ortho", NA),
-    opth = ifelse(str_detect(other_desc, "[Cc]ataract"), "optho", opth),
+    opth = ifelse(str_detect(other_desc, "[Cc]ataract") | !is.na(opth), "optho", opth),
     gi = ifelse(!is.na(colorectal) | !is.na(gi_other) | !is.na(abdominal), "GI/Abdominal", NA),
-    across(c(various, cardiac, colorectal, gyn, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, thoracic, urol, vasc, other), ~ firstup(.x)),
+    across(c(various, cardiac, gyn, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, thoracic, urol, vasc, other), ~ firstup(.x)),
   ) |>
-  unite("surgs", various, cardiac, colorectal, gyn, gi, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, thoracic, urol, vasc, other, sep = ":", remove = FALSE, na.rm = TRUE) |>
+  unite("surgs", various, cardiac, gyn, gi, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, thoracic, urol, vasc, other, sep = ":", remove = FALSE, na.rm = TRUE) |>
   select(-c(various, abdominal, cardiac, colorectal, gyn, gi, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, thoracic, urol, vasc, other, design_other, gi_other, starts_with("ortho"), list, other_desc, starts_with("hip"))) |>
   select(refid, study_l, design_f_lab, centers, n_enroll, country, non_vh_hdi, surgs) %>%
   arrange(design_f_lab, surgs)
@@ -196,7 +195,7 @@ included_dat |>
 ```{r}
 #| eval: false
 temp <- study_arm_dat |> 
-  filter(refid %in% kq5_refid & design_f == "rct") |> 
+  filter(refid %in% kq6_refid & design_f == "rct") |> 
   select(refid, design_f, study, arm_id, arm_n, contains("kq5"))
 
 view_rec(742, temp)
@@ -206,5 +205,4 @@ view_rec(742, temp)
   
 ```
 
-
-## {#references}
+## References {#references}

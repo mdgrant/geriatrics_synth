@@ -88,7 +88,7 @@ study_char_dat <- read_csv(path_csv(study_char_file)) |>
     country = ifelse(grepl("USA", country), "USA", country),
     country = ifelse(grepl("UK", country), "UK", country),
     study = paste(author, year),
-    study_l = paste0("[", study, "]", "(", "evidence_tables.html#", refid, ")")
+    study_l = paste0("[", study, "]", "(", "evidence_tables.html#", refid, ")") #, " [@", refid, "]")
   ) |>
   relocate(c(design_f, design_f_lab), .after = design) |>
   select(-ris_code, -level, -study_char_k) |>
