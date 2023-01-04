@@ -1,7 +1,7 @@
 ---
 title: "K6: Delirium Prophylaxis"
 editor: visual
-toc-title: "Sections"
+toc-title: "Delirium Prophylaxis"
 toc-location: "left"
 tbl-cap-location: "top"
 page-layout: full
