@@ -22,10 +22,8 @@ website:
         menu:
           - href: kq5.html
             text: "KQ5 Potentially Inappropriate Medications"
-      # - text: Intraop
-      #   menu:
-      #     - href: kq6.html
-      #       text: "KQ6 Delirium Prophylaxis"
+          - href: kq6.html
+            text: "KQ6 Delirium Prophylaxis"
       - text: Appendix
         menu:
           - href: evidence_tables.html
