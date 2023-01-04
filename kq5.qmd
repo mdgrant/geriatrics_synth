@@ -32,13 +32,15 @@ Among \[geriatric\] patients 65 years or older undergoing surgery and anesthesia
 ```{r, refids}
 kq5_refid_design <- study_char_dat |>
   filter(!is.na(kq5_inapp_meds)) |>
-  select(refid, study, year, title, design_f, design_f_lab, starts_with("kq"))
+  select(refid, study, year, title, design_f, design_f_lab, starts_with("kq")) |> 
+  arrange(design_f)
 
 kq5_refid <- kq5_refid_design |> 
   pull(refid)
 
 study_char_dat <- study_char_dat |> 
-  filter(refid %in% kq5_refid)
+  filter(refid %in% kq5_refid) |> 
+  arrange(design_f)
 ```
 
 ## Outcome Importance Rankings
@@ -50,16 +52,7 @@ study_char_dat <- study_char_dat |>
 library(reactablefmtr)
 library(htmltools)
 
-outcome_dat <- read_csv("data/kq5_outcome.csv") |> 
-  clean_names() |> 
-  mutate(any_top_5 = rank1 + rank5 + rank4 + rank3 + rank2 + rank1) 
-
-# rename(Outcome = outcome,
-#        "Rank 1" = Rank1,
-#        "Rank 2" = Rank2,
-#        "Rank 3" = Rank3,
-#        "Rank 4" = Rank4,
-#        "Rank 5" = Rank5)
+outcome_dat <- rankings("KQ5")
 
 ```
 
@@ -106,9 +99,15 @@ reactable(
 ```{r}
 bar_chart <- function(label, width = 100, height = 12, fill = "#00bfc4", background = NULL) {
   bar <- div(style = list(background = fill, width = width, height = height))
-  chart <- div(style = list(flexGrow = 1, marginLeft = 10, background = background, maxWidth = 100, height = 12), bar)
+  chart <- div(style = list(flexGrow = 1, marginLeft = 1, background = background, maxWidth = 100, height = 12), bar)
   div(style = list(display = "flex", alignItems = "center", maxWidth = 100), label, chart)
 }
+
+# bar_chart <- function(label, width = "100%", height = 12, fill = "#00bfc4", background = NULL) {
+#   bar <- div(style = list(background = fill, width = width, height = height))
+#   chart <- div(style = list(flexGrow = 1, marginLeft = 10, background = background, maxWidth = 100, height = 12), bar)
+#   div(style = list(display = "flex", alignItems = "center", maxWidth = 100), label, chart)
+# }
 
 reactable(
   outcome_dat,
@@ -146,6 +145,54 @@ reactable(
   compact = TRUE,
   class = "priority-tbl"
 )
+
+# Render a bar chart in the background of the cell
+# bar_style <- function(width = 1, fill = "#e6e6e6", height = "75%",
+#                       align = c("left", "right"), color = NULL) {
+#   align <- match.arg(align)
+#   if (align == "left") {
+#     position <- paste0(width * 100, "%")
+#     image <- sprintf("linear-gradient(90deg, %1$s %2$s, transparent %2$s)", fill, position)
+#   } else {
+#     position <- paste0(100 - width * 100, "%")
+#     image <- sprintf("linear-gradient(90deg, transparent %1$s, %2$s %1$s)", position, fill)
+#   }
+#   list(
+#     backgroundImage = image,
+#     backgroundSize = paste("100%", height),
+#     backgroundRepeat = "no-repeat",
+#     backgroundPosition = "center",
+#     color = color
+#   )
+# }
+
+# data <- mtcars[, 1:4]
+# 
+# reactable(
+#   data,
+#   columns = list(
+#     mpg = colDef(
+#       style = function(value) {
+#         bar_style(width = value / max(data$mpg), fill = "#2c5e77", color = "#FF4040")
+#       },
+#       align = "left",
+#       format = colFormat(digits = 1),
+#     ),
+#     disp = colDef(
+#       style = function(value) {
+#         bar_style(width = value / max(data$disp), fill = "hsl(208, 70%, 90%)")
+#       }
+#     ),
+#     hp = colDef(
+#       style = function(value) {
+#         bar_style(width = value / max(data$hp), height = "90%", align = "right")
+#       }
+#     )
+#   ),
+#   bordered = TRUE
+# )
+
+
 
 ```
 
@@ -252,7 +299,24 @@ included_dat |>
 
 ```
 
+<!-- rct w/comparators -------------------------------- (2023-01-03 16:12) @ --->
+
+```{r}
+#| eval: false
+temp <- study_arm_dat |> 
+  filter(refid %in% kq5_refid & design_f == "rct") |> 
+  select(refid, design_f, study, arm_id, arm_n, contains("kq5"))
+
+view_rec(742, temp)
+  
+  
+  
+  
+```
+
 ## Outline
+
+**Key question**<br/> **Included Studies**<br/> Table 1. Number of included studies according to age and design.<br/> *Design, centers, country, surgery*<br/> **Outcomes**<br/>  *Patient-reported*<br/>     Outcome One<br/>     DAG if relevant<br/>     Relevant characteristics table(s) of studies<br/>     Results<br/>     Pooled<br/>  *Clinical*<br/>     Outcome One<br/>     DAG if relevant<br/>     Relevant characteristics table(s) of studies<br/>     Results<br/>     Pooled<br/>     Synthesis other<br/> **Study/Participant Detail**<br/>     *Study Characteristics*<br/>     *Patient Characteristics*<br/> **Funding and Conflict of Interest**<br/> **Risk of Bias**<br/> **References**
 
 [outline](obsidian://open?vault=z_obsidian_asa&file=analysis%20outline)
 
