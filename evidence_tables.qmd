@@ -59,10 +59,6 @@ obs_refid <- study_char_dat |>
   filter(!design_f %in% c("rct", "nr_trial", "cluster", "crossover", "quasi_exp")) |> 
   pull(refid)
 
-# add design to study_arm_dat for convenience
-study_arm_dat <- left_join(study_arm_dat, study_char_dat |> select(refid, design_f), by = "refid") |> 
-  relocate(design_f, .after = refid) 
-
 ```
 
 ## Key Question 5

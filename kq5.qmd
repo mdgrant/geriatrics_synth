@@ -57,9 +57,6 @@ outcome_dat <- rankings("KQ5")
 ```
 
 ```{r}
-#| eval: false
-library(viridis)
-
 reactable(
   outcome_dat,
   pagination = FALSE,
@@ -70,6 +67,7 @@ reactable(
       box_shadow = TRUE,
       bar_height = 12,
       max_value = 10
+      # fill_color = "#B22215"
     ),
     style = cell_style(outcome_dat,
       font_size = "11px",
@@ -82,7 +80,9 @@ reactable(
     rank3 = colDef(name = "Rank 3", width = 80, headerClass = "header", align = "center"),
     rank4 = colDef(name = "Rank 4", width = 80, headerClass = "header", align = "center"),
     rank5 = colDef(name = "Rank 5", width = 80, headerClass = "header", align = "center"),
-    any_top_5 = colDef(name = "Any top 5", width = 100, headerClass = "header", align = "center")
+    any_top_5 = colDef(name = "Any", width = 80, headerClass = "header", align = "center", 
+      cell = data_bars(outcome_dat, box_shadow = TRUE, bar_height = 12, max_value = 10, fill_color = "#B22215"
+    ))
   ),
   theme = reactableTheme(
     borderColor = "#dfe2e5",
@@ -93,106 +93,6 @@ reactable(
   compact = TRUE,
   class = "priority-tbl"
 )
-
-```
-
-```{r}
-bar_chart <- function(label, width = 100, height = 12, fill = "#00bfc4", background = NULL) {
-  bar <- div(style = list(background = fill, width = width, height = height))
-  chart <- div(style = list(flexGrow = 1, marginLeft = 1, background = background, maxWidth = 100, height = 12), bar)
-  div(style = list(display = "flex", alignItems = "left", maxWidth = 100), label, chart)
-}
-
-# bar_chart <- function(label, width = "100%", height = 12, fill = "#00bfc4", background = NULL) {
-#   bar <- div(style = list(background = fill, width = width, height = height))
-#   chart <- div(style = list(flexGrow = 1, marginLeft = 10, background = background, maxWidth = 100, height = 12), bar)
-#   div(style = list(display = "flex", alignItems = "center", maxWidth = 100), label, chart)
-# }
-
-reactable(
-  outcome_dat,
-  pagination = FALSE,
-  defaultSorted = "any_top_5",
-  defaultSortOrder = "desc",
-  defaultColDef = colDef(
-    cell = data_bars(outcome_dat,
-      box_shadow = FALSE,
-      bar_height = 12,
-      max_value = 10
-    ),
-    style = cell_style(outcome_dat,
-      font_size = "11px",
-    )
-  ),
-  columns = list(
-    outcome = colDef(name = "Outcome", width = 200),
-    rank1 = colDef(name = "Rank 1", width = 80, headerClass = "header", align = "center"),
-    rank2 = colDef(name = "Rank 2", width = 80, headerClass = "header", align = "center"),
-    rank3 = colDef(name = "Rank 3", width = 80, headerClass = "header", align = "center"),
-    rank4 = colDef(name = "Rank 4", width = 80, headerClass = "header", align = "center"),
-    rank5 = colDef(name = "Rank 5", width = 80, headerClass = "header", align = "center"),
-    any_top_5 = colDef(name = "Any", align = "left", width = 96, cell = function(value) {
-      width <- value * 7.2
-      bar_chart(value, width = width, fill = "#B22215", background = "#e1e1e1")
-    })
-  ),
-  theme = reactableTheme(
-    borderColor = "#dfe2e5",
-    stripedColor = "#f6f8fa",
-    highlightColor = "#f0f5f9",
-    cellPadding = "0px 0px"
-  ),
-  compact = TRUE,
-  class = "priority-tbl"
-)
-
-# Render a bar chart in the background of the cell
-# bar_style <- function(width = 1, fill = "#e6e6e6", height = "75%",
-#                       align = c("left", "right"), color = NULL) {
-#   align <- match.arg(align)
-#   if (align == "left") {
-#     position <- paste0(width * 100, "%")
-#     image <- sprintf("linear-gradient(90deg, %1$s %2$s, transparent %2$s)", fill, position)
-#   } else {
-#     position <- paste0(100 - width * 100, "%")
-#     image <- sprintf("linear-gradient(90deg, transparent %1$s, %2$s %1$s)", position, fill)
-#   }
-#   list(
-#     backgroundImage = image,
-#     backgroundSize = paste("100%", height),
-#     backgroundRepeat = "no-repeat",
-#     backgroundPosition = "center",
-#     color = color
-#   )
-# }
-
-# data <- mtcars[, 1:4]
-# 
-# reactable(
-#   data,
-#   columns = list(
-#     mpg = colDef(
-#       style = function(value) {
-#         bar_style(width = value / max(data$mpg), fill = "#2c5e77", color = "#FF4040")
-#       },
-#       align = "left",
-#       format = colFormat(digits = 1),
-#     ),
-#     disp = colDef(
-#       style = function(value) {
-#         bar_style(width = value / max(data$disp), fill = "hsl(208, 70%, 90%)")
-#       }
-#     ),
-#     hp = colDef(
-#       style = function(value) {
-#         bar_style(width = value / max(data$hp), height = "90%", align = "right")
-#       }
-#     )
-#   ),
-#   bordered = TRUE
-# )
-
-
 
 ```
 
