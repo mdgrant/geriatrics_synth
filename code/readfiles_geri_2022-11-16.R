@@ -93,7 +93,7 @@ study_char_dat <- read_csv(path_csv(study_char_file)) |>
   relocate(c(design_f, design_f_lab), .after = design) |>
   select(-ris_code, -level, -study_char_k) |>
   filter(refid != 1) |> # refid 1 only for column types
-  select(refid, study, study_l, year, author:comment, linked_references, labels, title)
+  select(refid, starts_with("design"), study, study_l, year, author:comment, linked_references, labels, title)
 
 levels(study_char_dat$design_f_lab)
 
@@ -115,11 +115,19 @@ study_arm_dat <- read_csv(path_csv(study_arm_file)) |>
   select(-ris_code, -level, -study_char_k) |>
   rename(author_dist = author, author = author_added) |> # author distiller, author entered
   group_by(refid) |> # add study arm numbering
-  mutate(arm_id = row_number()) |>
+    mutate(arm_id = row_number()) |>
   ungroup() |>
-  select(refid, author, year, arm_id, everything()) |>
+  mutate(
+    study = paste(author, year),
+    study_l = paste0("[", study, "]", "(", "evidence_tables.html#", refid, ")")
+  ) |>
+  select(refid, study, study_l, year, arm_id, everything()) |>
+  select(-c(author, author_dist, title, doi, user)) |>
   filter(refid != 1) |> # refid 1 only for column types
-  relocate(linked_references, labels, .after = last_col())
+  relocate(linked_references, labels, .after = last_col()) |>
+  left_join(study_char_dat |> select(refid, design_f), by = "refid") |> # add design_f
+  relocate(design_f, .after = refid) |>
+  relocate(study, .after = design_f)
 
 # type_col(study_arm_dat) |> arrange(desc(mode)) |> View()
 
