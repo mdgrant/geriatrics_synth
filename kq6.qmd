@@ -29,15 +29,7 @@ Among \[geriatric\] patients 65 years or older undergoing surgery and anesthesia
 
 <!-- refids design tibbles ---------------------------- (2022-12-28 08:41) @ --->
 
-```{r, refids}
-kq6_refid_design <- study_char_dat |>
-  filter(!is.na(kq6_proph_meds)) |>
-  select(refid, study, year, title, design_f, design_f_lab, starts_with("kq")) |> 
-  arrange(design_f)
-
-kq6_refid <- kq6_refid_design |> 
-  pull(refid)
-
+```{r, data}
 study_char_dat <- study_char_dat |> 
   filter(refid %in% kq6_refid) |> 
   arrange(design_f)
@@ -47,52 +39,10 @@ study_char_dat <- study_char_dat |>
 
 <font size = 4> `r table_ref()` Rankings of the 5 most important outcomes (10 respondents). </font>
 
-```{r}
-#| include: false
-library(reactablefmtr)
-library(htmltools)
-
+```{r, outcome_priority}
+#| include: true
 outcome_dat <- rankings("KQ6")
-```
-
-```{r}
-reactable(
-  outcome_dat,
-  pagination = FALSE,
-  defaultSorted = "any_top_5",
-  defaultSortOrder = "desc",
-  defaultColDef = colDef(
-    cell = data_bars(outcome_dat,
-      box_shadow = TRUE,
-      bar_height = 12,
-      max_value = 10
-      # fill_color = "#B22215"
-    ),
-    style = cell_style(outcome_dat,
-      font_size = "11px",
-    )
-  ),
-  columns = list(
-    outcome = colDef(name = "Outcome", width = 200),
-    rank1 = colDef(name = "Rank 1", width = 80, headerClass = "header", align = "center"),
-    rank2 = colDef(name = "Rank 2", width = 80, headerClass = "header", align = "center"),
-    rank3 = colDef(name = "Rank 3", width = 80, headerClass = "header", align = "center"),
-    rank4 = colDef(name = "Rank 4", width = 80, headerClass = "header", align = "center"),
-    rank5 = colDef(name = "Rank 5", width = 80, headerClass = "header", align = "center"),
-    any_top_5 = colDef(name = "Any", width = 80, headerClass = "header", align = "center", 
-      cell = data_bars(outcome_dat, box_shadow = TRUE, bar_height = 12, max_value = 10, fill_color = "#B22215"
-    ))
-  ),
-  theme = reactableTheme(
-    borderColor = "#dfe2e5",
-    stripedColor = "#f6f8fa",
-    highlightColor = "#f0f5f9",
-    cellPadding = "0px 0px"
-  ),
-  compact = TRUE,
-  class = "priority-tbl"
-)
-
+outcome_tab(outcome_dat)
 ```
 
 <!-- ![](assets/pim_outcome.png){fig-align="left" width="3.5in"} -->

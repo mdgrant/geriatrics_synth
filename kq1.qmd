@@ -1,6 +1,54 @@
 ---
-title: "kq1"
+title: "KQ 1 Expanded Preoperative Screening"
 editor: visual
+toc-title: "Expanded Preoperative Screening"
+toc-location: "left"
+tbl-cap-location: "top"
+page-layout: full
+css: styles.css
+tables:
+      style: Table
+      caption:
+        pre: "Table "
+        sep: " -- "
+# bibliography: "bib/kq1.bib"
+# csl: jama.csl
+# link-citations: yes
+# nocite: '@*'
 ---
 
-## KQ1
+## Key Question
+
+Among patients 65 years or older \[geriatric\] anticipating surgery and anesthesia, does expanded preoperative evaluation (e.g., for frailty, cognitive impairment, functional status, or psychosocial issues) lead to improved postoperative outcomes?
+
+<!-- setup -------------------------------------------- (2022-12-24 16:56) @ --->
+
+```{r, read_data}
+#| include: false
+source("code/readfiles_geri_2022-11-16.R")
+```
+
+<!-- kq5..._dat files --------------------------------- (2022-12-28 08:41) @ --->
+
+```{r, data}
+# note working file not renamed
+study_char_dat <- study_char_dat |> 
+  filter(refid %in% kq1_refid) |> 
+  arrange(design_f)
+
+study_arm_dat <- study_arm_dat |> 
+  filter(refid %in% kq1_refid) |> 
+  arrange(design_f)
+```
+
+## Outcome Importance Rankings
+
+<font size = 4> `r table_ref()` Rankings of the 5 most important outcomes (10 respondents). </font>
+
+```{r, outcome_priority}
+#| include: true
+outcome_dat <- rankings("KQ1")
+outcome_tab(outcome_dat)
+```
+
+<!-- ![](assets/pim_outcome.png){fig-align="left" width="3.5in"} -->

@@ -3,6 +3,8 @@ title: "KQ 5: Potentially Inappropriate Medications"
 editor: visual
 toc-title: "Potentially Inappropriate Medications"
 toc-location: "left"
+toc_float: 
+  collapsed: true
 tbl-cap-location: "top"
 page-layout: full
 css: styles.css
@@ -19,26 +21,24 @@ nocite: '@*'
 
 ## Key Question
 
-Among \[geriatric\] patients 65 years or older undergoing surgery and anesthesia, do commonly used potentially inappropriate medications administered during the perioperative period increase the risk of postoperative delirium or other adverse outcomes?
+Among patients 65 years or older \[geriatric\] undergoing surgery and anesthesia, do commonly used potentially inappropriate medications administered during the perioperative period increase the risk of postoperative delirium or other adverse outcomes?
 
 <!-- setup -------------------------------------------- (2022-12-24 16:56) @ --->
 
-```{r, file = "code/readfiles_geri_2022-11-16.R"}
+```{r, read_data}
 #| include: false
+source("code/readfiles_geri_2022-11-16.R")
 ```
 
-<!-- refids design tibbles ---------------------------- (2022-12-28 08:41) @ --->
+<!-- kq5..._dat files --------------------------------- (2022-12-28 08:41) @ --->
 
-```{r, refids}
-kq5_refid_design <- study_char_dat |>
-  filter(!is.na(kq5_inapp_meds)) |>
-  select(refid, study, year, title, design_f, design_f_lab, starts_with("kq")) |> 
+```{r, data}
+# note working file not renamed
+study_char_dat <- study_char_dat |> 
+  filter(refid %in% kq5_refid) |> 
   arrange(design_f)
 
-kq5_refid <- kq5_refid_design |> 
-  pull(refid)
-
-study_char_dat <- study_char_dat |> 
+study_arm_dat <- study_arm_dat |> 
   filter(refid %in% kq5_refid) |> 
   arrange(design_f)
 ```
@@ -47,53 +47,10 @@ study_char_dat <- study_char_dat |>
 
 <font size = 4> `r table_ref()` Rankings of the 5 most important outcomes (10 respondents). </font>
 
-```{r}
-#| include: false
-library(reactablefmtr)
-library(htmltools)
-
+```{r, outcome_priority}
+#| include: true
 outcome_dat <- rankings("KQ5")
-
-```
-
-```{r}
-reactable(
-  outcome_dat,
-  pagination = FALSE,
-  defaultSorted = "any_top_5",
-  defaultSortOrder = "desc",
-  defaultColDef = colDef(
-    cell = data_bars(outcome_dat,
-      box_shadow = TRUE,
-      bar_height = 12,
-      max_value = 10
-      # fill_color = "#B22215"
-    ),
-    style = cell_style(outcome_dat,
-      font_size = "11px",
-    )
-  ),
-  columns = list(
-    outcome = colDef(name = "Outcome", width = 200),
-    rank1 = colDef(name = "Rank 1", width = 80, headerClass = "header", align = "center"),
-    rank2 = colDef(name = "Rank 2", width = 80, headerClass = "header", align = "center"),
-    rank3 = colDef(name = "Rank 3", width = 80, headerClass = "header", align = "center"),
-    rank4 = colDef(name = "Rank 4", width = 80, headerClass = "header", align = "center"),
-    rank5 = colDef(name = "Rank 5", width = 80, headerClass = "header", align = "center"),
-    any_top_5 = colDef(name = "Any", width = 80, headerClass = "header", align = "center", 
-      cell = data_bars(outcome_dat, box_shadow = TRUE, bar_height = 12, max_value = 10, fill_color = "#B22215"
-    ))
-  ),
-  theme = reactableTheme(
-    borderColor = "#dfe2e5",
-    stripedColor = "#f6f8fa",
-    highlightColor = "#f0f5f9",
-    cellPadding = "0px 0px"
-  ),
-  compact = TRUE,
-  class = "priority-tbl"
-)
-
+outcome_tab(outcome_dat)
 ```
 
 <!-- ![](assets/pim_outcome.png){fig-align="left" width="3.5in"} -->
@@ -120,13 +77,15 @@ study_char_dat |>
   summarise(total = n()) |>
   adorn_totals("row") |>
   gt(id = "one") |>
-  cols_label(design_f_lab = "Design", total = "Studies") |>
+  cols_label(
+    design_f_lab = "Design", 
+    total = "Studies") |>
   cols_width(
     # design_f_lab ~ px(200),
     design_f_lab ~ "1.8in",
     total ~ ".5in"
   ) |>
-  gt_theme_mg() |> 
+  gt_theme_mg() |>
   tab_style(
     style = list(
       cell_fill(color = "#E4F3FE"),
@@ -147,6 +106,32 @@ study_char_dat |>
 <!-- design, enrollment, centers ... ------------------- (2022-12-28 10:44) @ --->
 
 ```{r, included}
+# drug classes by study
+drug_classes <- study_arm_dat |>
+  select(refid, design_f, study, arm_id, arm_n, contains("kq5")) |>
+  select(refid, design_f, study, arm_id, arm_n, kq5_antichol:kq5_nonbenzo_other_spec) |>
+  select(!contains("spec")) |>
+  select(!contains("drug")) |>
+  filter(if_any(starts_with("kq"), ~ !is.na(.))) |>
+  rename_all(~ str_replace(., "kq5_", "")) |>
+  unite(agents, antichol:nonbenzo, na.rm = TRUE, sep = "|") |>
+  mutate(
+    agents = str_replace(agents, "antichol", "Anticholinergic"),
+    agents = str_replace(agents, "antipsych", "Antipsychotic"),
+    agents = str_replace(agents, "benzo", "Benzodiazepine"),
+    agents = str_replace(agents, "corticoster", "Corticosteroid"),
+    agents = str_replace(agents, "nsaid", "NSAID"),
+    agents = str_replace(agents, "h2antag", "H2 blocker"),
+    agents = str_replace(agents, "nonBenzodiazepine", "Nonbenzodiazepine hypnotic")
+  ) |> 
+  select(refid, study, agents) |>
+  distinct() |>
+  group_by(study) |>
+  mutate(agents_up = paste0(agents, collapse = "|")) |>
+  slice(1) |>
+  ungroup() |>
+  select(-c(study, agents))
+
 included_dat <- study_char_dat |>
   select(refid, starts_with("design"), study_l, year, n_enroll, n_analyze, centers, country, non_vh_hdi, starts_with("surg")) |>
   # select(refid, study, starts_with("surg")) |> # compile surgeries
@@ -157,10 +142,20 @@ included_dat <- study_char_dat |>
     gi = ifelse(!is.na(colorectal) | !is.na(gi_other) | !is.na(abdominal), "GI/Abdominal", NA),
     across(c(various, cardiac, colorectal, gyn, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, thoracic, urol, vasc, other), ~ firstup(.x)),
   ) |>
-  unite("surgs", various, cardiac, colorectal, gyn, gi, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, thoracic, urol, vasc, other, sep = ":", remove = FALSE, na.rm = TRUE) |>
+  unite("surgs", various, cardiac, colorectal, gyn, gi, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, thoracic, urol, vasc, other, sep = "|", remove = FALSE, na.rm = TRUE) |>
+  mutate(
+    surgs = ifelse(refid == 7722, "Non-cardiac", surgs) #Duprey 2022
+  ) |> 
   select(-c(various, abdominal, cardiac, colorectal, gyn, gi, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, thoracic, urol, vasc, other, design_other, gi_other, starts_with("ortho"), list, other_desc, starts_with("hip"))) |>
-  select(refid, study_l, design_f_lab, centers, n_enroll, country, non_vh_hdi, surgs) %>%
-  arrange(design_f_lab, surgs)
+  select(refid, study_l, design_f_lab, centers, n_enroll, country, non_vh_hdi, surgs) |> 
+  left_join(drug_classes, by = "refid") |>
+  mutate(
+        agents_up = ifelse(refid == 7722, md("Anticholinergic|Antipsychotic|<br/> Benzodiazepine|NSAID"), agents_up), # Duprey 2022
+        agents_up = ifelse(refid == 3727, md("NSAID|Benzodiazepine|<br/> Nonbenzodiazepine hypnotic"), agents_up), # Mangusan 2015
+        agents_up = ifelse(refid == 246, md("Anticholinergic|H2 blocker|<br/> Benzodiazepine"), agents_up) # Jeong 2016
+  ) |> 
+  relocate(agents_up, .before = surgs) |> 
+  arrange(agents_up, design_f_lab, surgs)
 
 included_dat |>
   group_by(design_f_lab) |>
@@ -171,10 +166,11 @@ included_dat |>
     n_enroll = "Enrolled",
     country = "Country",
     centers = "Centers",
-    surgs = "Surgery"
-   ) |>
+    agents_up = "Drug Class",
+    surgs = "Surgery",
+  ) |>
   cols_hide(non_vh_hdi) |>
-    fmt_markdown(columns = c(study_l)) |> 
+  fmt_markdown(columns = c(study_l, agents_up)) |>
   tab_footnote(
     footnote = md("Non very high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."),
     locations = cells_column_labels(columns = country)
@@ -184,34 +180,253 @@ included_dat |>
     locations = cells_body(columns = country, rows = !is.na(non_vh_hdi))
   ) |>
   tab_footnote(
-        footnote = md("Various indicates more than 4 different types of surgery."),
-        locations = cells_column_labels(columns = surgs)
-      ) |>
+    footnote = md("Various indicates more than 4 different types of surgery."),
+    locations = cells_column_labels(columns = surgs)
+  ) |>
   gt_theme_mg() |>
   tab_style(
     style = cell_text(align = "center"),
     locations = cells_column_labels(
       columns = c("refid")
     )
-  ) |> 
-  opt_footnote_marks(marks = "letters") |> 
-  tab_source_note("GI: gastrointestinal; Ortho: orthopedic; Neuro: neurological; Oralmax: oral maxillofacial; Vasc: vascular.")
+  ) |>
+  opt_footnote_marks(marks = "letters") |>
+  tab_source_note("Antichol: anticholinergics; Antipsych: antipsychotics; GI: gastrointestinal; Ortho: orthopedic; Neuro: neurological; Oralmax: oral maxillofacial; Vasc: vascular.")
 
 ```
 
-<!-- rct w/comparators -------------------------------- (2023-01-03 16:12) @ --->
+<!-- add kq6 arms to studies -------------------------- (2023-01-06 10:59) @ --->
+<!-- consequence of data entry allowing only 1 kq per arm -->
 
 ```{r}
-#| eval: false
-temp <- study_arm_dat |> 
-  filter(refid %in% kq5_refid & design_f == "rct") |> 
-  select(refid, design_f, study, arm_id, arm_n, contains("kq5"))
+#| include: false
+## drug class ----------------------------------------- (2023-01-10 16:20) @----
+drug_classes <- study_arm_dat |> 
+  select(refid, design_f, study, arm_id, arm_n, contains("kq5")) |> 
+  select(refid, design_f, study, arm_id, arm_n, kq5_antichol:kq5_nonbenzo_other_spec) |> 
+  select(!contains("spec")) |> 
+  select(!contains("drug")) |> 
+  filter(if_any(starts_with("kq"), ~ !is.na(.))) |> 
+  rename_all(~ str_replace(., "kq5_", "")) |> 
+  unite(agents, antichol:nonbenzo, na.rm = TRUE, sep = "|") |> 
+  mutate(agents = str_remove_all(agents, "_y"),
+         agents = case_when(
+           refid %in% c(246, 3727) ~ "Various", # Jeong 246 preop, Mangusan 3727
+           agents == "antichol" ~ "Anticholinergics",
+           agents == "antipsych" ~ "Antipsychotics",
+           agents == "benzo" ~ "Benzodiazepines",
+           agents == "corticoster" ~ "Corticosteroids",
+           agents == "nsaid" ~ "NSAIDs",
+           agents == "h2antag" ~ "H2 blockers",
+           agents == "nonbenzo" ~ "Nonbenzodiazepine hypnotics"
+         )) |> 
+  # find all drugs for a given trial even if in > 1 arm
+  select(refid, study, agents) |> 
+  distinct() |> 
+  group_by(study) |> 
+  mutate(agents_up = paste0(agents, collapse = "|")) |> 
+  slice(1) |> 
+  ungroup() |> 
+  select(-c(study, agents))
 
-view_rec(742, temp)
-  
-  
-  
-  
+## get factor labels and levels for drugs ------------- (2023-01-10 16:20) @----
+drug_f_levels <- read_csv("data/kq5_levels_labels.csv") |> pull(level)
+drug_f_labels <- read_csv("data/kq5_levels_labels.csv") |> pull(label)
+
+## table by arm --------------------------------------- (2023-01-10 16:21) @----
+kq5_by_arm_tab <- study_arm_dat |>
+  select(refid, design_f_lab, study, study_l, arm_id, arm_n, contains(c("kq5", "kq6")), anti_cortico_drug, starts_with("inapp")) |>
+  rename(
+    control_desc_kq5 = kq5_control_desc,
+    control_desc_kq6 = kq6_control_desc,
+    interv_desc_kq5 = kq5_interv_desc,
+    interv_desc_kq6 = kq6_interv_desc,
+    none_kq5 = kq5_none,
+    none_kq6 = kq6_none,
+    other_spec_kq5 = kq5_other_spec,
+    other_spec_kq6 = kq6_other_spec,
+    notes_kq5 = kq5_notes,
+    notes_kq6 = kq6_notes,
+    arm_kq5 = arm_kq5_pim,
+    arm_kq6 = arm_kq6_proph_meds
+  ) |>
+  # update kq5&6 study kq5 arms with kq6 data
+  rename_with(~ str_replace(.x, "^kq[5-6]_", "")) |>
+  # unite("arm_kq56", none_kq5, none_kq6, antichol, antipsych, cort, nsaid, h2antag, benzo, nonbenzo, dexmed, ketamine, melatonin, ramelteon, sep = "|", na.rm = TRUE, remove = TRUE) |>
+  unite("arm_kq56", none_kq5, none_kq6, antichol, antipsych, anti_cortico_drug, nsaid, h2antag, benzo, nonbenzo, dexmed, ketamine, melatonin, ramelteon, sep = "|", na.rm = TRUE, remove = TRUE) |>
+  unite("drug", contains("drug"), sep = "|", na.rm = TRUE, remove = TRUE) |>
+  unite("other_spec", contains("other_spec"), sep = "|", na.rm = TRUE, remove = TRUE) |>
+  unite("control_desc", contains("control_desc"), sep = "|", na.rm = TRUE, remove = TRUE) |>
+  # intervention timing
+  unite("time_admin", c(inapp_med_pre:inapp_med_unspec), sep = "|", na.rm = TRUE, remove = FALSE) |> 
+  mutate(
+    drug = na_if(drug, ""),
+    control_desc_recode = case_when(
+      str_detect(control_desc, "[Ss]aline|[Nn][Aa][Cc][Ll]") ~ "Saline",
+      str_detect(control_desc, "[Pp]lacebo|[Oo]ral pill") ~ "Placebo",
+      str_detect(control_desc, "[Nn]o treatment|no prophylactice") ~ "None",
+      str_detect(control_desc, "[Pp]lacebo|[Oo]ral pill") ~ "Placebo"
+    ),
+    arm_kq56 = str_replace(arm_kq56, "kq[5-6]_", ""),
+    drug = str_replace(drug, "^\\w*_", ""),
+    drug = ifelse(drug == "other" & !is.na(other_spec), tolower(substr(other_spec, 1, 5)), drug),
+    # from kq6
+    drug = case_when(
+      arm_kq56 == "dexmedetomidine" ~ "dexmedetomidine",
+      arm_kq56 == "ketamine" ~ "ketamine",
+      arm_kq56 == "melatonin" ~ "melatonin",
+      drug == "any" & arm_kq56 == "benzo" ~ "anybenz",
+      drug == "any" & arm_kq56 == "antipsych" ~ "anyantipsych",
+      other_spec == "omeprazole" ~ "omepr",
+      refid == 9157 & arm_kq56 == "control" ~ "propofol",
+      is.na(drug) &!is.na(arm_kq56) ~ arm_kq56,
+      refid == 246 ~ "various", # Jeong 2022
+      TRUE ~ drug
+    ),
+    drug_f = factor(drug,
+      levels = drug_f_levels,
+      labels = drug_f_labels,
+    ), 
+    per_day = case_when(
+      inapp_med_doseperday == 1 ~ "qd",
+      inapp_med_doseperday == 2 ~ "bid",
+      inapp_med_doseperday == 3 ~ "tid",
+      TRUE ~ NA_character_
+    ),
+    dose_sched = paste0(inapp_med_dose, dose_measure, " (", per_day, "×", inapp_med_days,  "d)"),
+    # remove missings
+    dose_sched = str_replace_all(dose_sched, "×NAd|NA×|NAd|NA", ""),
+    dose_sched = str_replace_all(dose_sched, "\\(\\)", ""),
+    dose_sched = str_replace(dose_sched, "\\_", "/"),
+    dose_sched = ifelse(str_detect(dose_sched, "dose"), "NR", dose_sched),
+    time_admin = str_replace_all(time_admin, "inapp_med_", ""),
+    time_admin = str_replace(time_admin, "post", "Postop"),
+    time_admin = str_replace(time_admin, "induct", "Induction"),
+    time_admin = str_replace(time_admin, "intra", "Intraop"),
+    time_admin = firstup(time_admin),
+    time_admin = str_replace(time_admin, "Pre", "Preop"),
+    time_admin = str_replace(time_admin, "prev", "-prev"),
+    time_admin = str_replace(time_admin, "treat", "-treat"),
+    time_admin = ifelse(time_admin == "Unspec", "Unspecified", time_admin),
+    # placebo, missing, none
+    # drug_f = as.character(drug_f),
+    # drug_f = ifelse(is.na(drug_f), firstup(arm_kq56), drug_f)
+  ) |>
+  left_join(drug_classes, by = "refid") |> 
+  select(refid, design_f_lab, agents_up, study_l, arm_n, drug_f, dose_sched, time_admin)
+
+```
+
+<br/>
+
+## Drugs by Study
+
+```{r, kq5_drugs_tables_function}
+kq5_char_drugs_tab <- function(drugs, footnote) {
+  kq5_by_arm_tab |>
+    # mutate(drug_f = fct)
+    arrange(refid, fct_rev(drug_f)) |> 
+    filter(agents_up == drugs) |> 
+    group_by(refid) |>
+    mutate(study_l = ifelse(row_number() > 1, "", study_l)) |>
+    ungroup() %>%
+    select(-refid) |>
+    group_by(design_f_lab) |>
+    gt(id = "one") |>
+    tab_header(
+    title = drugs,
+  ) %>%
+    cols_label(
+      # refid = "ID",
+      # design_f_lab = "Design",
+      # agents_up = "Class",
+      # arm_id = "Arm",
+      study_l = "Study",
+      arm_n = "N",
+      drug_f = "Drug",
+      dose_sched = "Dosing",
+      time_admin = "Timing"
+    ) |>
+    cols_hide(agents_up) |>
+    fmt_markdown(columns = c(study_l)) |>
+    tab_style(
+      style = cell_text(align = "center"),
+      locations = cells_column_labels(
+        columns = c("arm_n", "drug_f", "dose_sched", "time_admin")
+      )
+    ) |>
+    tab_style(
+      style = cell_text(align = "left"),
+      locations = cells_body(
+        columns = c("drug_f", "dose_sched", "time_admin")
+      )
+    ) |>
+    opt_horizontal_padding(scale = 3) |>
+    gt_theme_mg() |> 
+      tab_options(
+        heading.align = "left"
+      ) |> 
+    tab_source_note(footnote)
+}
+
+```
+
+### Benzodiazepines
+
+<font size = 4> `r table_ref()` Studies examining benzodiazepines, dose, and timing according to study design. </font>
+
+```{r benzodiazepines}
+kq5_char_drugs_tab("Benzodiazepines", "Intraop: intraoperative; Preop:preopertive; Postop: postoperative; prev:preventive.")
+```
+
+<br/>
+
+### Antipsychotics
+
+<font size = 4> `r table_ref()` Studies examining antipsychotics, dose, and timing according to study design. </font>
+
+```{r antipsychotics}
+kq5_char_drugs_tab("Antipsychotics", "Preop:preopertive; Postop: postoperative; prev:preventive.")
+```
+
+<br/>
+
+### Anticholinergics
+
+<font size = 4> `r table_ref()` Studies examining anticholinergics, dose, and timing according to study design. </font>
+
+```{r anticholinergics}
+kq5_char_drugs_tab("Anticholinergics", "Preop:preopertive.")
+```
+
+<br/>
+
+### Corticosteroids
+
+<font size = 4> `r table_ref()` Studies examining corticosteroids, dose, and timing according to study design. </font>
+
+```{r corticosteroids}
+kq5_char_drugs_tab("Corticosteroids", "Intraop: intraoperative; Preop:preopertive; Postop: postoperative; prev:preventive.")
+```
+
+<br/>
+
+### NSAIDs
+
+<font size = 4> `r table_ref()` Studies examining NSAIDs, dose, and timing according to study design. </font>
+
+```{r nsaids}
+kq5_char_drugs_tab("NSAIDs", "Intraop: intraoperative; Preop:preopertive; Postop: postoperative; prev:preventive.")
+```
+
+<br/>
+
+### Multiple
+
+<font size = 4> `r table_ref()` Studies examining multiple drugs, dose, and timing according to study design. </font>
+
+```{r various}
+kq5_char_drugs_tab("Various", "Preop:preopertive; Postop: postoperative.")
 ```
 
 ## Outline
@@ -219,3 +434,11 @@ view_rec(742, temp)
 **Key question**<br/> **Included Studies**<br/> Table 1. Number of included studies according to age and design.<br/> *Design, centers, country, surgery*<br/> **Outcomes**<br/>  *Patient-reported*<br/>     Outcome One<br/>     DAG if relevant<br/>     Relevant characteristics table(s) of studies<br/>     Results<br/>     Pooled<br/>  *Clinical*<br/>     Outcome One<br/>     DAG if relevant<br/>     Relevant characteristics table(s) of studies<br/>     Results<br/>     Pooled<br/>     Synthesis other<br/> **Study/Participant Detail**<br/>     *Study Characteristics*<br/>     *Patient Characteristics*<br/> **Funding and Conflict of Interest**<br/> **Risk of Bias**<br/> **References**
 
 ## References {#references}
+
+
+
+
+
+
+
+

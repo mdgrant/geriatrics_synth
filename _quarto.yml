@@ -18,12 +18,22 @@ website:
             text: "KQ1 Expanded Preoperative Screening"
           - href: kq2.html
             text: "KQ2 Prehabilitation"
+      - text: Intraop
+        menu:
+          - href: kq3.html
+            text: "KQ3 Regional vs. General Anesthesia"
+          - href: kq4.html
+            text: "KQ4 Intravenous vs. Inhaled Anesthesia"
       - text: Periop
         menu:
           - href: kq5.html
             text: "KQ5 Potentially Inappropriate Medications"
           - href: kq6.html
             text: "KQ6 Delirium Prophylaxis"
+      - text: Postop
+        menu:
+          - href: kq8.html
+            text: "KQ8 Delirium Screening"
       - text: Appendix
         menu:
           - href: evidence_tables.html

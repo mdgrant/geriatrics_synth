@@ -7,3 +7,17 @@ Draft materials. Not to be cited.
 Corrections, suggestions for additions, or comments can be sent to [Mark Grant](mailto:m.grant@asahq.org).
 
 [The current protocol can be found here.](https://mdgrant.github.io/geriatrics_pp/intro.html)
+
+[KQ1 Expanded Preoperative Screening](kq1.html)
+
+[KQ2 Prehabilitation](kq2.html)
+
+[KQ3 Regional vs. General Anesthesia](kq3.html)
+
+[KQ4 Intravenous vs. Inhaled Anesthesia](kq4.html)
+
+[KQ5 Potentially Inappropriate Medications](kq5.html)
+
+[KQ6 Delirium Prophylaxis](kq6.html)
+
+[KQ8 Delirium Screening](kq8.html)

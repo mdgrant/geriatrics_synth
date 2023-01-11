@@ -1,7 +1,7 @@
 ---
-title: "KQ 2 Prehabilitation"
+title: "KQ 4 Intravenous vs. Inhaled Anesthesia"
 editor: visual
-toc-title: "Prehabilitation"
+toc-title: "Intravenous vs. Inhaled Anesthesia"
 toc-location: "left"
 tbl-cap-location: "top"
 page-layout: full
@@ -11,7 +11,7 @@ tables:
       caption:
         pre: "Table "
         sep: " -- "
-# bibliography: "bib/kq1.bib"
+# bibliography: "bib/kq3.bib"
 # csl: jama.csl
 # link-citations: yes
 # nocite: '@*'
@@ -19,7 +19,7 @@ tables:
 
 ## Key Question
 
-Among patients 65 years or older \[geriatric\] anticipating surgery and anesthesia, do interventions targeted at improving physical function, cognition, and nutritional status before surgery (“prehabilitation”) improve postoperative outcomes?
+Among patients 65 years or older \[geriatric\] undergoing surgery with general anesthesia, does the use of intravenous agents for maintenance of anesthesia improve postoperative outcomes compared with inhaled agents?
 
 <!-- setup -------------------------------------------- (2022-12-24 16:56) @ --->
 
@@ -33,11 +33,11 @@ source("code/readfiles_geri_2022-11-16.R")
 ```{r, data}
 # note working file not renamed
 study_char_dat <- study_char_dat |> 
-  filter(refid %in% kq1_refid) |> 
+  filter(refid %in% kq4_refid) |> 
   arrange(design_f)
 
 study_arm_dat <- study_arm_dat |> 
-  filter(refid %in% kq1_refid) |> 
+  filter(refid %in% kq4_refid) |> 
   arrange(design_f)
 ```
 
@@ -47,7 +47,7 @@ study_arm_dat <- study_arm_dat |>
 
 ```{r, outcome_priority}
 #| include: true
-outcome_dat <- rankings("KQ2")
+outcome_dat <- rankings("KQ4")
 outcome_tab(outcome_dat)
 ```
 

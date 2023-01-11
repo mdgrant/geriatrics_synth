@@ -4,6 +4,8 @@ library(janitor)
 library(gt, quietly = TRUE)
 library(gtExtras)
 library(glue)
+library(reactablefmtr)
+library(htmltools)
 # library(gtsummary)
 knitr::opts_chunk$set(echo = FALSE)
 
@@ -125,9 +127,9 @@ study_arm_dat <- read_csv(path_csv(study_arm_file)) |>
   select(-c(author, author_dist, title, doi, user)) |>
   filter(refid != 1) |> # refid 1 only for column types
   relocate(linked_references, labels, .after = last_col()) |>
-  left_join(study_char_dat |> select(refid, design_f), by = "refid") |> # add design_f
-  relocate(design_f, .after = refid) |>
-  relocate(study, .after = design_f)
+  left_join(study_char_dat |> select(refid, design_f, design_f_lab), by = "refid") |> # add design_f
+  relocate(c(design_f, design_f_lab), .after = refid) |>
+  relocate(study, .after = design_f_lab)
 
 # type_col(study_arm_dat) |> arrange(desc(mode)) |> View()
 
@@ -197,7 +199,20 @@ study_refs_dat <- read_csv(path_csv(study_refs_file), col_types = str_c(c("n", r
 ## delete temporary files ----------------------------- (2022-12-24 13:23) @----
 rm(list = ls(pattern = ".*file"))
 
+## refids by kq --------------------------------------- (2023-01-04 14:05) @----
+kq1_refid <- kq_refids(kq1_preop_eval)
+kq2_refid <- kq_refids(kq2_prehab)
+kq3_refid <- kq_refids(kq3_reg_gen)
+kq4_refid <- kq_refids(kq4_tiva_inhale)
+kq5_refid <- kq_refids(kq5_inapp_meds)
+kq6_refid <- kq_refids(kq6_proph_meds)
+kq7_refid <- kq_refids(kq7_postop_reg)
+kq8_refid <- kq_refids(kq8_pacu_screen)
 
+refid_design <- study_char_dat |>
+  filter(!is.na(kq5_inapp_meds)) |>
+  select(refid, study, year, title, design_f, design_f_lab, starts_with("kq")) |>
+  arrange(design_f)
 
 
 

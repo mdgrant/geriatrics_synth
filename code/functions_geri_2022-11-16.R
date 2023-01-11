@@ -13,12 +13,19 @@ path_csv <- function(name_csv){
   return(path)
 }
 
+# function to pull refids
+kq_refids <- function(kq_id) {
+  study_char_dat |>
+    filter(!is.na({{kq_id}})) |>
+    pull(refid)
+}
+
 # count of unique for variable
-qinu <- function(df, var){
-  df %>%
-    select({{var}}) %>%
-    distinct() %>%
-    count() %>%
+count_unique <- function(df, var){
+  df |>
+    select({{var}}) |>
+    distinct() |>
+    count() |>
     pull(n)
 }
 
@@ -33,11 +40,23 @@ proc_freq <- function(df, a, b){
 
 # convenience function to view record(s) for refid from dataset
 view_rec <- function(data_set, refid_select) {
-  data_set %>%
-    filter(refid == refid_select) %>%
-    janitor::remove_empty(which = "cols") %>%
-    t() %>%
+  data_set |>
+    filter(refid == refid_select) |>
+    janitor::remove_empty(which = "cols") |>
+    t() |>
+    as.data.frame() |>
+    rownames_to_column(var = "variable") |>
     View()
+}
+
+# convenience function to view record(s) for refid from dataset
+noview_rec <- function(data_set, refid_select) {
+  data_set |>
+    filter(refid == refid_select) |>
+    janitor::remove_empty(which = "cols") |>
+    t() |>
+    as.data.frame() |>
+    rownames_to_column(var = "variable")
 }
 
 # capitalize 1st letter
@@ -92,7 +111,7 @@ gt_theme_mg <- function(data) {
     )
 }
 
-# simple figure and table caption labels (greater flexibility for html)
+# simple figure and table caption labels (flexibility for html)
 table_n <- 0
 figure_n <- 0
 
@@ -169,3 +188,89 @@ rankings <- function(key_question){
     mutate(across(rank1:rank5, as.numeric),
            any_top_5 = rank5 + rank4 + rank3 + rank2 + rank1)
 }
+
+# create excel file of individual study records
+library(openxlsx)
+
+# function to create excel with pages for each refid
+by_study_xlsx <- function(refids, kq_dat, name) {
+  # record for worksheet
+  view_xlsx <- function(data_set, refid_select) {
+    data_set %>%
+      filter(refid == refid_select) %>%
+      janitor::remove_empty(which = "cols") %>%
+      t() |>
+      as.data.frame() %>%
+      rownames_to_column(., var = "var_name")
+  }
+
+  wb <- createWorkbook(name)
+
+  for (i in 1:length(refids)) {
+    temp_sheet <- view_xlsx(kq_dat, refids[i])
+    addWorksheet(wb, sheetName = refids[i])
+    setColWidths(wb, i, cols = c(1:5), widths = c(rep(40, 5)))
+    writeData(wb, sheet = i, temp_sheet)
+  }
+
+  path <- glue::glue("/Users/mgrant/Desktop/{name}.xlsx")
+  saveWorkbook(wb, path, overwrite = TRUE)
+}
+
+# usage
+# add design to tibble if not study characteristics file
+# temp_dat <- left_join(study_arm_dat, study_char_dat |> select(refid, design_f), by = "refid") |>
+#   relocate(design_f, .after = refid) |>
+#   arrange(design_f)
+#
+# by_study_xlsx(kq5_refid, temp_dat, "kq5")
+
+# outcome priority table
+outcome_tab <- function(outcome_dat) {
+  reactable(
+    outcome_dat,
+    pagination = FALSE,
+    defaultSorted = "any_top_5",
+    defaultSortOrder = "desc",
+    defaultColDef = colDef(
+      cell = data_bars(outcome_dat,
+        box_shadow = TRUE,
+        bar_height = 12,
+        max_value = 10
+        # fill_color = "#B22215"
+      ),
+      style = cell_style(outcome_dat,
+        font_size = "11px",
+      )
+    ),
+    columns = list(
+      outcome = colDef(name = "Outcome", width = 200),
+      rank1 = colDef(name = "Rank 1", width = 80, headerClass = "header", align = "center"),
+      rank2 = colDef(name = "Rank 2", width = 80, headerClass = "header", align = "center"),
+      rank3 = colDef(name = "Rank 3", width = 80, headerClass = "header", align = "center"),
+      rank4 = colDef(name = "Rank 4", width = 80, headerClass = "header", align = "center"),
+      rank5 = colDef(name = "Rank 5", width = 80, headerClass = "header", align = "center"),
+      any_top_5 = colDef(
+        name = "Any", width = 80, headerClass = "header", align = "center",
+        cell = data_bars(
+          outcome_dat,
+          box_shadow = TRUE,
+          bar_height = 12,
+          max_value = 10,
+          fill_color = "#B22215"
+        )
+      )
+    ),
+    theme = reactableTheme(
+      borderColor = "#dfe2e5",
+      stripedColor = "#f6f8fa",
+      highlightColor = "#f0f5f9",
+      cellPadding = "0px 0px"
+    ),
+    compact = TRUE,
+    class = "priority-tbl"
+  )
+}
+
+
+
