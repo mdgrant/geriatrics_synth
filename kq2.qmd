@@ -19,7 +19,7 @@ tables:
 
 ## Key Question
 
-Among patients 65 years or older \[geriatric\] anticipating surgery and anesthesia, do interventions targeted at improving physical function, cognition, and nutritional status before surgery (“prehabilitation”) improve postoperative outcomes?
+Among patients 65 years or older \[geriatric\] anticipating surgery and anesthesia, do interventions targeted at improving physical function, cognition, and nutritional status before surgery ("prehabilitation") improve postoperative outcomes?
 
 <!-- setup -------------------------------------------- (2022-12-24 16:56) @ --->
 
@@ -50,4 +50,3 @@ study_arm_dat <- study_arm_dat |>
 outcome_dat <- rankings("KQ2")
 outcome_tab(outcome_dat)
 ```
-

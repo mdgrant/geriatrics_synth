@@ -379,8 +379,6 @@ kq5_char_drugs_tab <- function(drugs, footnote) {
 kq5_char_drugs_tab("Benzodiazepines", "Intraop: intraoperative; Preop:preopertive; Postop: postoperative; prev:preventive.")
 ```
 
-<br/>
-
 ### Antipsychotics
 
 <font size = 4> `r table_ref()` Studies examining antipsychotics, dose, and timing according to study design. </font>
@@ -388,8 +386,6 @@ kq5_char_drugs_tab("Benzodiazepines", "Intraop: intraoperative; Preop:preopertiv
 ```{r antipsychotics}
 kq5_char_drugs_tab("Antipsychotics", "Preop:preopertive; Postop: postoperative; prev:preventive.")
 ```
-
-<br/>
 
 ### Anticholinergics
 
@@ -399,8 +395,6 @@ kq5_char_drugs_tab("Antipsychotics", "Preop:preopertive; Postop: postoperative; 
 kq5_char_drugs_tab("Anticholinergics", "Preop:preopertive.")
 ```
 
-<br/>
-
 ### Corticosteroids
 
 <font size = 4> `r table_ref()` Studies examining corticosteroids, dose, and timing according to study design. </font>
@@ -409,8 +403,6 @@ kq5_char_drugs_tab("Anticholinergics", "Preop:preopertive.")
 kq5_char_drugs_tab("Corticosteroids", "Intraop: intraoperative; Preop:preopertive; Postop: postoperative; prev:preventive.")
 ```
 
-<br/>
-
 ### NSAIDs
 
 <font size = 4> `r table_ref()` Studies examining NSAIDs, dose, and timing according to study design. </font>
@@ -418,8 +410,6 @@ kq5_char_drugs_tab("Corticosteroids", "Intraop: intraoperative; Preop:preopertiv
 ```{r nsaids}
 kq5_char_drugs_tab("NSAIDs", "Intraop: intraoperative; Preop:preopertive; Postop: postoperative; prev:preventive.")
 ```
-
-<br/>
 
 ### Multiple
 

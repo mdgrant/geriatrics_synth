@@ -50,4 +50,3 @@ study_arm_dat <- study_arm_dat |>
 outcome_dat <- rankings("KQ4")
 outcome_tab(outcome_dat)
 ```
-
