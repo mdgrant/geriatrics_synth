@@ -6,7 +6,11 @@ library(gtExtras)
 library(glue)
 library(reactablefmtr)
 library(htmltools)
-# library(gtsummary)
+library(gtsummary)
+# theme_gtsummary_journal(journal = "jama")
+# theme_gtsummary_compact()
+# set_gtsummary_theme(theme_gtsummary_journal("nejm", font_size))
+# set_gtsummary_theme(theme_gtsummary_compact())
 knitr::opts_chunk$set(echo = FALSE)
 
 ## data files ----------------------------------------- (2022-11-16 14:19) @----
@@ -145,9 +149,17 @@ contin_dat <- read_csv(path_csv(contin_out_file)) |>
   group_by(refid) |> # add study arm numbering
   mutate(arm_id = row_number()) |>
   ungroup() |>
-  select(refid, author, year, arm_id, everything()) |>
+  mutate(
+    study = paste(author, year),
+    study_l = paste0("[", study, "]", "(", "evidence_tables.html#", refid, ")")
+  ) |>
+  select(refid, study, study_l, year, arm_id, everything()) |>
+  select(-c(author, author_dist, title, doi, user)) |>
   filter(refid != 1) |> # refid 1 only for column types
-  relocate(linked_references, labels, .after = last_col())
+  relocate(linked_references, labels, .after = last_col()) |>
+  left_join(study_char_dat |> select(refid, design_f, design_f_lab), by = "refid") |> # add design_f
+  relocate(c(design_f, design_f_lab), .after = refid) |>
+  relocate(study, .after = design_f_lab)
 
 # type_col(contin_dat) |> arrange(desc(mode)) |> View()
 
@@ -162,9 +174,17 @@ dichot_dat <- read_csv(path_csv(dichot_out_file)) |>
   group_by(refid) |> # add study arm numbering
   mutate(arm_id = row_number()) |>
   ungroup() |>
-  select(refid, author, year, arm_id, everything()) |>
+  mutate(
+    study = paste(author, year),
+    study_l = paste0("[", study, "]", "(", "evidence_tables.html#", refid, ")")
+  ) |>
+  select(refid, study, study_l, year, arm_id, everything()) |>
+  select(-c(author, author_dist, title, doi, user)) |>
   filter(refid != 1) |> # refid 1 only for column types
-  relocate(linked_references, labels, .after = last_col())
+  relocate(linked_references, labels, .after = last_col()) |>
+  left_join(study_char_dat |> select(refid, design_f, design_f_lab), by = "refid") |> # add design_f
+  relocate(c(design_f, design_f_lab), .after = refid) |>
+  relocate(study, .after = design_f_lab)
 
 # type_col(dichot_dat) |> arrange(desc(mode)) |> View()
 
@@ -179,9 +199,17 @@ likert_dat <- read_csv(path_csv(likert_out_file)) |>
   group_by(refid) |> # add study arm numbering
   mutate(arm_id = row_number()) |>
   ungroup() |>
-  select(refid, author, year, arm_id, everything()) |>
+  mutate(
+    study = paste(author, year),
+    study_l = paste0("[", study, "]", "(", "evidence_tables.html#", refid, ")")
+  ) |>
+  select(refid, study, study_l, year, arm_id, everything()) |>
+  select(-c(author, author_dist, title, doi, user)) |>
   filter(refid != 1) |> # refid 1 only for column types
-  relocate(linked_references, labels, .after = last_col())
+  relocate(linked_references, labels, .after = last_col()) |>
+  left_join(study_char_dat |> select(refid, design_f, design_f_lab), by = "refid") |> # add design_f
+  relocate(c(design_f, design_f_lab), .after = refid) |>
+  relocate(study, .after = design_f_lab)
 
 # type_col(likert_dat) |> arrange(desc(mode)) |> View()
 

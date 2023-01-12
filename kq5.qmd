@@ -33,14 +33,11 @@ source("code/readfiles_geri_2022-11-16.R")
 <!-- kq5..._dat files --------------------------------- (2022-12-28 08:41) @ --->
 
 ```{r, data}
-# note working file not renamed
-study_char_dat <- study_char_dat |> 
-  filter(refid %in% kq5_refid) |> 
-  arrange(design_f)
-
-study_arm_dat <- study_arm_dat |> 
-  filter(refid %in% kq5_refid) |> 
-  arrange(design_f)
+study_char_dat <- data_kq(study_char_dat, kq5_refid)
+study_arm_dat <- data_kq(study_arm_dat, kq5_refid)
+contin_dat <- data_kq(contin_dat, kq5_refid)
+dichot_dat <- data_kq(dichot_dat, kq5_refid)
+likert_dat <- data_kq(likert_dat, kq5_refid)
 ```
 
 ## Outcome Importance Rankings
@@ -419,9 +416,59 @@ kq5_char_drugs_tab("NSAIDs", "Intraop: intraoperative; Preop:preopertive; Postop
 kq5_char_drugs_tab("Various", "Preop:preopertive; Postop: postoperative.")
 ```
 
-## Outline
+## Outcomes
 
-**Key question**<br/> **Included Studies**<br/> Table 1. Number of included studies according to age and design.<br/> *Design, centers, country, surgery*<br/> **Outcomes**<br/>  *Patient-reported*<br/>     Outcome One<br/>     DAG if relevant<br/>     Relevant characteristics table(s) of studies<br/>     Results<br/>     Pooled<br/>  *Clinical*<br/>     Outcome One<br/>     DAG if relevant<br/>     Relevant characteristics table(s) of studies<br/>     Results<br/>     Pooled<br/>     Synthesis other<br/> **Study/Participant Detail**<br/>     *Study Characteristics*<br/>     *Patient Characteristics*<br/> **Funding and Conflict of Interest**<br/> **Risk of Bias**<br/> **References**
+### Reporting Frequency
+
+<font size = 4> `r table_ref()` Frequency dichotomous outcomes were reported. </font>
+
+```{r dichot_outcome_freq}
+dichot_dat |>
+  select(refid, design_f_lab, d_adl:d_satisfaction) |>
+  mutate(across(d_adl:d_satisfaction, ~ !is.na(.x))) |>
+  group_by(refid) |>
+  mutate(
+    across(d_adl:d_satisfaction, ~ sum(.x) != 0)
+  ) |>
+  ungroup() |>
+  rename_with(~ str_replace(.x, "d_", "")) |>
+  rename(
+    "Complications" = "complication",
+    "Cognitive delay" = "cog_delay",
+    "Delirium duration" = "deli_duration",
+    "Discharge location" = "disch_location",
+    "Opioid use" = "opioid",
+    "Quality of recovery" = "qor",
+    "ADL" = "adl",
+    "Readmission" = "readmit",
+    "Mortality" = "mortality",
+    "Delirium" = "delirium",
+    "Depression" = "depression",
+    "Comfort" = "comfort",
+    "Ssatisfaction" = "satisfaction"
+  ) |>
+  group_by(refid) |>
+  slice(1) |>
+  ungroup() |>
+  select(-refid) |>
+  arrange(design_f_lab) |>
+  mutate(
+    design_f_lab = fct_drop(design_f_lab)
+  ) |>
+  group_by(design_f_lab) |>
+  tbl_summary(
+    by = design_f_lab,
+    missing = "no"
+  ) |>
+  modify_header(label = "**Outcome**") |>
+  as_gt(id = "one") |>
+  gt_theme_mg()
+
+```
+
+<!-- ## Outline -->
+
+<!-- **Key question**<br/> **Included Studies**<br/> Table 1. Number of included studies according to age and design.<br/> *Design, centers, country, surgery*<br/> **Outcomes**<br/>  *Patient-reported*<br/>     Outcome One<br/>     DAG if relevant<br/>     Relevant characteristics table(s) of studies<br/>     Results<br/>     Pooled<br/>  *Clinical*<br/>     Outcome One<br/>     DAG if relevant<br/>     Relevant characteristics table(s) of studies<br/>     Results<br/>     Pooled<br/>     Synthesis other<br/> **Study/Participant Detail**<br/>     *Study Characteristics*<br/>     *Patient Characteristics*<br/> **Funding and Conflict of Interest**<br/> **Risk of Bias**<br/> **References** -->
 
 ## References {#references}
 

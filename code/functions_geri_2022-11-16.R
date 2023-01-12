@@ -272,5 +272,10 @@ outcome_tab <- function(outcome_dat) {
   )
 }
 
-
+# select records for kq
+data_kq <- function(data, refids) {
+  data |>
+    filter(refid %in% refids) |>
+    arrange(design_f)
+}
 
