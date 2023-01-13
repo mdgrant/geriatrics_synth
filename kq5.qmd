@@ -40,7 +40,7 @@ dichot_dat <- data_kq(dichot_dat, kq5_refid)
 likert_dat <- data_kq(likert_dat, kq5_refid)
 ```
 
-## Outcome Importance Rankings
+## Outcome Importance
 
 <font size = 4> `r table_ref()` Rankings of the 5 most important outcomes (10 respondents). </font>
 
@@ -51,6 +51,137 @@ outcome_tab(outcome_dat)
 ```
 
 <!-- ![](assets/pim_outcome.png){fig-align="left" width="3.5in"} -->
+
+### Reporting Frequency
+
+<font size = 4> `r table_ref()` Dichotomous outcomes. </font>
+
+```{r dichot_outcome_freq}
+dichot_dat |>
+  select(refid, design_f_lab, d_adl:d_satisfaction) |>
+  mutate(across(d_adl:d_satisfaction, ~ !is.na(.x))) |>
+  group_by(refid) |>
+  mutate(
+    across(d_adl:d_satisfaction, ~ sum(.x) != 0)
+  ) |>
+  ungroup() |>
+  rename(
+    "Complications" = "d_complication",
+    "Cognitive delay" = "d_cog_delay",
+    "Delirium duration" = "d_deli_duration",
+    "Discharge location" = "d_disch_location",
+    "Opioid use" = "d_opioid",
+    "Quality of recovery" = "d_qor",
+    "ADL" = "d_adl",
+    "Readmission" = "d_readmit",
+    "Mortality" = "d_mortality",
+    "Delirium" = "d_delirium",
+    "Depression" = "d_depression",
+    "Comfort" = "d_comfort",
+    "Satisfaction" = "d_satisfaction"
+  ) |>
+  group_by(refid) |>
+  slice(1) |>
+  ungroup() |>
+  select(-refid) |>
+  arrange(design_f_lab) |>
+  mutate(
+    design_f_lab = fct_drop(design_f_lab)
+  ) |>
+  group_by(design_f_lab) |>
+  tbl_summary(
+    by = design_f_lab,
+    missing = "no"
+  ) |>
+  modify_header(label = "**Outcome**") |>
+  as_gt(id = "one") |>
+  gt_theme_mg() |> 
+  tab_options(footnotes.marks = "letters")
+  # opt_footnote_marks(marks = "standard")
+
+```
+
+<font size = 4> `r table_ref()` Continuous outcomes. </font>
+
+```{r cont_outcome_freq}
+contin_dat |>
+  select(refid, design_f_lab, c_6mwd:c_pulmonary) |>
+  mutate(across(c_6mwd:c_pulmonary, ~ !is.na(.x))) |>
+  group_by(refid) |>
+  mutate(
+    across(c_6mwd:c_pulmonary, ~ sum(.x) != 0)
+  ) |>
+  ungroup() |>
+  rename(
+    "6 Minute walk" = "c_6mwd",
+    "Delirium duration" = "c_delirium_dur",
+    "Grip strength" = "c_handgrip",
+    "LOS" = "c_los",
+    "Opioid use" = "c_opioid",
+    "Pulmonary function" = "c_pulmonary"
+  ) |>
+  group_by(refid) |>
+  slice(1) |>
+  ungroup() |>
+  select(-refid) |>
+  arrange(design_f_lab) |>
+  mutate(
+    design_f_lab = fct_drop(design_f_lab)
+  ) |>
+  group_by(design_f_lab) |>
+  tbl_summary(
+    by = design_f_lab,
+    missing = "no"
+  ) |>
+  modify_header(label = "**Outcome**") |>
+  as_gt(id = "one") |>
+  gt_theme_mg() |> 
+  tab_options(footnotes.marks = "letters")
+  # opt_footnote_marks(marks = "standard")
+
+```
+
+<font size = 4> `r table_ref()` Likert-type outcomes. </font>
+
+```{r likert_outcome_freq}
+likert_dat |>
+  select(refid, design_f_lab, l_adl:l_sat) |>
+  mutate(across(l_adl:l_sat, ~ !is.na(.x))) |>
+  group_by(refid) |>
+  mutate(
+    across(l_adl:l_sat, ~ sum(.x) != 0)
+  ) |>
+  ungroup() |>
+  rename(
+    "Activities of daily living" = "l_adl",
+    "Cognitive function" = "l_cogfunc",
+    "Complications" = "l_complications",
+    "Mental status" = "l_mental",
+    "Pain" = "l_pain",
+    "Quality of life" = "l_qol",
+    "Quality of recovery" = "l_qor",
+    "Satisfaction" = "l_sat",
+  ) |>
+  group_by(refid) |>
+  slice(1) |>
+  ungroup() |>
+  select(-refid) |>
+  arrange(design_f_lab) |>
+  mutate(
+    design_f_lab = fct_drop(design_f_lab)
+  ) |>
+  group_by(design_f_lab) |>
+  tbl_summary(
+    by = design_f_lab,
+    missing = "no"
+  ) |>
+  modify_header(label = "**Outcome**") |>
+  as_gt(id = "one") |>
+  gt_theme_mg() |> 
+  tab_options(footnotes.marks = "letters")
+  # opt_footnote_marks(marks = "standard")
+
+```
 
 ## Causal Model
 
@@ -418,53 +549,31 @@ kq5_char_drugs_tab("Various", "Preop:preopertive; Postop: postoperative.")
 
 ## Outcomes
 
-### Reporting Frequency
+### Delirium
 
-<font size = 4> `r table_ref()` Frequency dichotomous outcomes were reported. </font>
+```{r}
+refid_del_dichot <- dichot_dat |> 
+  filter(!is.na(d_delirium)) |> 
+  select(refid) |> 
+  distinct() |> 
+  pull(refid)
 
-```{r dichot_outcome_freq}
-dichot_dat |>
-  select(refid, design_f_lab, d_adl:d_satisfaction) |>
-  mutate(across(d_adl:d_satisfaction, ~ !is.na(.x))) |>
-  group_by(refid) |>
-  mutate(
-    across(d_adl:d_satisfaction, ~ sum(.x) != 0)
-  ) |>
-  ungroup() |>
-  rename_with(~ str_replace(.x, "d_", "")) |>
-  rename(
-    "Complications" = "complication",
-    "Cognitive delay" = "cog_delay",
-    "Delirium duration" = "deli_duration",
-    "Discharge location" = "disch_location",
-    "Opioid use" = "opioid",
-    "Quality of recovery" = "qor",
-    "ADL" = "adl",
-    "Readmission" = "readmit",
-    "Mortality" = "mortality",
-    "Delirium" = "delirium",
-    "Depression" = "depression",
-    "Comfort" = "comfort",
-    "Ssatisfaction" = "satisfaction"
-  ) |>
-  group_by(refid) |>
-  slice(1) |>
-  ungroup() |>
-  select(-refid) |>
-  arrange(design_f_lab) |>
-  mutate(
-    design_f_lab = fct_drop(design_f_lab)
-  ) |>
-  group_by(design_f_lab) |>
-  tbl_summary(
-    by = design_f_lab,
-    missing = "no"
-  ) |>
-  modify_header(label = "**Outcome**") |>
-  as_gt(id = "one") |>
-  gt_theme_mg()
+temp <- dichot_dat |> 
+  select(refid, design_f_lab, study, study_l, year, arm_id, contains("deli"))
+
+
+
 
 ```
+
+
+
+
+
+
+
+
+
 
 <!-- ## Outline -->
 
