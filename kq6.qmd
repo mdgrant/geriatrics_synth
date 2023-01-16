@@ -220,7 +220,7 @@ included_dat |>
     refid ~ px(60),
     study_l ~ px(140),
     centers ~ px(40),
-    n_enroll ~ px(40),
+    n_enroll ~ px(55),
     country ~ px(100),
     surgs ~ px(220)
   ) |> 
@@ -248,6 +248,8 @@ included_dat |>
   tab_source_note("GI: gastrointestinal; Ortho: orthopedic; Neuro: neurological; Oralmax: oral maxillofacial; Vasc: vascular.")
 
 ```
+
+
 
 
 ## References {#references}
