@@ -82,6 +82,20 @@ design_labels <- c(
   "Other",
   "Fully Paired")
 
+design_labels_abbrev <- c(
+  "RCT",
+  "Cluster",
+  "Crossover",
+  "NR Trial",
+  "Quasi-exp",
+  "Prosp Coh",
+  "Retro Coh",
+  "Cross Sect",
+  "Case-Cont",
+  "Case Series",
+  "Other",
+  "Paired")
+
 study_char_dat <- read_csv(path_csv(study_char_file)) |>
   janitor::clean_names() |>
   rename(author_dist = author, author = author_added) |> # author distiller, author entered
@@ -91,6 +105,8 @@ study_char_dat <- read_csv(path_csv(study_char_file)) |>
     design_f = fct_collapse(design_f, other = c("other", "fully_paired")),
     design_f_lab = factor(design, levels = design_levels, labels = design_labels),
     design_f_lab = fct_collapse(design_f_lab, Other = c("Other", "Fully Paired")),
+    design_f_abbrev = factor(design, levels = design_levels, labels = design_labels_abbrev),
+    design_f_abbrev = fct_collapse(design_f_abbrev, Other = c("Other", "Paired")),
     country = ifelse(grepl("USA", country), "USA", country),
     country = ifelse(grepl("UK", country), "UK", country),
     study = paste(author, year),
@@ -157,9 +173,9 @@ contin_dat <- read_csv(path_csv(contin_out_file)) |>
   select(-c(author, author_dist, title, doi, user)) |>
   filter(refid != 1) |> # refid 1 only for column types
   relocate(linked_references, labels, .after = last_col()) |>
-  left_join(study_char_dat |> select(refid, design_f, design_f_lab), by = "refid") |> # add design_f
-  relocate(c(design_f, design_f_lab), .after = refid) |>
-  relocate(study, .after = design_f_lab)
+  left_join(study_char_dat |> select(refid, design_f, design_f_lab, design_f_abbrev), by = "refid") |> # add design_f
+  relocate(c(design_f, design_f_lab, design_f_abbrev), .after = refid) |>
+  relocate(study, .after = design_f_abbrev)
 
 # type_col(contin_dat) |> arrange(desc(mode)) |> View()
 
@@ -182,9 +198,9 @@ dichot_dat <- read_csv(path_csv(dichot_out_file)) |>
   select(-c(author, author_dist, title, doi, user)) |>
   filter(refid != 1) |> # refid 1 only for column types
   relocate(linked_references, labels, .after = last_col()) |>
-  left_join(study_char_dat |> select(refid, design_f, design_f_lab), by = "refid") |> # add design_f
-  relocate(c(design_f, design_f_lab), .after = refid) |>
-  relocate(study, .after = design_f_lab)
+  left_join(study_char_dat |> select(refid, design_f, design_f_lab, design_f_abbrev), by = "refid") |> # add design_f
+  relocate(c(design_f, design_f_lab), design_f_abbrev, .after = refid) |>
+  relocate(study, .after = design_f_abbrev)
 
 # type_col(dichot_dat) |> arrange(desc(mode)) |> View()
 
@@ -207,9 +223,9 @@ likert_dat <- read_csv(path_csv(likert_out_file)) |>
   select(-c(author, author_dist, title, doi, user)) |>
   filter(refid != 1) |> # refid 1 only for column types
   relocate(linked_references, labels, .after = last_col()) |>
-  left_join(study_char_dat |> select(refid, design_f, design_f_lab), by = "refid") |> # add design_f
-  relocate(c(design_f, design_f_lab), .after = refid) |>
-  relocate(study, .after = design_f_lab)
+  left_join(study_char_dat |> select(refid, design_f, design_f_lab, design_f_abbrev), by = "refid") |> # add design_f
+  relocate(c(design_f, design_f_lab, design_f_abbrev), .after = refid) |>
+  relocate(study, .after = design_f_abbrev)
 
 # type_col(likert_dat) |> arrange(desc(mode)) |> View()
 

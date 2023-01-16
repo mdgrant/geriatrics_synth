@@ -1,7 +1,7 @@
 ---
 title: "Evidence Tables"
-editor: visual
-toc-title: "Outline"
+editor: source
+toc-title: "Study Design"
 toc-location: "left"
 tbl-cap-location: "top"
 page-layout: full
@@ -10,6 +10,8 @@ navbar:
     background: primary
     search: true
     pinned: true
+    limit: 100
+    copy-button: true
 tables:
       style: Table
       caption:
@@ -30,9 +32,9 @@ nocite: '@*'
 ```{r evidenceTables}
 # incl excl enrolled summary
 evidence_tables <- study_char_dat |> 
-  select(refid, study, n_enroll, include, exclude, results, design_f_lab, year, author, comment) |> 
+  select(refid, author, year, study, n_enroll, include, exclude, results, design_f_lab, comment) |> 
   mutate(
-    study = glue("<span><a id='{refid}'></a></span>{study}"),
+    study = glue("{author}<br/>{year}<span><a id='{refid}'></a></span>"),
     include = firstup(include),
     exclude = firstup(exclude),
     results = firstup(results),
@@ -42,14 +44,20 @@ evidence_tables <- study_char_dat |>
     incl_excl = paste0("**Include:** ", include, "<br/>", "**Exclude:** ", exclude),
     incl_excl = str_replace(incl_excl, "NA", " Not specified."),
   ) |> 
-  replace_na(list(comment = "")) |> 
-  select(-c(author))
+  relocate(study, .after = refid) |> 
+  replace_na(list(comment = "")) 
 
 # trial refids
-trial_refid <- study_char_dat |> 
-  filter(design_f %in% c("rct", "nr_trial", "cluster", "crossover")) |> 
+rand_trial_refid <- study_char_dat |> 
+  filter(design_f %in% c("rct", "cluster", "crossover")) |> 
   pull(refid)
-  
+
+# nr trial refids
+nr_trial_refid <- study_char_dat |> 
+  filter(design_f %in% c("nr_trial")) |> 
+  pull(refid)
+
+
 # quasi experimental refids
 quasi_refid <- study_char_dat |> 
   filter(design_f %in% c("quasi_exp")) |> 
@@ -60,28 +68,22 @@ obs_refid <- study_char_dat |>
   filter(!design_f %in% c("rct", "nr_trial", "cluster", "crossover", "quasi_exp")) |> 
   pull(refid)
 
+# later add study arm data
+# study_arm_dat_trial <- study_arm_dat |> 
+#   filter(refid %in% trial_refid)
+  # filter((refid %in% kq5_refid) & (refid %in% trial_refid))
+
 ```
 
 <!-- ## Key Question 5 -->
 
-```{r}
-kq5_refid <- study_char_dat |>
-  filter(!is.na(kq5_inapp_meds)) |>
-  arrange(design_f) |> 
-  pull(refid)
-
-# trials rct nrct
-study_arm_dat_trial <- study_arm_dat |> 
-  filter(refid %in% trial_refid)
-  # filter((refid %in% kq5_refid) & (refid %in% trial_refid))
-
-view_rec(study_arm_dat, 742)
-
+```{r evidence_table_template}
+evidence_tables_function <- function(refid_select) {
 evidence_tables |>
-  # filter(refid %in% kq5_refid) |>
+  filter(refid %in% refid_select) |>
   arrange(design_f_lab, study) |>
-  select(study, n_enroll, incl_excl, results, comment, design_f_lab) |>
-  group_by(design_f_lab) |>
+  select(study, n_enroll, incl_excl, results, comment) |>
+  # group_by(design_f_lab) |>
   gt(id = "one") |> 
   cols_label(
     study = "Study",
@@ -95,7 +97,7 @@ evidence_tables |>
     n_enroll ~ "50px",
     incl_excl ~ "300px",
     results ~ "300px",
-    comment ~ "150px"
+    comment ~ "160px"
   ) |> 
     cols_align(
     align = "left",
@@ -114,7 +116,31 @@ evidence_tables |>
     locations = cells_body(columns = everything())
   ) |> 
   gt_theme_mg()
+}
+```
 
+## Randomized Clinical Trials
+
+```{r}
+evidence_tables_function(rand_trial_refid)
+```
+
+## Nonrandomized Trials
+
+```{r}
+evidence_tables_function(nr_trial_refid)
+```
+
+## Before-after & Time Series
+
+```{r}
+evidence_tables_function(quasi_refid)
+```
+
+## Observational
+
+```{r}
+evidence_tables_function(obs_refid)
 ```
 
 # References {#references}

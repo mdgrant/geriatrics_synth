@@ -1,0 +1,97 @@
+---
+title: "Strength of Evidence"
+editor: visual
+toc-title: "Strength of Evidence"
+toc-location: "left"
+toc_float: 
+  collapsed: true
+tbl-cap-location: "top"
+page-layout: full
+css: styles.css
+tables:
+      style: Table
+      caption:
+        pre: "Table "
+        sep: " -- "
+---
+
+
+```{r}
+#| include: false
+
+# grade footnote
+vlow <-  '<span><span class="quality-sign">⨁</span><span class="quality-sign">◯</span><span class="quality-sign">◯</span><span class="quality-sign">◯</span>'
+
+low <- '<span><span class="quality-sign">⨁</span><span class="quality-sign">⨁</span><span class="quality-sign">◯</span><span class="quality-sign">◯</span>'
+
+mod <- '<span><span class="quality-sign">⨁</span><span class="quality-sign">⨁</span><span class="quality-sign">⨁</span><span class="quality-sign">◯</span>'
+
+high <- '<span><span class="quality-sign">⨁</span><span class="quality-sign">⨁</span><span class="quality-sign">⨁</span><span class="quality-sign">⨁</span>'
+
+grade_foot <- c("Very low:", vlow, "Low:", low, "Moderate:", mod, "High:", high)
+```
+
+<font size = 4> Ratings for important outcomes according to study design.</font>
+
+# **KQ5 Potentially Inappropriate Medications**
+
+
+# **Rating Systems Reference**
+
+#   GRADE
+
+<br> <font size = 4> **High** --- We are very confident that the true effect lies close to that of the estimate of the effect.
+
+**Moderate** --- We are moderately confident in the effect estimate: The true effect is likely to be close to the estimate of the effect, but there is a possibility that it is substantially different.
+
+**Low** --- Our confidence in the effect estimate is limited: The true effect may be substantially different from the estimate of the effect.
+
+**Very Low** --- We have very little confidence in the effect estimate: The true effect is likely to be substantially different from the estimate of effect.
+
+</font>
+
+## Domains (downgrading)
+
+<font size = 4>
+
+*Bias* --- Systematic error (eg, selection bias, confounding bias, measurement bias).
+
+*Inconsistency* --- Unexplained heterogeneity of results; studies find effect estimates that differ widely.
+
+*Imprecision* --- The range of plausible effects estimated from relevant studies.
+
+*Indirectness* --- Direct evidence consists of research that directly compares the interventions which we are interested in, delivered to the populations in which we are interested, and measures the outcomes important to patients.
+
+*Other (eg, publication bias)* --- Selective publication or reporting of results (typically of positive results).
+
+## Domains (updgrading)
+
+*Effect Size*
+
+*Dose-response*
+
+*Plausible Residual Confounding*
+
+</font>
+
+<br/><br/>
+
+#   ACCF/AHA
+
+<font size = 4>
+
+**Level A** --- High-quality evidence from more than 1 RCTs. Meta-analyses of high-quality RCTs. One or more RCTs corroborated by high-quality registry studies.
+
+**Level B-R** --- Moderate-quality evidence from 1 or more randomized controlled trials. Meta-analyses of moderate-quality RCTs.
+
+**Level B-NR** --- Moderate-quality evidence from 1 or more well-designed, well-executed nonrandomized studies, observational studies, or registry studies. Meta-analyses of such studies.
+
+**Level C-LD** --- Randomized or nonrandomized observational or registry studies with limitations of design or execution. Meta-analyses of such studies. Physiological or mechanistic studies in human subjects.
+
+**Level C-EO** --- Consensus of expert opinion based on clinical experience when evidence is insufficient, vague, or conflicting.
+
+</font>
+
+<font size = 3> RCT: randomized controlled trial; NR: nonrandomized; LD: limited data; EO: expert opinion </font>
+
+

@@ -1,8 +1,6 @@
 project:
   type: website
   output-dir: docs
-
-
 website:
   title: "Geriatrics Evidence Synthesis"
   navbar:
@@ -10,9 +8,10 @@ website:
     search: true
     pinned: true
     left:
-      - href: index.qmd
+      - href: index.html
         text: Home
-      - text: Preop
+      - href: soe.html
+        text: GRADE
         menu:
           - href: kq1.html
             text: "KQ1 Expanded Preoperative Screening"

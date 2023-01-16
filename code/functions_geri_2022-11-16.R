@@ -104,7 +104,9 @@ gt_theme_mg <- function(data) {
       column_labels.border.bottom.width = px(1.3),
       column_labels.font.weight = "bold",
       column_labels.padding = px(3),
+      heading.align = "left"
     ) |>
+    opt_horizontal_padding(scale = 2) |>
     tab_style(
       style = list(cell_text(weight = "bold")),
       locations = cells_row_groups()
@@ -222,7 +224,6 @@ by_study_xlsx <- function(refids, kq_dat, name) {
 # temp_dat <- left_join(study_arm_dat, study_char_dat |> select(refid, design_f), by = "refid") |>
 #   relocate(design_f, .after = refid) |>
 #   arrange(design_f)
-#
 # by_study_xlsx(kq5_refid, temp_dat, "kq5")
 
 # outcome priority table
@@ -279,3 +280,170 @@ data_kq <- function(data, refids) {
     arrange(design_f)
 }
 
+# footnote designs for tables
+foot_out_freq <- function(data) {
+  design_select <- data |>
+    select(design_f_abbrev) |>
+    mutate(design_select = as.character(fct_collapse(design_f_abbrev))) |>
+    distinct() |>
+    pull(design_select)
+
+  foot_labels <- tribble(
+    ~design_factor, ~abbreviation,
+    "RCT", "RCT: randomized clinical trial",
+    "Cluster", "Cluster: cluster randomized",
+    "Crossover", "Crossover: crossover trial",
+    "NR Trial", "NR Trial: non-randomized trial",
+    "Quasi-exp", "Quasi-exp: before-after or time series",
+    "Prosp Coh", "Prosp Coh: prospective cohort",
+    "Retro Coh", "Retro Coh: retrospective cohort",
+    "Cross Sect", "Cross Sect: cross-sectional",
+    "Case-Cont", "Case-Cont: case-control",
+    "Case Series", "Case Series",
+    "Other", "Other",
+    "Paired", "Paired: fully-paired"
+  )
+
+  foot_labels <- foot_labels |>
+    filter(design_factor %in% design_select) |>
+    pull(abbreviation) |>
+    str_flatten(collapse = "; ")
+
+  paste0("ADL: activities of daily living; ", foot_labels, ".")
+}
+
+# dichot freq outcomes
+dichot_freq_fun <- function(data) {
+  # for footnote
+  data |>
+    select(refid, design_f_abbrev, d_adl:d_satisfaction) |>
+    mutate(across(d_adl:d_satisfaction, ~ !is.na(.x))) |>
+    group_by(refid) |>
+    mutate(
+      across(d_adl:d_satisfaction, ~ sum(.x) != 0)
+    ) |>
+    ungroup() |>
+    rename(
+      "Complications" = "d_complication",
+      "Cognitive delay" = "d_cog_delay",
+      "Delirium duration" = "d_deli_duration",
+      "Discharge location" = "d_disch_location",
+      "Opioid use" = "d_opioid",
+      "Quality of recovery" = "d_qor",
+      "ADL" = "d_adl",
+      "Readmission" = "d_readmit",
+      "Mortality" = "d_mortality",
+      "Delirium" = "d_delirium",
+      "Depression" = "d_depression",
+      "Comfort" = "d_comfort",
+      "Satisfaction" = "d_satisfaction"
+    ) |>
+    group_by(refid) |>
+    slice(1) |>
+    ungroup() |>
+    select(-refid) |>
+    arrange(design_f_abbrev) |>
+    mutate(
+      design_f_abbrev = fct_drop(design_f_abbrev)
+    ) |>
+    group_by(design_f_abbrev) |>
+    tbl_summary(
+      by = design_f_abbrev,
+      missing = "no"
+    ) |>
+    modify_header(label = "**Outcome**") |>
+    as_gt(id = "one") |>
+    cols_width(
+      1 ~ "120px",
+      everything() ~ "120px") |>
+    gt_theme_mg() |>
+    tab_options(footnotes.marks = "letters") |>
+    tab_source_note(foot_out_freq(data))
+  # opt_footnote_marks(marks = "standard")
+}
+
+# contin freq outcomes
+contin_freq_fun <- function(data) {
+  data |>
+    select(refid, design_f_abbrev, c_6mwd:c_pulmonary) |>
+    mutate(across(c_6mwd:c_pulmonary, ~ !is.na(.x))) |>
+    group_by(refid) |>
+    mutate(
+      across(c_6mwd:c_pulmonary, ~ sum(.x) != 0)
+    ) |>
+    ungroup() |>
+    rename(
+      "6-Minute walk" = "c_6mwd",
+      "Delirium duration" = "c_delirium_dur",
+      "Grip strength" = "c_handgrip",
+      "Length of stay" = "c_los",
+      "Opioid use" = "c_opioid",
+      "Pulmonary function" = "c_pulmonary"
+    ) |>
+    group_by(refid) |>
+    slice(1) |>
+    ungroup() |>
+    select(-refid) |>
+    arrange(design_f_abbrev) |>
+    mutate(
+      design_f_abbrev = fct_drop(design_f_abbrev)
+    ) |>
+    group_by(design_f_abbrev) |>
+    tbl_summary(
+      by = design_f_abbrev,
+      missing = "no"
+    ) |>
+    modify_header(label = "**Outcome**") |>
+    as_gt(id = "one") |>
+    cols_width(
+      1 ~ "120px",
+      everything() ~ "120px") |>
+    gt_theme_mg() |>
+    tab_options(footnotes.marks = "letters")|>
+    tab_source_note(foot_out_freq(data))
+  # opt_footnote_marks(marks = "standard")
+}
+
+# likert freq outcomes
+likert_freq_fun <- function(data) {
+  data |>
+    select(refid, design_f_abbrev, l_adl:l_sat) |>
+    mutate(across(l_adl:l_sat, ~ !is.na(.x))) |>
+    group_by(refid) |>
+    mutate(
+      across(l_adl:l_sat, ~ sum(.x) != 0)
+    ) |>
+    ungroup() |>
+    rename(
+      "ADL" = "l_adl",
+      "Cognitive function" = "l_cogfunc",
+      "Complications" = "l_complications",
+      "Mental status" = "l_mental",
+      "Pain" = "l_pain",
+      "Quality of life" = "l_qol",
+      "Quality of recovery" = "l_qor",
+      "Satisfaction" = "l_sat",
+    ) |>
+    group_by(refid) |>
+    slice(1) |>
+    ungroup() |>
+    select(-refid) |>
+    arrange(design_f_abbrev) |>
+    mutate(
+      design_f_abbrev = fct_drop(design_f_abbrev)
+    ) |>
+    group_by(design_f_abbrev) |>
+    tbl_summary(
+      by = design_f_abbrev,
+      missing = "no"
+    ) |>
+    modify_header(label = "**Outcome**") |>
+    as_gt(id = "one") |>
+    cols_width(
+      1 ~ "120px",
+      everything() ~ "120px") |>
+    gt_theme_mg() |>
+    tab_options(footnotes.marks = "letters")|>
+    tab_source_note(foot_out_freq(data))
+  # opt_footnote_marks(marks = "standard")
+}

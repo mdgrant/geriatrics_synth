@@ -2,7 +2,7 @@
 title: "Evidence Synthesis"
 ---
 
-Draft materials. Not to be cited.
+Draft materials. **Not to be cited.**
 
 Corrections, suggestions for additions, or comments can be sent to [Mark Grant](mailto:m.grant@asahq.org).
 
@@ -21,3 +21,5 @@ Corrections, suggestions for additions, or comments can be sent to [Mark Grant](
 [KQ6 Delirium Prophylaxis](kq6.html)
 
 [KQ8 Delirium Screening](kq8.html)
+
+[GRADE](soe.html)
