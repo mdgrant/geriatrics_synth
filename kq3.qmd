@@ -1,6 +1,6 @@
 ---
 title: "KQ 3 Regional vs. General Anesthesia"
-editor: visual
+editor: source
 toc-title: "Regional vs. General Anesthesia"
 toc-location: "left"
 tbl-cap-location: "top"
@@ -26,6 +26,11 @@ Among patients 65 years or older \[geriatric\] undergoing surgery, does regional
 ```{r, read_data}
 #| include: false
 source("code/readfiles_geri_2022-11-16.R")
+study_char_dat <- data_kq(study_char_dat, kq3_refid)
+study_arm_dat <- data_kq(study_arm_dat, kq3_refid)
+contin_dat <- data_kq(contin_dat, kq3_refid)
+dichot_dat <- data_kq(dichot_dat, kq3_refid)
+likert_dat <- data_kq(likert_dat, kq3_refid)
 ```
 
 <!-- kq5..._dat files --------------------------------- (2022-12-28 08:41) @ --->

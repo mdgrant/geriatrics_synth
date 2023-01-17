@@ -326,16 +326,14 @@ kq5_by_arm_tab <- study_arm_dat |>
     # drug_f = as.character(drug_f),
     # drug_f = ifelse(is.na(drug_f), firstup(arm_kq56), drug_f)
   ) |>
-  left_join(drug_classes, by = "refid") |> # note by study, NOT arm
-  select(refid, design_f_lab, agents_up, study_l, arm_id, arm_n, drug_f, drug_f_nopim, dose_sched, time_admin)
-
-# writexl::write_xlsx(kq5_by_arm_tab, "/Users/mgrant/Desktop/kq5_by_arm_tab.xlsx")
-
-# kq5_by_arm_tab |> tabyl(drug_f_nopim)
+  left_join(drug_classes, by = "refid")  # note by study, NOT arm
 
 # save file for use in KQ6
+write_csv(kq5_by_arm_tab |> select(refid, arm_id, agents_up, drug_f, other_spec, control_desc), "data/kq5_drug_by_arm.csv")
 
-# write_csv(kq5_by_arm_tab |> select(refid, arm_id, agents_up, drug_f, other_spec), "data/kq5_drug_by_arm.csv")
+# data for analysi variables 
+kq5_by_arm_tab <- kq5_by_arm_tab |> 
+  select(refid, design_f_lab, agents_up, study_l, arm_id, arm_n, drug_f, drug_f_nopim, dose_sched, time_admin)
 
 ```
 
@@ -379,7 +377,7 @@ kq5_char_drugs_tab <- function(drugs, footnote) {
     cols_hide(agents_up) |>
     fmt_markdown(columns = c(study_l)) |>
     tab_style(
-      style = cell_text(align = "center"),
+      style = cell_text(align = "left"),
       locations = cells_column_labels(
         columns = c("arm_n", "drug_f_nopim", "dose_sched", "time_admin", "drug_f")
       )
@@ -484,6 +482,12 @@ temp <- dichot_dat |>
 
 writexl::write_xlsx(temp, "/Users/mgrant/Desktop/temp.xlsx")
 
+```
+
+Test
+
+```{r}
+x <- 1 + 1
 ```
 
 ## References {#references}

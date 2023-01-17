@@ -98,7 +98,7 @@ study_char_dat |>
   )
 ```
 
-## Design, centers, country, surgery
+### Design, centers, country, surgery
 
 <font size = 4> `r table_ref()` Study design, enrollment, centers, country, and surgery (see [References](#references) for citations). </font>
 
@@ -106,15 +106,16 @@ study_char_dat |>
 
 ```{r drugs_by_arm}
 #| message: false
+# DATA: drugs_dat <- study_arm_dat include drug arm data; adds kq5/6 arms
 ## drugs; from kq6, add kq5 arm drugs ----------------- (2023-01-16 13:46) @----
 # drugs for kq5 studies; needed to fill in "missings" for kq6 arms coded as kq5 arms
 kq5_drug_by_arm <- read_csv("data/kq5_drug_by_arm.csv") |> 
   rename(drug = drug_f) |> 
   mutate(drug = as.character(drug)) |> 
-  select(refid, arm_id, drug)
+  select(refid, arm_id, drug, control_desc)
 
 drugs_dat <- study_arm_dat |>
-  select(refid, design_f, study, arm_id, arm_n, contains("kq6")) |>
+  select(refid, design_f, study, study_l, arm_id, arm_n, arm_kq6_proph_meds, kq6_control_desc:kq6_notes, multiple_kq) |>
   rename_with(~ str_replace(., "kq6_", ""), everything()) |>
   rename_with(~ str_replace(., "dex_", "dexmed_"), everything()) |>
   mutate(
@@ -130,10 +131,12 @@ drugs_dat <- study_arm_dat |>
     drug = firstup(drug)
   ) |>
   relocate(drug, .after = arm_n) |>
-  # update drug for "kq5" arms
+  # update drug and control description for "kq5" arms
   left_join(kq5_drug_by_arm, by = c("refid", "arm_id")) |>
-  mutate(drug = coalesce(drug.x, drug.y)) |>
-  select(-drug.x, -drug.y) |>
+  mutate(drug = coalesce(drug.x, drug.y),
+         control_desc = coalesce(control_desc.x, control_desc.y),
+         control_desc = firstup(control_desc)) |>
+  select(-matches("\\.x|\\.y")) |> 
   mutate(
     drug_f = fct(drug,
       levels = c(
@@ -163,13 +166,14 @@ drugs_dat <- study_arm_dat |>
   ) |>
   ungroup() |>
   relocate(c(drug, drug_f, drug_study), .after = arm_id) |>
+  relocate(c(other_spec, interv_desc, control_desc), .after = last_col()) |> 
   arrange(refid, drug_study) |>
   fill(drug_study) |>
   arrange(refid, arm_id)
 
-```  
+```
 
-```{r included_tab}
+```{r included_table}
 #| echo: false
 included_dat <- study_char_dat |>
   select(refid, starts_with("design"), study_l, year, n_enroll, n_analyze, centers, country, non_vh_hdi, starts_with("surg")) |>
@@ -249,6 +253,45 @@ included_dat |>
 
 ```
 
+### Interventions and Comparators
+
+```{r drug_comparator}
+#| eval: false
+# by arm
+dex_by_arm <- drugs_dat |>
+  select(refid:interv_desc, matches("^proph_|dexmed"), -study_l) |>
+  # dosing
+  rename_with(~ gsub("proph_med_", "", .x, fixed = TRUE)) |>
+  mutate(
+    across(pre:unspec, ~ gsub("proph_med_", "", .x, fixed = TRUE)),
+    across(pre:unspec, ~ firstup(.x))
+  ) |>
+  unite("time_admin", c(pre:unspec), sep = "|", na.rm = TRUE, remove = FALSE) |> 
+  relocate(time_admin, .before = pre)
+
+
+
+  
+  
+  # timing
+
+writexl::write_xlsx(dex_by_arm, "/Users/mgrant/Desktop/dex_by_arm.xlsx")
+
+
+# dex table
+drgu
+
+
+
+drug_by_arm |> 
+  tabyl(drug_f)
+
+drug_compare_dat <- study_arm_dat |> 
+  select(refid, design_f_lab, study, arm_id, arm_n, kq6_control_desc:kq6_notes)
+  
+writexl::write_xlsx(drug_by_arm, "/Users/mgrant/Desktop/drug_by_arm.xlsx")
+
+```
 
 
 
