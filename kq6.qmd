@@ -256,47 +256,105 @@ included_dat |>
 ### Interventions and Comparators
 
 ```{r drug_comparator}
-#| eval: false
+#| eval: true
+# dex studies
+dex_refid <- drugs_dat |> 
+  filter(drug == "Dexmedetomidine") |> 
+  pull(refid)
+
 # by arm
 dex_by_arm <- drugs_dat |>
-  select(refid:interv_desc, matches("^proph_|dexmed"), -study_l) |>
+  filter(refid %in% dex_refid) |> 
+  mutate(year = str_extract(study, "\\d{4}")) |> 
+  select(refid:interv_desc, matches("^proph_|dexmed"), year) |>
   # timing
   rename_with(~ gsub("proph_med_", "", .x, fixed = TRUE)) |>
+  rename_with(~ gsub("dexmed_", "", .x, fixed = TRUE)) |>
   mutate(
     across(pre:unspec, ~ gsub("proph_med_", "", .x, fixed = TRUE)),
     across(pre:unspec, ~ firstup(.x)),
     pre = "Preop",
-    intra = "Intraop"
+    intra = "Intraop",
+# to order drugs
+   drug = fct(drug, levels = c("Dexmedetomidine", "Midazolam", "Placebo", "Other", "None"))
   ) |>
   unite("time_admin", c(pre:unspec), sep = "|", na.rm = TRUE, remove = FALSE) |> 
-  relocate(time_admin, .after = arm_n)
+  relocate(time_admin, .after = arm_n) |> 
   # dosing
+  mutate(
+    maintain_range = ifelse(!is.na(maintain_low + maintain_up), paste0(maintain, " (", maintain_low, "–", maintain_up, ")"), NA),
+    maintain_range = str_replace(maintain_range, "NA ", "")
+  ) |> 
+ arrange(year, study, desc(drug)) |> 
+    select(study_l, arm_n, drug, loading, maintain_range, postdose, time_admin, year)
 
-temp <- dex_by_arm |> 
-  select(dexmed_loading:dexmed_postdose)
+```
 
+<font size = 4> `r table_ref()` Dosing and comparators in Dexmedetomidine studies. </font>
 
-
+```{r dex_table}
+dex_by_arm |>
+  group_by(study_l) |>
+  mutate(study_l = ifelse(row_number() > 1, "", study_l)) |>
+  ungroup() |>
+  gt(id = "one") |>
+  cols_hide(year) |>
+  cols_label(
+    study_l = "Study",
+    arm_n = "N",
+    drug = "Comparator",
+    loading = "Loading",
+    maintain_range = md(" Maintenance<br/>(range) per hr"),
+    postdose = md("Post-<br/>surgical"),
+    time_admin = "Timing"
+    # drug_f = md("Comparator <br/> Detail")
+  ) |>
+  tab_spanner(
+    label = "Dexmedetomidine Dose mcg/kg",
+    columns = c(
+      loading, maintain_range, postdose
+    )
+  ) |>
+  fmt_markdown(columns = c(study_l)) |>
+  tab_style(
+    style = cell_text(align = "left"),
+    locations = cells_column_labels(
+      columns = c(drug:time_admin)
+    )
+  ) |>
+  tab_style(
+    style = cell_text(align = "left"),
+    locations = cells_body(
+      columns = c(drug:time_admin)
+    )
+  ) |>
+  tab_style(
+    style = list(
+      cell_text(color = "red")
+    ),
+    locations = cells_body(
+      columns = c(arm_n:time_admin),
+      rows = drug == "Dexmedetomidine"
+    )
+  ) |>
+  sub_missing(
+  columns = everything(),
+  rows = everything(),
+  missing_text = ""
+) |> 
+  # opt_horizontal_padding(scale = 3) |> # added to them scale = 2
+  # tab_source_note(footnote) |>
+  gt_theme_mg() |>
+  cols_width(
+    study_l ~ px(120),
+    arm_n ~ px(40),
+    drug ~ px(130),
+    loading ~ px(100),
+    maintain_range ~ px(120),
+    postdose ~ px(100),
+    time_admin ~ px(150)
+  ) 
   
-  
-  # timing
-
-writexl::write_xlsx(dex_by_arm, "/Users/mgrant/Desktop/dex_by_arm.xlsx")
-
-
-# dex table
-drgu
-
-
-
-drug_by_arm |> 
-  tabyl(drug_f)
-
-drug_compare_dat <- study_arm_dat |> 
-  select(refid, design_f_lab, study, arm_id, arm_n, kq6_control_desc:kq6_notes)
-  
-writexl::write_xlsx(drug_by_arm, "/Users/mgrant/Desktop/drug_by_arm.xlsx")
-
 ```
 
 
