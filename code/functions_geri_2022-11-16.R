@@ -231,6 +231,7 @@ outcome_tab <- function(outcome_dat) {
   reactable(
     outcome_dat,
     pagination = FALSE,
+    highlight = TRUE,
     defaultSorted = "any_top_5",
     defaultSortOrder = "desc",
     defaultColDef = colDef(

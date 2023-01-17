@@ -260,14 +260,20 @@ included_dat |>
 # by arm
 dex_by_arm <- drugs_dat |>
   select(refid:interv_desc, matches("^proph_|dexmed"), -study_l) |>
-  # dosing
+  # timing
   rename_with(~ gsub("proph_med_", "", .x, fixed = TRUE)) |>
   mutate(
     across(pre:unspec, ~ gsub("proph_med_", "", .x, fixed = TRUE)),
-    across(pre:unspec, ~ firstup(.x))
+    across(pre:unspec, ~ firstup(.x)),
+    pre = "Preop",
+    intra = "Intraop"
   ) |>
   unite("time_admin", c(pre:unspec), sep = "|", na.rm = TRUE, remove = FALSE) |> 
-  relocate(time_admin, .before = pre)
+  relocate(time_admin, .after = arm_n)
+  # dosing
+
+temp <- dex_by_arm |> 
+  select(dexmed_loading:dexmed_postdose)
 
 
 
