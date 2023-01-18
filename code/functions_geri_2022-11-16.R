@@ -231,7 +231,7 @@ outcome_tab <- function(outcome_dat) {
   reactable(
     outcome_dat,
     pagination = FALSE,
-    highlight = TRUE,
+    # highlight = TRUE,
     defaultSorted = "any_top_5",
     defaultSortOrder = "desc",
     defaultColDef = colDef(
@@ -359,7 +359,8 @@ dichot_freq_fun <- function(data) {
       everything() ~ "120px") |>
     gt_theme_mg() |>
     tab_options(footnotes.marks = "letters") |>
-    tab_source_note(foot_out_freq(data))
+    tab_source_note(foot_out_freq(data)) |>
+    sub_values(values = c("0 (0%)"), replacement = "—")
   # opt_footnote_marks(marks = "standard")
 }
 
@@ -400,8 +401,9 @@ contin_freq_fun <- function(data) {
       1 ~ "120px",
       everything() ~ "120px") |>
     gt_theme_mg() |>
-    tab_options(footnotes.marks = "letters")|>
-    tab_source_note(foot_out_freq(data))
+    tab_options(footnotes.marks = "letters") |>
+    tab_source_note(foot_out_freq(data)) |>
+    sub_values(values = c("0 (0%)"), replacement = "—")
   # opt_footnote_marks(marks = "standard")
 }
 
@@ -444,7 +446,8 @@ likert_freq_fun <- function(data) {
       1 ~ "120px",
       everything() ~ "120px") |>
     gt_theme_mg() |>
-    tab_options(footnotes.marks = "letters")|>
-    tab_source_note(foot_out_freq(data))
+    tab_options(footnotes.marks = "letters") |>
+    tab_source_note(foot_out_freq(data)) |>
+    sub_values(values = c("0 (0%)"), replacement = "—")
   # opt_footnote_marks(marks = "standard")
 }

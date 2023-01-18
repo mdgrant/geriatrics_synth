@@ -16,7 +16,7 @@ website:
       - text: Preop
         menu:
           - href: kq1.html
-            text: "KQ1 Expanded Preoperative Screening"
+            text: "KQ1 Expanded Preoperative Evaluation"
           - href: kq2.html
             text: "KQ2 Prehabilitation"
       - text: Intraop
@@ -39,6 +39,8 @@ website:
         menu:
           - href: evidence_tables.html
             text: "Study-level evidence tables"
+          - href: outcome_rankings.html
+            text: "Outcome rankings by key question"
       - about.qmd
 
 format:

@@ -50,7 +50,10 @@ outcome_tab(outcome_dat)
 <font size = 4> `r table_ref()` Dichotomous outcomes. </font>
 
 ```{r dichot_outcome_freq}
-dichot_freq_fun(dichot_dat)
+temp <- dichot_freq_fun(dichot_dat)
+temp |> 
+  sub_values(values = c("0 (0%)"), replacement = "—")
+
 ```
 
 <font size = 4> `r table_ref()` Continuous outcomes. </font>
