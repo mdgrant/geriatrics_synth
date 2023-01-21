@@ -34,7 +34,7 @@ outcome_tab(outcome_dat)
 ```
 
 ## KQ 2 Prehabilitation 
-<font size = 4> `r table_ref()`  Among geriatric patients anticipating surgery and anesthesia, do interventions targeted at improving physical function, cognition, and nutritional status before surgery (“prehabilitation”) improve postoperative outcomes? </font>
+<font size = 4> `r table_ref()`  Among older patients anticipating surgery and anesthesia, do interventions targeted at improving physical function, cognition, and nutritional status before surgery (“prehabilitation”) improve postoperative outcomes? </font>
 
 
 ```{r}

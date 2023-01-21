@@ -8,6 +8,13 @@
     background-color: #EAECEE;
 }
 
+#one .gt_footnote_marks {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 75%;
+    vertical-align: 0.4em;
+}
+
 /* Styles for the priority table */
 .priority-tbl {
   font-size: 14px;

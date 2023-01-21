@@ -1,0 +1,31 @@
+﻿level,label
+halo,Haloperidol
+olan,Olanzapine
+rispe,Risperdone
+anyantipsych,Any antipsychotic
+peneh,Penehyclidine
+cort_dex,Dexamethasone
+cort_methylpred,Methylprednisolone
+celecox,Celecoxib
+flurbi,Flurbiprofen
+keto,Ketorolac
+famo,Famotidine
+diaz,Diazepam
+midaz,Midazolam
+nitraz,Nitrazepam
+remimaz,Remimazolam
+anybenz,Any benzodiazepine
+eszo,Eszopiclone
+zale,Zaleplon
+zol,Zolpidem
+melatonin,Melatonin
+corticoster,Corticosteroid
+various,Various
+dexmedetomidine,Dexmedetomidine
+ketamine,Ketamine
+omepr,Omeprazole
+propofol,Propofol
+other,Other 
+placebo,Placebo
+control,Control
+none,None

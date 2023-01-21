@@ -1,5 +1,4 @@
 ## preliminaries -------------------------------------- (2022-11-16 11:49) @----
-library(tidyverse)
 library(janitor)
 library(gt, quietly = TRUE)
 library(gtExtras)
@@ -7,6 +6,7 @@ library(glue)
 library(reactablefmtr)
 library(htmltools)
 library(gtsummary)
+library(tidyverse)
 # theme_gtsummary_journal(journal = "jama")
 # theme_gtsummary_compact()
 # set_gtsummary_theme(theme_gtsummary_journal("nejm", font_size))
@@ -141,9 +141,10 @@ study_arm_dat <- read_csv(path_csv(study_arm_file)) |>
   ungroup() |>
   mutate(
     study = paste(author, year),
-    study_l = paste0("[", study, "]", "(", "evidence_tables.html#", refid, ")")
+    study_l = paste0("[", study, "]", "(", "evidence_tables.html#", refid, ")"),
+    study_id = paste0(study, "-", arm_id) # each table row unique for footnote
   ) |>
-  select(refid, study, study_l, year, arm_id, everything()) |>
+  select(refid, study, study_l, study_id, year, arm_id, everything()) |>
   select(-c(author, author_dist, title, doi, user)) |>
   filter(refid != 1) |> # refid 1 only for column types
   relocate(linked_references, labels, .after = last_col()) |>
@@ -167,9 +168,10 @@ contin_dat <- read_csv(path_csv(contin_out_file)) |>
   ungroup() |>
   mutate(
     study = paste(author, year),
-    study_l = paste0("[", study, "]", "(", "evidence_tables.html#", refid, ")")
+    study_l = paste0("[", study, "]", "(", "evidence_tables.html#", refid, ")"),
+    study_id = paste0(study, "-", arm_id)
   ) |>
-  select(refid, study, study_l, year, arm_id, everything()) |>
+  select(refid, study, study_l, study_id, year, arm_id, everything()) |>
   select(-c(author, author_dist, title, doi, user)) |>
   filter(refid != 1) |> # refid 1 only for column types
   relocate(linked_references, labels, .after = last_col()) |>
@@ -192,9 +194,10 @@ dichot_dat <- read_csv(path_csv(dichot_out_file)) |>
   ungroup() |>
   mutate(
     study = paste(author, year),
-    study_l = paste0("[", study, "]", "(", "evidence_tables.html#", refid, ")")
+    study_l = paste0("[", study, "]", "(", "evidence_tables.html#", refid, ")"),
+    study_id = paste0(study, "-", arm_id)
   ) |>
-  select(refid, study, study_l, year, arm_id, everything()) |>
+  select(refid, study, study_l, study_id, year, arm_id, everything()) |>
   select(-c(author, author_dist, title, doi, user)) |>
   filter(refid != 1) |> # refid 1 only for column types
   relocate(linked_references, labels, .after = last_col()) |>
@@ -217,9 +220,10 @@ likert_dat <- read_csv(path_csv(likert_out_file)) |>
   ungroup() |>
   mutate(
     study = paste(author, year),
-    study_l = paste0("[", study, "]", "(", "evidence_tables.html#", refid, ")")
+    study_l = paste0("[", study, "]", "(", "evidence_tables.html#", refid, ")"),
+    study_id = paste0(study, "-", arm_id)
   ) |>
-  select(refid, study, study_l, year, arm_id, everything()) |>
+  select(refid, study, study_l, study_id, year, arm_id, everything()) |>
   select(-c(author, author_dist, title, doi, user)) |>
   filter(refid != 1) |> # refid 1 only for column types
   relocate(linked_references, labels, .after = last_col()) |>

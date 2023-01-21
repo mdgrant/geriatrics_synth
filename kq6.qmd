@@ -250,7 +250,7 @@ included_dat |>
     )
   ) |> 
   opt_footnote_marks(marks = "letters") |> 
-  tab_source_note("GI: gastrointestinal; Ortho: orthopedic; Neuro: neurological; Oralmax: oral maxillofacial; Vasc: vascular.")
+  tab_footnote("GI: gastrointestinal; Ortho: orthopedic; Neuro: neurological; Oralmax: oral maxillofacial; Vasc: vascular.")
 
 ```
 
@@ -364,9 +364,9 @@ dex_by_arm |>
     maintain_range ~ px(120),
     postdose ~ px(100),
     time_admin ~ px(160)
-  ) 
+  ) |> 
+  tab_footnote("Preop: preoperative; Induct: induction; Intraop: intraoperative; Postop: postoperative.")
   # |>  tab_info()
-  # tab_source_note(footnote)
 
 ```
 
@@ -472,7 +472,8 @@ ket_by_arm |>
       columns = drug,
       rows = arm_n %in% c(223, 227)
     )
-  )
+  ) |> 
+  tab_footnote("Preop: preoperative; Induct: induction; Intraop: intraoperative; Postop: postoperative; Unspec: unspecified.")
 # |>  tab_info()
 # tab_source_note(footnote)
 

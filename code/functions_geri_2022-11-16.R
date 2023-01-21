@@ -104,13 +104,16 @@ gt_theme_mg <- function(data) {
       column_labels.border.bottom.width = px(1.3),
       column_labels.font.weight = "bold",
       column_labels.padding = px(3),
-      heading.align = "left"
+      heading.align = "left",
+      footnotes.padding = px(0),
+      source_notes.padding = px(0),
     ) |>
     opt_horizontal_padding(scale = 2) |>
     tab_style(
       style = list(cell_text(weight = "bold")),
       locations = cells_row_groups()
-    )
+    ) |>
+    opt_footnote_marks(marks = "letters")
 }
 
 # simple figure and table caption labels (flexibility for html)
@@ -353,13 +356,14 @@ dichot_freq_fun <- function(data) {
       missing = "no"
     ) |>
     modify_header(label = "**Outcome**") |>
+    modify_footnote(update = everything() ~ NA) |>
     as_gt(id = "one") |>
     cols_width(
       1 ~ "120px",
       everything() ~ "120px") |>
     gt_theme_mg() |>
     tab_options(footnotes.marks = "letters") |>
-    tab_source_note(foot_out_freq(data)) |>
+    tab_footnote(foot_out_freq(data)) |>
     sub_values(values = c("0 (0%)"), replacement = "—")
   # opt_footnote_marks(marks = "standard")
 }
@@ -396,13 +400,14 @@ contin_freq_fun <- function(data) {
       missing = "no"
     ) |>
     modify_header(label = "**Outcome**") |>
+    modify_footnote(update = everything() ~ NA) |>
     as_gt(id = "one") |>
     cols_width(
       1 ~ "120px",
       everything() ~ "120px") |>
     gt_theme_mg() |>
     tab_options(footnotes.marks = "letters") |>
-    tab_source_note(foot_out_freq(data)) |>
+    tab_footnote(foot_out_freq(data)) |>
     sub_values(values = c("0 (0%)"), replacement = "—")
   # opt_footnote_marks(marks = "standard")
 }
@@ -441,13 +446,14 @@ likert_freq_fun <- function(data) {
       missing = "no"
     ) |>
     modify_header(label = "**Outcome**") |>
+    modify_footnote(update = everything() ~ NA) |>
     as_gt(id = "one") |>
     cols_width(
       1 ~ "120px",
       everything() ~ "120px") |>
     gt_theme_mg() |>
     tab_options(footnotes.marks = "letters") |>
-    tab_source_note(foot_out_freq(data)) |>
+    tab_footnote(foot_out_freq(data)) |>
     sub_values(values = c("0 (0%)"), replacement = "—")
   # opt_footnote_marks(marks = "standard")
 }
