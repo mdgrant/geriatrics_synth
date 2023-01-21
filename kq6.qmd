@@ -3,6 +3,7 @@ title: "K6: Delirium Prophylaxis"
 editor: source
 toc-title: "Delirium Prophylaxis"
 toc-location: "left"
+toc-depth: 4
 toc_float: 
   collapsed: true
 tbl-cap-location: "top"
@@ -50,10 +51,7 @@ outcome_tab(outcome_dat)
 <font size = 4> `r table_ref()` Dichotomous outcomes. </font>
 
 ```{r dichot_outcome_freq}
-temp <- dichot_freq_fun(dichot_dat)
-temp |> 
-  sub_values(values = c("0 (0%)"), replacement = "—")
-
+dichot_freq_fun(dichot_dat)
 ```
 
 <font size = 4> `r table_ref()` Continuous outcomes. </font>
@@ -225,7 +223,7 @@ included_dat |>
     fmt_markdown(columns = c(study_l)) |> 
   cols_width(
     refid ~ px(60),
-    study_l ~ px(140),
+    study_l ~ px(165),
     centers ~ px(40),
     n_enroll ~ px(55),
     country ~ px(100),
@@ -258,7 +256,11 @@ included_dat |>
 
 ### Interventions and Comparators
 
-```{r drug_comparator}
+#### Dexmedetomidine
+
+<font size = 4> `r table_ref()` Dosing and comparators in dexmedetomidine studies. </font>
+
+```{r dex_compare}
 #| eval: true
 # dex studies
 dex_refid <- drugs_dat |> 
@@ -267,48 +269,50 @@ dex_refid <- drugs_dat |>
 
 # by arm
 dex_by_arm <- drugs_dat |>
-  filter(refid %in% dex_refid) |> 
-  mutate(year = str_extract(study, "\\d{4}")) |> 
-  select(refid:interv_desc, matches("^proph_|dexmed"), year) |>
+  filter(refid %in% dex_refid) |>
+  mutate(year = str_extract(study, "\\d{4}")) |>
+  select(refid:arm_proph_meds, matches("^proph_|dexmed"), year, interv_desc, control_desc, other_spec) |>
   # timing
   rename_with(~ gsub("proph_med_", "", .x, fixed = TRUE)) |>
   rename_with(~ gsub("dexmed_", "", .x, fixed = TRUE)) |>
   mutate(
     across(pre:unspec, ~ gsub("proph_med_", "", .x, fixed = TRUE)),
     across(pre:unspec, ~ firstup(.x)),
-    pre = "Preop",
-    intra = "Intraop",
-# to order drugs
-   drug = fct(drug, levels = c("Dexmedetomidine", "Midazolam", "Placebo", "Other", "None"))
+    pre = ifelse(!is.na(pre), "Preop", NA),
+    intra = ifelse(!is.na(intra), "Intraop", NA),
+    # to order drugs
+    drug = fct(drug, levels = c("Dexmedetomidine", "Midazolam", "Placebo", "Other", "None"))
   ) |>
-  unite("time_admin", c(pre:unspec), sep = "|", na.rm = TRUE, remove = FALSE) |> 
-  relocate(time_admin, .after = arm_n) |> 
+  unite("time_admin", c(pre:unspec), sep = "|", na.rm = TRUE, remove = FALSE) |>
+  relocate(time_admin, .after = arm_n) |>
   # dosing
   mutate(
-    maintain_range = ifelse(!is.na(maintain_low + maintain_up), paste0(maintain, " (", maintain_low, "–", maintain_up, ")"), NA),
-    maintain_range = str_replace(maintain_range, "NA ", "")
-  ) |> 
- arrange(year, study, desc(drug)) |> 
-    select(study_l, arm_n, drug, loading, maintain_range, postdose, time_admin, year)
+    maintain_range = ifelse(!is.na(maintain_low + maintain_up), paste0(maintain, " (", maintain_low, "–", maintain_up, ")"), maintain),
+    maintain_range = str_replace(maintain_range, "NA ", ""),
+    loading = ifelse(loading == "0", "", loading),
+    loading = ifelse(loading == "1", "1.0", loading),
+    loading = ifelse(loading == "1000", "1.0", loading),
+    loading = str_replace(loading, "-1$", "-1.0")
+  ) |>
+  arrange(year, refid, desc(drug)) |>
+  select(study_l, arm_n, drug, loading, maintain_range, postdose, time_admin, year, refid)
 
 ```
 
-<font size = 4> `r table_ref()` Dosing and comparators in Dexmedetomidine studies. </font>
-
 ```{r dex_table}
 dex_by_arm |>
-  group_by(study_l) |>
+  group_by(refid) |>
   mutate(study_l = ifelse(row_number() > 1, "", study_l)) |>
   ungroup() |>
   gt(id = "one") |>
-  cols_hide(year) |>
+  cols_hide(c(year, refid)) |>
   cols_label(
     study_l = "Study",
     arm_n = "N",
     drug = "Comparator",
     loading = "Loading",
-    maintain_range = md(" Maintenance<br/>(range) per hr"),
-    postdose = md("Post-<br/>surgical"),
+    maintain_range = md("  Maintenance<br/>(range) per hr"),
+    postdose = md("Postop"),
     time_admin = "Timing"
     # drug_f = md("Comparator <br/> Detail")
   ) |>
@@ -326,14 +330,20 @@ dex_by_arm |>
     )
   ) |>
   tab_style(
+    style = cell_text(align = "center"),
+    locations = cells_body(
+      columns = c(loading, maintain_range, postdose)
+    )
+    ) |> 
+    tab_style(
     style = cell_text(align = "left"),
     locations = cells_body(
-      columns = c(drug:time_admin)
+      columns = c(study_l, arm_n, drug, time_admin)
     )
   ) |>
   tab_style(
     style = list(
-      cell_text(color = "red")
+      cell_text(color = "maroon")
     ),
     locations = cells_body(
       columns = c(arm_n:time_admin),
@@ -345,21 +355,163 @@ dex_by_arm |>
   rows = everything(),
   missing_text = ""
 ) |> 
-  # opt_horizontal_padding(scale = 3) |> # added to them scale = 2
-  # tab_source_note(footnote) |>
   gt_theme_mg() |>
   cols_width(
-    study_l ~ px(120),
+    study_l ~ px(165),
     arm_n ~ px(40),
     drug ~ px(130),
     loading ~ px(100),
     maintain_range ~ px(120),
     postdose ~ px(100),
-    time_admin ~ px(150)
+    time_admin ~ px(160)
   ) 
-  
+  # |>  tab_info()
+  # tab_source_note(footnote)
+
 ```
 
+#### Ketamine
+
+<font size = 4> `r table_ref()` Dosing and comparators in dexmedetomidine studies. </font>
+
+```{r ket_compare}
+#| eval: true
+# ketamine studies
+ket_refid <- drugs_dat |> 
+  filter(drug == "Ketamine") |> 
+  pull(refid)
+
+# by arm
+ket_by_arm <- drugs_dat |>
+  filter(refid %in% ket_refid) |> 
+  mutate(year = str_extract(study, "\\d{4}")) |> 
+  select(refid:arm_proph_meds, matches("^proph_|keta"), year, interv_desc, control_desc, other_spec) |>
+  # timing
+  rename_with(~ gsub("proph_med_", "", .x, fixed = TRUE)) |>
+  rename_with(~ gsub("ketamine_", "", .x, fixed = TRUE)) |>
+  mutate(
+    across(pre:unspec, ~ gsub("proph_med_", "", .x, fixed = TRUE)),
+    across(pre:unspec, ~ firstup(.x)),
+    pre = ifelse(!is.na(pre), "Preop", NA),
+    intra = ifelse(!is.na(intra), "Intraop", NA),
+   # to order drugs
+   drug = fct(drug, levels = c("Ketamine", "Haloperidol", "Placebo", "Other", "None"))
+  ) |>
+  unite("time_admin", c(pre:unspec), sep = "|", na.rm = TRUE, remove = FALSE) |> 
+  relocate(time_admin, .after = arm_n) |> 
+  # dosing
+ arrange(year, refid, desc(drug)) |> 
+    select(study_l, arm_n, drug, dose, dose_iv, time_admin, year, refid)
+
+```
+
+```{r ket_table}
+ket_by_arm |>
+  group_by(refid) |>
+  mutate(study_l = ifelse(row_number() > 1, "", study_l)) |>
+  ungroup() |>
+  gt(id = "one") |>
+  cols_hide(c(year, refid)) |>
+  cols_label(
+    study_l = "Study",
+    arm_n = "N",
+    drug = "Comparator",
+    dose = md("  Dose <br/> (mg/kg)"),
+    dose_iv = md("Maintenance <br/>   (mg/kg)"),
+    time_admin = "Timing"
+  ) |>
+  fmt_markdown(columns = c(study_l)) |>
+  tab_style(
+    style = cell_text(align = "left"),
+    locations = cells_column_labels(
+      columns = c(drug:time_admin)
+    )
+  ) |>
+  tab_style(
+    style = cell_text(align = "right"),
+    locations = cells_body(
+      columns = c(arm_n)
+    )
+  ) |>
+  tab_style(
+    style = cell_text(align = "left"),
+    locations = cells_body(
+      columns = c(study_l, drug, dose, dose_iv, time_admin)
+    )
+  ) |>
+  tab_style(
+    style = list(
+      cell_text(color = "maroon")
+    ),
+    locations = cells_body(
+      columns = c(arm_n:time_admin),
+      rows = drug == "Ketamine"
+    )
+  ) |>
+  sub_missing(
+    columns = everything(),
+    rows = everything(),
+    missing_text = ""
+  ) |>
+  gt_theme_mg() |>
+  cols_width(
+    study_l ~ px(165),
+    arm_n ~ px(40),
+    drug ~ px(130),
+    dose ~ px(100),
+    dose_iv ~ px(120),
+    time_admin ~ px(160)
+  ) |>
+  fmt_number(
+    columns = dose,
+    drop_trailing_zeros = TRUE,
+  ) |>
+  tab_footnote(
+    footnote = md("S-Ketamine"),
+    locations = cells_body(
+      columns = drug,
+      rows = arm_n %in% c(223, 227)
+    )
+  )
+# |>  tab_info()
+# tab_source_note(footnote)
+
+```
+
+
+
+
+```{r delirium_ip}
+#| eval: false
+# reported on days vs incidence proportion
+dichot_dat |>
+  select(refid, study, matches("^deli.*time")) |>
+  filter(if_any(starts_with("deli"), ~ !is.na(.))) |>
+  mutate(
+    deli_times = ifelse(if_any(starts_with("delirium"), ~ !is.na(.)), "Yes", "No"),
+    deli_total = ifelse(!is.na(delitotal_time), "Reported", "Not Reported")
+  ) |>
+  select(refid, study, deli_times, deli_total) |>
+  group_by(refid) |>
+  slice(1) |>
+  ungroup() |>
+  # use gt summary
+  select(-refid, -study) |>
+  tbl_cross(
+    percent = "col",
+    label = list(deli_times ~ "At Days", deli_total ~ "Incidence Proportion")
+  ) |>
+   modify_column_alignment(columns = everything(), align = "right") |> 
+  as_gt(id = "one") |>
+  gt_theme_mg()
+  # use tabyl
+  # tabyl(deli_times, deli_total) |> 
+  # adorn_totals(c("row", "col")) |> 
+  # adorn_percentages("row") |> 
+  # adorn_pct_formatting(rounding = "half up", digits = 1) |> 
+  # adorn_ns()
+
+```
 
 
 ## References {#references}
