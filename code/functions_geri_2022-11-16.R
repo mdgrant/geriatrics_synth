@@ -113,7 +113,16 @@ gt_theme_mg <- function(data) {
       style = list(cell_text(weight = "bold")),
       locations = cells_row_groups()
     ) |>
-    opt_footnote_marks(marks = "letters")
+    opt_footnote_marks(marks = "letters") |>
+    opt_css(
+      css = "
+    #one .gt_footnote_marks {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 75%;
+    vertical-align: 0.4em;
+}"
+    )
 }
 
 # simple figure and table caption labels (flexibility for html)

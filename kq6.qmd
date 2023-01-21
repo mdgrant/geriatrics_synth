@@ -472,17 +472,16 @@ ket_by_arm |>
       columns = drug,
       rows = arm_n %in% c(223, 227)
     )
-  ) |> 
+  ) |>
   tab_footnote("Preop: preoperative; Induct: induction; Intraop: intraoperative; Postop: postoperative; Unspec: unspecified.")
+
 # |>  tab_info()
 # tab_source_note(footnote)
 
 ```
 
 
-
-
-```{r delirium_ip}
+```{r delirium_incidence}
 #| eval: false
 # reported on days vs incidence proportion
 dichot_dat |>
