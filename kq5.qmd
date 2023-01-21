@@ -201,7 +201,7 @@ included_dat |>
     )
   ) |>
   opt_footnote_marks(marks = "letters") |>
-  tab_source_note("Antichol: anticholinergics; Antipsych: antipsychotics; GI: gastrointestinal; Ortho: orthopedic; Neuro: neurological; Oralmax: oral maxillofacial; Vasc: vascular.")
+  tab_footnote("Antichol: anticholinergics; Antipsych: antipsychotics; GI: gastrointestinal; Ortho: orthopedic; Neuro: neurological; Oralmax: oral maxillofacial; Vasc: vascular.")
 
 ```
 
@@ -398,7 +398,7 @@ kq5_char_drugs_tab <- function(drugs, footnote) {
       )
     ) |>
     # opt_horizontal_padding(scale = 3) |> # added to them scale = 2
-    tab_source_note(footnote) |>
+    tab_footnote(footnote) |>
     gt_theme_mg() |>
     cols_width(
       study_l ~ px(120),
@@ -484,10 +484,5 @@ writexl::write_xlsx(temp, "/Users/mgrant/Desktop/temp.xlsx")
 
 ```
 
-Test
-
-```{r}
-x <- 1 + 1
-```
 
 ## References {#references}
