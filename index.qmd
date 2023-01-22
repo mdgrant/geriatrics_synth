@@ -2,11 +2,9 @@
 title: "Evidence Synthesis"
 ---
 
-Draft materials. **Not to be cited.**
+Draft materials **(not to be cited).**
 
-Corrections, suggestions for additions, or comments can be sent to [Mark Grant](mailto:m.grant@asahq.org).
-
-[The current protocol can be found here.](https://mdgrant.github.io/geriatrics_pp/intro.html)
+Corrections, suggestions, or comments can be sent to [Mark Grant](mailto:m.grant@asahq.org).
 
 [KQ1 Expanded Preoperative Screening](kq1.html)
 
@@ -23,3 +21,5 @@ Corrections, suggestions for additions, or comments can be sent to [Mark Grant](
 [KQ8 Delirium Screening](kq8.html)
 
 [GRADE](soe.html)
+
+[Draft Protocol](protocol.html)

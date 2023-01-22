@@ -116,12 +116,13 @@ gt_theme_mg <- function(data) {
     opt_footnote_marks(marks = "letters") |>
     opt_css(
       css = "
-    #one .gt_footnote_marks {
-    font-style: normal;
-    font-weight: normal;
-    font-size: 75%;
-    vertical-align: 0.4em;
-}"
+      #one .gt_footnote_marks {
+      font-style: normal;
+      font-weight: normal;
+      font-size: 75%;
+      vertical-align: 0.4em;
+      }
+    "
     )
 }
 

@@ -3,6 +3,9 @@ project:
   output-dir: docs
 website:
   title: "Geriatrics Evidence Synthesis"
+  search:
+    location: navbar
+    limit: 100
   favicon: favicon.png
   navbar:
     background: primary
@@ -41,6 +44,8 @@ website:
             text: "Study-level evidence tables"
           - href: outcome_rankings.html
             text: "Outcome rankings by key question"
+          - href: protocol.html
+            text: "Draft protocol"
       - about.qmd
 
 format:

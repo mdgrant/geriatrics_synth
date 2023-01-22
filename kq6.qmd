@@ -116,7 +116,7 @@ kq5_drug_by_arm <- read_csv("data/kq5_drug_by_arm.csv") |>
   select(refid, arm_id, drug, control_desc)
 
 drugs_dat <- study_arm_dat |>
-  select(refid, design_f, study, study_l, arm_id, arm_n, arm_kq6_proph_meds, kq6_control_desc:kq6_notes, multiple_kq) |>
+  select(refid, design_f_lab, study, study_l, study_id, arm_id, arm_n, arm_kq6_proph_meds, kq6_control_desc:kq6_notes, multiple_kq) |>
   rename_with(~ str_replace(., "kq6_", ""), everything()) |>
   rename_with(~ str_replace(., "dex_", "dexmed_"), everything()) |>
   mutate(
@@ -231,11 +231,11 @@ included_dat |>
   ) |> 
   # opt_horizontal_padding(scale = 2) |>
   tab_footnote(
-    footnote = md("Non very high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."),
+    footnote = md("Non very-high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."),
     locations = cells_column_labels(columns = country)
   ) |>
   tab_footnote(
-    footnote = md("Non very high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."),
+    footnote = md("Non very-high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."),
     locations = cells_body(columns = country, rows = !is.na(non_vh_hdi))
   ) |>
   tab_footnote(
@@ -258,7 +258,7 @@ included_dat |>
 
 #### Dexmedetomidine
 
-<font size = 4> `r table_ref()` Dosing and comparators in dexmedetomidine studies. </font>
+<font size = 4> `r table_ref()` Dosing and comparators in dexmedetomidine randomized clinical trials. </font>
 
 ```{r dex_compare}
 #| eval: true
@@ -295,7 +295,7 @@ dex_by_arm <- drugs_dat |>
     loading = str_replace(loading, "-1$", "-1.0")
   ) |>
   arrange(year, refid, desc(drug)) |>
-  select(study_l, arm_n, drug, loading, maintain_range, postdose, time_admin, year, refid)
+  select(study_l, arm_n, drug, loading, maintain_range, postdose, time_admin, year, refid, design_f_lab)
 
 ```
 
@@ -304,6 +304,7 @@ dex_by_arm |>
   group_by(refid) |>
   mutate(study_l = ifelse(row_number() > 1, "", study_l)) |>
   ungroup() |>
+  group_by(design_f_lab) |> 
   gt(id = "one") |>
   cols_hide(c(year, refid)) |>
   cols_label(
@@ -372,7 +373,7 @@ dex_by_arm |>
 
 #### Ketamine
 
-<font size = 4> `r table_ref()` Dosing and comparators in dexmedetomidine studies. </font>
+<font size = 4> `r table_ref()` Dosing and comparators in ketamine studies. </font>
 
 ```{r ket_compare}
 #| eval: true
@@ -401,7 +402,7 @@ ket_by_arm <- drugs_dat |>
   relocate(time_admin, .after = arm_n) |> 
   # dosing
  arrange(year, refid, desc(drug)) |> 
-    select(study_l, arm_n, drug, dose, dose_iv, time_admin, year, refid)
+    select(study_l, arm_n, drug, dose, dose_iv, time_admin, year, refid, design_f_lab)
 
 ```
 
@@ -410,6 +411,7 @@ ket_by_arm |>
   group_by(refid) |>
   mutate(study_l = ifelse(row_number() > 1, "", study_l)) |>
   ungroup() |>
+  group_by(design_f_lab) |> 
   gt(id = "one") |>
   cols_hide(c(year, refid)) |>
   cols_label(
@@ -480,6 +482,123 @@ ket_by_arm |>
 
 ```
 
+#### Melatonin and Ramelteon
+
+<font size = 4> `r table_ref()` Melatonin and ramelteon studies comparators and dosing. </font>
+
+```{r melatonin_ramelteon_compare}
+#| eval: true
+# melatonin ramelteon studies
+mel_ram_refid <- drugs_dat |> 
+  filter(drug %in% c("Melatonin", "Ramelteon")) |> 
+  pull(refid)
+
+# by arm
+mel_ram_by_arm <- drugs_dat |>
+  filter(refid %in% mel_ram_refid) |> 
+  mutate(year = str_extract(study, "\\d{4}")) |> 
+  select(refid:arm_proph_meds, matches("^proph_|mela|ramel"), year, interv_desc, control_desc, other_spec, study_id) |>
+  # timing
+  rename_with(~ gsub("proph_med_", "", .x, fixed = TRUE)) |>
+  mutate(
+    across(pre:unspec, ~ gsub("proph_med_", "", .x, fixed = TRUE)),
+    across(pre:unspec, ~ firstup(.x)),
+    pre = ifelse(!is.na(pre), "Preop", NA),
+    intra = ifelse(!is.na(intra), "Intraop", NA),
+    dose = coalesce(melatonin_dose, ramelteon_dose),
+    days = coalesce(melatonin_days, as.character(ramelteon_numberdoses)),
+    dose = ifelse(!is.na(dose), paste0(dose, "mg × ", days), dose),
+   # to order drugs
+   drug = fct(drug, levels = c("Melatonin", "Ramelteon", "Midazolam", "Placebo", "Other", "None"))
+  ) |>
+  unite("time_admin", c(pre:unspec), sep = "|", na.rm = TRUE, remove = FALSE) |> 
+  relocate(time_admin, .after = arm_n) |> 
+  # dosing
+ arrange(year, refid, desc(drug)) |> 
+    select(study_l, arm_n, drug, drug_f, drug_study, dose, time_admin, year, refid, study_id, design_f_lab, interv_desc, control_desc)
+
+```
+
+```{r melatonin_ramelteon_table}
+mel_ram_by_arm |>
+  mutate(groups = paste0(drug_study, " - ", design_f_lab)) |> 
+  group_by(refid) |>
+  mutate(study_l = ifelse(row_number() > 1, "", study_l)) |>
+  ungroup() |>
+  group_by(groups) |> 
+  gt(id = "one") |>
+  row_group_order(groups = c("Melatonin - Randomized Clinical Trial", "Ramelteon - Randomized Clinical Trial", "Ramelteon - Before-After/Time Series")) |> 
+  cols_hide(c(year, refid, drug_f, design_f_lab, drug_study, study_id, interv_desc, control_desc)) |>
+  cols_label(
+    study_l = "Study",
+    arm_n = "N",
+    drug = "Comparator",
+    dose = md("Dosing"),
+    time_admin = "Timing"
+  ) |>
+  fmt_markdown(columns = c(study_l)) |>
+  tab_style(
+    style = cell_text(align = "left"),
+    locations = cells_column_labels(
+      columns = c(drug:time_admin)
+    )
+  ) |>
+  tab_style(
+    style = cell_text(align = "right"),
+    locations = cells_body(
+      columns = c(arm_n)
+    )
+  ) |>
+  tab_style(
+    style = cell_text(align = "left"),
+    locations = cells_body(
+      columns = c(study_l, drug, dose, time_admin)
+    )
+  ) |>
+  tab_style(
+    style = list(
+      cell_text(color = "maroon")
+    ),
+    locations = cells_body(
+      columns = c(arm_n:time_admin),
+      rows = drug %in% c("Melatonin", "Ramelteon")
+    )
+  ) |>
+  sub_missing(
+    columns = everything(),
+    rows = everything(),
+    missing_text = ""
+  ) |>
+  gt_theme_mg() |>
+  cols_width(
+    study_l ~ px(165),
+    arm_n ~ px(40),
+    drug ~ px(130),
+    dose ~ px(100),
+    time_admin ~ px(120)
+  ) |>
+  # fmt_number(
+  #   columns = dose,
+  #   drop_trailing_zeros = TRUE,
+  # ) |>
+  # tab_footnote(
+  #   footnote = md("Test"),
+  #   locations = cells_body(
+  #     columns = drug,
+  #     rows = study_id == "Gupta 2019-2"
+  #   )
+  # ) |>
+  tab_footnote("NS: not stated; Preop: preoperative; Postop: postoperative.")
+
+# |>  tab_info()
+# tab_source_note(footnote)
+
+```
+
+
+## Outcomes
+
+### Delirium 
 
 ```{r delirium_incidence}
 #| eval: false

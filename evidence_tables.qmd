@@ -10,7 +10,6 @@ navbar:
     background: primary
     search: true
     pinned: true
-    limit: 100
     copy-button: true
 tables:
       style: Table
