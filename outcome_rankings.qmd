@@ -24,7 +24,7 @@ source("code/readfiles_geri_2022-11-16.R")
 
 ## For all included key questions 
 
-Rankings of the 5 most important outcomes for key questions 1 through 6 and 8 (11 respondents; maximum 77 for each or any top 5 ranking). 
+Rankings of the 5 most important outcomes for key questions 1 through 6 and 8 (11 respondents; maximum 77 for each or "Any" top 5 ranking). 
 
 ```{r}
 ## key questions 1-6 & 8 --------------------------------------- (2023-01-24 11:48) @----
