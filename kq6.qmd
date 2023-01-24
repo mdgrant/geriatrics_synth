@@ -36,14 +36,15 @@ dichot_dat <- data_kq(dichot_dat, kq6_refid)
 likert_dat <- data_kq(likert_dat, kq6_refid)
 ```
 
-## Outcome Importance Rankings
+<!-- ## Outcome Importance Rankings -->
 
-<font size = 4> `r table_ref()` Rankings of the 5 most important outcomes (10 respondents). </font>
+<!-- <font size = 4> `r table_ref()` Rankings of the 5 most important outcomes (11 respondents). </font> -->
 
 ```{r, outcome_priority}
 #| include: true
+#| eval: false
 outcome_dat <- rankings("KQ6")
-outcome_tab(outcome_dat)
+outcome_tab(outcome_dat, 11)
 ```
 
 ### Reporting Frequency

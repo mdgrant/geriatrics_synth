@@ -1,7 +1,7 @@
 ---
 title: "Outcome Rankings by Key Question"
 editor: source
-toc-title: "Outcome Rankings by Key Question"
+toc-title: "Outcome Rankings"
 toc-location: "left"
 toc_float: 
   collapsed: true
@@ -22,81 +22,170 @@ tables:
 source("code/readfiles_geri_2022-11-16.R")
 ```
 
-Rankings of the 5 most important outcomes for each question (10 respondents).
+## For all included key questions 
 
-## KQ 1 Expanded Preoperative Evaluation
+Rankings of the 5 most important outcomes for key questions 1 through 6 and 8 (11 respondents; maximum 77 for each or any top 5 ranking). 
+
+```{r}
+## key questions 1-6 & 8 --------------------------------------- (2023-01-24 11:48) @----
+# function for outcome priority table by kq
+outcome_tab_all <- function(outcome_dat, responses) {
+  reactable(
+    outcome_dat,
+    pagination = FALSE,
+    # highlight = TRUE,
+    defaultSorted = "any_top_5",
+    defaultSortOrder = "desc",
+    defaultColDef = colDef(
+      cell = data_bars(outcome_dat,
+                       box_shadow = TRUE,
+                       force_outside = c(1, 77),
+                       bar_height = 12,
+                       max_value = responses
+                       # fill_color = "#B22215"
+      ),
+      style = cell_style(outcome_dat,
+                         font_size = "11px",
+      )
+    ),
+    columns = list(
+      outcome = colDef(name = "Outcome", width = 200),
+      rank1 = colDef(name = "Rank 1", width = 80, headerClass = "header", align = "center"),
+      rank2 = colDef(name = "Rank 2", width = 80, headerClass = "header", align = "center"),
+      rank3 = colDef(name = "Rank 3", width = 80, headerClass = "header", align = "center"),
+      rank4 = colDef(name = "Rank 4", width = 80, headerClass = "header", align = "center"),
+      rank5 = colDef(name = "Rank 5", width = 80, headerClass = "header", align = "center"),
+      any_top_5 = colDef(
+        name = "Any", width = 80, headerClass = "header", align = "center",
+        cell = data_bars(
+          outcome_dat,
+          force_outside = c(1, 77),
+          box_shadow = TRUE,
+          bar_height = 12,
+          max_value = responses,
+          fill_color = "#B22215"
+        )
+      )
+    ),
+    theme = reactableTheme(
+      borderColor = "#dfe2e5",
+      stripedColor = "#f6f8fa",
+      highlightColor = "#f0f5f9",
+      cellPadding = "0px 0px"
+    ),
+    compact = TRUE,
+    class = "priority-tbl"
+  )
+}
+
+# read data for all kq
+priority_dat <- readxl::read_xlsx("data/OutcomeRankingRawData_2023-01-23_edit.xlsx", range = "A1:S89", sheet = "data") |>
+  fill(kq) |>
+  # exclude kq7 not being addressed
+  filter(kq != 7) |>
+  mutate(id = paste0(kq, "-", id))
+
+# function to tally the number by rank 1, 2, 3, 4, 5
+rankings_all <- function(priority) {
+  priority_dat |>
+    # group_by(kq) |>
+    summarise(across(3:19, ~ sum(.x == priority, na.rm = TRUE)), .names = "{.col}") |>
+    mutate(rank = priority)
+}
+
+rankings_dat <- bind_rows(rankings_all(1), rankings_all(2), rankings_all(3), rankings_all(4), rankings_all(5)) |>
+  select(-.names)
+
+rankings_dat <- tblhelpr::transpose_tibble(rankings_dat, col_names = rank, id_col = "outcomes") |>
+  rename_with(.fn = ~ paste0("rank", .)) |>
+  rename(outcome = rankoutcomes) |>
+  mutate(across(rank1:rank5, as.numeric),
+    any_top_5 = rank5 + rank4 + rank3 + rank2 + rank1
+  )
+
+# rankings_dat |>
+#   summarise(across(rank1:rank5, sum))
+
+outcome_tab_all(rankings_dat, 77)
+```
+
+## By key question
+
+Rankings of the 5 most important outcomes (11 respondents).
+
+### KQ 1 Expanded Preoperative Evaluation
 <font size = 4> `r table_ref()`  Among older patients anticipating surgery and anesthesia, does expanded preoperative evaluation (e.g., for frailty, cognitive impairment, functional status, or psychosocial issues) lead to improved postoperative outcomes? </font>
 
 ```{r}
 #| include: true
 outcome_dat <- rankings("KQ1")
-outcome_tab(outcome_dat)
+outcome_tab(outcome_dat, 11)
 ```
 
-## KQ 2 Prehabilitation 
+### KQ 2 Prehabilitation 
 <font size = 4> `r table_ref()`  Among older patients anticipating surgery and anesthesia, do interventions targeted at improving physical function, cognition, and nutritional status before surgery (“prehabilitation”) improve postoperative outcomes? </font>
 
 
 ```{r}
 #| include: true
 outcome_dat <- rankings("KQ2")
-outcome_tab(outcome_dat)
+outcome_tab(outcome_dat, 11)
 ```
 
-## KQ 3 Regional vs. General Anesthesia
+### KQ 3 Regional vs. General Anesthesia
 
 <font size = 4> `r table_ref()` Among older patients undergoing surgery, does regional anesthesia as the primary anesthetic technique improve postoperative outcomes compared with general anesthesia? </font>
 
 ```{r}
 #| include: true
 outcome_dat <- rankings("KQ3")
-outcome_tab(outcome_dat)
+outcome_tab(outcome_dat, 11)
 ```
 
-## KQ 4 Intravenous vs. Inhaled Anesthesia
+### KQ 4 Intravenous vs. Inhaled Anesthesia
 
 <font size = 4> `r table_ref()` Among older patients undergoing surgery with general anesthesia, does the use of intravenous agents for maintenance of anesthesia improve postoperative outcomes compared with inhaled agents? </font>
 
 ```{r}
 #| include: true
 outcome_dat <- rankings("KQ4")
-outcome_tab(outcome_dat)
+outcome_tab(outcome_dat, 11)
 ```
 
-## KQ 5 Potentially Inappropriate Medications
+### KQ 5 Potentially Inappropriate Medications
 
 <font size = 4> `r table_ref()` Among older patients undergoing surgery and anesthesia, do commonly used potentially inappropriate medications administered during the perioperative period increase the risk of postoperative delirium or other adverse outcomes? </font>
 
 ```{r}
 #| include: true
 outcome_dat <- rankings("KQ5")
-outcome_tab(outcome_dat)
+outcome_tab(outcome_dat, 11)
 ```
 
-## KQ 6 Delirium Prophylaxis
+### KQ 6 Delirium Prophylaxis
 
 <font size = 4> `r table_ref()` Among older patients undergoing surgery and anesthesia, do dexmedetomidine, ketamine, ramelteon, or melatonin administered during the perioperative period decrease the risk of postoperative delirium or other adverse cognitive outcomes? </font>
 
 ```{r}
 #| include: true
 outcome_dat <- rankings("KQ6")
-outcome_tab(outcome_dat)
+outcome_tab(outcome_dat, 11)
 ```
 
-## KQ 7 Lower Limb Regional Anesthesia
+### KQ 7 Lower Limb Regional Anesthesia
 <font size = 4> `r table_ref()` Among older patients undergoing surgery, do postoperative lower limb regional anesthetic techniques, such as continuous epidural anesthesia improve postoperative outcomes? </font>
 
 ```{r}
 #| include: true
 outcome_dat <- rankings("KQ7")
-outcome_tab(outcome_dat)
+outcome_tab(outcome_dat, 11)
 ```
 
-## KQ 8 Delirium Screening
+### KQ 8 Delirium Screening
 
 <font size = 4> `r table_ref()` Does screening older patients for postoperative delirium in the post anesthesia care unit improve postoperative outcomes? </font>
 
 ```{r}
 outcome_dat <- rankings("KQ8")
-outcome_tab(outcome_dat)
+outcome_tab(outcome_dat, 11)
 ```

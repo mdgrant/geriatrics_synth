@@ -140,69 +140,6 @@ figure_ref <- function() {
   paste0("Figure ", figure_n, ". ")
 }
 
-# get ranking data and munge to usable
-rankings <- function(key_question){
-  # key_question "KQ1" "KQ2" ...
-
-  read_by_kq <- function(kq, range){
-    read_outcome_dat <- function(cells){readxl::read_xlsx("data/OutcomeRankingRawData_2022-09-06.xlsx", range = cells, sheet = "data")}
-    read_outcome_dat(range) |>
-      mutate(kq = kq) |>
-      relocate(kq, .before = 1) |>
-      mutate(
-        across(1:18, as.numeric)
-      )
-  }
-
-  out_kq1 <- read_by_kq(1, "J2:Z12")
-  out_kq2 <- read_by_kq(2, "AA2:AQ12")
-  out_kq3 <- read_by_kq(3, "AR2:BH12")
-  out_kq4 <- read_by_kq(4, "BI2:BY12")
-  out_kq5 <- read_by_kq(5, "BZ2:CP12")
-  out_kq6 <- read_by_kq(6, "CQ2:DG12")
-  out_kq7 <- read_by_kq(7, "DH2:DX12")
-  out_kq8 <- read_by_kq(8, "DY2:EO12")
-
-  priority_dat <- bind_rows(out_kq1, out_kq2, out_kq3, out_kq4, out_kq5, out_kq6, out_kq7, out_kq8) |>
-    mutate(kq = factor(kq,
-      labels = c(
-        "KQ1 Preoperative Evaluation",
-        "KQ2 Prehabilitation",
-        "KQ3 Regional versus General",
-        "KQ4 Intravenous versus Inhaled",
-        "KQ5 Potentially Inappropriate Medications",
-        "KQ6 Pharmacologic Delirium Prophylaxis",
-        "KQ7 Postoperative Regional Anesthesia",
-        "KQ8 PACU Delirium Screening"
-      )
-    )) |>
-    relocate(kq, .before = 1)
-
-  # priority_dat |>
-  #   group_by(kq) |>
-  #   summarise(across(1:17, ~ sum(.x == 2, na.rm = TRUE)), .names = "{.col}") |>
-  #   mutate(rank = priority)
-
-  rankings <- function(priority){
-    priority_dat |>
-      group_by(kq) |>
-      summarise(across(1:17, ~ sum(.x == priority, na.rm = TRUE)), .names = "{.col}") |>
-      mutate(rank = priority)
-  }
-
-  rankings_dat <- bind_rows(rankings(1), rankings(2), rankings(3), rankings(4), rankings(5)) |>
-    arrange(kq, rank)
-
-  temp <- rankings_dat |>
-    filter(str_detect(kq, key_question))
-
-  tblhelpr::transpose_tibble(temp, col_names = rank, id_col = "outcomes") |>
-    filter(!outcomes %in% c("kq", ".names")) |>
-    rename_with(.fn = ~ paste0("rank", . )) |>
-    rename(outcome = rankoutcomes) |>
-    mutate(across(rank1:rank5, as.numeric),
-           any_top_5 = rank5 + rank4 + rank3 + rank2 + rank1)
-}
 
 # create excel file of individual study records
 library(openxlsx)
@@ -239,8 +176,73 @@ by_study_xlsx <- function(refids, kq_dat, name) {
 #   arrange(design_f)
 # by_study_xlsx(kq5_refid, temp_dat, "kq5")
 
-# outcome priority table
-outcome_tab <- function(outcome_dat) {
+
+# get ranking data and munge to usable
+rankings <- function(key_question){
+  # key_question "KQ1" "KQ2" ...
+
+  read_by_kq <- function(kq, range){
+    read_outcome_dat <- function(cells){readxl::read_xlsx("data/OutcomeRankingRawData_2023-01-23.xlsx", range = cells, sheet = "data")}
+    read_outcome_dat(range) |>
+      mutate(kq = kq) |>
+      relocate(kq, .before = 1) |>
+      mutate(
+        across(1:18, as.numeric)
+      )
+  }
+
+  out_kq1 <- read_by_kq(1, "J2:Z12")
+  out_kq2 <- read_by_kq(2, "AA2:AQ12")
+  out_kq3 <- read_by_kq(3, "AR2:BH12")
+  out_kq4 <- read_by_kq(4, "BI2:BY12")
+  out_kq5 <- read_by_kq(5, "BZ2:CP12")
+  out_kq6 <- read_by_kq(6, "CQ2:DG12")
+  out_kq7 <- read_by_kq(7, "DH2:DX12")
+  out_kq8 <- read_by_kq(8, "DY2:EO12")
+
+  priority_dat <- bind_rows(out_kq1, out_kq2, out_kq3, out_kq4, out_kq5, out_kq6, out_kq7, out_kq8) |>
+    mutate(kq = factor(kq,
+                       labels = c(
+                         "KQ1 Preoperative Evaluation",
+                         "KQ2 Prehabilitation",
+                         "KQ3 Regional versus General",
+                         "KQ4 Intravenous versus Inhaled",
+                         "KQ5 Potentially Inappropriate Medications",
+                         "KQ6 Pharmacologic Delirium Prophylaxis",
+                         "KQ7 Postoperative Regional Anesthesia",
+                         "KQ8 PACU Delirium Screening"
+                       )
+    )) |>
+    relocate(kq, .before = 1)
+
+  # priority_dat |>
+  #   group_by(kq) |>
+  #   summarise(across(1:17, ~ sum(.x == 2, na.rm = TRUE)), .names = "{.col}") |>
+  #   mutate(rank = priority)
+
+  rankings <- function(priority){
+    priority_dat |>
+      group_by(kq) |>
+      summarise(across(1:17, ~ sum(.x == priority, na.rm = TRUE)), .names = "{.col}") |>
+      mutate(rank = priority)
+  }
+
+  rankings_dat <- bind_rows(rankings(1), rankings(2), rankings(3), rankings(4), rankings(5)) |>
+    arrange(kq, rank)
+
+  temp <- rankings_dat |>
+    filter(str_detect(kq, key_question))
+
+  tblhelpr::transpose_tibble(temp, col_names = rank, id_col = "outcomes") |>
+    filter(!outcomes %in% c("kq", ".names")) |>
+    rename_with(.fn = ~ paste0("rank", . )) |>
+    rename(outcome = rankoutcomes) |>
+    mutate(across(rank1:rank5, as.numeric),
+           any_top_5 = rank5 + rank4 + rank3 + rank2 + rank1)
+}
+
+# outcome priority table by kq
+outcome_tab <- function(outcome_dat, responses) {
   reactable(
     outcome_dat,
     pagination = FALSE,
@@ -250,8 +252,9 @@ outcome_tab <- function(outcome_dat) {
     defaultColDef = colDef(
       cell = data_bars(outcome_dat,
         box_shadow = TRUE,
+        # force_outside = c(1, 88),
         bar_height = 12,
-        max_value = 10
+        max_value = responses
         # fill_color = "#B22215"
       ),
       style = cell_style(outcome_dat,
@@ -269,9 +272,10 @@ outcome_tab <- function(outcome_dat) {
         name = "Any", width = 80, headerClass = "header", align = "center",
         cell = data_bars(
           outcome_dat,
+          # force_outside = c(1, 88),
           box_shadow = TRUE,
           bar_height = 12,
-          max_value = 10,
+          max_value = responses,
           fill_color = "#B22215"
         )
       )

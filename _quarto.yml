@@ -16,28 +16,22 @@ website:
         text: Home
       - href: soe.html
         text: GRADE
-      - text: Preop
+      - text: Key Question
         menu:
           - href: kq1.html
-            text: "KQ1 Expanded Preoperative Evaluation"
-          - href: kq2.html
-            text: "KQ2 Prehabilitation"
-      - text: Intraop
-        menu:
-          - href: kq3.html
-            text: "KQ3 Regional vs. General Anesthesia"
-          - href: kq4.html
-            text: "KQ4 Intravenous vs. Inhaled Anesthesia"
-      - text: Periop
-        menu:
-          - href: kq5.html
-            text: "KQ5 Potentially Inappropriate Medications"
-          - href: kq6.html
-            text: "KQ6 Delirium Prophylaxis"
-      - text: Postop
-        menu:
+            text: "Expanded Preoperative Evaluation"
           - href: kq8.html
-            text: "KQ8 Delirium Screening"
+            text: "Postoperative Delirium Screening"
+          - href: kq2.html
+            text: "Prehabilitation"
+          - href: kq3.html
+            text: "Regional vs. General Anesthesia"
+          - href: kq4.html
+            text: "Intravenous vs. Inhaled Anesthesia"
+          - href: kq5.html
+            text: "Potentially Inappropriate Medications"
+          - href: kq6.html
+            text: "Delirium Prophylaxis"
       - text: Appendix
         menu:
           - href: evidence_tables.html
