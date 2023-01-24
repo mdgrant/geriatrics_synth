@@ -24,7 +24,7 @@ source("code/readfiles_geri_2022-11-16.R")
 
 ## For all included key questions 
 
-Rankings of the 5 most important outcomes for key questions 1 through 6 and 8 (11 respondents; maximum 77 for each or "Any" top 5 ranking). 
+<font size = 4> `r table_ref()`</font> Rankings for the 5 most important outcomes across 7 key questions (11 respondents; maximum 77 for each outcome rank or any top 5 ranking).
 
 ```{r}
 ## key questions 1-6 & 8 --------------------------------------- (2023-01-24 11:48) @----
@@ -108,6 +108,32 @@ rankings_dat <- tblhelpr::transpose_tibble(rankings_dat, col_names = rank, id_co
 
 outcome_tab_all(rankings_dat, 77)
 ```
+
+### Outcomes reported across all studies and questions (abstracted as of 2023-01-21)
+
+```{r, read_data}
+#| include: false
+source("code/readfiles_geri_2022-11-16.R")
+```
+
+<font size = 4> `r table_ref()` Dichotomous outcomes. </font>
+
+```{r dichot_outcome_freq}
+dichot_freq_fun(dichot_dat)
+```
+
+<font size = 4> `r table_ref()` Continuous outcomes. </font>
+
+```{r cont_outcome_freq}
+contin_freq_fun(contin_dat)
+```
+
+<font size = 4> `r table_ref()` Likert-type outcomes. </font>
+
+```{r likert_outcome_freq}
+likert_freq_fun(likert_dat)
+```
+
 
 ## By key question
 
