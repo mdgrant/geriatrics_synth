@@ -38,7 +38,6 @@ likert_dat <- data_kq(likert_dat, kq6_refid)
 
 <!-- ## Outcome Importance Rankings -->
 
-
 ```{r, outcome_priority}
 #| include: true
 #| eval: false
@@ -48,7 +47,7 @@ outcome_tab(outcome_dat, 11)
 
 ### Reporting Frequency
 
-<font size = 4> `r table_ref()` Dichotomous outcomes. </font>
+<font size = 4> `r table_ref()` Dichotomous or count outcomes. </font>
 
 ```{r dichot_outcome_freq}
 dichot_freq_fun(dichot_dat)
@@ -60,7 +59,7 @@ dichot_freq_fun(dichot_dat)
 contin_freq_fun(contin_dat)
 ```
 
-<font size = 4> `r table_ref()` Likert-type outcomes. </font>
+<font size = 4> `r table_ref()` Likert or ordinal outcomes. </font>
 
 ```{r likert_outcome_freq}
 likert_freq_fun(likert_dat)
@@ -72,7 +71,7 @@ likert_freq_fun(likert_dat)
 
 <!-- Number of studies by design ----------------------- (2022-12-28 10:44) @ --->
 
-```{r}
+```{r studies_design}
 study_char_dat |>
   filter(refid %in% kq6_refid) |>
   select(refid, study, design_f_lab) |>
@@ -134,10 +133,13 @@ drugs_dat <- study_arm_dat |>
   relocate(drug, .after = arm_n) |>
   # update drug and control description for "kq5" arms
   left_join(kq5_drug_by_arm, by = c("refid", "arm_id")) |>
-  mutate(drug = coalesce(drug.x, drug.y),
-         control_desc = coalesce(control_desc.x, control_desc.y),
-         control_desc = firstup(control_desc)) |>
-  select(-matches("\\.x|\\.y")) |> 
+  mutate(
+    drug = coalesce(drug.x, drug.y),
+    control_desc = coalesce(control_desc.x, control_desc.y),
+    control_desc = firstup(control_desc),
+    arm_proph_meds = ifelse(is.na(arm_proph_meds), "kq5_arm", arm_proph_meds)
+  ) |>
+  select(-matches("\\.x|\\.y")) |>
   mutate(
     drug_f = fct(drug,
       levels = c(
@@ -167,10 +169,18 @@ drugs_dat <- study_arm_dat |>
   ) |>
   ungroup() |>
   relocate(c(drug, drug_f, drug_study), .after = arm_id) |>
-  relocate(c(other_spec, interv_desc, control_desc), .after = last_col()) |> 
+  relocate(c(other_spec, interv_desc, control_desc), .after = last_col()) |>
   arrange(refid, drug_study) |>
   fill(drug_study) |>
   arrange(refid, arm_id)
+
+drugs_dat |> tabyl(drug)
+
+temp <- drugs_dat |> 
+  filter(drug %in% c("Other", "Placeob", "None")) |> 
+  select(refid, study, contains("drug"), other_spec, contains("_desc"))
+
+writexl::write_xlsx(temp, "/Users/mgrant/Desktop/temp.xlsx")
 
 ```
 
@@ -366,7 +376,9 @@ dex_by_arm |>
     postdose ~ px(100),
     time_admin ~ px(160)
   ) |> 
-  tab_footnote("Preop: preoperative; Induct: induction; Intraop: intraoperative; Postop: postoperative.")
+  tab_footnote("Preop: preoperative; Induct: induction; Intraop: intraoperative; Postop: postoperative.") 
+  # gtsave("/Users/mgrant/Desktop/dex_arm_dose_table6.docx")
+  
   # |>  tab_info()
 
 ```

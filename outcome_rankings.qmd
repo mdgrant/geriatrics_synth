@@ -116,7 +116,7 @@ outcome_tab_all(rankings_dat, 77)
 source("code/readfiles_geri_2022-11-16.R")
 ```
 
-<font size = 4> `r table_ref()` Dichotomous outcomes. </font>
+<font size = 4> `r table_ref()` Dichotomous or count outcomes. </font>
 
 ```{r dichot_outcome_freq}
 dichot_freq_fun(dichot_dat)
@@ -128,7 +128,7 @@ dichot_freq_fun(dichot_dat)
 contin_freq_fun(contin_dat)
 ```
 
-<font size = 4> `r table_ref()` Likert-type outcomes. </font>
+<font size = 4> `r table_ref()` Likert or ordinal outcomes. </font>
 
 ```{r likert_outcome_freq}
 likert_freq_fun(likert_dat)

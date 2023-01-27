@@ -1,5 +1,6 @@
 ---
 title: "Evidence Synthesis"
+editor: source
 ---
 
 Draft materials **(not to be cited).**
@@ -14,9 +15,7 @@ Corrections, suggestions, or comments can be sent to [Mark Grant](mailto:m.grant
 
 [Regional vs. General Anesthesia](kq3.html)
 
-[Intravenous vs. Inhaled Anesthesia](kq4.html)
-
-[Potentially Inappropriate Medications](kq5.html)
+[Intravenous vs. Inhaled Anesthesia](kq4.html) 4 [Potentially Inappropriate Medications](kq5.html)
 
 [Delirium Prophylaxis](kq6.html)
 

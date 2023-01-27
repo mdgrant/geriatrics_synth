@@ -37,8 +37,6 @@ likert_dat <- data_kq(likert_dat, kq5_refid)
 
 <!-- ## Outcome Importance -->
 
-
-
 ```{r, outcome_priority}
 #| include: true
 #| eval: false
@@ -48,7 +46,7 @@ outcome_tab(outcome_dat, 11)
 
 ### Outcome Reporting Frequency
 
-<font size = 4> `r table_ref()` Dichotomous outcomes. </font>
+<font size = 4> `r table_ref()` Dichotomous and count outcomes. </font>
 
 ```{r dichot_outcome_freq}
 dichot_freq_fun(dichot_dat)
@@ -60,7 +58,7 @@ dichot_freq_fun(dichot_dat)
 contin_freq_fun(contin_dat)
 ```
 
-<font size = 4> `r table_ref()` Likert-type outcomes. </font>
+<font size = 4> `r table_ref()` Likert and ordinal outcomes. </font>
 
 ```{r likert_outcome_freq}
 likert_freq_fun(likert_dat)
@@ -246,7 +244,7 @@ drug_f_labels <- read_csv("data/kq5_levels_labels.csv") |> pull(label)
 ## table by arm --------------------------------------- (2023-01-10 16:21) @----
 # by arm pim and comparator --------------------------- (2023-01-15 15:24) @----
 kq5_by_arm_tab <- study_arm_dat |>
-  select(refid, design_f_lab, study, study_l, arm_id, arm_n, contains(c("kq5", "kq6")), anti_cortico_drug, starts_with("inapp")) |>
+  select(refid, design_f_lab, study, study_l, arm_id, arm_n, contains(c("kq5", "kq6")), anti_cortico_drug, starts_with("inapp"), anesthagent_info) |>
   rename(
     control_desc_kq5 = kq5_control_desc,
     control_desc_kq6 = kq6_control_desc,
