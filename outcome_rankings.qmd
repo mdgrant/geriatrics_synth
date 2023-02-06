@@ -91,7 +91,7 @@ rankings_all <- function(priority) {
     # group_by(kq) |>
     summarise(across(3:19, ~ sum(.x == priority, na.rm = TRUE)), .names = "{.col}") |>
     mutate(rank = priority)
-}
+}f
 
 rankings_dat <- bind_rows(rankings_all(1), rankings_all(2), rankings_all(3), rankings_all(4), rankings_all(5)) |>
   select(-.names)
