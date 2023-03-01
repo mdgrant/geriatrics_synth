@@ -49,6 +49,24 @@ view_rec <- function(data_set, refid_select) {
     View()
 }
 
+## view_all function to page through all distiller forms
+readkey <- function() {
+  cat("[press [enter] to continue]")
+  number <- scan(n = 1)
+}
+
+view_all <- function(refid){
+  view_rec(study_char_dat, refid)
+  readkey()
+  view_rec(study_arm_dat, refid)
+  readkey()
+  view_rec(dichot_dat, refid)
+  readkey()
+  view_rec(contin_dat, refid)
+  readkey()
+  view_rec(likert_dat, refid)
+}
+
 # convenience function to view record(s) for refid from dataset
 noview_rec <- function(data_set, refid_select) {
   data_set |>
@@ -57,6 +75,12 @@ noview_rec <- function(data_set, refid_select) {
     t() |>
     as.data.frame() |>
     rownames_to_column(var = "variable")
+}
+
+# replace nonmissing with U00D7
+notna_to_x <- function(variable, symbol) {
+  # ifelse(!is.na(variable), "\U00D7", NA)
+  ifelse(!is.na(variable), symbol, NA)
 }
 
 # capitalize 1st letter
@@ -140,7 +164,6 @@ figure_ref <- function() {
   paste0("Figure ", figure_n, ". ")
 }
 
-
 # create excel file of individual study records
 library(openxlsx)
 
@@ -176,56 +199,57 @@ by_study_xlsx <- function(refids, kq_dat, name) {
 #   arrange(design_f)
 # by_study_xlsx(kq5_refid, temp_dat, "kq5")
 
-
 # get ranking data and munge to usable
 rankings <- function(key_question){
   # key_question "KQ1" "KQ2" ...
 
-  read_by_kq <- function(kq, range){
-    read_outcome_dat <- function(cells){readxl::read_xlsx("data/OutcomeRankingRawData_2023-01-23.xlsx", range = cells, sheet = "data")}
-    read_outcome_dat(range) |>
-      mutate(kq = kq) |>
-      relocate(kq, .before = 1) |>
-      mutate(
-        across(1:18, as.numeric)
-      )
+read_by_kq <- function(kq, range) {
+  read_outcome_dat <- function(cells) {
+    readxl::read_xlsx("data/OutcomeRankingRawData_2023-01-23.xlsx", range = cells, sheet = "data")
   }
+  read_outcome_dat(range) |>
+    mutate(kq = kq) |>
+    relocate(kq, .before = 1) |>
+    mutate(
+      across(1:18, as.numeric)
+    )
+}
 
-  out_kq1 <- read_by_kq(1, "J2:Z12")
-  out_kq2 <- read_by_kq(2, "AA2:AQ12")
-  out_kq3 <- read_by_kq(3, "AR2:BH12")
-  out_kq4 <- read_by_kq(4, "BI2:BY12")
-  out_kq5 <- read_by_kq(5, "BZ2:CP12")
-  out_kq6 <- read_by_kq(6, "CQ2:DG12")
-  out_kq7 <- read_by_kq(7, "DH2:DX12")
-  out_kq8 <- read_by_kq(8, "DY2:EO12")
+out_kq1 <- read_by_kq(1, "J2:Z12")
+out_kq2 <- read_by_kq(2, "AA2:AQ12")
+out_kq3 <- read_by_kq(3, "AR2:BH12")
+out_kq4 <- read_by_kq(4, "BI2:BY12")
+out_kq5 <- read_by_kq(5, "BZ2:CP12")
+out_kq6 <- read_by_kq(6, "CQ2:DG12")
+out_kq7 <- read_by_kq(7, "DH2:DX12")
+out_kq8 <- read_by_kq(8, "DY2:EO12")
 
-  priority_dat <- bind_rows(out_kq1, out_kq2, out_kq3, out_kq4, out_kq5, out_kq6, out_kq7, out_kq8) |>
-    mutate(kq = factor(kq,
-                       labels = c(
-                         "KQ1 Preoperative Evaluation",
-                         "KQ2 Prehabilitation",
-                         "KQ3 Regional versus General",
-                         "KQ4 Intravenous versus Inhaled",
-                         "KQ5 Potentially Inappropriate Medications",
-                         "KQ6 Pharmacologic Delirium Prophylaxis",
-                         "KQ7 Postoperative Regional Anesthesia",
-                         "KQ8 PACU Delirium Screening"
-                       )
-    )) |>
-    relocate(kq, .before = 1)
+priority_dat <- bind_rows(out_kq1, out_kq2, out_kq3, out_kq4, out_kq5, out_kq6, out_kq7, out_kq8) |>
+  mutate(kq = factor(kq,
+    labels = c(
+      "KQ1 Preoperative Evaluation",
+      "KQ2 Prehabilitation",
+      "KQ3 Regional versus General",
+      "KQ4 Intravenous versus Inhaled",
+      "KQ5 Potentially Inappropriate Medications",
+      "KQ6 Pharmacologic Delirium Prophylaxis",
+      "KQ7 Postoperative Regional Anesthesia",
+      "KQ8 PACU Delirium Screening"
+    )
+  )) |>
+  relocate(kq, .before = 1)
 
-  # priority_dat |>
-  #   group_by(kq) |>
-  #   summarise(across(1:17, ~ sum(.x == 2, na.rm = TRUE)), .names = "{.col}") |>
-  #   mutate(rank = priority)
+# priority_dat |>
+#   group_by(kq) |>
+#   summarise(across(1:17, ~ sum(.x == 2, na.rm = TRUE)), .names = "{.col}") |>
+#   mutate(rank = priority)
 
-  rankings <- function(priority){
-    priority_dat |>
-      group_by(kq) |>
-      summarise(across(1:17, ~ sum(.x == priority, na.rm = TRUE)), .names = "{.col}") |>
-      mutate(rank = priority)
-  }
+rankings <- function(priority) {
+  priority_dat |>
+    group_by(kq) |>
+    summarise(across(1:17, ~ sum(.x == priority, na.rm = TRUE)), .names = "{.col}") |>
+    mutate(rank = priority)
+}
 
   rankings_dat <- bind_rows(rankings(1), rankings(2), rankings(3), rankings(4), rankings(5)) |>
     arrange(kq, rank)
@@ -327,12 +351,13 @@ foot_out_freq <- function(data) {
     pull(abbreviation) |>
     str_flatten(collapse = "; ")
 
-  paste0("ADL: activities of daily living; ", foot_labels, ".")
+  foot_labels
 }
 
-# dichot freq outcomes
-dichot_freq_fun <- function(data) {
-  # for footnote
+# dichot freq outcomes; data and add to footnote abbreviations for study designs included eg "ADL: activities of daily living; "
+dichot_freq_fun <- function(data, add_footnote = NULL) {
+  # column_last <- length(fct_unique(fct_drop(data |> pull(design_f_abbrev))))
+  # dichot_dat |>
   data |>
     select(refid, design_f_abbrev, d_adl:d_satisfaction) |>
     mutate(across(d_adl:d_satisfaction, ~ !is.na(.x))) |>
@@ -343,17 +368,17 @@ dichot_freq_fun <- function(data) {
     ungroup() |>
     rename(
       "Complications" = "d_complication",
-      "Cognitive delay" = "d_cog_delay",
+      "Delayed NCR" = "d_cog_delay",
       "Delirium duration" = "d_deli_duration",
       "Discharge location" = "d_disch_location",
       "Opioid use" = "d_opioid",
-      "Quality of recovery" = "d_qor",
+      "QoR" = "d_qor",
       "ADL" = "d_adl",
       "Readmission" = "d_readmit",
       "Mortality" = "d_mortality",
       "Delirium" = "d_delirium",
       "Depression" = "d_depression",
-      "Comfort" = "d_comfort",
+      "Pain" = "d_pain",
       "Satisfaction" = "d_satisfaction"
     ) |>
     group_by(refid) |>
@@ -372,18 +397,19 @@ dichot_freq_fun <- function(data) {
     modify_header(label = "**Outcome**") |>
     modify_footnote(update = everything() ~ NA) |>
     as_gt(id = "one") |>
-    cols_width(
-      1 ~ "120px",
-      everything() ~ "120px") |>
     gt_theme_mg() |>
+    cols_width(
+      label ~ "180px",
+      matches("stat_[1-9]") ~ "120px") |>
     tab_options(footnotes.marks = "letters") |>
-    tab_footnote(foot_out_freq(data)) |>
-    sub_values(values = c("0 (0%)"), replacement = "—")
+    tab_footnote(paste0(add_footnote, foot_out_freq(data), ".")) |>
+    sub_values(values = c("0 (0)"), replacement = "—")
   # opt_footnote_marks(marks = "standard")
 }
 
-# contin freq outcomes
-contin_freq_fun <- function(data) {
+# contin freq outcomes; data and add to footnote abbreviations for study designs included eg "ADL: activities of daily living; "
+contin_freq_fun <- function(data, add_footnote = NULL) {
+  # column_last <- length(fct_unique(fct_drop(data |> pull(design_f_abbrev))))
   data |>
     select(refid, design_f_abbrev, c_6mwd:c_pulmonary) |>
     mutate(across(c_6mwd:c_pulmonary, ~ !is.na(.x))) |>
@@ -393,7 +419,7 @@ contin_freq_fun <- function(data) {
     ) |>
     ungroup() |>
     rename(
-      "6-Minute walk" = "c_6mwd",
+      "6-minute walk" = "c_6mwd",
       "Delirium duration" = "c_delirium_dur",
       "Grip strength" = "c_handgrip",
       "Length of stay" = "c_los",
@@ -416,18 +442,19 @@ contin_freq_fun <- function(data) {
     modify_header(label = "**Outcome**") |>
     modify_footnote(update = everything() ~ NA) |>
     as_gt(id = "one") |>
-    cols_width(
-      1 ~ "120px",
-      everything() ~ "120px") |>
     gt_theme_mg() |>
+    cols_width(
+      label ~ "180px",
+      matches("stat_[1-9]") ~ "120px") |>
     tab_options(footnotes.marks = "letters") |>
-    tab_footnote(foot_out_freq(data)) |>
-    sub_values(values = c("0 (0%)"), replacement = "—")
+    tab_footnote(paste0(add_footnote, foot_out_freq(data), ".")) |>
+    sub_values(values = c("0 (0)"), replacement = "—")
   # opt_footnote_marks(marks = "standard")
 }
 
-# likert freq outcomes
-likert_freq_fun <- function(data) {
+# likert freq outcomes; data and add to footnote abbreviations for study designs included eg "ADL: activities of daily living; "
+likert_freq_fun <- function(data, add_footnote = NULL) {
+  # column_last <- length(fct_unique(fct_drop(data |> pull(design_f_abbrev))))
   data |>
     select(refid, design_f_abbrev, l_adl:l_sat) |>
     mutate(across(l_adl:l_sat, ~ !is.na(.x))) |>
@@ -438,12 +465,13 @@ likert_freq_fun <- function(data) {
     ungroup() |>
     rename(
       "ADL" = "l_adl",
-      "Cognitive function" = "l_cogfunc",
+      "Delayed NCR" = "l_cogfunc",
+      "Delirium"	= "l_delirium",
       "Complications" = "l_complications",
-      "Mental status" = "l_mental",
+      "Depression/anxiety" = "l_depression",
       "Pain" = "l_pain",
       "Quality of life" = "l_qol",
-      "Quality of recovery" = "l_qor",
+      "QoR" = "l_qor",
       "Satisfaction" = "l_sat",
     ) |>
     group_by(refid) |>
@@ -462,12 +490,134 @@ likert_freq_fun <- function(data) {
     modify_header(label = "**Outcome**") |>
     modify_footnote(update = everything() ~ NA) |>
     as_gt(id = "one") |>
-    cols_width(
-      1 ~ "120px",
-      everything() ~ "120px") |>
     gt_theme_mg() |>
+    cols_width(
+      label ~ "180px",
+      matches("stat_[1-9]") ~ "120px") |>
     tab_options(footnotes.marks = "letters") |>
-    tab_footnote(foot_out_freq(data)) |>
-    sub_values(values = c("0 (0%)"), replacement = "—")
+    tab_footnote(paste0(add_footnote, foot_out_freq(data), ".")) |>
+    sub_values(values = c("0 (0)"), replacement = "—")
   # opt_footnote_marks(marks = "standard")
 }
+
+# refid not missing by outcome
+refid_reported_outcome <- function(data_dat, vars){
+  data_dat |>
+    filter(if_any({{vars}}, ~ !is.na(.x))) |>
+    select(refid) |>
+    distinct() |>
+    pull(refid)
+}
+
+refid_reported_outcome_other <- function(data_dat, vars, instrument, negate_flag = FALSE){
+  data_dat |>
+  filter(str_detect({{vars}}, instrument, negate = negate_flag)) |>
+  select(refid) |>
+  distinct() |>
+  pull(refid)
+}
+
+# age column "age_table" for tables; column header md("Mean <u>Med</u> (SD) [Range] {IQR}")
+# table_age_mn_med <- study_arm_dat |>
+#   select(starts_with("age_"), arm_n, refid, arm_id) |>
+#   age_for_tables() |>
+#   select(refid, arm_id, age_table)
+
+digit1 <- function(x){
+  formatC(x, digits = 1, format = "f")
+}
+
+digit0 <- function(x){
+  formatC(x, digits = 0, format = "f")
+}
+
+age_for_tables <- function(x) {
+  mutate(x,
+    age_sd = ifelse(is.na(age_sd) & !is.na(age_95l + age_95u), (age_95u - age_95l) / (1.96 * 2) * sqrt(arm_n), age_sd),
+    age_table =
+      case_when(
+        !is.na(age_mean + age_sd) ~ paste0(digit1(age_mean), " (", digit1(age_sd), ")"),
+        !is.na(age_mean + age_low + age_up) ~ paste0(digit1(age_mean), " [", digit0(age_low), "-", digit0(age_up), "]"),
+        !is.na(age_med + age_low + age_up) ~ paste0("<u>",digit1(age_med), "</u>", " [", digit0(age_low), "-", digit0(age_up), "]"),
+        !is.na(age_med + age_iqrl + age_iqru) ~ paste0("<u>", digit1(age_med), "</u>", " {", digit0(age_iqrl), "-", digit0(age_iqru), "}"),
+        !is.na(age_mean) ~ as.character(digit1(age_mean)),
+        !is.na(age_med) ~ paste0("<u>", digit1(age_med), "</u>"),
+        .default = ""
+      )
+  )
+}
+
+# mean med uncertainty summary column header md("Mean <u>Med</u> (SD) [Range] {IQR}")
+# example mmse1_dat <- mean_med_table(likert_dat, "mmse_", 1, 0)
+mean_med_table <- function(data, variable_select, observation_n, digs = 0) {
+  data |>
+    select(starts_with(variable_select), refid, arm_id, arm_n) |>
+    select(matches(paste0(observation_n, "$")), refid, arm_id, arm_n) |>
+    select(!matches("diff"), refid, arm_id, arm_n) |>
+    rename_with(~ gsub("95", "ci95", .x, fixed = TRUE)) |>
+    rename_with(~ gsub(variable_select, "", .x, fixed = TRUE)) |>
+    rename_with(~ str_replace(.x, "[1-4]", "")) |>
+    mutate(
+      sd = ifelse(is.na(sd) & !is.na(ci95l + ci95u), (ci95u - ci95l) / (1.96 * 2) * sqrt(arm_n), sd),
+      sd_f = formatC(sd, digits = 1, format = "f"),
+      table =
+        case_when(
+          !is.na(m + sd) ~ paste0(formatC(m, digits = digs, format = "f"), " (", sd_f, ")"),
+          !is.na(m + rl + ru) ~ paste0(formatC(m, digits = digs, format = "f"), " [", formatC(rl, digits = digs, format = "f"), "-", formatC(ru, digits = digs, format = "f"), "]"),
+          !is.na(med + rl + ru) ~ paste0("<u>", formatC(med, digits = digs, format = "f"), "</u>", " [", formatC(rl, digits = digs, format = "f"), "-", formatC(ru, digits = digs, format = "f"), "]"),
+          !is.na(med + iqrl + iqru) ~ paste0("<u>", formatC(med, digits = digs, format = "f"), "</u>", " {", formatC(iqrl, digits = digs, format = "f"), "-", formatC(iqru, digits = digs, format = "f"), "}"),
+          !is.na(m) ~ as.character(formatC(m, digits = digs, format = "f")),
+          !is.na(med) ~ paste0("<u>", formatC(med, digits = digs, format = "f"), "</u>"),
+          .default = ""
+        )
+    ) |>
+    select(refid, arm_id, time, table) |>
+    rename(!!paste0(variable_select, "table", observation_n) := table) |>
+    rename(!!paste0(variable_select, "time", observation_n) := time)
+}
+
+# single time
+# mean_med_table_single(study_arm_dat, "pre_mmse_", 0)
+mean_med_table_single <- function(data, variable_select, digs = 1) {
+  data |>
+    select(starts_with(variable_select), refid, arm_id, arm_n) |>
+    select(!matches("diff"), refid, arm_id, arm_n) |>
+    rename_with(~ gsub("95", "ci95", .x, fixed = TRUE)) |>
+    rename_with(~ gsub(variable_select, "", .x, fixed = TRUE)) |>
+    rename_with(~ str_replace(.x, "[1-4]", "")) |>
+    mutate(
+      sd = ifelse(is.na(sd) & !is.na(ci95l + ci95u), (ci95u - ci95l) / (1.96 * 2) * sqrt(arm_n), sd),
+      sd_f = formatC(sd, digits = 1, format = "f"),
+      table =
+        case_when(
+          !is.na(m + sd) ~ paste0(formatC(m, digits = digs, format = "f"), " (", sd_f, ")"),
+          !is.na(m + rl + ru) ~ paste0(formatC(m, digits = digs, format = "f"), " [", formatC(rl, digits = digs, format = "f"), "-", formatC(ru, digits = digs, format = "f"), "]"),
+          !is.na(med + rl + ru) ~ paste0("<u>", formatC(med, digits = digs, format = "f"), "</u>", " [", formatC(rl, digits = digs, format = "f"), "-", formatC(ru, digits = digs, format = "f"), "]"),
+          !is.na(med + iqrl + iqru) ~ paste0("<u>", formatC(med, digits = digs, format = "f"), "</u>", " {", formatC(iqrl, digits = digs, format = "f"), "-", formatC(iqru, digits = digs, format = "f"), "}"),
+          !is.na(m) ~ as.character(formatC(m, digits = digs, format = "f")),
+          !is.na(med) ~ paste0("<u>", formatC(med, digits = digs, format = "f"), "</u>"),
+          .default = ""
+        )
+    ) |>
+    select(refid, arm_id, table) |>
+    rename(!!paste0(variable_select) := table)
+}
+
+# proportion bar for gt
+bar_chart <- function(label, height = "14px", fill = "#00bfc4", background = "white") {
+  bar <- glue::glue("<div style='background:{fill};width:{label}%;height:{height};'></div>")
+  chart <- glue::glue("<div style='flex-grow:1;margin-left:2px;margin-right:2px;background:{background};'>{bar}</div>")
+  glue::glue("<div style='display:flex;align-items:left';>{chart}</div>") |>
+    gt::html()
+}
+
+bar_prop <- function(proportion, fill_color, background_color = "#EAECEE") {
+  purrr::map(proportion, ~ bar_chart(label = .x, fill = fill_color, background = background_color))
+}
+
+# bar_prop_select <- function(selector, proportion, fill_color, background = "#d2d2d2") {
+#   ifelse(selector,
+#     purrr::map(proportion, ~ bar_chart(label = .x, fill = fill_color, background = background)),
+#     purrr::map(proportion, ~ bar_chart(label = .x, fill = fill_color, background = background))
+#   )
+# }

@@ -5,7 +5,7 @@ toc-title: "Delirium Prophylaxis"
 toc-location: "left"
 toc-depth: 4
 toc_float: 
-  collapsed: true
+  collapsed: false
 tbl-cap-location: "top"
 page-layout: full
 css: styles.css
@@ -137,7 +137,7 @@ study_char_dat |>
 ```{r drugs_by_arm}
 #| message: false
 # CODE: drugs & recode drugs/comparators so that usable; "other" category recoded to comparator
-# CODE: drugs_dat <- study_arm_dat include drug arm data; adds kq5/6 arms
+# drugs_dat <- study_arm_dat include drug arm data; adds kq5/6 arms
 ## drugs; from kq6, add kq5 arm drugs ----------------- (2023-01-16 13:46) @----
 # drugs for kq5 studies; needed to fill in "missings" for kq6 arms coded as kq5 arms
 kq5_drug_by_arm <- read_csv("data/kq5_drug_by_arm.csv") |> 
@@ -217,7 +217,7 @@ drugs_dat <- study_arm_dat |>
 
 ```{r drug_tables}
 #| eval = FALSE
-# CODE: drug and drug_recode can save to desktop; working only
+# CODE: eval = FALSE; drug and drug_recode can save to desktop; working only 
 drugs_dat |> tabyl(drug)
 drugs_dat |> tabyl(drug_recode)
 drugs_dat |> tabyl(drug_recode_abbr)
@@ -280,6 +280,11 @@ included_dat <- study_char_dat |>
   ) |>
   arrange(drug_design, surgs, study_l) |>
   select(refid, study_l, centers, n_enroll, country, drug_design, surgs, non_vh_hdi)
+# 
+# included_dat |>
+#   mutate(drug_design = paste(drug_study, design_f_lab)) |>
+#   filter(str_detect(drug_design, "NA"))
+#   
 
 included_dat |>
   group_by(drug_design) |>
@@ -509,7 +514,7 @@ ket_by_arm <- drugs_dat |>
 ```
 
 ```{r ket_table}
-# CODE: ketamine table 2023-02-21  draft; VERIFY no
+# CODE: ketamine table 2023-02-21  draft; VERIFY NO
 ket_by_arm |>
   arrange(year, study) |> 
   rename(study_l = study_l_w_linked) |> 
@@ -634,9 +639,10 @@ mel_ram_by_arm <- drugs_dat |>
     select(refid, study_id, year, study_l_w_linked, arm_n, drug, drug_f, drug_study, dose, time_admin, pre, postop, design_f_lab, interv_desc, control_desc)
 ```
 
-:::{.callout-note collapse=true appearance='minimal' icon=false}
-## <font size = 4> `r table_ref()` Melatonin and ramelteon studies comparators and dosing. </font>
+<!-- :::{.callout-note collapse=true appearance='minimal' icon=false} -->
+<!-- ## <font size = 4> `r table_ref()` Melatonin and ramelteon studies comparators and dosing. </font> -->
 
+<font size = 4> `r table_ref()` Melatonin and ramelteon studies comparators and dosing. </font>
 
 ```{r melatonin_ramelteon_table}
 mel_ram_by_arm |>
@@ -706,7 +712,7 @@ mel_ram_by_arm |>
 # tab_source_note(footnote)
 ```
 
-:::
+<!-- ::: -->
 
 ## Outcomes
 
@@ -714,59 +720,126 @@ mel_ram_by_arm |>
 
 #### Dexmedetomidine
 
-```{r dex_delirium_descriptive}
-temp <- study_arm_dat |> 
-  select(refid, study, matches("^age"))
+<font size = 4> `r table_ref()` Delirium incidence over defined lengths of hospitalization in randomized clinical trials of dexmedetomidine. </font>
 
-```
-
-
-```{r delirium_incidence}
-#| eval: false
-# reported on days vs incidence proportion
-temp <- dichot_dat |>
+```{r delirium_total_tab}
+# CODE: delirium incidence
+# total 
+delirium_total_tab <- dichot_dat |>
   # select(refid, study, matches("^deli")) |>
-  select(refid, study, arm_n, matches("*time"), matches("delitotal")) |> 
-  filter(if_any(starts_with("deli"), ~ !is.na(.))) |>
+  # select(refid, study, arm_n, matches("*time"), matches("delitotal")) |> 
+  select(refid, year, arm_id, design_f_lab, study, study_l, arm_n, delitotal_time:delitotal_95high, deli_cam:deli_scale_otherspec) |> 
+  filter(!is.na(delitotal_n)) |> 
+  filter(refid %in% dex_refid) |> 
+  remove_empty(which = "cols") |> 
+  left_join(drugs_dat |> select(refid, arm_id, drug_recode_abbr), by = c("refid", "arm_id")) |> 
+  relocate(drug_recode_abbr, .after = arm_n) |> 
   mutate(
-    deli_times = ifelse(if_any(starts_with("delirium"), ~ !is.na(.)), "Yes", "No"),
-    deli_total = ifelse(!is.na(delitotal_time), "Reported", "Not Reported")
+    across(starts_with("deli_"), ~ str_remove_all(.x, "scale_")),
+    across(starts_with("deli_"), ~ str_remove_all(.x, "deli_")),
+    across(deli_cam:deli_scale_icdsc, ~ toupper(.x)),
   ) |> 
-  remove_empty(which = "cols")
-  select(refid, study, deli_times, deli_total) |>
-  group_by(refid) |>
-  slice(1) |>
-  ungroup() |>
-  # use gt summary
-  select(-refid, -study) |>
-  tbl_cross(
-    percent = "col",
-    label = list(deli_times ~ "At Days", deli_total ~ "Incidence Proportion")
-  ) |>
-   modify_column_alignment(columns = everything(), align = "right") |> 
-  as_gt(id = "one") |>
-  gt_theme_mg()
-  # use tabyl
-  # tabyl(deli_times, deli_total) |> 
-  # adorn_totals(c("row", "col")) |> 
-  # adorn_percentages("row") |> 
-  # adorn_pct_formatting(rounding = "half up", digits = 1) |> 
-  # adorn_ns()
-
-temp_2 <- likert_dat |> 
-  select(refid, study, matches("mmse")) |> 
-  filter(if_any(starts_with("mmse"), ~ !is.na(.)))
-
-temp_contin <- contin_dat |>
-  select(refid, study, matches("^deli")) |>
-  filter(if_any(starts_with("deli"), ~ !is.na(.)))g
-
-mmse_refids <- temp_contin$refid  
-mmse_delirium_refids <- temp_contin$refid  
-
-mmse_refids %in% kq6_refid
-
+  rename_with(~ gsub("scale_", "", .x, fixed = TRUE)) |> 
+  rename_with(~ gsub("deli_", "", .x, fixed = TRUE)) |> 
+  mutate(
+    other = ifelse(str_detect(otherspec, "AMT"), "AMT", other),
+    other = ifelse(str_detect(otherspec, "Psychiatrist consultation"), "Psych", other),
+    other = ifelse(str_detect(otherspec, "Chinese"), "Note", other),
+    other = ifelse(other == "other", NA_character_ , other),
+    calc_percent = delitotal_n/arm_n * 100
+  ) |> 
+  relocate(calc_percent, .after = delitotal_perc) |> 
+  unite(scale_delirium, cam:other, remove = TRUE, sep = "/", na.rm = TRUE) |> 
+  mutate(scale_delirium = ifelse(scale_delirium == "unspec", "NS", scale_delirium)) |> 
+  select(year, refid, design_f_lab, study, study_l, arm_id, arm_n, drug_recode_abbr, scale_delirium, delitotal_time, calc_percent) |> 
+  arrange(year, study) |> 
+  left_join(table_mn_med |> select(refid, arm_id, pre_mmse), by = c("refid", "arm_id")) |> 
+  left_join(table_age_mn_med, by = c("refid", "arm_id")) |> 
+  relocate(pre_mmse, .before = scale_delirium) |> 
+  relocate(age_table, .after = arm_n)
+  
 ```
+
+```{r delirium_total_gt}
+# delirium_total_gt <- 
+delirium_total_tab |>
+  # mutate(
+  #   arm_id = ifelse(refid == 13734 & drug_recode_abbr == "Dex", 2, arm_id),
+  #   arm_id = ifelse(refid == 13734 & drug_recode_abbr == "Rhyth", 1, arm_id),
+  #   arm_id = ifelse(study == "Liu 2016 (no MCI)" & drug_recode_abbr == "Dex", 2, arm_id),
+  #   arm_id = ifelse(study == "Liu 2016 (no MCI)" & drug_recode_abbr == "Plac", 1, arm_id),
+  # ) |> 
+  arrange(year, study, arm_id) |>
+  group_by(study_l) |>
+  mutate(
+    delitotal_time = ifelse(delitotal_time == 999, "Stay", as.character(delitotal_time)),
+    study_l = ifelse(row_number() > 1, "", study_l),
+    delitotal_time = ifelse(row_number() > 1, "", delitotal_time),
+    scale_delirium = ifelse(row_number() > 1, "", scale_delirium),
+    bar = case_when(
+      str_detect(drug_recode_abbr, "Dex") ~ bar_prop(calc_percent, color_1),
+      .default = bar_prop(calc_percent, color_3)
+    ),
+  ) |>
+  ungroup() |>
+  rename(drug_recode = drug_recode_abbr) |>
+  group_by(design_f_lab) |>
+  gt(id = "one") |>
+  cols_hide(c(year, refid, arm_id, study, design_f_lab)) |>
+  cols_label(
+    study_l = "Study",
+    arm_n = "N",
+    age_table = "  Age",
+    drug_recode = md("Drug"),
+    pre_mmse = md("  MMSE<br/>  (preop)"),
+    scale_delirium = "Scale",
+    delitotal_time = "Days",
+    calc_percent = "",
+    bar = md("Incidence<br/>Proportion")
+  ) |>
+  fmt_markdown(columns = c(study_l, pre_mmse, age_table, bar)) |>
+  fmt_percent(columns = calc_percent, scale_values = FALSE, decimals = 1) |>
+  tab_style(
+    style = cell_text(align = "left"),
+    locations = cells_column_labels(columns = c(study, age_table, drug_recode, pre_mmse, scale_delirium))
+  ) |>
+  tab_style(
+    style = cell_text(align = "center"),
+    locations = cells_column_labels(columns = c(arm_n, delitotal_time, calc_percent))
+  ) |>
+  tab_style(
+    style = cell_text(align = "left"),
+    locations = cells_body(columns = c(age_table, drug_recode, pre_mmse, scale_delirium, bar))
+  ) |>
+  tab_style(
+    style = cell_text(align = "center"),
+    locations = cells_body(columns = c(delitotal_time))
+  ) |>
+  tab_style(
+    style = list(cell_text(color = "#A93226")),
+    locations = cells_body(columns = c(arm_n:calc_percent), rows = str_detect(drug_recode, "Dex"))
+  ) |>
+  cols_align_decimal(columns = calc_percent, dec_mark = ".") |> 
+  gt_theme_mg() |>
+  cols_width(
+    study_l ~ px(140),
+    arm_n ~ px(45),
+    age_table ~ px(100),
+    drug_recode ~ px(70),
+    pre_mmse ~ px(95),
+    scale_delirium ~ px(80),
+    delitotal_time ~ px(50),
+    calc_percent ~ px(50),
+    bar ~ px(100)
+  ) |> 
+    tab_footnote("Dex: Dexmedetomidine; Mid: Midazolam; Prop: Propofol; MS: Morphine; Preg: Pregabalin; Prop: Propofol; Rhyth: Rhythim; Plac: placebo; CAM: Confusion Assessment Method; DSM: Diagnostic and Statistical Manual of Mental Disorders; ICDSC: Intensive Care Delirium Screening Checklist; Psych: psychiatrist interview; NS; note specified.") |>
+  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |> 
+  tab_footnote("Days over which incidence proportion assessed. Stay indicates over patient hospital stay.", locations = cells_column_labels(columns = delitotal_time)) |> 
+  tab_footnote("Tool reported in the Chinese Expert Consensus on the Prevention and Treatment of Postoperative Delirium in Elderly Patients", locations = cells_body(columns = scale_delirium, rows = scale_delirium == "Note"))
+
+# delirium_total_gt
+```
+
 
 ## Study Characteristics
 

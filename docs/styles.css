@@ -58,6 +58,10 @@ div.callout-note.callout {
 .callout.callout-style-simple>div.callout-header {
     border-bottom: none;
     font-size: .9rem;
-    font-weight: 600;
+    font-weight: 400;
     opacity: 100%;
+}
+
+.sidebar nav[role="doc-toc"] ul {
+	 display: block;
 }
