@@ -27,6 +27,7 @@ Among older patients undergoing surgery and anesthesia, do commonly used potenti
 
 ```{r, read_data}
 #| include: false
+# CODE: read data
 source("code/readfiles_geri_2022-11-16.R")
 study_char_dat <- data_kq(study_char_dat, kq5_refid)
 study_arm_dat <- data_kq(study_arm_dat, kq5_refid)
@@ -35,11 +36,14 @@ dichot_dat <- data_kq(dichot_dat, kq5_refid)
 likert_dat <- data_kq(likert_dat, kq5_refid)
 ```
 
-<!-- ## Outcome Importance -->
+## Outcome Importance Rankings
 
-```{r, outcome_priority}
+<font size = 4> `r table_ref()`</font> Rankings for the 5 most important outcomes (11 respondents).
+
+```{r outcome_priority}
 #| include: true
-#| eval: false
+#| eval: true
+# CODE: outcome priority rankings
 outcome_dat <- rankings("KQ5")
 outcome_tab(outcome_dat, 11)
 ```
@@ -49,6 +53,7 @@ outcome_tab(outcome_dat, 11)
 <font size = 4> `r table_ref()` Dichotomous and count outcomes. </font>
 
 ```{r dichot_outcome_freq}
+# CODE: reporting frequency tabulation
 dichot_freq_fun(dichot_dat)
 ```
 
@@ -78,9 +83,14 @@ likert_freq_fun(likert_dat)
 
 <!-- Number of studies by design ----------------------- (2022-12-28 10:44) @ --->
 
-```{r number_studies}
+```{r studies_design}
+# CODE: study design table — design and number; no duplicate counting
 study_char_dat |>
   filter(refid %in% kq5_refid) |>
+  arrange(year) |> 
+  group_by(linked_references_all_refid) |> # count 1 for multiple pubs from single study
+  slice(1) |> 
+  ungroup() |> 
   select(refid, study, design_f_lab) |>
   group_by(design_f_lab, .drop = TRUE) |>
   summarise(total = n()) |>
@@ -104,7 +114,15 @@ study_char_dat |>
     locations = cells_body(
       rows = design_f_lab == "Total"
     )
-  )
+  ) |> 
+    tab_style(
+    style = list(
+      cell_text(align = "left")),
+      locations = cells_body(
+        columns = design_f_lab
+      )
+    ) |> 
+  tab_footnote("Counted randomized clinical trials with more than 1 publication only once (applies to 1 trial with 2 publications).")
 ```
 
 ## Design, centers, country, surgery
@@ -114,7 +132,7 @@ study_char_dat |>
 <!-- design, enrollment, centers ... ------------------- (2022-12-28 10:44) @ --->
 
 ```{r included}
-# drug classes by study
+# CODE: drug classes by study
 # note different from drug_classes data created later
 drug_classes <- study_arm_dat |>
   select(refid, design_f, study, arm_id, arm_n, contains("kq5")) |>
@@ -210,6 +228,7 @@ included_dat |>
 
 ```{r}
 #| include: false
+# CODE: drug pim classes by study
 ## pim drug class by study ---------------------------- (2023-01-10 16:20) @----
 drug_classes <- study_arm_dat |> 
   select(refid, design_f, study, arm_id, arm_n, contains("kq5")) |> 
@@ -330,7 +349,7 @@ kq5_by_arm_tab <- study_arm_dat |>
 # save file for use in KQ6
 write_csv(kq5_by_arm_tab |> select(refid, arm_id, agents_up, drug_f, other_spec, control_desc), "data/kq5_drug_by_arm.csv")
 
-# data for analysi variables 
+# data for analysis variables 
 kq5_by_arm_tab <- kq5_by_arm_tab |> 
   select(refid, design_f_lab, agents_up, study_l, arm_id, arm_n, drug_f, drug_f_nopim, dose_sched, time_admin)
 
@@ -341,6 +360,7 @@ kq5_by_arm_tab <- kq5_by_arm_tab |>
 ## Drugs by Study
 
 ```{r, kq5_drugs_tables_function}
+# CODE: drugs by studies function for table
 kq5_char_drugs_tab <- function(drugs, footnote) {
   kq5_by_arm_tab |>
     # for comparator detail
@@ -482,6 +502,5 @@ temp <- dichot_dat |>
 writexl::write_xlsx(temp, "/Users/mgrant/Desktop/temp.xlsx")
 
 ```
-
 
 ## References {#references}
