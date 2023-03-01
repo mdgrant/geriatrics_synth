@@ -21,7 +21,7 @@ nocite: '@*'
 
 ## Key Question
 
-Among patients 65 years or older \[geriatric\] undergoing surgery and anesthesia, do commonly used potentially inappropriate medications administered during the perioperative period increase the risk of postoperative delirium or other adverse outcomes?
+Among older patients undergoing surgery and anesthesia, do commonly used potentially inappropriate medications administered during the perioperative period increase the risk of postoperative delirium or other adverse outcomes?
 
 <!-- setup -------------------------------------------- (2022-12-24 16:56) @ --->
 
@@ -244,7 +244,7 @@ drug_f_labels <- read_csv("data/kq5_levels_labels.csv") |> pull(label)
 ## table by arm --------------------------------------- (2023-01-10 16:21) @----
 # by arm pim and comparator --------------------------- (2023-01-15 15:24) @----
 kq5_by_arm_tab <- study_arm_dat |>
-  select(refid, design_f_lab, study, study_l, arm_id, arm_n, contains(c("kq5", "kq6")), anti_cortico_drug, starts_with("inapp"), anesthagent_info) |>
+  select(refid, design_f_lab, study, study_l, arm_id, arm_n, contains(c("kq5", "kq6")), anti_cortico_drug, starts_with("inapp"), anesth_type) |>
   rename(
     control_desc_kq5 = kq5_control_desc,
     control_desc_kq6 = kq6_control_desc,
