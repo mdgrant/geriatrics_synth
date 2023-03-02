@@ -20,9 +20,9 @@ link-citations: no
 nocite: '@*'
 ---
 
-<!-- kq6.bib updated 2023-02-21 --> 
+<!-- kq6.bib updated 2023-02-21 -->
 
-## Key Question
+## **Key Question**
 
 Among older patients undergoing surgery and anesthesia, do dexmedetomidine, ketamine, ramelteon, or melatonin administered during the perioperative period decrease the risk of postoperative delirium or other adverse cognitive outcomes?
 
@@ -47,7 +47,7 @@ kq6_refid %in% cogfunc_refid
 kq6_refid[!kq6_refid %in% c(delirium_refid, cogfunc_refid)]
 ```
 
-## Outcome Importance Rankings
+## **Outcome Importance Rankings**
 
 <font size = 4> `r table_ref()`</font> Rankings for the 5 most important outcomes (11 respondents).
 
@@ -81,7 +81,7 @@ contin_freq_fun(contin_dat)
 likert_freq_fun(likert_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; QoR: quality of recovery; ")
 ```
 
-## Included Studies
+## **Included Studies**
 
 <font size = 4> `r table_ref()` Number of studies by design. </font>
 
@@ -349,7 +349,7 @@ study_char_dat |>
 
 ```
 
-### Interventions and Comparators
+## **Interventions and Comparators**
 
 #### Dexmedetomidine
 
@@ -640,6 +640,7 @@ mel_ram_by_arm <- drugs_dat |>
 ```
 
 <!-- :::{.callout-note collapse=true appearance='minimal' icon=false} -->
+
 <!-- ## <font size = 4> `r table_ref()` Melatonin and ramelteon studies comparators and dosing. </font> -->
 
 <font size = 4> `r table_ref()` Melatonin and ramelteon studies comparators and dosing. </font>
@@ -714,9 +715,9 @@ mel_ram_by_arm |>
 
 <!-- ::: -->
 
-## Outcomes
+## **Outcomes**
 
-### Delirium 
+### *Delirium*
 
 #### Dexmedetomidine
 
@@ -731,7 +732,7 @@ delirium_total_tab <- delirium_total_tab_fun(dex_refid)
 delirium_total_gt_dex <- delirium_total_gt_fun("Dex")
 # tab_info(delirium_total_gt_dex)
 delirium_total_gt_dex |> 
-    tab_footnote("MMSE: Mini-Mental State Examination; Dex: Dexmedetomidine; Mid: Midazolam; Prop: Propofol; MS: Morphine; Preg: Pregabalin; Prop: Propofol; Rhyth: Rhythim; Plac: placebo; CAM: Confusion Assessment Method; DSM: Diagnostic and Statistical Manual of Mental Disorders; ICDSC: Intensive Care Delirium Screening Checklist; Psych: psychiatrist interview; NS; note specified.") |>
+    tab_footnote("MMSE: Mini-Mental State Examination; Dex: Dexmedetomidine; Mid: Midazolam; Prop: Propofol; MS: Morphine; Preg: Pregabalin; Prop: Propofol; Rhyth: Rhythim; Plac: placebo; CAM: Confusion Assessment Method; DSM: Diagnostic and Statistical Manual of Mental Disorders; ICDSC: Intensive Care Delirium Screening Checklist; Psych: psychiatrist interview; NS; not specified.") |>
   tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
   tab_footnote("Days over which incidence proportion assessed. Stay indicates over patient hospital stay.", locations = cells_column_labels(columns = delitotal_time)) |>
   tab_footnote("Tool reported in the Chinese Expert Consensus on the Prevention and Treatment of Postoperative Delirium in Elderly Patients", locations = cells_body(columns = scale_delirium, rows = scale_delirium == "Note"))
@@ -752,11 +753,29 @@ delirium_total_gt_ket <- delirium_total_gt_fun("Ket")
 # tab_info(delirium_total_gt_ket)
 
 delirium_total_gt_ket |>
-  tab_footnote("MMSE: Mini-Mental State Examination; Ket: ketamine; Plac: placebo; Hal: haloperidol; ICDSC: Intensive Care Delirium Screening Checklist; Psych: psychiatrist interview; NS; note specified.") |>
+  tab_footnote("MMSE: Mini-Mental State Examination; Ket: ketamine; Plac: placebo; Hal: haloperidol; ICDSC: Intensive Care Delirium Screening Checklist; Psych: psychiatrist interview; NS; not specified.") |>
   tab_footnote(md("Mean <u>Med</u> (SD) {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
   tab_footnote("Days over which incidence proportion assessed. Stay indicates over patient hospital stay.", locations = cells_column_labels(columns = delitotal_time))
 ```
 
+#### Melatonin and Ramelteon
+
+<font size = 4> `r table_ref()` Delirium incidence and days of ascertainment during hospitalization in randomized clinical trials of melatonin and ramelteon. </font>
+
+```{r delirium_total_mel_ram_tab}
+# CODE: delirium incidence ketamine
+delirium_total_tab <- delirium_total_tab_fun(mel_ram_refid)
+```
+
+```{r delirium_total_mel_ram_gt}
+delirium_total_gt_mel_ram <- delirium_total_gt_fun("Mel|Ram")
+# tab_info(delirium_total_gt_mel_ram_gt)
+
+delirium_total_gt_mel_ram |>
+  tab_footnote("MMSE: Mini-Mental State Examination; Mel: melatonin; Ram: ramelteon; AMT: Abbreviated Mental Test; DSM: Diagnostic and Statistical Manual of Mental Disorders; CAM: Confusion Assessment Method; ICDSC: Intensive Care Delirium Screening Checklist.") |>
+  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
+  tab_footnote("Days over which incidence proportion assessed. Stay indicates over patient hospital stay.", locations = cells_column_labels(columns = delitotal_time))
+```
 
 ## Study Characteristics
 
@@ -765,6 +784,4 @@ delirium_total_gt_ket |>
 
 ```
 
-
 ## References {#references}
-
