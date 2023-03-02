@@ -15,7 +15,11 @@ set_gtsummary_theme(theme_gtsummary_journal(journal = "jama"))
 data_files <- as_tibble(list.files("data/"))
 # data_files # for debug
 
+# utility functions
 source("code/functions_geri_2022-11-16.R")
+
+# functions for tables that are repetitive
+source("code/converted_to_function.R")
 
 study_char_file <- read_file_mg("studyChar")
 study_refs_file <- read_file_mg("studyRefs")
@@ -409,7 +413,6 @@ cogfunc_likert_refid <- c(refid_reported_outcome(likert_dat, l_cogfunc)) |>
 cogfunc_refid <- sort(unique(c(cogfunc_dichot_refid, cogfunc_likert_refid)))
 
 # table of formatted means and medians
-
 source("code/summary_mn_med_2023-02-27.R")
 
 # color palate
