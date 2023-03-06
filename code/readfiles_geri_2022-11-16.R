@@ -19,7 +19,7 @@ data_files <- as_tibble(list.files("data/"))
 source("code/functions_geri_2022-11-16.R")
 
 # functions for tables that are repetitive
-source("code/converted_to_function.R")
+source("code/table_functions.R")
 
 study_char_file <- read_file_mg("studyChar")
 study_refs_file <- read_file_mg("studyRefs")
@@ -52,7 +52,6 @@ z <- matrix(c(
 # save list of files in current analysis
 write_delim(data.frame(z), "used_files_dates.txt", delim = "--", col_names = FALSE)
 rm(a, b, c, d, e, g, z)
-
 
 ## study characteristics  ----------------------------- (2022-11-16 14:22) @----
 # study_char.dat <- suppressWarnings(read_csv(path_csv(study_char_file))) |>
@@ -136,6 +135,37 @@ study_char_dat <- read_csv(path_csv(study_char_file)) |>
   relocate(c(design_f, design_f_lab), .after = design) |>
   select(-ris_code, -level, -study_char_k) |>
   select(refid, starts_with("design"), study, study_l, year, author:comment, linked_references, labels, title) # does not include factorial
+
+## add surgery classifications ------------------------ (2023-03-04 13:56) @----
+surgs <- study_char_dat |>
+  select(refid, starts_with("design"), study_l, year, n_enroll, n_analyze, centers, country, non_vh_hdi, starts_with("surg")) |>
+  rename_with(~ gsub("surg_", "", .x, fixed = TRUE)) |>
+  mutate(across(various:other, ~ gsub("surg_", "", .x, fixed = TRUE)),
+         ortho_any = ifelse(if_any(contains("ortho"), ~ !is.na(.x)), "ortho", NA),
+         opth = ifelse(str_detect(other_desc, "[Cc]ataract") | !is.na(opth), "ophtho", opth),
+         gi = ifelse(!is.na(colorectal) | !is.na(gi_other) | !is.na(abdominal), "GI/Abdominal", NA),
+         across(c(various, cardiac, gyn, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, spine, thoracic, urol, vasc, other), ~ firstup(.x)),
+  ) |>
+  unite("surgs", various, cardiac, gyn, gi, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, spine, thoracic, urol, vasc, other, sep = "|", remove = FALSE, na.rm = TRUE) |>
+  select(-c(various, abdominal, cardiac, colorectal, gyn, gi, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, spine, thoracic, urol, vasc, other, design_other, gi_other, starts_with("ortho"), list, other_desc, starts_with("hip"))) |>
+  mutate(
+    surgs = ifelse(str_count(surgs, "\\|") > 3, "Various", surgs),
+    surgs_single = ifelse(str_detect(surgs, "\\|"), "Various", surgs),
+    surgs_single = ifelse(surgs == "GI/Abdominal", "GI/Abd", surgs_single),
+    surgs_single = ifelse(surgs == "GI/Abdominal|Hepatic", "GI/Abd", surgs_single),
+    surgs_single = ifelse(surgs == "Hepatic", "GI/Abd", surgs_single),
+    surgs_single = ifelse(surgs == "Various", "Various", surgs_single),
+    # surgs_single = ifelse(surgs == "Other", "Various", surgs_single),
+    surgs_single_f = factor(surgs_single, levels = rev(c("Various", "Spine", "Vasc", "Ent", "Gyn", "Oralmax", "Other", "Headneck", "Neuro", "Ophtho", "Urol", "Thoracic", "GI/Abd", "Cardiac", "Ortho"))),
+    # NOTE: surgs_f_lump minimum 4 studies
+    surgs_single_f_lump = fct_lump_min(surgs_single_f, min = 4, other_level = "Other")
+  ) |>
+  select(refid, surgs, surgs_single, surgs_single_f, surgs_single_f_lump)
+
+surgs |> tabyl(surgs_single_f_lump)
+
+study_char_dat <- study_char_dat |>
+  left_join(surgs, by = "refid")
 
 ## add linked references ------------------------------ (2023-02-18 12:27) @----
 # study_l_w_linked includes study with links to both studies
@@ -238,6 +268,7 @@ study_arm_dat <- read_csv(path_csv(study_arm_file)) |>
   left_join(study_char_dat |> select(refid, design_f, design_f_lab, study_l_w_linked), by = "refid") |> # add design_f
   relocate(c(design_f, design_f_lab), .after = refid) |>
   relocate(study, study_l_w_linked, .after = design_f_lab) |>
+  # CODE: anesthetic type
   unite(anesth_type, inhalation:anes_ns, sep = "-", na.rm = TRUE, remove = FALSE) |>
   # NOTE: variables for anesthetic type: anesth_type, volatile, iv, regional, sedation_only
   mutate(
@@ -250,12 +281,12 @@ study_arm_dat <- read_csv(path_csv(study_arm_file)) |>
     anesth_type = str_replace(anesth_type, "sedation", "Only sedation"),
     anesth_type = str_replace(anesth_type, "anes_ns", "NS"),
     anesth_type = str_replace_all(anesth_type, "-", "/"),
-    volatile = ifelse(!is.na(inhalation), "✓", NA),
-    iv = ifelse(!is.na(tiva), "✓", NA),
-    regional = ifelse(if_any(spinal:regional_oth, ~ !is.na(.x)), "✓", NA),
-    sedation_only = ifelse(!is.na(sedation), "✓", NA)
+    volatile_tab = ifelse(!is.na(inhalation), "✓", NA),
+    tiva_tab = ifelse(!is.na(tiva), "✓", NA),
+    regional_tab = ifelse(if_any(spinal:regional_oth, ~ !is.na(.x)), "✓", NA),
+    sedation_only_tab = ifelse(!is.na(sedation), "✓", NA)
   ) |>
-  relocate(anesth_type, volatile:sedation_only, .before = inhalation)
+  relocate(anesth_type, volatile_tab:sedation_only_tab, .before = inhalation)
 
 ## for factorial designs add arm ids
 study_arm_dat <- study_arm_dat |>
@@ -271,6 +302,63 @@ study_arm_dat <- study_arm_dat |>
     kq6_other_spec = ifelse(study_id == "Lee 2018b-4", "pregabalin", kq6_other_spec))
 
 # type_col(study_arm_dat) |> arrange(desc(mode)) |> View()
+
+## create asa ps variable ----------------------------- (2023-03-03 13:37) @----
+asa_combine <- study_arm_dat |>
+  select(refid, arm_id, asa_1:asa_123) |>
+  mutate(across(asa_1:asa_123, ~ as.numeric(!is.na(.x)))) |>
+  unite(asa_all, asa_1:asa_123) |>
+  left_join(study_arm_dat |> select(refid, arm_id, asa_1:asa_123), by = c("refid", "arm_id")) |>
+  mutate(across(asa_1:asa_123, ~ str_pad(as.character(digit0(.x)), width = 2, "left")),
+    asa_all_combine = case_when(
+      asa_all == "0_0_1_0_0_0_0_0" ~ paste0("  |  |", asa_3, "| "),
+      asa_all == "1_1_0_0_0_0_1_0" ~ paste0(asa_1, "|", asa_2, "| ", asa_34, "  "),
+      asa_all == "0_0_1_1_1_0_0_0" ~ paste0(" ", asa_12, "  |", asa_3, "|", asa_4),
+      asa_all == "0_0_1_0_1_0_0_0" ~ paste0(" ", asa_12, "  |", asa_3, "|  "),
+      asa_all == "0_0_1_1_0_0_0_0" ~ paste0("  |  |", asa_3, "|", asa_4),
+      asa_all == "0_0_0_0_0_1_0_0" & asa_23 == "100" ~ paste0("  | ", asa_23, " |  "),
+      asa_all == "0_0_0_0_0_1_0_0" ~ paste0("  | ", asa_23, "  |  "),
+      asa_all == "0_0_0_0_1_0_1_0" ~ paste0("  ", asa_12, " |  ", asa_34, " "),
+      asa_all == "0_1_1_1_0_0_0_0" ~ paste0("  |", asa_2, "|", asa_3, "|", asa_4),
+      asa_all == "0_0_0_0_0_0_0_1" ~ paste0("  ", asa_123, "   |  "),
+      asa_all == "0_0_0_0_1_0_0_0" & asa_12 == "100" ~ paste0(" ", asa_12, " |  |  "),
+      asa_all == "0_0_0_0_1_0_0_0" ~ paste0(" ", asa_12, "  |  |  "),
+      asa_all == "1_1_0_0_0_0_0_0" ~ paste0(asa_1, "|", asa_2, "|  |  "),
+      asa_all == "1_1_1_1_0_0_0_0" ~ paste0(asa_1, "|", asa_2, "|", asa_3, "|", asa_4),
+      asa_all == "0_1_1_0_0_0_0_0" ~ paste0("  |", asa_2, "|", asa_3, "|  "),
+      asa_all == "1_1_1_0_0_0_0_0" ~ paste0(asa_1, "|", asa_2, "|", asa_3, "|  "),
+      asa_all == "0_0_0_0_0_0_0_0" ~ "NS",
+      .default = NA
+    ),
+    asa_ps_incl = case_when(
+      asa_all == "0_0_1_0_0_0_0_0" ~ "  3 ",
+      asa_all == "1_1_0_0_0_0_1_0" ~ "1234",
+      asa_all == "0_0_1_1_1_0_0_0" ~ "1234",
+      asa_all == "0_0_1_0_1_0_0_0" ~ "123 ",
+      asa_all == "0_0_1_1_0_0_0_0" ~ "  34",
+      asa_all == "0_0_0_0_0_1_0_0" ~ " 23 ",
+      asa_all == "0_0_0_0_1_0_1_0" ~ "1234",
+      asa_all == "0_1_1_1_0_0_0_0" ~ " 234",
+      asa_all == "0_0_0_0_0_0_0_1" ~ "123 ",
+      asa_all == "0_0_0_0_1_0_0_0" ~ "12  ",
+      asa_all == "1_1_0_0_0_0_0_0" ~ "12  ",
+      asa_all == "1_1_1_1_0_0_0_0" ~ "1234",
+      asa_all == "0_1_1_0_0_0_0_0" ~ " 23 ",
+      asa_all == "1_1_1_0_0_0_0_0" ~ "123 ",
+      asa_all == "0_0_0_0_0_0_0_0" ~ "NS",
+      .default = NA
+    ),
+    asa_ps1_incl = str_detect(asa_ps_incl, "1"),
+    asa_ps2_incl = str_detect(asa_ps_incl, "2"),
+    asa_ps3_incl = str_detect(asa_ps_incl, "3"),
+    asa_ps4_incl = str_detect(asa_ps_incl, "4"),
+    asa_psns_incl = str_detect(asa_ps_incl, "NS")
+  ) |>
+  select(refid, arm_id, asa_all_combine:asa_psns_incl)
+
+study_arm_dat <- study_arm_dat |>
+  left_join(asa_combine, by = c("refid", "arm_id")) |>
+  relocate(asa_all_combine:asa_psns_incl, .before = asa_1)
 
 ## continuous outcomes -------------------------------- (2022-12-23 14:50) @----
 contin_dat <- read_csv(path_csv(contin_out_file)) |>
