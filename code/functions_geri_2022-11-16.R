@@ -49,7 +49,7 @@ view_rec <- function(data_set, refid_select) {
     View()
 }
 
-## view_all function to page through all distiller forms
+## view_all function to page through all distiller forms; uses readkey
 readkey <- function() {
   cat("[press [enter] to continue]")
   number <- scan(n = 1)
@@ -67,20 +67,16 @@ view_all <- function(refid){
   view_rec(likert_dat, refid)
 }
 
-# convenience function to view record(s) for refid from dataset
-noview_rec <- function(data_set, refid_select) {
-  data_set |>
-    filter(refid == refid_select) |>
-    janitor::remove_empty(which = "cols") |>
-    t() |>
-    as.data.frame() |>
-    rownames_to_column(var = "variable")
-}
-
 # replace nonmissing with U00D7
 notna_to_x <- function(variable, symbol) {
   # ifelse(!is.na(variable), "\U00D7", NA)
   ifelse(!is.na(variable), symbol, NA)
+}
+
+# format to n (percent)
+# n_per_fun(9, 28, 1)
+n_per_fun <- function(events_n, total, n_sig_dig){
+  str_c(events_n," (", formatC(events_n/total * 100, digits = n_sig_dig, format = "f"), ")")
 }
 
 # capitalize 1st letter
@@ -192,7 +188,7 @@ by_study_xlsx <- function(refids, kq_dat, name) {
   saveWorkbook(wb, path, overwrite = TRUE)
 }
 
-# usage
+## by_study_xlsx usage -------------------------------- (2023-03-06 22:52) @----
 # add design to tibble if not study characteristics file
 # temp_dat <- left_join(study_arm_dat, study_char_dat |> select(refid, design_f), by = "refid") |>
 #   relocate(design_f, .after = refid) |>
@@ -222,6 +218,7 @@ refid_reported_outcome_other <- function(data_dat, vars, instrument, negate_flag
   pull(refid)
 }
 
+## age column "age_table" for tables ------------------ (2023-03-06 22:52) @----
 # age column "age_table" for tables; column header md("Mean <u>Med</u> (SD) [Range] {IQR}")
 # table_age_mn_med <- study_arm_dat |>
 #   select(starts_with("age_"), arm_n, refid, arm_id) |>
@@ -320,9 +317,21 @@ bar_prop <- function(proportion, fill_color, background_color = "#EAECEE") {
   purrr::map(proportion, ~ bar_chart(label = .x, fill = fill_color, background = background_color))
 }
 
+## bar_prop_select ------------------------------------ (2023-03-06 22:52) @----
 # bar_prop_select <- function(selector, proportion, fill_color, background = "#d2d2d2") {
 #   ifelse(selector,
 #     purrr::map(proportion, ~ bar_chart(label = .x, fill = fill_color, background = background)),
 #     purrr::map(proportion, ~ bar_chart(label = .x, fill = fill_color, background = background))
 #   )
 # }
+
+
+## rr_ci_fun ------------------------------------------ (2023-03-06 22:53) @----
+# calculate relative risk, ci, and format no refid
+rr_ci_fun <- function(event1, n1, event2, n2, digits = 2) {
+  a <- meta::metabin(event1, n1, event2, n2, sm = "RR")
+  with(a, paste0(
+    sprintf(paste0("%.", digits, "f"), round(exp(TE), digits)), " (",
+    sprintf(paste0("%.", digits, "f"), round(exp(lower), digits)), "-",
+    sprintf(paste0("%.", digits, "f"), round(exp(upper), digits)), ")"))
+}

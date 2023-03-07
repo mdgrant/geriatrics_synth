@@ -8,6 +8,7 @@ library(htmltools)
 library(gtsummary)
 library(tidyverse)
 library(skimr)
+library(robvis)
 knitr::opts_chunk$set(echo = FALSE)
 set_gtsummary_theme(theme_gtsummary_journal(journal = "jama"))
 
@@ -27,7 +28,7 @@ study_arm_file  <- read_file_mg("studyArm")
 contin_out_file <- read_file_mg("contOutcomes")
 dichot_out_file <- read_file_mg("dichotOutcomes")
 likert_out_file <- read_file_mg("likertOutcomes")
-# rob_file        <- read_file_mg("rob_")
+rob_file        <- read_file_mg("rob_2")
 
 # display file characteristics
 a <- as.character(file.mtime(paste0("data/", study_char_file)))
@@ -35,8 +36,8 @@ b <- as.character(file.mtime(paste0("data/", study_arm_file)))
 c <- as.character(file.mtime(paste0("data/", contin_out_file)))
 d <- as.character(file.mtime(paste0("data/", dichot_out_file)))
 e <- as.character(file.mtime(paste0("data/", likert_out_file)))
+f <- as.character(file.mtime(paste0("data/", rob_file)))
 g <- as.character(file.mtime(paste0("data/", study_refs_file)))
-# f <- as.character(file.mtime(paste0("data/", rob_file)))
 
 z <- matrix(c(
   paste(a, study_char_file),
@@ -44,14 +45,14 @@ z <- matrix(c(
   paste(c, contin_out_file),
   paste(d, dichot_out_file),
   paste(e, likert_out_file),
-  # paste(f, rob_file),
-  paste(g, study_refs_file)
+  paste(g, study_refs_file),
+  paste(f, rob_file)
   ))
 # z
 
 # save list of files in current analysis
 write_delim(data.frame(z), "used_files_dates.txt", delim = "--", col_names = FALSE)
-rm(a, b, c, d, e, g, z)
+rm(a, b, c, d, e, f, g, z)
 
 ## study characteristics  ----------------------------- (2022-11-16 14:22) @----
 # study_char.dat <- suppressWarnings(read_csv(path_csv(study_char_file))) |>
@@ -458,6 +459,10 @@ study_refs_dat <- read_csv(path_csv(study_refs_file), col_types = str_c(c("n", r
 
 # check correct column types (nb suppressed warnings)
 # type_col(study_refs.dat) |> arrange(desc(mode)) |> View()
+
+## risk of bias 2.0 ----------------------------------- (2023-03-07 10:43) @----
+rob_dat <- read_csv(path_csv(rob_file)) |>
+  clean_names()
 
 ## delete temporary files ----------------------------- (2022-12-24 13:23) @----
 rm(list = ls(pattern = ".*file"))

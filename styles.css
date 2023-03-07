@@ -5,7 +5,7 @@
 }
 
 #one tr:hover {
-    background-color: #EAECEE;
+    background-color: #D5D8DC;
 }
 
 #one .gt_footnote_marks {
@@ -46,7 +46,6 @@
   line-height: normal;
   position: relative
 }
-
 
 div.callout-note.callout {
     border-left-color: #F9F9F9 ;
