@@ -30,7 +30,7 @@ Among older patients undergoing surgery and anesthesia, do dexmedetomidine, keta
 
 ```{r read_data}
 #| include: false
-# CODE: read data
+# CODE: * read data
 source("code/readfiles_geri_2022-11-16.R")
 study_char_dat <- data_kq(study_char_dat, kq6_refid)
 study_arm_dat <- data_kq(study_arm_dat, kq6_refid)
@@ -136,7 +136,7 @@ study_char_dat |>
 
 ```{r drugs_by_arm}
 #| message: false
-# CODE: drugs & recode drugs/comparators so that usable; "other" category recoded to comparator
+# CODE: * drugs & recode drugs/comparators so that usable; "other" category recoded to comparator
 # drugs_dat <- study_arm_dat include drug arm data; adds kq5/6 arms
 ## drugs; from kq6, add kq5 arm drugs ----------------- (2023-01-16 13:46) @----
 # drugs for kq5 studies; needed to fill in "missings" for kq6 arms coded as kq5 arms
@@ -353,7 +353,7 @@ study_char_dat |>
 
 #### Dexmedetomidine
 
-<font size = 4> `r table_ref()` Dosing and comparators in dexmedetomidine randomized clinical trials. </font>
+<font size = 4> `r table_ref()` Selected characteristics, comparators, and dosing in dexmedetomidine trials. </font>
 
 ```{r dex_compare}
 #| eval: true
@@ -386,14 +386,26 @@ dex_by_arm <- drugs_dat |>
   left_join(table_age_mn_med, by = c("refid", "arm_id")) |> 
   left_join(table_mn_med |> select(refid, arm_id, pre_mmse), by = c("refid", "arm_id")) |>
   left_join(study_arm_dat |> select(refid, arm_id, asa_ps_incl, volatile_tab:sedation_only_tab), by = c("refid", "arm_id")) |>
-  left_join(surgs |> select(refid, surgs_single_f_lump), by = c("refid")) |>
-  mutate(groups = paste0(surgs_single_f_lump, " - ", design_f_lab), 
-  dex_groups = factor(groups, levels = c("Ortho - Randomized Clinical Trial", "Cardiac - Randomized Clinical Trial", "GI/Abd - Randomized Clinical Trial", "Thoracic - Randomized Clinical Trial","Urol - Randomized Clinical Trial", "Headneck - Randomized Clinical Trial", "Ophtho - Randomized Clinical Trial", "Various - Randomized Clinical Trial","Other - Randomized Clinical Trial", "Thoracic - Nonrandomized Trial", "GI/Abd - Nonrandomized Trial"))) |> 
-  select(study, year, refid, study_l, arm_n, drug_recode, drug_recode_abbr, volatile_tab:sedation_only_tab, asa_ps_incl, age_table, pre_mmse, loading, maintain_range, postdose, pre:post, design_f_lab, dex_groups, surgs_single_f_lump)
+  left_join(surgs |> select(refid, surgs_single_f), by = c("refid")) |>
+  mutate(dex_groups = paste0(surgs_single_f, " - ", design_f_lab))
 
+dex_group_levels <- dex_by_arm |> 
+  group_by(refid) |> 
+  slice(1) |> 
+  ungroup() |> 
+  tabyl(dex_groups) |> 
+  arrange(desc(n)) |> 
+  pull(dex_groups)
+
+dex_by_arm <- dex_by_arm |> 
+  mutate(  
+  dex_groups = factor(dex_groups, levels = dex_group_levels)) |> 
+  select(refid, study, year, study_l, arm_n, drug_recode_abbr, asa_ps_incl, volatile_tab, tiva_tab, regional_tab, sedation_only_tab, age_table, pre_mmse, loading, maintain_range, postdose, pre, ind, intr, post ,design_f_lab, dex_groups, surgs_single_f)
+
+rm(dex_group_levels)
 ```
 
-```{r dex_table, warning = FALSE}
+```{r dex_table}
 #| echo = FALSE
 # CODE: dexmedetomidine table 2023-02-21 draft; VERIFY NO
 dex_by_arm |>
@@ -402,7 +414,6 @@ dex_by_arm |>
   mutate(
     study_l = ifelse(row_number() > 1, "", study_l),
     asa_ps_incl = ifelse(row_number() > 1, "", asa_ps_incl),
-    drug_recode = drug_recode_abbr,
     across(volatile_tab:sedation_only_tab, ~ ifelse(row_number() > 1, "", .x)),
     volatile_tab = ifelse(refid == 328 & row_number() %in% c(2, 3), "✓", volatile_tab),
     tiva_tab = ifelse(refid == 328 & row_number() == 4, "✓", tiva_tab)
@@ -410,11 +421,11 @@ dex_by_arm |>
   ungroup() |>
   group_by(dex_groups) |>
   gt(id = "one") |> 
-  cols_hide(c(year, study, refid, drug_recode_abbr, design_f_lab, surgs_single_f_lump)) |>
+  cols_hide(c(year, study, refid, design_f_lab, surgs_single_f)) |>
   cols_label(
     study_l = "Study",
     arm_n = "N",
-    drug_recode = "Comparator",
+    drug_recode_abbr = "Comparator",
     asa_ps_incl = md("  PS"),
     volatile_tab = "Vol",
     tiva_tab = "TIVA",
@@ -433,18 +444,16 @@ dex_by_arm |>
   ) |>
   fmt_markdown(columns = c(study_l, pre_mmse, age_table, pre, ind, intr, post)) |>
   tab_spanner(label = "Dexmedetomidine Dose mcg/kg", columns = c(loading, maintain_range, postdose), level = 2) |>
-  # tab_spanner(label = "Timing", columns = c(pre:post)) |>
   tab_spanner(label = "Maintenance", columns = c(maintain_range), level = 1) |>
   tab_spanner(label = "ASA", columns = c(asa_ps_incl)) |>
   tab_spanner(label = "Anesthetic", columns = c(volatile_tab:sedation_only_tab)) |>
   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(loading:postdose))) |>
-  # tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(drug_recode, loading:postdose))) |>
   tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(loading, maintain_range, postdose, pre:post))) |>
-  tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(drug_recode, study_l, pre:post))) |>
+  tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(drug_recode_abbr, study_l, pre:post))) |>
   tab_style(style = cell_text(font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
   tab_style(style = cell_text(size = px(8)), locations = cells_column_labels(columns = c(volatile_tab:sedation_only_tab))) |>
   tab_style(style = cell_text(size = px(10)), locations = cells_column_labels(columns = c(pre:post))) |>
-  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n, drug_recode), rows = str_detect(drug_recode, "Dex"))) |>
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n, drug_recode_abbr), rows = str_detect(drug_recode_abbr, "Dex"))) |>
   tab_style(style = cell_text(align = "right"), locations = cells_body(columns = c(arm_n))) |>
   sub_missing(columns = everything(), rows = everything(), missing_text = "") |>
   sub_values(values = c("NS"), replacement = "—") |>
@@ -456,22 +465,23 @@ dex_by_arm |>
     post ~ px(32),
     study_l ~ px(165),
     arm_n ~ px(45),
-    drug_recode ~ px(90),
+    drug_recode_abbr ~ px(90),
     asa_ps_incl ~ px(45),
     volatile_tab ~ px(30),
     tiva_tab ~ px(30),
     regional_tab ~ px(30),
     sedation_only_tab ~ px(30),
-    age_table = ~ px(80),
+    age_table ~ px(80),
     pre_mmse ~ px(80),
     loading ~ px(80),
     maintain_range ~ px(100),
     postdose ~ px(80),
   ) |>
   opt_css(css = "#one .gt_column_spanner {border-bottom-style: hidden;}") |>
-  tab_footnote("Dex: Dexmedetomidine; Uli: Ulinastatin; Hal: Haloperidol; Mid: Midazolam; Mid/Prop: Midazolam/propofol; Mid/Seve: Midazolam/sevoflurane; Preg: Pregabalin; Prop: Propofol; Rhyth: Rhythim; Plac; placebo; PS: performance status; MMSE: Mini-Mental State Exam; Pre: preoperative; Ind: induction; Intr: intraoperative; Post: postoperative; —: unspecified.") |>
+  tab_footnote("Dex: Dexmedetomidine; Uli: Ulinastatin; Hal: Haloperidol; Mid: Midazolam; Mid/Prop: Midazolam/propofol; Mid/Seve: Midazolam/sevoflurane; Preg: Pregabalin; Prop: Propofol; Rhyth: Rhythim; Plac; placebo; PS: physical status; MMSE: Mini-Mental State Exam; Pre: preoperative; Ind: induction; Intr: intraoperative; Post(op): postoperative; —: unspecified; Various: more that one procedure category.") |>
   tab_footnote("Range if reported in parentheses.", locations = cells_column_labels(columns = maintain_range)) |> 
-  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse)))
+  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |> 
+  tab_footnote(md("ASA Physical Status of patients included (proportions can be found here[link to table add])."), locations = cells_column_labels(columns = c(asa_ps_incl))) 
 
 # gtsave("/Users/mgrant/Desktop/dex_arm_dose_table6.docx")
 # |>  tab_info()
@@ -479,7 +489,7 @@ dex_by_arm |>
 
 #### Ketamine
 
-<font size = 4> `r table_ref()` Dosing and comparators in ketamine studies. </font>
+<font size = 4> `r table_ref()` Selected characteristics, comparators, and dosing in ketamine studies. </font>
 
 ```{r ket_compare}
 #| eval: true
@@ -512,25 +522,40 @@ ket_by_arm <- drugs_dat |>
   left_join(table_mn_med |> select(refid, arm_id, pre_mmse), by = c("refid", "arm_id")) |>
   left_join(study_arm_dat |> select(refid, arm_id, asa_ps_incl, volatile_tab:sedation_only_tab), by = c("refid", "arm_id")) |>
   left_join(surgs |> select(refid, surgs_single_f, surgs), by = c("refid")) |>
-  mutate(ket_groups = paste0(surgs_single_f, " - ", design_f_lab),
-         # key_groups = factor(ket_groups)) |> 
-         ket_groups = factor(ket_groups, levels = c("Cardiac - Randomized Clinical Trial", "GI/Abd - Randomized Clinical Trial", "Ortho - Randomized Clinical Trial", "Ophtho - Randomized Clinical Trial", "Various - Randomized Clinical Trial", "Spine - Prospective Cohort"))) |>
-  select(study, year, refid, study_l, arm_n, drug, volatile_tab:sedation_only_tab, asa_ps_incl, age_table, pre_mmse, dose, dose_iv, time_admin, pre:post, design_f_lab, surgs_single_f, ket_groups, surgs)
+  mutate(ket_groups = paste0(surgs_single_f, " - ", design_f_lab))
+
+ket_group_levels <- ket_by_arm |> 
+  group_by(refid) |> 
+  slice(1) |> 
+  ungroup() |> 
+  tabyl(ket_groups) |> 
+  arrange(desc(n)) |> 
+  pull(ket_groups)
+
+ket_by_arm <- ket_by_arm |> 
+  mutate(  
+  ket_groups = factor(ket_groups, levels = ket_group_levels)) |> 
+  select(study, year, refid, study_l, arm_n, drug, asa_ps_incl, volatile_tab, tiva_tab, regional_tab, sedation_only_tab, age_table, pre_mmse, dose, dose_iv, pre, ind, intr, post, ket_groups)
+
+rm(ket_group_levels)
 
 # ket_by_arm |> tabyl(ket_groups)
 
 ```
 
-```{r ket_table, warning = FALSE}
+```{r ket_table}
 # CODE: ketamine table 2023-02-21  draft; VERIFY NO
 ket_by_arm |> 
   arrange(ket_groups, year, study) |>
   group_by(refid) |>
-  mutate(study_l = ifelse(row_number() > 1, "", study_l)) |>
+  mutate(
+    study_l = ifelse(row_number() > 1, "", study_l),
+    asa_ps_incl = ifelse(row_number() > 1, "", asa_ps_incl),
+    across(volatile_tab:sedation_only_tab, ~ ifelse(row_number() > 1, "", .x))) |> 
   ungroup() |>
   group_by(ket_groups) |>
   gt(id = "one") |>
-  cols_hide(c(year, study, refid, time_admin, design_f_lab, surgs_single_f, ket_groups, surgs, sedation_only_tab)) |>
+  cols_hide(c(year, study, refid, ket_groups, sedation_only_tab)) |>
   cols_label(
     study_l = "Study",
     arm_n = "N",
@@ -554,7 +579,7 @@ ket_by_arm |>
   tab_spanner(label = "Dose", columns = c(dose), level = 1) |>
   tab_spanner(label = "ASA", columns = c(asa_ps_incl)) |>
   tab_spanner(label = "Anesthetic", columns = c(volatile_tab:regional_tab)) |>
-  tab_style(style = cell_text(align = "left"), locations = cells_column_labels(columns = c(drug, time_admin))) |>
+  tab_style(style = cell_text(align = "left"), locations = cells_column_labels(columns = c(drug))) |>
   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(dose, dose_iv))) |>
   tab_style(style = cell_text(align = "right"), locations = cells_body(columns = c(arm_n))) |>
   tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(study_l, drug, dose, dose_iv, pre:post))) |>
@@ -578,17 +603,17 @@ ket_by_arm |>
     tiva_tab ~ px(32),
     regional_tab ~ px(32),
     # sedation_only_tab ~ px(30),
-    age_table = ~ px(80),
+    age_table ~ px(80),
     pre_mmse ~ px(80),
     dose ~ px(80),
     dose_iv ~ px(100)
   ) |>
-  opt_css(css = "#one .gt_column_spanner {border-bottom-style: hidden;}") |> 
   fmt_number(columns = dose, drop_trailing_zeros = TRUE, ) |>
   tab_footnote(footnote = md("S-Ketamine"), locations = cells_body(columns = drug, rows = arm_n %in% c(223, 227))) |>
   tab_footnote(footnote = "Time administered not reported.", locations = cells_body(columns = pre, rows = arm_n == 38 & drug == "Ketamine")) |>
-  tab_footnote("Plac; placebo; PS: performance status; MMSE: Mini-Mental State Exam; Pre: preoperative; Ind: induction; Intr: intraoperative; Post: postoperative; —: unspecified.") |> 
-  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse)))
+  tab_footnote("Plac; placebo; PS: physical status; MMSE: Mini-Mental State Exam; Pre: preoperative; Ind: induction; Intr: intraoperative; Post: postoperative; —: unspecified; Various: more that one procedure category.") |> 
+  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |> 
+  tab_footnote(md("ASA Physical Status of patients included (proportions can be found here[link to table add])."), locations = cells_column_labels(columns = c(asa_ps_incl))) 
 
 ```
 
@@ -596,7 +621,7 @@ ket_by_arm |>
 
 ```{r melatonin_ramelteon_compare}
 #| eval: true
-# melatonin ramelteon studies
+# CODE: melatonin ramelteon studies
 mel_ram_refid <- drugs_dat |> 
   filter(drug %in% c("Melatonin", "Ramelteon")) |> 
   pull(refid)
@@ -608,6 +633,7 @@ mel_ram_by_arm <- drugs_dat |>
   select(refid:arm_proph_meds, matches("^proph_|mela|ramel"), year, interv_desc, control_desc, other_spec) |>
   # timing
   rename_with(~ gsub("proph_med_", "", .x, fixed = TRUE)) |>
+  rename(post = postop) |> 
   unite("time_admin", c(pre:unspec), sep = "|", na.rm = TRUE, remove = FALSE) |> 
   mutate(
     time_admin = str_remove_all(time_admin, "proph_med_"),
@@ -620,57 +646,96 @@ mel_ram_by_arm <- drugs_dat |>
    # to order drugs
    drug = fct(drug, levels = c("Melatonin", "Ramelteon", "Midazolam", "Placebo", "Other", "None"))
   ) |>
-  relocate(time_admin, .after = arm_n) |> 
-  # dosing
- arrange(year, refid, desc(drug)) |> 
-    select(refid, study_id, year, study_l_w_linked, arm_n, drug, drug_f, drug_study, dose, time_admin, pre, postop, design_f_lab, interv_desc, control_desc)
+  left_join(table_age_mn_med, by = c("refid", "arm_id")) |> 
+  left_join(table_mn_med |> select(refid, arm_id, pre_mmse), by = c("refid", "arm_id")) |>
+  left_join(study_arm_dat |> select(refid, arm_id, asa_ps_incl, volatile_tab:sedation_only_tab), by = c("refid", "arm_id")) |>
+  left_join(surgs |> select(refid, surgs_single_f, surgs), by = c("refid")) |>
+    mutate(mel_ram_groups = paste0(surgs_single_f, " - ", design_f_lab)) |> 
+  relocate(time_admin, .after = arm_n)
+
+mel_ram_group_levels <- mel_ram_by_arm |> 
+  group_by(refid) |> 
+  slice(1) |> 
+  ungroup() |> 
+  tabyl(mel_ram_groups) |> 
+  arrange(desc(n)) |> 
+  pull(mel_ram_groups)
+
+mel_ram_by_arm <- mel_ram_by_arm |>
+  mutate(
+    mel_ram_groups = factor(mel_ram_groups, levels = mel_ram_group_levels),
+    mel_ram_groups = fct_relevel(mel_ram_groups, c("Cardiac - Randomized Clinical Trial", "Ortho - Randomized Clinical Trial", "Various - Randomized Clinical Trial", "GI/Abd - Before-After/Time Series", "Thoracic - Before-After/Time Series"))
+  ) |>
+  select(study, year, refid, study_l, arm_n, drug, asa_ps_incl, volatile_tab, tiva_tab, regional_tab, sedation_only_tab, age_table, pre_mmse, dose, pre, post, mel_ram_groups)
+
+rm(mel_ram_group_levels)
 ```
 
 <!-- :::{.callout-note collapse=true appearance='minimal' icon=false} -->
 
 <!-- ## <font size = 4> `r table_ref()` Melatonin and ramelteon studies comparators and dosing. </font> -->
 
-<font size = 4> `r table_ref()` Melatonin and ramelteon studies comparators and dosing. </font>
+<font size = 4> `r table_ref()` Selected characteristics, comparators, and dosing in Melatonin and ramelteon studies. </font>
 
 ```{r melatonin_ramelteon_table}
 mel_ram_by_arm |>
-  arrange(year, study_id) |>
-  rename(study_l = study_l_w_linked) |>
-  mutate(groups = paste0(drug_study, " - ", design_f_lab)) |>
+  arrange(mel_ram_groups, year, study) |>
   group_by(refid) |>
-  mutate(study_l = ifelse(row_number() > 1, "", study_l)) |>
+  mutate(
+    study_l = ifelse(row_number() > 1, "", study_l),
+    asa_ps_incl = ifelse(row_number() > 1, "", asa_ps_incl),
+    across(volatile_tab:sedation_only_tab, ~ ifelse(row_number() > 1, "", .x))) |> 
   ungroup() |>
-  group_by(groups) |>
+  group_by(mel_ram_groups) |>
   gt(id = "one") |>
-  row_group_order(groups = c("Melatonin - Randomized Clinical Trial", "Ramelteon - Randomized Clinical Trial", "Ramelteon - Before-After/Time Series")) |>
-  cols_hide(c(year, refid, drug_f, design_f_lab, drug_study, study_id, interv_desc, control_desc, time_admin)) |>
+  # row_group_order(groups = c("Melatonin - Randomized Clinical Trial", "Ramelteon - Randomized Clinical Trial", "Ramelteon - Before-After/Time Series")) |>
+  cols_hide(c(study, year, refid, sedation_only_tab)) |>
   cols_label(
     study_l = "Study",
     arm_n = "N",
     drug = "Comparator",
+    asa_ps_incl = md(" PS"),
+    volatile_tab = "Vol",
+    tiva_tab = "TIVA",
+    regional_tab = "Reg",
+    # sedation_only_tab = "Sed",
+    age_table = "Age",
+    pre_mmse = "MMSE",
     dose = md("Dosing"),
     pre = "Pre",
-    postop = "Post"
+    post = "Post"
   ) |>
-  fmt_markdown(columns = c(study_l)) |>
-  tab_style(style = cell_text(align = "left"), locations = cells_column_labels(columns = c(drug:postop))) |>
+  fmt_markdown(columns = c(study_l, pre_mmse, age_table, pre, post)) |>
+  tab_spanner(label = "ASA", columns = c(asa_ps_incl)) |>
+  tab_spanner(label = "Anesthetic", columns = c(volatile_tab:regional_tab)) |>
+  tab_style(style = cell_text(align = "left"), locations = cells_column_labels(columns = c(drug:post))) |>
   tab_style(style = cell_text(align = "right"), locations = cells_body(columns = c(arm_n))) |>
-  tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(study_l, drug, dose, pre, postop))) |>
+  tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(study_l, drug, dose, pre, post))) |>
   tab_style(style = list(cell_text(color = "maroon")), locations = cells_body(columns = c(arm_n:drug), rows = drug %in% c("Melatonin", "Ramelteon"))) |>
+  tab_style(style = cell_text(size = px(9)), locations = cells_column_labels(columns = c(volatile_tab:regional_tab))) |>
+  tab_style(style = cell_text(size = px(10)), locations = cells_column_labels(columns = c(pre, post))) |>
   sub_missing(columns = everything(), rows = everything(), missing_text = "") |>
+  sub_values(values = c("NS"), replacement = "—") |>
   gt_theme_mg() |>
   cols_width(
-    study_l ~ px(150),
+    study_l ~ px(165),
     arm_n ~ px(45),
-    drug ~ px(130),
+    drug ~ px(90),
+    asa_ps_incl ~ px(45),
+    volatile_tab ~ px(32),
+    tiva_tab ~ px(32),
+    regional_tab ~ px(32),
+    sedation_only_tab ~ px(30),
+    age_table ~ px(80),
+    pre_mmse ~ px(80),
     dose ~ px(90),
-    pre ~ px(32),
-    postop ~ px(60),
+    pre ~ px(30),
+    post ~ px(32),
   ) |>
-  tab_footnote("Pre: preoperative; Post: postoperative.")
+  tab_footnote("MMSE: Mini-Mental State Exam; Pre: preoperative; Post: postoperative; Various: more that one procedure category.") |> 
+  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |> 
+  tab_footnote(md("ASA Physical Status of patients included (proportions can be found here[link to table add])."), locations = cells_column_labels(columns = c(asa_ps_incl))) 
 
-# |>  tab_info()
-# tab_source_note(footnote)
 ```
 
 <!-- ::: -->
@@ -681,11 +746,13 @@ mel_ram_by_arm |>
 
 #### Dexmedetomidine
 
-<font size = 4> `r table_ref()` Delirium incidence and days of ascertainment during hospitalization in randomized clinical trials of dexmedetomidine. </font>
+<font size = 4> `r table_ref()` Delirium incidence and days of ascertainment during hospitalization in trials of dexmedetomidine. </font>
 
 ```{r delirium_total_dex_tab}
 # CODE: delirium incidence dexmedetomidine
-delirium_total_tab <- delirium_total_tab_fun(dex_refid)
+delirium_total_tab <- delirium_total_tab_fun(dex_refid) |> 
+  left_join(dex_by_arm |> select(refid, dex_groups) |> distinct(), by = c("refid")) |> 
+  rename(compare_groups = dex_groups)
 ```
 
 ```{r delirium_total_dex_gt}
@@ -693,7 +760,7 @@ delirium_total_gt_dex <- delirium_total_gt_fun("Dex")
 # tab_info(delirium_total_gt_dex)
 delirium_total_gt_dex |> 
     tab_footnote("MMSE: Mini-Mental State Examination; Dex: Dexmedetomidine; Mid: Midazolam; Prop: Propofol; MS: Morphine; Preg: Pregabalin; Prop: Propofol; Rhyth: Rhythim; Plac: placebo; CAM: Confusion Assessment Method; DSM: Diagnostic and Statistical Manual of Mental Disorders; ICDSC: Intensive Care Delirium Screening Checklist; Psych: psychiatrist interview; NS; not specified.") |>
-  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
+  # tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
   tab_footnote("Days over which incidence proportion assessed. Stay indicates over patient hospital stay.", locations = cells_column_labels(columns = delitotal_time)) |>
   tab_footnote("Tool reported in the Chinese Expert Consensus on the Prevention and Treatment of Postoperative Delirium in Elderly Patients", locations = cells_body(columns = scale_delirium, rows = scale_delirium == "Note"))
 
@@ -701,39 +768,42 @@ delirium_total_gt_dex |>
 
 #### Ketamine
 
-<font size = 4> `r table_ref()` Delirium incidence and days of ascertainment during hospitalization in randomized clinical trials of ketamine. </font>
+<font size = 4> `r table_ref()` Delirium incidence and days of ascertainment during hospitalization in ketamine studies. </font>
 
 ```{r delirium_total_ket_tab}
 # CODE: delirium incidence ketamine
-delirium_total_tab <- delirium_total_tab_fun(ket_refid)
+delirium_total_tab <- delirium_total_tab_fun(ket_refid) |> 
+  left_join(ket_by_arm |> select(refid, ket_groups) |> distinct(), by = c("refid")) |> 
+  rename(compare_groups = ket_groups)
 ```
 
 ```{r delirium_total_ket_gt}
 delirium_total_gt_ket <- delirium_total_gt_fun("Ket")
 # tab_info(delirium_total_gt_ket)
-
 delirium_total_gt_ket |>
   tab_footnote("MMSE: Mini-Mental State Examination; Ket: ketamine; Plac: placebo; Hal: haloperidol; ICDSC: Intensive Care Delirium Screening Checklist; Psych: psychiatrist interview; NS; not specified.") |>
-  tab_footnote(md("Mean <u>Med</u> (SD) {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
+  # tab_footnote(md("Mean <u>Med</u> (SD) {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
   tab_footnote("Days over which incidence proportion assessed. Stay indicates over patient hospital stay.", locations = cells_column_labels(columns = delitotal_time))
 ```
 
 #### Melatonin and Ramelteon
-
-<font size = 4> `r table_ref()` Delirium incidence and days of ascertainment during hospitalization in randomized clinical trials of melatonin and ramelteon. </font>
+ 
+<font size = 4> `r table_ref()` Delirium incidence and days of ascertainment during hospitalization in melatonin and ramelteon studies. </font>
 
 ```{r delirium_total_mel_ram_tab}
 # CODE: delirium incidence ketamine
-delirium_total_tab <- delirium_total_tab_fun(mel_ram_refid)
+delirium_total_tab <- delirium_total_tab_fun(mel_ram_refid) |> 
+    left_join(mel_ram_by_arm |> select(refid, mel_ram_groups) |> distinct(), by = c("refid")) |> 
+  rename(compare_groups = mel_ram_groups)
 ```
 
 ```{r delirium_total_mel_ram_gt}
-delirium_total_gt_mel_ram <- delirium_total_gt_fun("Mel|Ram")
+delirium_total_gt_mel_ram <- delirium_total_gt_fun("Mel|Ram") 
 # tab_info(delirium_total_gt_mel_ram_gt)
-
 delirium_total_gt_mel_ram |>
+  row_group_order(groups = c("Cardiac - Randomized Clinical Trial", "Ortho - Randomized Clinical Trial", "Various - Randomized Clinical Trial", "GI/Abd - Before-After/Time Series", "Thoracic - Before-After/Time Series")) |> 
   tab_footnote("MMSE: Mini-Mental State Examination; Mel: melatonin; Ram: ramelteon; AMT: Abbreviated Mental Test; DSM: Diagnostic and Statistical Manual of Mental Disorders; CAM: Confusion Assessment Method; ICDSC: Intensive Care Delirium Screening Checklist.") |>
-  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
+  # tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
   tab_footnote("Days over which incidence proportion assessed. Stay indicates over patient hospital stay.", locations = cells_column_labels(columns = delitotal_time))
 ```
 

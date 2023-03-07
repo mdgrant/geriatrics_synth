@@ -15,6 +15,11 @@
     vertical-align: 0.4em;
 }
 
+#one span.gt_column_spanner {
+  border-bottom-style: hidden;
+  border-bottom-color: #FFFFFF;
+}
+
 /* Styles for the priority table */
 .priority-tbl {
   font-size: 14px;
