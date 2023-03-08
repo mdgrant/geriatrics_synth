@@ -33,6 +33,7 @@ nocite: '@*'
 evidence_tables <- study_char_dat |> 
   select(refid, author, year, study, n_enroll, include, exclude, results, design_f_lab, comment) |> 
   mutate(
+    year = str_extract(study, "\\d{4}\\w?$"),
     study = glue("{author}<br/>{year}<span><a id='{refid}'></a></span>"),
     include = firstup(include),
     exclude = firstup(exclude),

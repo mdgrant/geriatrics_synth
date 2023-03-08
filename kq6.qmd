@@ -461,7 +461,7 @@ dex_by_arm |>
     age_table = "Age",
     pre_mmse = "MMSE",
     loading = "Loading",
-    maintain_range = md("per hr"),
+    maintain_range = md("Maintenance/hr"),
     postdose = md("Postop"),
     pre = "Pre",
     ind = "Ind",
@@ -470,8 +470,8 @@ dex_by_arm |>
     # drug_f = md("Comparator <br/> Detail")
   ) |>
   fmt_markdown(columns = c(study_l, pre_mmse, age_table, pre, ind, intr, post)) |>
-  tab_spanner(label = "Dexmedetomidine Dose mcg/kg", columns = c(loading, maintain_range, postdose), level = 2) |>
-  tab_spanner(label = "Maintenance", columns = c(maintain_range), level = 1) |>
+  tab_spanner(label = "Dexmedetomidine Dose mcg/kg", columns = c(loading, maintain_range, postdose), level = 1) |>
+  # tab_spanner(label = "Maintenance/hr", columns = c(loading, maintain_range, postdose), level = 1) |>
   tab_spanner(label = "ASA", columns = c(asa_ps_incl)) |>
   tab_spanner(label = "Anesthetic", columns = c(volatile_tab:sedation_only_tab)) |>
   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(loading:postdose))) |>
@@ -479,7 +479,7 @@ dex_by_arm |>
   tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(drug_recode_abbr, study_l, pre:post))) |>
   tab_style(style = cell_text(font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
   tab_style(style = cell_text(size = px(8)), locations = cells_column_labels(columns = c(volatile_tab:sedation_only_tab))) |>
-  tab_style(style = cell_text(size = px(10)), locations = cells_column_labels(columns = c(pre:post))) |>
+  tab_style(style = cell_text(size = px(10)), locations = cells_column_labels(columns = c(pre:post, maintain_range))) |>
   tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n, drug_recode_abbr), rows = str_detect(drug_recode_abbr, "Dex"))) |>
   tab_style(style = cell_text(align = "right"), locations = cells_body(columns = c(arm_n))) |>
   sub_missing(columns = everything(), rows = everything(), missing_text = "") |>
@@ -588,7 +588,7 @@ ket_by_arm |>
     study_l = "Study",
     arm_n = "N",
     drug = "Comparator",
-    asa_ps_incl = md(" PS"),
+    asa_ps_incl = md("  PS"),
     volatile_tab = "Vol",
     tiva_tab = "TIVA",
     regional_tab = "Reg",
@@ -718,7 +718,7 @@ mel_ram_by_arm |>
     study_l = "Study",
     arm_n = "N",
     drug = "Comparator",
-    asa_ps_incl = md(" PS"),
+    asa_ps_incl = md("  PS"),
     volatile_tab = "Vol",
     tiva_tab = "TIVA",
     regional_tab = "Reg",
@@ -761,8 +761,6 @@ mel_ram_by_arm |>
   tab_footnote(md("ASA Physical Status of patients included (proportions can be found here[link to table add])."), locations = cells_column_labels(columns = c(asa_ps_incl))) 
 
 ```
-
-<!-- ::: -->
 
 ## **Outcomes**
 
@@ -876,7 +874,7 @@ rob_summary(rob_temp_dat, tool = "ROB2")
 
 <font size = 4> `r figure_ref()` Risk of bias assessment for randomized controlled trials. </font>
 
-```{r traffic, fig.width = 6, fig.height = 16}
+```{r traffic, out.width = "70%", fig.height = 16}
 rob_traffic_light(rob2_reconciled_dat |> select(-refid), psize = 4, tool = "ROB2")
 ```
 
