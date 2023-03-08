@@ -789,9 +789,9 @@ delirium_total_gt_fun("Dex") |>
 ```
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <font size = 4> `r figure_ref()` Summary risk of bias dexmedetomidine randomized clinical trials. </font>
+#### <font size = 4> `r figure_ref()` Summary risk of bias dexmedetomidine randomized clinical trials. </font> 
 
-```{r rob2_summary, fig.height = 4}
+```{r rob2_summary, fig.height = 3, out.width = "50%"}
 rob_temp_dat <- rob2_reconciled_dat |> 
   filter(refid %in% dex_refid) |> 
   select(-refid)
@@ -823,7 +823,7 @@ delirium_total_gt_ket |>
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()` Summary risk of bias ketamine randomized clinical trials. </font>
 
-```{r rob2_summary_ket, fig.height = 4}
+```{r rob2_summary_ket, fig.height = 3, out.width = "50%"}
 rob_temp_dat <- rob2_reconciled_dat |> 
   filter(refid %in% ket_refid) |> 
   select(-refid)
@@ -837,7 +837,7 @@ rob_summary(rob_temp_dat, tool = "ROB2")
 <font size = 4> `r table_ref()` Delirium incidence and days of ascertainment during hospitalization in melatonin and ramelteon studies. </font>
 
 ```{r delirium_total_mel_ram_tab}
-# CODE: delirium incidence ketamine
+# CODE: delirium incidence melatonin ramelteon
 delirium_total_tab <- delirium_total_tab_fun(mel_ram_refid) |> 
     left_join(mel_ram_by_arm |> select(refid, mel_ram_groups) |> distinct(), by = c("refid")) |> 
   rename(compare_groups = mel_ram_groups)
@@ -856,7 +856,7 @@ delirium_total_gt_mel_ram |>
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()` Summary risk of bias melatonin or ramelteon randomized clinical trials. </font>
 
-```{r rob2_summary_mel_ram, fig.height = 4}
+```{r rob2_summary_mel_ram, fig.height = 3, out.width = "50%"}
 rob_temp_dat <- rob2_reconciled_dat |> 
   filter(refid %in% mel_ram_refid) |> 
   select(-refid)

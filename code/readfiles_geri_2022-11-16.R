@@ -251,17 +251,23 @@ study_arm_dat <- read_csv(path_csv(study_arm_file)) |>
     study_l = paste0("[", study, "]", "(", "evidence_tables.html#", refid, ")"),
     study_id = paste0(study, "-", arm_id), # each table row unique for footnote
     refid_c = as.character(refid),
-    refid_c = case_when( # append refid_c for factorial designs to indicate comparison
-      arm_id == factorial_1_1 ~ paste0(refid_c, "-1"),
-      arm_id == factorial_1_2 ~ paste0(refid_c, "-1"),
-      arm_id == factorial_2_1 ~ paste0(refid_c, "-2"),
-      arm_id == factorial_2_2 ~ paste0(refid_c, "-2"),
-      arm_id == factorial_3_1 ~ paste0(refid_c, "-3"),
-      arm_id == factorial_3_2 ~ paste0(refid_c, "-3"),
-      arm_id == factorial_4_1 ~ paste0(refid_c, "-4"),
-      arm_id == factorial_4_2 ~ paste0(refid_c, "-4"),
+    refid_c = case_when(
+      refid == 1419 & arm_id  %in% c(4, 3) ~ "1419-1",
+      refid == 1419 & arm_id  %in% c(1, 2) ~ "1419-2",
+      refid == 328 & arm_id  %in% c(2, 4) ~ "328-2",
+      refid == 328 & arm_id  %in% c(1, 3) ~ "328-1",
       .default = refid_c
     )
+    # refid_c = case_when( # append refid_c for factorial designs to indicate comparison
+    #   arm_id == factorial_1_1 ~ paste0(refid_c, "-1"),
+    #   arm_id == factorial_1_2 ~ paste0(refid_c, "-1"),
+    #   arm_id == factorial_2_1 ~ paste0(refid_c, "-2"),
+    #   arm_id == factorial_2_2 ~ paste0(refid_c, "-2"),
+    #   arm_id == factorial_3_1 ~ paste0(refid_c, "-3"),
+    #   arm_id == factorial_3_2 ~ paste0(refid_c, "-3"),
+    #   arm_id == factorial_4_1 ~ paste0(refid_c, "-4"),
+    #   arm_id == factorial_4_2 ~ paste0(refid_c, "-4"),
+    #   .default = refid_c
   ) |>
   select(refid, study, study_l, study_id, year, arm_id, everything()) |>
   select(-c(author, author_dist, title, doi, user, factorial_1_1:factorial_4_2)) |>
@@ -505,7 +511,7 @@ cogfunc_likert_refid <- c(refid_reported_outcome(likert_dat, l_cogfunc)) |>
 # any dncr outcome
 cogfunc_refid <- sort(unique(c(cogfunc_dichot_refid, cogfunc_likert_refid)))
 
-# table of formatted means and medians
+# formatted means and medians for tables
 source("code/summary_mn_med_2023-02-27.R")
 
 # color palate
