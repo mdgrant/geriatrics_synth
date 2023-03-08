@@ -5,3 +5,5 @@
 /.quarto/
 @@
 old.Rproj.user
+data
+rob.qmd
