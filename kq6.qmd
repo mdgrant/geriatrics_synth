@@ -874,7 +874,7 @@ rob_summary(rob_temp_dat, tool = "ROB2")
 
 <font size = 4> `r figure_ref()` Risk of bias assessment for randomized controlled trials. </font>
 
-```{r traffic, out.width = "70%", fig.height = 16}
+```{r traffic, out.width = "55%", fig.height = 16}
 rob_traffic_light(rob2_reconciled_dat |> select(-refid), psize = 4, tool = "ROB2")
 ```
 
