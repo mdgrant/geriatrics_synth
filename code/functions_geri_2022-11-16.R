@@ -155,6 +155,12 @@ table_ref <- function() {
   paste0("Table ", table_n, ". ")
 }
 
+anchor_table_ref <- function() {
+   table_n + 1
+}
+
+# `r paste0("tab", knitr::current_input(), anchor_table_ref())`
+
 figure_ref <- function() {
   figure_n <<- figure_n + 1
   paste0("Figure ", figure_n, ". ")
@@ -225,12 +231,16 @@ refid_reported_outcome_other <- function(data_dat, vars, instrument, negate_flag
 #   age_for_tables() |>
 #   select(refid, arm_id, age_table)
 
+digit0 <- function(x){
+  formatC(x, digits = 0, format = "f")
+}
+
 digit1 <- function(x){
   formatC(x, digits = 1, format = "f")
 }
 
-digit0 <- function(x){
-  formatC(x, digits = 0, format = "f")
+digit2 <- function(x){
+  formatC(x, digits = 2, format = "f")
 }
 
 age_for_tables <- function(x) {
@@ -335,3 +345,17 @@ rr_ci_fun <- function(event1, n1, event2, n2, digits = 2) {
     sprintf(paste0("%.", digits, "f"), round(exp(lower), digits)), "-",
     sprintf(paste0("%.", digits, "f"), round(exp(upper), digits)), ")"))
 }
+
+## collapse arms -------------------------------------- (2023-03-09 07:19) @----
+# collapse_arms_dichot(dichot_dat, "Lee 2018a", c(2, 3), delitotal_n, arm_n, "den")
+# collapse_dichot(dichot_dat, "Lee 2018a", c(2, 3), delitotal_n)
+# collapse_dichot(dichot_dat, "Lee 2018a", c(2, 3), arm_n)
+collapse_dichot <- function(data_dat, study, arms, variable) {
+  data_dat |>
+    filter(study == {{ study }} & arm_id %in% {{ arms }}) |>
+    summarize(variable_n = sum({{ variable }})) |>
+    pull(variable_n)
+}
+
+# make base graphs pretty
+par(bty = "n", xaxt = "l", yaxt = "l")

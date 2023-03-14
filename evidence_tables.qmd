@@ -22,6 +22,29 @@ link-citations: no
 nocite: '@*'
 ---
 
+<!-- ```{=html} -->
+<!-- :target {  /* fix target location so caption appears */ -->
+<!--     display: block; -->
+<!--     position: relative; -->
+<!--     top: -60px; -->
+<!--     visibility: display; -->
+<!-- } -->
+
+<!-- </style> -->
+<!-- ``` -->
+
+```{css, echo = FALSE}
+:target {  /* fix target location so caption appears */
+    display: block;
+    position: relative;
+    top: -105px;
+    visibility: display;
+}
+
+</style>
+```
+
+
 <!-- setup -------------------------------------------- (2022-12-24 16:56) @ --->
 
 ```{r, file = "code/readfiles_geri_2022-11-16.R"}
