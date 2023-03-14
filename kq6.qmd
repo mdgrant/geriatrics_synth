@@ -1270,6 +1270,102 @@ forest(ket_plac_meta,
 <!-- ::: -->
 
 
+
+#### Melatonin\/Ramelteon
+
+<font size = 4> `r figure_ref()` Melatonin and ramelteon compared with placebo.  </font>
+
+```{r nma_mel_ram_dat, fig.width = 14, fig.height = 5, fig.align = "left"}
+# ```{r nma_dat, out.width = 50%, out.height = 100%}
+# risk of bias
+mel_ram_plac_refid <- pairwise_dat |> 
+  filter(treat2 %in% c("Mel", "Ram")) |> 
+  filter(treat1 == "Plac/None") |> 
+  pull(refid)
+
+mel_ram_meta_dat <- pairwise_dat |> 
+  left_join(rob_meta_dat, by = "refid") |> 
+  filter(refid %in% mel_ram_plac_refid) |> 
+  select(study, year, event2, n2, event1, n1, D1:Overall, treat2, treat1) |> 
+  filter(!treat2 == c("Mid")) |> 
+  filter(!treat1 == c("Mid")) |> 
+  mutate(mel_ram = ifelse(treat2 == "Mel", "Melatonin", "Ramelteon")) 
+
+mel_ram_plac_meta <- metabin(event2, n2, event1, n1,
+  data = mel_ram_meta_dat,
+  studlab = study,
+  sm = "RR",
+  method = "MH",
+  method.tau = "PM",
+  hakn = FALSE,
+  prediction = FALSE,
+  allstudies = TRUE,
+  subgroup = mel_ram
+  )
+
+# summary(mel_ram_plac_meta)
+forest(mel_ram_plac_meta,
+  allstudies = TRUE,
+  common = TRUE,
+  label.e = "Mel/Ram",
+  label.c = "Placebo",
+  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
+  just.addcols.right = "right",
+  digits = 2,
+  digits.tau2 = 1,
+  overall.hetstat = TRUE,
+  print.I2.ci = TRUE,
+  prediction = FALSE,
+  fs.xlab = 11,
+  pooled.events = TRUE,
+  subgroup = TRUE,
+  print.subgroup.name = FALSE,
+  print.pval.Q = FALSE,
+  text.subgroup.nohet = TRUE,
+  # colgap.forest.left = "10mm",
+  # colgap.forest.right = "10mm",
+  # colgap.left = "2mm",
+  xlim = c(0.1, 3),
+  # at = c(0.1, 0.5, 1, c, ...),
+  xlab = "Favors: Ram/Mel                   Placebo",
+  addrows.below.overall = 4
+  # text.addline1 = paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval))
+)
+```
+<font size = 2> Mel: melatonin; Ram: ramelteon; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias; +: low risk of bias; ?: some concerns; - high risk of bias.</font>
+
+
+<!-- ::: {.callout-note collapse="true" appearance="minimal" icon="false"} -->
+<!-- #### <font size = 4> `r figure_ref()` Summary risk of bias from randomized clinical trials of ketamine compared with placebo or no intervention. </font> -->
+
+<!-- ```{r rob2_summary_mel_ram_plac, fig.height = 3, out.width = "60%"} -->
+<!-- rob_temp_dat <- rob2_reconciled_dat |>  -->
+<!--   filter(refid %in% mel_ram_plac_refid) |>  -->
+<!--   select(-refid) -->
+
+<!-- rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind") -->
+<!-- ``` -->
+<!-- ::: -->
+
+#### All Comparators
+
+<font size = 4> `r figure_ref()` Network meta-analysis including all comparators.</font>
+
+```{r nmmForest, fig.width = 14, fig.height = 5, fig.align = "left"}
+#| eval: true
+forest(nmm_netmeta_nma,
+       xlab = "Risk Ratio")
+       # xlim = c(.001, 2),
+       # at = c(0.01, .1, 0.5, 1, 2))
+```
+<font size = 3>Dex: Dexmedetomidine; Ket: Ketamine; Mel: Melatonin; Ram: Ramelteon; Mid: Midazolam; MS: Morphine; Preg: Pregabalin; Prop: Propofol; Rhyth: Rhythim; Plac/None: Placebo or no comparator.</font>
+
+
+
+
+
+
 ## Study Characteristics
 
 ```{r study_characteristics}
