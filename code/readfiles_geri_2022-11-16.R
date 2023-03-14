@@ -14,7 +14,8 @@ library(gtExtras)
 library(glue)
 library(tidyverse)
 conflicts_prefer(dplyr::filter)
-knitr::opts_chunk$set(echo = FALSE, out.format = "html")
+# knitr::opts_chunk$set(echo = FALSE, out.format = "html")
+knitr::opts_chunk$set(echo = FALSE)
 set_gtsummary_theme(theme_gtsummary_journal(journal = "jama"))
 
 ## data files ----------------------------------------- (2022-11-16 14:19) @----
