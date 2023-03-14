@@ -648,7 +648,7 @@ ket_by_arm |>
 
 ```
 
-#### Melatonin and Ramelteon
+#### Melatonin\/Ramelteon
 
 ```{r melatonin_ramelteon_compare}
 #| eval: true

@@ -102,7 +102,7 @@ domain_summary <- soe_kq6.dat |>
 
 <br/>
 
-<font size = 4> Table `r table_n`. Strength of evidence for outcomes relevant to neuromuscular monitor technical performance. </font>
+<font size = 4> Table `r table_n`. Strength of evidence for outcomes relevant to delirium prophylaxis. </font>
 
 ```{r kq6SOE, include = TRUE}
 ## kq6SOE (updated 2022/01/20 15:00) --------------------------------------
@@ -138,7 +138,7 @@ soe_summary |>
 
 <br>
 
-<font size = 4> Table `r table_n`. GRADE domains for strength of evidence rating for outcomes relevant to neuromuscular monitor technical performance. </font>
+<font size = 4> Table `r table_n`. GRADE domains for strength of evidence rating for outcomes relevant to delirium prophylaxis. </font>
 
 ```{r kq6Domain, include = TRUE, eval = TRUE}
 ## (updated 2021/05/14 08:02) sug_neo_domain_summary --------------------------
