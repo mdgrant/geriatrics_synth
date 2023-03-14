@@ -24,6 +24,11 @@ p {
   border-bottom-color: #FFFFFF;
 }
 
+.navbar-dark, span.menu-text {
+    font-size: 13px;
+}
+
+
 /* Styles for the priority table */
 .priority-tbl {
   font-size: 14px;

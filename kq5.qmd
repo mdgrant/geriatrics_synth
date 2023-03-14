@@ -28,7 +28,8 @@ Among older patients undergoing surgery and anesthesia, do commonly used potenti
 ```{r, read_data}
 #| include: false
 # CODE: read data
-source("code/readfiles_geri_2022-11-16.R")
+# source("code/readfiles_geri_2022-11-16.R")
+source("code/load_data.R")
 study_char_dat <- data_kq(study_char_dat, kq5_refid)
 study_arm_dat <- data_kq(study_arm_dat, kq5_refid)
 contin_dat <- data_kq(contin_dat, kq5_refid)

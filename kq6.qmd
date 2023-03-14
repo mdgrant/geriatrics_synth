@@ -1,5 +1,5 @@
 ---
-title: "K6: Delirium Prophylaxis"
+title: "Delirium Prophylaxis"
 editor: source
 toc-title: "Delirium Prophylaxis"
 toc-location: "left"
@@ -31,7 +31,8 @@ Among older patients undergoing surgery and anesthesia, do dexmedetomidine, keta
 ```{r read_data}
 #| include: false
 # CODE: * read data
-source("code/readfiles_geri_2022-11-16.R")
+source("code/load_data.R")
+# load("data/geri_data_2023-03-13.Rdata")
 study_char_dat <- data_kq(study_char_dat, kq6_refid)
 study_arm_dat <- data_kq(study_arm_dat, kq6_refid)
 contin_dat <- data_kq(contin_dat, kq6_refid)
@@ -867,7 +868,7 @@ rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind")
 ### *Meta-analyses*
 
 ```{r delirium_meta_data}
-# CODE: delirium meta data munge
+# CODE: * delirium meta data munge
 # study arm postop only
 postop_only_dat <- study_arm_dat |> 
   select(refid, study, proph_med_pre, proph_med_induct, proph_med_intra, proph_med_postop) |> 
@@ -959,7 +960,7 @@ delirium_meta_dat |>
 
 ```{r nma_meta_dat}
 #| eval: true
-# CODE: delirium meta data, pairwise and network (netmeta)
+# CODE: * delirium meta data, pairwise and network (netmeta)
 nma_rct_dat <- delirium_meta_dat |> 
   filter(design_f_lab == "Randomized Clinical Trial") |> 
   # filter(surg_f == "Cardiac") |> 
@@ -1352,19 +1353,73 @@ forest(mel_ram_plac_meta,
 
 <font size = 4> `r figure_ref()` Network meta-analysis including all comparators.</font>
 
-```{r nmmForest, fig.width = 14, fig.height = 5, fig.align = "left"}
+```{r nmmForest, fig.width = 6, fig.height = 3.5, fig.align = "center"}
 #| eval: true
+par(mar = c(1, 1, 1, 1))
 forest(nmm_netmeta_nma,
        xlab = "Risk Ratio")
        # xlim = c(.001, 2),
        # at = c(0.01, .1, 0.5, 1, 2))
 ```
-<font size = 3>Dex: Dexmedetomidine; Ket: Ketamine; Mel: Melatonin; Ram: Ramelteon; Mid: Midazolam; MS: Morphine; Preg: Pregabalin; Prop: Propofol; Rhyth: Rhythim; Plac/None: Placebo or no comparator.</font>
+<font size = 2>Dex: Dexmedetomidine; Ket: Ketamine; Mel: Melatonin; Ram: Ramelteon; Mid: Midazolam; MS: Morphine; Preg: Pregabalin; Prop: Propofol; Rhyth: Rhythim; Plac/None: Placebo or no comparator.</font>
 
+<br/>
 
+<font size = 4> `r table_ref()` League table of risk ratios and 95% confidence intervals from network meta-analysis (random effects model). Comparisons from direct evidence displayed in the upper diagonal; network comparisons shown on the lower diagonal. </font>
 
+```{r leagueTable}
+#| results: asis
+nmm_league <- netleague(nmm_netmeta_nma,
+  digits = 2,
+  common =  FALSE,
+  # direct = FALSE,
+  seq = trts
+)
 
+as_tibble(nmm_league$random) |>
+  mutate(
+    across(V1:V9, ~ str_replace(.x, " \\[", "<br>\\(")),
+    across(V1:V9, ~ str_replace(.x, "\\]", "\\)")),
+    across(V1:V9, ~ ifelse(.x == ".", "", .x))
+  ) |>
+  gt("one") |>
+  fmt_markdown(columns = everything()) |>
+  tab_style(style = cell_text(align = "center", size = "px(10)"), locations = cells_body(V1:V9)) |>
+  tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V1, rows = V1 %in% trts)) |>
+  tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V2, rows = V2 %in% trts)) |>
+  tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V3, rows = V3 %in% trts)) |>
+  tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V4, rows = V4 %in% trts)) |>
+  tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V5, rows = V5 %in% trts)) |>
+  tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V6, rows = V6 %in% trts)) |>
+  tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V7, rows = V7 %in% trts)) |>
+  tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V8, rows = V8 %in% trts)) |>
+  tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V9, rows = V9 %in% trts)) |>
+  rm_stubhead() |>
+  tab_options(column_labels.hidden = TRUE) |>
+  gt_theme_mg() |> 
+  tab_style(style = cell_text(size = "px(10)"), locations = cells_body(V1:V9))
 
+# tab_info(temp)
+
+```
+<font size = 2>Dex: Dexmedetomidine; Ket: Ketamine; Mel: Melatonin; Ram: Ramelteon; Mid: Midazolam; MS: Morphine; Preg: Pregabalin; Prop: Propofol; Rhyth: Rhythim; Plac/None: Placebo or no comparator.</font>
+
+<br/>
+
+<font size = 4> `r figure_ref()` Comparison of direct and indirect evidence in network meta-analysis (node splitting forest plot).  </font>
+
+```{r, fig.height = 11, fig.width = 7, out.width = "60%", out.height = "60%", fig.align = 'center'}
+netsplit(nmm_netmeta_nma, order = trts) %>%
+  forest(.,
+    xlab = "Risk Ratio",
+    xlim = c(0.1, 10),
+    leftcols = c("studlab", "k"),
+    rightlabs = c("RR", "(95% CI)")
+  )
+```
+<font size = 2>Dex: Dexmedetomidine; Ket: Ketamine; Mel: Melatonin; Ram: Ramelteon; Mid: Midazolam; MS: Morphine; Preg: Pregabalin; Prop: Propofol; Rhyth: Rhythim; Plac/None: Placebo or no comparator.</font>
+
+<br/>
 
 ## Study Characteristics
 
