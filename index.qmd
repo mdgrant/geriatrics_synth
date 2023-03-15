@@ -21,7 +21,7 @@ Corrections, suggestions, or comments can be sent to [Mark Grant](mailto:m.grant
 
 [Delirium Prophylaxis](kq6.html)
 
-[GRADE](soe.html)
+[GRADE](soe_gt.html)
 
 [Draft Protocol](protocol.html)
 
