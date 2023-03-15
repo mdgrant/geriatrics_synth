@@ -18,6 +18,7 @@ conflicts_prefer(dplyr::filter)
 # knitr::opts_chunk$set(echo = FALSE, out.format = "html")
 knitr::opts_chunk$set(echo = FALSE)
 set_gtsummary_theme(theme_gtsummary_journal(journal = "jama"))
+settings.meta(CIbracket = "(")
 
 ## data files ----------------------------------------- (2022-11-16 14:19) @----
 data_files <- as_tibble(list.files("data/"))

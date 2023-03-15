@@ -79,19 +79,3 @@ div.callout-note.callout {
 	 display: block;
 }
 
- div.callout-tweet.callout {
-	 border-left-color: #0dcaf0;
-}
- div.callout-tweet.callout-style-default > .callout-header {
-	 background-color: #bfe4eb;
-}
- .callout-tweet.icon .callout-icon {
-	 display: unset !important;
-}
- div.callout-tweet.icon.callout-captioned .callout-icon::before {
-	 background-image: href{(/Users/mgrant/Desktop/rob_pic.png)};
-}
- .callout-tweet.icon.callout-style-default div.callout-icon-container {
-	 padding-top: 0.1em;
-	 padding-right: 0.35em;
-}
