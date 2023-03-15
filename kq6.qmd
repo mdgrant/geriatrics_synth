@@ -1163,7 +1163,7 @@ forest(dex_plac_meta_china,
   xlab = "Favors: Dexmedetomidine               Placebo/None",
   addrows.below.overall = 4,
   text.addline1 = paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval)),
-  text.addline2 = paste0("Residual heterogeneity including country (China vs. other) ", "I²", " = ", digit0(temp_metareg$I2), "%"))
+  text.addline2 = paste0("Residual heterogeneity meta regression including country (China vs. other) ", "I²", " = ", digit0(temp_metareg$I2), "%"))
 
 ```
 <font size = 2> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias; +: low risk of bias; ?: some concerns; - high risk of bias.</font>
@@ -1362,8 +1362,9 @@ forest(mel_ram_plac_meta,
 
 <font size = 4> `r figure_ref()` Network meta-analysis including all comparators.</font>
 
-```{r nmaForest, fig.width = 6, fig.height = 3.0, fig.align = "center"}
+```{r nmaForest, fig.width = 6, fig.height = 3.3, fig.align = "center"}
 #| eval: true
+# CODE: network meta results
 par(mar = c(1, 1, 1, 1))
 forest(netmeta_melram_nma,
        xlab = "Risk Ratio")
@@ -1387,13 +1388,12 @@ nma_melram_league <- netleague(netmeta_melram_nma,
 
 as_tibble(nma_melram_league$random) |>
   mutate(
-    across(V1:V8, ~ str_replace(.x, " \\[", "<br>\\(")),
-    across(V1:V8, ~ str_replace(.x, "\\]", "\\)")),
+    across(V1:V8, ~ str_replace(.x, " \\(", "<br>\\(")),
+    # across(V1:V8, ~ str_replace(.x, "\\]", "\\)")),
     across(V1:V8, ~ ifelse(.x == ".", "", .x))
   ) |>
   gt(id = "one") |>
   fmt_markdown(columns = everything()) |>
-  tab_style(style = cell_text(align = "center", size = "px(10)"), locations = cells_body(V1:V8)) |>
   tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V1, rows = V1 %in% trts_melram)) |>
   tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V2, rows = V2 %in% trts_melram)) |>
   tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V3, rows = V3 %in% trts_melram)) |>
@@ -1403,9 +1403,9 @@ as_tibble(nma_melram_league$random) |>
   tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V7, rows = V7 %in% trts_melram)) |>
   tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V8, rows = V8 %in% trts_melram)) |>
   rm_stubhead() |>
-  tab_options(column_labels.hidden = TRUE) |>
-  gt_theme_mg() |> 
-  tab_style(style = cell_text(size = "px(13)"), locations = cells_body(V1:V8)) |> 
+  gt_theme_mg() |>
+  tab_options(column_labels.hidden = TRUE, table.font.size = px(14)) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_body(V1:V8)) |>
   tab_footnote("Dex: Dexmedetomidine; Ket: Ketamine; Mel/Ram: Melatonin or Ramelteon; Mid: Midazolam; MS: Morphine; Preg: Pregabalin; Prop: Propofol; Rhyth: Rhythim; Plac/None: Placebo or no comparator.")
 
 # tab_info(temp)
