@@ -110,8 +110,8 @@ gt_theme_mg <- function(data) {
     tab_options(
       table.font.color = "black",
       data_row.padding = px(2),
-      table.font.size = px(12),
-      column_labels.font.size = px(12),
+      table.font.size = px(13), # ?12
+      column_labels.font.size = px(13),  # ?12
       table.align = "left",
       table_body.border.bottom.width = px(1.7),
       table.border.top.width = px(1.7),
@@ -126,6 +126,7 @@ gt_theme_mg <- function(data) {
       column_labels.padding = px(3),
       heading.align = "left",
       footnotes.padding = px(0),
+      footnotes.font.size = px(14),
       source_notes.padding = px(0),
     ) |>
     opt_horizontal_padding(scale = 2) |>

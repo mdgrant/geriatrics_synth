@@ -144,4 +144,68 @@ soe_summary |>
 
 
 
+<hr style="height:2px;border-width:0;color:gray;background-color:gray">
 
+<br/>
+
+<br/>
+
+# **Rating Systems Reference**
+
+## GRADE
+
+<br> <font size = 4> 
+<a id="High"></a>
+**High** --- We are very confident that the true effect lies close to that of the estimate of the effect.
+
+**Moderate** --- We are moderately confident in the effect estimate: The true effect is likely to be close to the estimate of the effect, but there is a possibility that it is substantially different.
+
+**Low** --- Our confidence in the effect estimate is limited: The true effect may be substantially different from the estimate of the effect.
+
+**Very Low** --- We have very little confidence in the effect estimate: The true effect is likely to be substantially different from the estimate of effect.
+
+</font>
+
+### Domains (downgrade)
+
+<font size = 4>
+
+*Bias* --- Systematic error (eg, selection bias, confounding bias, measurement bias).
+
+*Inconsistency* --- Unexplained heterogeneity of results; studies find effect estimates that differ widely.
+
+*Imprecision* --- The range of plausible effects estimated from relevant studies.
+
+*Indirectness* --- Direct evidence consists of research that directly compares the interventions which we are interested in, delivered to the populations in which we are interested, and measures the outcomes important to patients.
+
+*Other (eg, publication bias)* --- Selective publication or reporting of results (typically of positive results).
+
+### Domains (upgrade)
+
+*Effect Size* --- Large effect size (eg, risk ratio >2 or <0.5)
+
+*Dose-response* --- When relevant exposure categories. 
+
+*Plausible Residual Confounding* --- When unaccounted residual confounding would increase the effect magnitude.
+
+</font>
+
+<br/><br/>
+
+## ACCF/AHA
+
+<font size = 4>
+
+**Level A** --- High-quality evidence from more than 1 RCTs. Meta-analyses of high-quality RCTs. One or more RCTs corroborated by high-quality registry studies.
+
+**Level B-R** --- Moderate-quality evidence from 1 or more randomized controlled trials. Meta-analyses of moderate-quality RCTs.
+
+**Level B-NR** --- Moderate-quality evidence from 1 or more well-designed, well-executed nonrandomized studies, observational studies, or registry studies. Meta-analyses of such studies.
+
+**Level C-LD** --- Randomized or nonrandomized observational or registry studies with limitations of design or execution. Meta-analyses of such studies. Physiological or mechanistic studies in human subjects.
+
+**Level C-EO** --- Consensus of expert opinion based on clinical experience when evidence is insufficient, vague, or conflicting.
+
+</font>
+
+<font size = 3> RCT: randomized controlled trial; NR: nonrandomized; LD: limited data; EO: expert opinion </font>

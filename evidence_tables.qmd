@@ -133,12 +133,19 @@ evidence_tables |>
   tab_style(
     style = cell_text(size = "12px"),
     locations = cells_body(columns = everything())) |> 
-  fmt_markdown(columns = c(study, incl_excl)) |> 
+  fmt_markdown(columns = c(study, incl_excl, results, comment)) |> 
     tab_style(
     style = "vertical-align:top",
     locations = cells_body(columns = everything())
   ) |> 
-  gt_theme_mg()
+  gt_theme_mg() |> 
+    opt_css(
+      css = "
+      p {
+      line-height: 1.5;
+      }
+    "
+    )
 }
 ```
 

@@ -29,3 +29,5 @@ data_files <- as_tibble(list.files("data/"))
 data_file <- read_file_mg("geri_data")
 
 load(paste0("data/", data_file))
+
+source("code/functions_geri_2022-11-16.R")
