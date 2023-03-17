@@ -151,7 +151,10 @@ soe_summary |>
 
 <font size = 4> Table `r table_n`. GRADE domains for strength of evidence rating for outcomes relevant to delirium prophylaxis. </font>
 
-```{r kq6Domain, include = TRUE, eval = TRUE}
+```{r kq6Domain, eval = TRUE}
+#| warning: false
+#| include: true
+#| echo: false
 kq6_domain_summary <- domain_summary |>
   # filter(comparison == "sug_neo") |>
   select(-summary) |>
