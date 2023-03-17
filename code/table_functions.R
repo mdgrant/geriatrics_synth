@@ -301,7 +301,7 @@ likert_freq_fun <- function(data, add_footnote = NULL) {
 # delirium_total_tab <- delirium_total_tab_fun(ket_refid)
 
 delirium_total_tab_fun <- function(refids){
-  # referent values to calculate rr ci
+  # referent values for calculating rr and ci; rr_ci
   delirium_rr_ref <- dichot_dat |>
     select(refid, refid_c, arm_id, delitotal_n, arm_n) |>
     filter(!is.na(delitotal_n)) |>

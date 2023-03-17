@@ -43,7 +43,7 @@ likert_dat <- data_kq(likert_dat, kq6_refid)
 
 ```{r rob2_data} 
 # identify studies with disagreements
-# CODE: * ROB data
+# CODE: * rob data
 rob2_conflict_refid <- rob_dat |> 
   select(refid, starts_with("assessor")) |> 
   distinct() |> 
@@ -508,7 +508,7 @@ dex_by_arm |>
     postdose ~ px(70),
   ) |>
   opt_css(css = "#one .gt_column_spanner {border-bottom-style: hidden;}") |>
-  tab_footnote("GI: gastrointestinal; Abd: abdominal (includes hepatic); Ortho: orthopedic; Various: more that one procedure category; Oralmax: oral and maxillofacial; Ophtho; ophthalmologic; Dex: Dexmedetomidine; Uli: Ulinastatin; Hal: Haloperidol; Mid: Midazolam; Mid/Prop: Midazolam/propofol; Mid/Seve: Midazolam/sevoflurane; Preg: Pregabalin; Prop: Propofol; Rhyth: Rhythim; Plac; placebo; PS: physical status; Vol: volatile; TIVA: total intravenous anesthesia; Reg: regional; MMSE: Mini-Mental State Exam; Pre: preoperative; Ind: induction; Intr: intraoperative; Post(op): postoperative; —: unspecified.") |>
+  tab_footnote("GI: gastrointestinal; Abd: abdominal (includes hepatic); Ortho: orthopedic; Various: more that one procedure category; Oralmax: oral and maxillofacial; Ophtho; ophthalmologic; Dex: Dexmedetomidine; Ulin: Ulinastatin; Hal: Haloperidol; Mid: Midazolam; Mid/Prop: Midazolam/propofol; Mid/Seve: Midazolam/sevoflurane; Preg: Pregabalin; Prop: Propofol; Rhyth: Rhythim; Plac; placebo; PS: physical status; Vol: volatile; TIVA: total intravenous anesthesia; Reg: regional; MMSE: Mini-Mental State Exam; Pre: preoperative; Ind: induction; Intr: intraoperative; Post(op): postoperative; —: unspecified.") |>
   tab_footnote("Range if reported in parentheses.", locations = cells_column_labels(columns = maintain_range)) |> 
   tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |> 
   tab_footnote(md("ASA Physical Status of patients included (proportions can be found here[link to table add])."), locations = cells_column_labels(columns = c(asa_ps_incl))) |> 
@@ -769,6 +769,17 @@ mel_ram_by_arm |>
 
 ## **Delirium Incidence**
 
+```{r non_missings_delirium}
+#| eval: false
+# NOTE: !verified non missing delirium incl effects; all have ns
+temp_deli <- dichot_dat |>
+  select(refid, study, starts_with("deli")) |>
+  filter(if_any(starts_with("deli"), ~ !is.na(.x)))
+
+skim(temp_deli)
+```
+
+
 ```{r delirium_meta_data}
 # CODE: * delirium meta data munge; here to produce figure
 # study arm postop only
@@ -876,7 +887,7 @@ delirium_total_tab <- delirium_total_tab_fun(dex_refid) |>
 
 ```{r delirium_total_dex_gt}
 delirium_total_gt_fun("Dex") |>
-  tab_footnote("MMSE: Mini-Mental State Examination; Dex: Dexmedetomidine; Mid: Midazolam; Prop: Propofol; MS: Morphine; Preg: Pregabalin; Prop: Propofol; Rhyth: Rhythim; Plac: placebo; CAM: Confusion Assessment Method; DSM: Diagnostic and Statistical Manual of Mental Disorders; ICDSC: Intensive Care Delirium Screening Checklist; Psych: psychiatrist interview; NS; not specified.") |>
+  tab_footnote("RR: risk ratio; MMSE: Mini-Mental State Examination; Dex: Dexmedetomidine; Mid: Midazolam; Prop: Propofol; MS: Morphine; Preg: Pregabalin; Prop: Propofol; Rhyth: Rhythim; Plac: placebo; CAM: Confusion Assessment Method; DSM: Diagnostic and Statistical Manual of Mental Disorders; ICDSC: Intensive Care Delirium Screening Checklist; Psych: psychiatrist interview; NS; not specified.") |>
   # tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
   tab_footnote("Days over which incidence proportion assessed. Stay indicates over patient hospital stay.", locations = cells_column_labels(columns = delitotal_time)) |>
   tab_footnote("Tool reported in the `Chinese Expert Consensus on the Prevention and Treatment of Postoperative Delirium in Elderly Patients.'", locations = cells_body(columns = scale_delirium, rows = scale_delirium == "Note"))
@@ -898,7 +909,7 @@ delirium_total_tab <- delirium_total_tab_fun(ket_refid) |>
 delirium_total_gt_ket <- delirium_total_gt_fun("Ket")
 # tab_info(delirium_total_gt_ket)
 delirium_total_gt_ket |>
-  tab_footnote("MMSE: Mini-Mental State Examination; Ket: ketamine; Plac: placebo; Hal: haloperidol; ICDSC: Intensive Care Delirium Screening Checklist; Psych: psychiatrist interview; NS; not specified.") |>
+  tab_footnote("RR: risk ratio; MMSE: Mini-Mental State Examination; Ket: ketamine; Plac: placebo; Hal: haloperidol; ICDSC: Intensive Care Delirium Screening Checklist; Psych: psychiatrist interview; NS; not specified.") |>
   # tab_footnote(md("Mean <u>Med</u> (SD) {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
   tab_footnote("Days over which incidence proportion assessed. Stay indicates over patient hospital stay.", locations = cells_column_labels(columns = delitotal_time))
 ```
@@ -919,7 +930,7 @@ delirium_total_gt_mel_ram <- delirium_total_gt_fun("Mel|Ram")
 # tab_info(delirium_total_gt_mel_ram_gt)
 delirium_total_gt_mel_ram |>
   row_group_order(groups = c("Cardiac - Randomized Clinical Trial", "Ortho - Randomized Clinical Trial", "Various - Randomized Clinical Trial", "GI/Abd - Before-After/Time Series", "Thoracic - Before-After/Time Series")) |> 
-  tab_footnote("MMSE: Mini-Mental State Examination; Mel: melatonin; Ram: ramelteon; AMT: Abbreviated Mental Test; DSM: Diagnostic and Statistical Manual of Mental Disorders; CAM: Confusion Assessment Method; ICDSC: Intensive Care Delirium Screening Checklist.") |>
+  tab_footnote("RR: risk ratio; MMSE: Mini-Mental State Examination; Mel: melatonin; Ram: ramelteon; AMT: Abbreviated Mental Test; DSM: Diagnostic and Statistical Manual of Mental Disorders; CAM: Confusion Assessment Method; ICDSC: Intensive Care Delirium Screening Checklist.") |>
   # tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
   tab_footnote("Days over which incidence proportion assessed. Stay indicates over patient hospital stay.", locations = cells_column_labels(columns = delitotal_time))
 ```
@@ -1114,13 +1125,15 @@ forest(dex_plac_meta,
   text.addline1 = paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval))
 )
 ```
-
-<foot_mg>  Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias; +: low risk of bias; ?: some concerns; - high risk of bias. </foot_mg> 
+<foot_mg>  Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias; +: low risk of bias; ?: some concerns; - high risk of bias. </foot_mg> <a id="figure-4"></a>
 
 <br/>
 
+<a id="figure-5"></a>
+
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention --- trials from China vs. other countries. </font>
+
 
 ```{r nma_dat_china, fig.width = 14, fig.height = 9, fig.align = "left"}
 dex_plac_meta_china <- metabin(event2, n2, event1, n1,
@@ -1173,6 +1186,7 @@ forest(dex_plac_meta_china,
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention small study effects --- funnel plot and limit meta-analysis. </font>
+
 
 ```{r dex_plac_meta_funnel_limit, out.width = "75%", out.height = "90%", fig.align = "left"}
 par(mar = c(4, 4, 2, 1))
@@ -1463,50 +1477,138 @@ netsplit(netmeta_melram_nma, order = trts_melram) %>%
 
 ## **Mortality**
 
-```{r mortality_base}
-mortality_total_tab_fun <- function(refids, mort_est){
-  # referent values to calculate rr ci
-  mortality_rr_ref <-
-    dichot_dat |>
-      mutate(
-        mort_n = {{mort_est}},
-        # mort_n = mort30_n,
-        # mort_n = mort90_n,
-        # mort_n = mort1_n,
-        ) |>
-      select(refid, refid_c, arm_id, mort_n, arm_n) |>
-      filter(!is.na(mort_n)) |>
-      filter(refid %in% refids) |>
-      arrange(refid_c, arm_id) |>
-      rename(ref_mort_n = mort_n, ref_arm_n = arm_n) |>
-      group_by(refid_c) |>
-      mutate(
-        ref_arm_n = ifelse(row_number() > 1, NA, ref_arm_n),
-        ref_mort_n = ifelse(row_number() > 1, NA, ref_mort_n)
-      ) |>
-      fill(ref_arm_n, ref_mort_n) |>
-      mutate(
-        ref_arm_n = ifelse(row_number() == 1, NA, ref_arm_n),
-        ref_mort_n = ifelse(row_number() == 1, NA, ref_mort_n)
-      ) |>
-      select(-refid)
+<font size = 4> `r table_ref()` Reported in-hospital, 30-, 90-, and 1-year mortality by comparator and surgical category.</font>
 
-  mortality_rr_ref
+```{r non_missings_mortality}
+#| eval: false
+# NOTE: !verified non missing mortality incl effects; all have ns
+temp_mort <- dichot_dat |>
+  select(refid, study, starts_with("mort")) |>
+  filter(if_any(starts_with("mort"), ~ !is.na(.x)))
+
+skim(temp_mort)
+writexl::write_xlsx(temp_mort, "/Users/mgrant/Desktop/temp_mort.xlsx")
+```
+
+```{r mortality_data}
+# CODE: mortality_dat create data including all reported, hosp, 30, 60, 90, 1-ear
+mortality_total_tab_fun <- function(refids, mort_est, mort_period) {
+  # referent values to calculate rr or rd
+  mortality_rr_ref <- dichot_dat |>
+    mutate(
+      mort_period = mort_period,
+      mort_n = {{ mort_est }},
+      ref_mort_n = mort_n,
+      ref_arm_n = arm_n
+    ) |>
+    select(refid, refid_c, arm_id, year, study, study_l, design_f_lab, mort_n, arm_n, ref_mort_n, ref_arm_n, mort_period) |>
+    filter(!is.na(mort_n)) |>
+    filter(refid %in% refids) |>
+    arrange(refid_c, arm_id) |>
+    # rename(ref_mort_n = mort_n, ref_arm_n = arm_n) |>
+    group_by(refid_c) |>
+    mutate(
+      ref_arm_n = ifelse(row_number() > 1, NA, ref_arm_n),
+      ref_mort_n = ifelse(row_number() > 1, NA, ref_mort_n)
+    ) |>
+    fill(ref_arm_n, ref_mort_n) |>
+    mutate(
+      ref_arm_n = ifelse(row_number() == 1, NA, ref_arm_n),
+      ref_mort_n = ifelse(row_number() == 1, NA, ref_mort_n)
+    ) |>
+    ungroup()
 }
 
-mortality_total_tab_fun(kq6_refid, morthosp_n)
-mortality_total_tab_fun(kq6_refid, mort30_n)
-mortality_total_tab_fun(kq6_refid, mort90_n)
-mortality_total_tab_fun(kq6_refid, mort1_n)
+mortality_dat <- bind_rows(
+  mortality_total_tab_fun(kq6_refid, morthosp_n, "Hospital"),
+  mortality_total_tab_fun(kq6_refid, mort30_n, "30d"),
+  mortality_total_tab_fun(kq6_refid, mort90_n, "90d"),
+  mortality_total_tab_fun(kq6_refid, mort1_n, "1yr")) |>
+  left_join(study_char_dat |> select(refid, surgs_single_f), by = "refid") |>
+  left_join(table_age_mn_med, by = c("refid", "arm_id")) |>
+  left_join(drugs_dat |> select(refid, arm_id, drug_recode_abbr), by = c("refid", "arm_id")) |>
+  left_join(asa_combine |> select(refid, arm_id, asa_ps_incl), by = c("refid", "arm_id")) |> 
+  mutate(mort_percent = mort_n/arm_n,
+         mort_period = factor(mort_period, levels = c("Hospital", "30d", "90d", "1yr"))) |>
+  relocate(mort_percent, .after = arm_n) |> 
+  relocate(arm_n, drug_recode_abbr, asa_ps_incl, age_table, .after = study_l)
 ```
 
-
-
-```{r mortality_total_dex_tab}
-# CODE: mortality dexmedetomidine
-
-
+```{r mortality_gt}
+#| eval: true
+mortality_dat |>
+  arrange(mort_period, surgs_single_f, year, study, arm_id) |>
+  group_by(study_l) |>
+  mutate(
+    surgs_single_f = as.character(surgs_single_f),
+    study_l = ifelse(row_number() == 1, study_l, NA),
+    study = ifelse(row_number() == 1, study, NA),
+    across(c(surgs_single_f, asa_ps_incl,), ~ ifelse(row_number() > 1, NA, .x)),
+    # bar = bar_prop(50, color_1),
+    bar = case_when(
+      str_detect(drug_recode_abbr, "Mel|Ram") ~ bar_prop(mort_percent * 100, "#0E6655"),
+      str_detect(drug_recode_abbr, "Ulin|MS|Prop") ~ bar_prop(mort_percent * 100, "#F39C12"),
+      str_detect(drug_recode_abbr, "Dex") ~ bar_prop(mort_percent * 100, "#A93226"),
+      .default = bar_prop(mort_percent * 100, color_1)
+    ),
+  ) |>
+  ungroup() |>
+  mutate(
+    # de Jonghe 2014 reported in hospital and 90-day
+    study_l = ifelse(refid == 16552 & arm_id == 1, "[de Jonghe 2014](evidence_tables.html#16552)", study_l),
+    surgs_single_f = ifelse(refid == 16552 & arm_id == 1, "Ortho", surgs_single_f),
+    rd_ci = ifelse(!is.na(ref_mort_n), rd_per_ci_fun(mort_n, arm_n, ref_mort_n, ref_arm_n, digits = 1), "—"),
+    mort_n_percent = n_per_fun(mort_n, arm_n, 1)
+  ) |> 
+  rename(drug_recode = drug_recode_abbr) |> 
+  relocate(surgs_single_f, .before = asa_ps_incl) |> 
+  relocate(mort_n_percent, .before = bar) |> 
+  select(-mort_n) |> 
+  group_by(mort_period) |> 
+  gt(id = "one") |> 
+  cols_hide(c(refid, refid_c, arm_id, year, study, design_f_lab, mort_percent, ref_mort_n, ref_arm_n)) |>
+  row_group_order(groups = c("Hospital", "30d", "90d", "1yr")) |> 
+  cols_label(
+    study_l = "Study",
+    arm_n = "N",
+    drug_recode = "Drug",
+    surgs_single_f = "Surgery",
+    age_table = "Age",
+    asa_ps_incl = "PS",
+    mort_n_percent = "N (%)",
+    bar = md(""),
+    rd_ci = "RD (95% CI)"
+  ) |> 
+  fmt_markdown(columns = c(study_l, bar, age_table)) |>
+  tab_spanner(label = "Mortality", columns = c(mort_n_percent, bar)) |> 
+  tab_spanner(label = "ASA", columns = c(asa_ps_incl)) |> 
+  gt_theme_mg() |> 
+  tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(study, drug_recode, surgs_single_f))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, age_table, asa_ps_incl, mort_n_percent, rd_ci))) |>
+  tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study, drug_recode, surgs_single_f, bar))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(mort_n_percent, rd_ci))) |>
+  tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |> 
+  tab_style(style = list(cell_text(color = "#0E6655")), locations = cells_body(columns = c(arm_n:mort_n_percent), rows = str_detect(drug_recode, "Mel|Ram"))) |> 
+  tab_style(style = list(cell_text(color = "#F39C12")), locations = cells_body(columns = c(arm_n:mort_n_percent), rows = str_detect(drug_recode, "Ulin|MS|Prop"))) |>
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:mort_n_percent), rows = str_detect(drug_recode, "Dex"))) |> 
+  sub_missing(columns = everything(), rows = everything(), missing_text = "") |> 
+  cols_width(
+    study_l ~ px(140),
+    arm_n ~ px(45),
+    drug_recode ~ px(70),
+    surgs_single_f ~ px(95),
+    age_table ~ px(100),
+    asa_ps_incl ~ px(60),
+    mort_n_percent ~ px(80),
+    bar ~ px(100),
+    rd_ci ~ px(145)
+  ) |> 
+  # opt_css(css = "#one .gt_column_spanner {border-bottom-style: hidden;}") |>
+  tab_footnote("ASA PS: American Society of Anesthesiologists Physical Status; RD: risk difference; GI: gastrointestinal; Abd: abdominal (includes hepatic); Ortho: orthopedic; Various: more that one procedure category;  Dex: Dexmedetomidine; Ulin: Ulinastatin; Hal: Haloperidol; Mid: Midazolam; Mid/Prop: Midazolam/propofol; Mid/Seve: Midazolam/sevoflurane; Preg: Pregabalin; Prop: Propofol; Rhyth: Rhythim; Plac; placebo;") |> 
+  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table))) |> 
+  tab_footnote("Different lengths of follow-up from the same trial.", locations = cells_body(columns = study_l, rows = study %in% c("Su 2016", "Zhang 2019b"))) 
 ```
+
 
 ## Study Characteristics
 

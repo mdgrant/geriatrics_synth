@@ -347,6 +347,16 @@ rr_ci_fun <- function(event1, n1, event2, n2, digits = 2) {
     sprintf(paste0("%.", digits, "f"), round(exp(upper), digits)), ")"))
 }
 
+## rd_ci_fun ------------------------------------------ (2023-03-06 22:53) @----
+# calculate risk difference, ci, and format no refid
+rd_per_ci_fun <- function(event1, n1, event2, n2, digits = 2) {
+  a <- meta::metabin(event1, n1 , event2, n2, sm = "RD")
+  with(a, paste0(
+    sprintf(paste0("%.", digits, "f"), round(TE * 100, digits)), "% (",
+    sprintf(paste0("%.", digits, "f"), round(lower * 100, digits)), ", ",
+    sprintf(paste0("%.", digits, "f"), round(upper * 100 , digits)), ")"))
+}
+
 ## collapse arms -------------------------------------- (2023-03-09 07:19) @----
 # collapse_arms_dichot(dichot_dat, "Lee 2018a", c(2, 3), delitotal_n, arm_n, "den")
 # collapse_dichot(dichot_dat, "Lee 2018a", c(2, 3), delitotal_n)
