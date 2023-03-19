@@ -26,6 +26,11 @@ nocite: '@*'
 
 Among older patients undergoing surgery and anesthesia, do dexmedetomidine, ketamine, ramelteon, or melatonin administered during the perioperative period decrease the risk of postoperative delirium or other adverse cognitive outcomes?
 
+:::{.callout-note collapse=true appearance='default' icon=true}
+## DRAFT results last updated `r lubridate::now()`
+Updated dexmedetomidine and melatonin/ramelteon results with 3 additional studies reporting daily, but not overall, incidence proportion (cumulative incidence).
+:::
+
 <!-- setup -------------------------------------------- (2022-12-24 16:56) @ --->
 
 ```{r read_data}
@@ -802,16 +807,16 @@ postop_only_dat <- study_arm_dat |>
   select(refid, postop_only)
 
 # get max of daily
-# dichot_dat |> 
-#   select(refid, arm_id, study, arm_n, delirium_n1, delirium_n2, delirium_n3, delilast_n, delitotal_n) |> 
+# dichot_dat |>
+#   select(refid, arm_id, study, arm_n, delirium_n1, delirium_n2, delirium_n3, delilast_n, delitotal_n) |>
 #   mutate(
-#     delirium_day_max = pmax(delirium_n1, delirium_n2, delirium_n3, delilast_n)
-#   ) |> 
+#     delirium_day_max = pmax(delirium_n1, delirium_n2, delirium_n3, delilast_n, na.rm = TRUE)
+#   ) |>
 #   filter(is.na(delitotal_n) & !is.na(delirium_day_max))
   
 delirium_meta_dat <- dichot_dat |>
   mutate(
-    delitotal_n = ifelse(refid %in% c(69, 13568), pmax(delirium_n1, delirium_n2, delirium_n3, delilast_n), delitotal_n)
+    delitotal_n = ifelse(refid %in% c(69, 13568, 5269, 8558, 9256), pmax(delirium_n1, delirium_n2, delirium_n3, delilast_n, na.rm = TRUE), delitotal_n)
   ) |> 
   filter(!is.na(delitotal_n)) |>
   left_join(drugs_dat |> select(refid, arm_id, drug_recode_abbr), by = c("refid", "arm_id")) |>
@@ -905,7 +910,16 @@ delirium_meta_dat |>
 # CODE: delirium incidence dexmedetomidine
 delirium_total_tab <- delirium_total_tab_fun(dex_refid) |> 
   left_join(dex_by_arm |> select(refid, dex_groups) |> distinct(), by = c("refid")) |> 
-  rename(compare_groups = dex_groups)
+  rename(compare_groups = dex_groups) |> 
+  mutate(delitotal_time = ifelse(is.na(delitotal_time), "Note", delitotal_time))
+
+refid_max_of_days <- delirium_total_tab |> 
+  filter(delitotal_time == "Note") |> 
+  mutate(refid = as.numeric(refid)) |> 
+  select(refid) |> 
+  distinct() |> 
+  pull(refid)
+  
 ```
 
 ```{r delirium_total_dex_gt}
@@ -914,7 +928,10 @@ delirium_total_gt_fun("Dex") |>
   # tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
   tab_footnote("Days over which incidence proportion assessed. Stay indicates over patient hospital stay.", locations = cells_column_labels(columns = delitotal_time)) |>
   tab_footnote("Tool reported in the `Chinese Expert Consensus on the Prevention and Treatment of Postoperative Delirium in Elderly Patients.'", locations = cells_body(columns = scale_delirium, rows = scale_delirium == "Note")) |> 
-  tab_footnote("Postoperative dexmedetomidine only.", locations = cells_body(columns = rr_ci, rows = refid %in% postop_only_dat$refid & rr_ci != "—"))
+  tab_footnote("Postoperative dexmedetomidine only.", locations = cells_body(columns = rr_ci, rows = refid %in% postop_only_dat$refid & rr_ci != "—")) |> 
+  tab_footnote("Reported only daily incidence.", locations = cells_body(columns = delitotal_time, rows = delitotal_time == "Note")) |> 
+  tab_footnote("Maximum of reported daily incidence.", locations = cells_body(columns = n_percent, rows = refid %in% refid_max_of_days))
+  
 ```
 
 ### Ketamine
@@ -946,17 +963,29 @@ delirium_total_gt_ket |>
 delirium_total_tab <- delirium_total_tab_fun(mel_ram_refid) |> 
     left_join(mel_ram_by_arm |> select(refid, mel_ram_groups) |> distinct(), by = c("refid")) |> 
   mutate(scale_delirium = ifelse(refid == 3841, "CAM/DRS/DSM", scale_delirium)) |> 
-  rename(compare_groups = mel_ram_groups)
+  rename(compare_groups = mel_ram_groups) |> 
+  mutate(delitotal_time = ifelse(is.na(delitotal_time), "Note", delitotal_time))
+
+refid_max_of_days <- delirium_total_tab |> 
+  filter(delitotal_time == "Note") |> 
+  mutate(refid = as.numeric(refid)) |> 
+  select(refid) |> 
+  distinct() |> 
+  pull(refid)
+
 ```
 
 ```{r delirium_total_mel_ram_gt}
 delirium_total_gt_mel_ram <- delirium_total_gt_fun("Mel|Ram") 
+
 # tab_info(delirium_total_gt_mel_ram_gt)
 delirium_total_gt_mel_ram |>
   row_group_order(groups = c("Cardiac - Randomized Clinical Trial", "Ortho - Randomized Clinical Trial", "Various - Randomized Clinical Trial", "Thoracic - Randomized Clinical Trial", "GI/Abd - Before-After/Time Series", "Thoracic - Before-After/Time Series")) |> 
   tab_footnote("RR: risk ratio; MMSE: Mini-Mental State Examination; Mel: melatonin; Ram: ramelteon; AMT: Abbreviated Mental Test; DRS: Delirium Rating Scale; DSM: Diagnostic and Statistical Manual of Mental Disorders; CAM: Confusion Assessment Method; ICDSC: Intensive Care Delirium Screening Checklist.") |>
   # tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
-  tab_footnote("Days over which incidence proportion assessed. Stay indicates over patient hospital stay.", locations = cells_column_labels(columns = delitotal_time))
+  tab_footnote("Days over which incidence proportion assessed. Stay indicates over patient hospital stay.", locations = cells_column_labels(columns = delitotal_time)) |> 
+  tab_footnote("Reported only daily incidence.", locations = cells_body(columns = delitotal_time, rows = delitotal_time == "Note")) |> 
+  tab_footnote("Maximum of reported daily incidence.", locations = cells_body(columns = n_percent, rows = refid %in% refid_max_of_days))
 ```
 
 ### *Meta-analyses*
@@ -1147,7 +1176,7 @@ forest(dex_plac_meta,
   xlab = "Favors: Dexmedetomidine               Placebo/None",
   addrows.below.overall = 4,
   text.addline1 = paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval)),
-  text.addline2 = "He 2018 and Huyan 2019 incidence proportion based on the maximum daily reported."
+  text.addline2 = "He 2018, Huyan 2019, Gao 2021, and Lu 2021 incidence proportion based on the maximum daily reported."
 )
 ```
 <foot_mg>  Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias; +: low risk of bias; ?: some concerns; - high risk of bias. </foot_mg> <a id="figure-4"></a>
@@ -1159,7 +1188,7 @@ forest(dex_plac_meta,
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention --- trials from China vs. other countries. </font>
 
-```{r nma_dat_china, fig.width = 14, fig.height = 9, fig.align = "left"}
+```{r nma_dat_china, fig.width = 14, fig.height = 10, fig.align = "left"}
 dex_plac_meta_china <- metabin(event2, n2, event1, n1,
   data = dex_meta_dat,
   studlab = study,
@@ -1173,7 +1202,9 @@ dex_plac_meta_china <- metabin(event2, n2, event1, n1,
   # subgroup = postop_only
   )
 
-temp_metareg <- metareg(dex_plac_meta_china)
+temp_metareg <- update(dex_plac_meta_china, tau.common = TRUE, common = FALSE, method.random.ci = "HK")
+
+temp_metareg <- metareg(temp_metareg)
 
 forest(dex_plac_meta_china,
   allstudies = TRUE,
@@ -1202,7 +1233,7 @@ forest(dex_plac_meta_china,
   xlab = "Favors: Dexmedetomidine               Placebo/None",
   addrows.below.overall = 4,
   text.addline1 = paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval)),
-  text.addline2 = paste0("Residual heterogeneity meta regression including country (China vs. other) ", "I²", " = ", digit0(temp_metareg$I2), "%"))
+  text.addline2 = paste0("Meta-regression (China vs. other) I² = ", digit0(temp_metareg$I2), "%"))
 
 ```
 
@@ -1380,7 +1411,7 @@ forest(ket_plac_meta,
 `r figure_n = 8`
 <font size = 4> `r figure_ref()` Melatonin and ramelteon compared with placebo. </font>
 
-```{r nma_mel_ram_dat, fig.width = 14, fig.height = 6, fig.align = "left"}
+```{r nma_mel_ram_dat, fig.width = 14, fig.height = 6.5, fig.align = "left"}
 # ```{r nma_dat, out.width = 50%, out.height = 100%}
 # risk of bias
 mel_ram_plac_refid <- pairwise_dat |> 
@@ -1437,6 +1468,7 @@ forest(mel_ram_plac_meta,
   addrows.below.overall = 4
   # text.addline1 = paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval))
 )
+
 ```
 
 <foot_mg>  Mel: melatonin; Ram: ramelteon; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias; +: low risk of bias; ?: some concerns; - high risk of bias. </foot_mg> 

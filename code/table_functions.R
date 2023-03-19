@@ -303,6 +303,9 @@ likert_freq_fun <- function(data, add_footnote = NULL) {
 delirium_total_tab_fun <- function(refids){
   # referent values for calculating rr and ci; rr_ci
   delirium_rr_ref <- dichot_dat |>
+    mutate(
+      delitotal_n = ifelse(refid %in% c(69, 13568, 5269, 8558, 9256), pmax(delirium_n1, delirium_n2, delirium_n3, delilast_n, na.rm = TRUE), delitotal_n)
+    ) |>
     select(refid, refid_c, arm_id, delitotal_n, arm_n) |>
     filter(!is.na(delitotal_n)) |>
     filter(refid %in% refids) |>
@@ -321,6 +324,9 @@ delirium_total_tab_fun <- function(refids){
     select(-refid)
 
   dichot_dat |>
+    mutate(
+      delitotal_n = ifelse(refid %in% c(69, 13568, 5269, 8558, 9256), pmax(delirium_n1, delirium_n2, delirium_n3, delilast_n, na.rm = TRUE), delitotal_n)
+    ) |>
     select(refid, refid_c, year, arm_id, design_f_lab, study, study_l, arm_n, delitotal_time:delitotal_95high, deli_cam:deli_scale_otherspec) |>
     filter(!is.na(delitotal_n)) |>
     filter(refid %in% refids) |>
@@ -417,7 +423,7 @@ delirium_total_gt_fun <- function(drug_f_abbr){
       # pre_mmse ~ px(95),
       scale_delirium ~ px(105),
       delitotal_time ~ px(50),
-      n_percent ~ px(80),
+      n_percent ~ px(90),
       bar ~ px(100),
       rr_ci ~ px(140)
     )
