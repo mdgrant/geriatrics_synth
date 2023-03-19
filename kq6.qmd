@@ -801,7 +801,18 @@ postop_only_dat <- study_arm_dat |>
   mutate(postop_only = TRUE) |> 
   select(refid, postop_only)
 
+# get max of daily
+dichot_dat |> 
+  select(refid, arm_id, study, arm_n, delirium_n1, delirium_n2, delirium_n3, delilast_n, delitotal_n) |> 
+  mutate(
+    delirium_day_max = pmax(delirium_n1, delirium_n2, delirium_n3, delilast_n)
+  ) |> 
+  filter(is.na(delitotal_n) & !is.na(delirium_day_max))
+  
 delirium_meta_dat <- dichot_dat |>
+  mutate(
+    delitotal_n = ifelse(refid %in% c(69, 13568), pmax(delirium_n1, delirium_n2, delirium_n3, delilast_n), delitotal_n)
+  ) |> 
   filter(!is.na(delitotal_n)) |>
   left_join(drugs_dat |> select(refid, arm_id, drug_recode_abbr), by = c("refid", "arm_id")) |>
   left_join(study_char_dat |> select(refid, country), by = "refid") |> 
@@ -829,6 +840,7 @@ delirium_meta_dat <- dichot_dat |>
     ),
     year = as.numeric(str_extract(study, "\\d{4}"))
   ) |>
+  filter(!(study == "He 2018" & arm_id == 2)) |> 
   filter(!(study %in% c("Lee 2018a", "Avidan 2017") & arm_id == 3)) |>
   filter(!(study %in% c("Zhao 2020") & arm_id %in% c(3, 4))) |>
   filter(!(study %in% c("Lee 2018b") & arm_id %in% c(2, 4))) |> # remove pregabalin, pregabaline/dex arms
@@ -1062,7 +1074,7 @@ netgraph(netmeta_melram_nma,
 
 <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention. </font>
 
-```{r nma_dat, fig.width = 14, fig.height = 7, fig.align = "left"}
+```{r nma_dat, fig.width = 14, fig.height = 8, fig.align = "left"}
 # ```{r nma_dat, out.width = 50%, out.height = 100%}
 # risk of bias
 rob_meta_dat <- rob2_reconciled_dat |> 
@@ -1134,7 +1146,8 @@ forest(dex_plac_meta,
   # at = c(0.1, 0.5, 1, c, ...),
   xlab = "Favors: Dexmedetomidine               Placebo/None",
   addrows.below.overall = 4,
-  text.addline1 = paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval))
+  text.addline1 = paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval)),
+  text.addline2 = "He 2018 and Huyan 2019 incidence proportion based on the maximum daily reported."
 )
 ```
 <foot_mg>  Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias; +: low risk of bias; ?: some concerns; - high risk of bias. </foot_mg> <a id="figure-4"></a>
@@ -1199,7 +1212,7 @@ forest(dex_plac_meta_china,
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention --- postoperative administration only vs. other times. </font>
 
-```{r nma_dat_postop, fig.width = 14, fig.height = 9, fig.align = "left"}
+```{r nma_dat_postop, fig.width = 14, fig.height = 10, fig.align = "left"}
 dex_plac_meta_postop <- metabin(event2, n2, event1, n1,
   data = dex_meta_dat,
   studlab = study,
