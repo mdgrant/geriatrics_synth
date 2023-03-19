@@ -141,7 +141,7 @@ soe_summary |>
   ) |>
   tab_footnote("Pts: patients; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; ACCF/AHA: American College of Cardiology Foundation/American Heart Association; RR: risk ratio.") |>
   tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
-  tab_footnote("+ Limited; ++ Important; +++ Critical.", locations = cells_column_labels(columns = out_import))
+  tab_footnote("Limited +; Important ++; Critical +++.", locations = cells_column_labels(columns = out_import))
 
 ```
 

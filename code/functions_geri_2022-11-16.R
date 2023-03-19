@@ -209,9 +209,9 @@ data_kq <- function(data, refids) {
     arrange(design_f)
 }
 # refid not missing by outcome
-refid_reported_outcome <- function(data_dat, vars){
+refid_reported_outcome <- function(data_dat, vars) {
   data_dat |>
-    filter(if_any({{vars}}, ~ !is.na(.x))) |>
+    filter(if_any({{ vars }}, ~ !is.na(.x))) |>
     select(refid) |>
     distinct() |>
     pull(refid)

@@ -410,16 +410,16 @@ delirium_total_gt_fun <- function(drug_f_abbr){
     ) |>
     gt_theme_mg() |>
     cols_width(
-      study_l ~ px(140),
+      study_l ~ px(165),
       arm_n ~ px(45),
       # age_table ~ px(100),
       drug_recode ~ px(70),
       # pre_mmse ~ px(95),
-      scale_delirium ~ px(80),
+      scale_delirium ~ px(105),
       delitotal_time ~ px(50),
       n_percent ~ px(80),
       bar ~ px(100),
-      rr_ci ~ px(125)
+      rr_ci ~ px(140)
     )
 }
 
