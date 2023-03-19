@@ -802,12 +802,12 @@ postop_only_dat <- study_arm_dat |>
   select(refid, postop_only)
 
 # get max of daily
-dichot_dat |> 
-  select(refid, arm_id, study, arm_n, delirium_n1, delirium_n2, delirium_n3, delilast_n, delitotal_n) |> 
-  mutate(
-    delirium_day_max = pmax(delirium_n1, delirium_n2, delirium_n3, delilast_n)
-  ) |> 
-  filter(is.na(delitotal_n) & !is.na(delirium_day_max))
+# dichot_dat |> 
+#   select(refid, arm_id, study, arm_n, delirium_n1, delirium_n2, delirium_n3, delilast_n, delitotal_n) |> 
+#   mutate(
+#     delirium_day_max = pmax(delirium_n1, delirium_n2, delirium_n3, delilast_n)
+#   ) |> 
+#   filter(is.na(delitotal_n) & !is.na(delirium_day_max))
   
 delirium_meta_dat <- dichot_dat |>
   mutate(
