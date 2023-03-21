@@ -1321,6 +1321,7 @@ rob_temp_dat <- rob2_reconciled_dat |>
 
 rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind")
 ```
+
 :::
 
 <br/>
@@ -1386,29 +1387,10 @@ forest(ket_plac_meta,
 
 <foot_mg>  D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias; +: low risk of bias; ?: some concerns; - high risk of bias. </foot_mg> 
 
-
-<!-- ::: {.callout-note collapse="true" appearance="minimal" icon="false"} -->
-
-<!-- #### <font size = 4> `r figure_ref()` Summary risk of bias from randomized clinical trials of ketamine compared with placebo or no intervention. </font> -->
-
-<!-- ```{r rob2_summary_ket_plac, fig.height = 3, out.width = "60%"} -->
-
-<!-- rob_temp_dat <- rob2_reconciled_dat |>  -->
-
-<!--   filter(refid %in% ket_plac_refid) |>  -->
-
-<!--   select(-refid) -->
-
-<!-- rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind") -->
-
-<!-- ``` -->
-
-<!-- ::: -->
-
 <br/>
 
 #### Melatonin/Ramelteon
-`r figure_n = 8`
+
 <font size = 4> `r figure_ref()` Melatonin and ramelteon compared with placebo. </font>
 
 ```{r nma_mel_ram_dat, fig.width = 14, fig.height = 6.5, fig.align = "left"}
@@ -1473,28 +1455,10 @@ forest(mel_ram_plac_meta,
 
 <foot_mg>  Mel: melatonin; Ram: ramelteon; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias; +: low risk of bias; ?: some concerns; - high risk of bias. </foot_mg> 
 
-<!-- ::: {.callout-note collapse="true" appearance="minimal" icon="false"} -->
-
-<!-- #### <font size = 4> `r figure_ref()` Summary risk of bias from randomized clinical trials of ketamine compared with placebo or no intervention. </font> -->
-
-<!-- ```{r rob2_summary_mel_ram_plac, fig.height = 3, out.width = "60%"} -->
-
-<!-- rob_temp_dat <- rob2_reconciled_dat |>  -->
-
-<!--   filter(refid %in% mel_ram_plac_refid) |>  -->
-
-<!--   select(-refid) -->
-
-<!-- rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind") -->
-
-<!-- ``` -->
-
-<!-- ::: -->
-
 <br/>
 
 #### All Comparators
-`r figure_n = 9`
+
 <font size = 4> `r figure_ref()` Network meta-analysis including all comparators.</font>
 
 ```{r nmaForest, fig.width = 6, fig.height = 3.3, fig.align = "center"}
