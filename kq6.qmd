@@ -28,7 +28,9 @@ Among older patients undergoing surgery and anesthesia, do dexmedetomidine, keta
 
 :::{.callout-note collapse=true appearance='default' icon=true}
 ## DRAFT results last updated `r lubridate::now()`
-Updated dexmedetomidine and melatonin/ramelteon results with 3 additional studies reporting daily, but not overall, incidence proportion (cumulative incidence).
+2023-03-21 Added sensitivity analysis according to delirium incidence proportion approximated by maximum daily incidence where incidence proportion was not reported.  
+
+2023-03-19 Updated dexmedetomidine and melatonin/ramelteon results with 3 additional studies reporting daily, but not overall, incidence proportion.
 :::
 
 <!-- setup -------------------------------------------- (2022-12-24 16:56) @ --->
@@ -40,11 +42,17 @@ Updated dexmedetomidine and melatonin/ramelteon results with 3 additional studie
 source("code/load_data.R")
 settings.meta(CIbracket = "(")
 # load("data/geri_data_2023-03-13.Rdata")
-study_char_dat <- data_kq(study_char_dat, kq6_refid) |> filter(!refid %in% 2598) 
-study_arm_dat <- data_kq(study_arm_dat, kq6_refid) |> filter(!refid %in% 2598)
-contin_dat <- data_kq(contin_dat, kq6_refid) |> filter(!refid %in% 2598)
-dichot_dat <- data_kq(dichot_dat, kq6_refid) |> filter(!refid %in% 2598)
-likert_dat <- data_kq(likert_dat, kq6_refid) |> filter(!refid %in% 2598)
+kq6_refid <- kq6_refid[!kq6_refid %in% 13734]
+study_char_dat <- data_kq(study_char_dat, kq6_refid) 
+study_arm_dat <- data_kq(study_arm_dat, kq6_refid) 
+contin_dat <- data_kq(contin_dat, kq6_refid) 
+likert_dat <- data_kq(likert_dat, kq6_refid) 
+dichot_dat <- data_kq(dichot_dat, kq6_refid) |>
+  mutate(
+    delirium_inc_prop = !is.na(delitotal_n),
+    delitotal_n = ifelse(is.na(delitotal_n), pmax(delirium_n1, delirium_n2, delirium_n3, delilast_n, na.rm = TRUE), delitotal_n)
+  )
+
 # rob_dat <- data_kq(rob_dat, kq6_refid) 
 ```
 
@@ -224,7 +232,7 @@ drugs_dat <- study_arm_dat |>
       if_any(drug_f, ~ . == "Ketamine") ~ "Ketamine",
       if_any(drug_f, ~ . == "Melatonin") ~ "Melatonin",
       if_any(drug_f, ~ . == "Ramelteon") ~ "Ramelteon",
-      # if_any(drug_f, ~ . == "Ulinastatin") ~ "Ulinastatin"
+      if_any(drug_f, ~ . == "Ulinastatin") ~ "Ulinastatin"
       # TRUE ~ "MISSING" # NA_character_ for verification
     ),
     drug_study = fct(drug_study, levels = c("Dexmedetomidine", "Ketamine", "Melatonin", "Ramelteon", "Ulinastatin")),
@@ -233,7 +241,7 @@ drugs_dat <- study_arm_dat |>
       str_detect(other_spec, "Midazolam and sevoflurane") ~ "Midazolam/sevoflurane",
       str_detect(other_spec, "[Mm]idazolam") ~ "Midazolam",
       str_detect(other_spec, "[Ss]ufentanil") ~ "Sufentanil",
-      str_detect(other_spec, "[Rr]hythim") ~ "Rhythim",
+      # str_detect(other_spec, "[Rr]hythim") ~ "Rhythim",
       str_detect(other_spec, "[Pp]ropofol") ~ "Propofol",
       str_detect(other_spec, "[Mm]orphine") ~ "Morphine",
       str_detect(other_spec, "[Pp]regabalin") ~ "Pregabalin",
@@ -248,9 +256,9 @@ drugs_dat <- study_arm_dat |>
     
     # HERE
     drug_recode = fct(drug_recode,
-      levels = c("Dexmedetomidine", "Dexmedetomidine/Pregabalin", "Dexmedetomidine/Ulinastatin", "Ketamine", "Melatonin", "Melatonin/Dexmedetomidine","Ramelteon", "Ulinastatin", "Haloperidol", "Midazolam", "Midazolam/propofol", "Midazolam/sevoflurane", "Morphine", "Pregabalin", "Propofol", "Rhythim", "Sufentanil", "Placebo", "None")
+      levels = c("Dexmedetomidine", "Dexmedetomidine/Pregabalin", "Dexmedetomidine/Ulinastatin", "Ketamine", "Melatonin", "Melatonin/Dexmedetomidine","Ramelteon", "Ulinastatin", "Haloperidol", "Midazolam", "Midazolam/propofol", "Midazolam/sevoflurane", "Morphine", "Pregabalin", "Propofol", "Sufentanil", "Placebo", "None")
     ),
-    drug_recode_abbr = fct_recode(drug_recode, Dex = "Dexmedetomidine", "Dex/Preg" = "Dexmedetomidine/Pregabalin", "Dex/Ulin" = "Dexmedetomidine/Ulinastatin", Ket = "Ketamine", Mel = "Melatonin", "Mel/Dex" = "Melatonin/Dexmedetomidine", Ram = "Ramelteon", Ulin = "Ulinastatin", Hal = "Haloperidol", Mid = "Midazolam", "Mid/Prop" = "Midazolam/propofol", "Mid/Sevo" = "Midazolam/sevoflurane", MS = "Morphine", Preg = "Pregabalin", Prop = "Propofol", Rhyth = "Rhythim", Sufen = "Sufentanil", Plac = "Placebo"),
+    drug_recode_abbr = fct_recode(drug_recode, Dex = "Dexmedetomidine", "Dex/Preg" = "Dexmedetomidine/Pregabalin", "Dex/Ulin" = "Dexmedetomidine/Ulinastatin", Ket = "Ketamine", Mel = "Melatonin", "Mel/Dex" = "Melatonin/Dexmedetomidine", Ram = "Ramelteon", Ulin = "Ulinastatin", Hal = "Haloperidol", Mid = "Midazolam", "Mid/Prop" = "Midazolam/propofol", "Mid/Sevo" = "Midazolam/sevoflurane", MS = "Morphine", Preg = "Pregabalin", Prop = "Propofol", Sufen = "Sufentanil", Plac = "Placebo"),
   ) |>
   ungroup() |>
   relocate(c(drug, drug_f, drug_recode, drug_recode_abbr, drug_study), .after = arm_id) |>
@@ -266,6 +274,7 @@ drugs_dat <- study_arm_dat |>
 # CODE: eval = FALSE; drug and drug_recode can save to desktop; working only 
 drugs_dat |> tabyl(drug)
 drugs_dat |> filter(drug == "Ulinastatin")
+drugs_dat |> filter(is.na(drug))
 drugs_dat |> tabyl(drug_recode)
 drugs_dat |> tabyl(drug_recode_abbr)
 
@@ -320,8 +329,8 @@ included_dat <- study_char_dat |>
         "Ketamine - Prospective Cohort",
         "Melatonin - Randomized Clinical Trial",
         "Ramelteon - Randomized Clinical Trial",
-        "Ramelteon - Before-After/Time Series"
-        # "Ulinastatin - Randomized Clinical Trial"
+        "Ramelteon - Before-After/Time Series",
+        "Ulinastatin - Randomized Clinical Trial"
       )
     )
   ) |>
@@ -355,27 +364,19 @@ included_dat |>
     surgs ~ px(220)
   ) |> 
   # opt_horizontal_padding(scale = 2) |>
-  tab_footnote(
-    footnote = md("Non very-high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."),
-    locations = cells_column_labels(columns = country)
-  ) |>
-  tab_footnote(
-    footnote = md("Non very-high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."),
-    locations = cells_body(columns = country, rows = !is.na(non_vh_hdi))
-  ) |>
-  tab_footnote(
-        footnote = md("Various indicates more than 4 different types of surgery."),
-        locations = cells_column_labels(columns = surgs)
-      ) |>
   gt_theme_mg() |>
-  tab_style(
-    style = cell_text(align = "center"),
-    locations = cells_column_labels(
-      columns = c("refid")
-    )
-  ) |> 
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c("refid"))) |> 
   opt_footnote_marks(marks = "letters") |> 
+  tab_footnote(footnote = md("Various indicates more than 4 different types of surgery."), locations = cells_column_labels(columns = surgs)) |>
+  tab_footnote(footnote = md("Non very-high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."), 
+               locations = cells_column_labels(columns = country)) |>
+  tab_footnote(footnote = md("Non very-high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."), 
+               locations = cells_body(columns = country, rows = !is.na(non_vh_hdi))) |>
+  tab_footnote(footnote = "Studies examining drugs not directly relevant to recommendations but potentially relevant to the evidence space (eg, a connected network) were included.", 
+locations = cells_row_groups(groups = )) |> 
   tab_footnote("GI: gastrointestinal; Ortho: orthopedic; Neuro: neurological; Oralmax: oral maxillofacial; Vasc: vascular.")
+
+
 ```
 
 #### Country Summary
@@ -640,10 +641,6 @@ ket_by_arm |>
   # tab_row_group(label = "numbered", rows = 1:10) |> 
   gt_theme_mg() |>
   cols_width(
-    pre ~ px(30),
-    ind ~ px(30),
-    intr ~ px(30),
-    post ~ px(32),
     study_l ~ px(165),
     arm_n ~ px(45),
     drug ~ px(90),
@@ -655,7 +652,11 @@ ket_by_arm |>
     age_table ~ px(100),
     pre_mmse ~ px(100),
     dose ~ px(80),
-    dose_iv ~ px(100)
+    dose_iv ~ px(100),
+    pre ~ px(30),
+    ind ~ px(30),
+    intr ~ px(30),
+    post ~ px(32)
   ) |>
   fmt_number(columns = dose, drop_trailing_zeros = TRUE, ) |>
 # TODO: * fix ketamine footnote Bornemann and Tu  
@@ -714,8 +715,7 @@ mel_ram_group_levels <- mel_ram_by_arm |>
 
 mel_ram_by_arm <- mel_ram_by_arm |>
   mutate(
-    mel_ram_groups = factor(mel_ram_groups, levels = mel_ram_group_levels),
-  ) |>
+    mel_ram_groups = factor(mel_ram_groups, levels = mel_ram_group_levels)) |>
   select(study, year, refid, study_l, arm_n, drug, asa_ps_incl, volatile_tab, tiva_tab, regional_tab, sedation_only_tab, age_table, pre_mmse, dose, pre, post, mel_ram_groups)
 
 rm(mel_ram_group_levels)
@@ -813,22 +813,20 @@ postop_only_dat <- study_arm_dat |>
 #     delirium_day_max = pmax(delirium_n1, delirium_n2, delirium_n3, delilast_n, na.rm = TRUE)
 #   ) |>
 #   filter(is.na(delitotal_n) & !is.na(delirium_day_max))
-  
+
 delirium_meta_dat <- dichot_dat |>
-  mutate(
-    delitotal_n = ifelse(refid %in% c(69, 13568, 5269, 8558, 9256), pmax(delirium_n1, delirium_n2, delirium_n3, delilast_n, na.rm = TRUE), delitotal_n)
-  ) |> 
   filter(!is.na(delitotal_n)) |>
   left_join(drugs_dat |> select(refid, arm_id, drug_recode_abbr), by = c("refid", "arm_id")) |>
   left_join(study_char_dat |> select(refid, country), by = "refid") |> 
   left_join(surgs |> select(refid, surgs_single_f), by = c("refid")) |>
   left_join(postop_only_dat, by = "refid") |> 
   rename(arm = drug_recode_abbr, surg_f = surgs_single_f) |> 
-  select(refid, refid_c, arm_id, study, design_f_lab, country, surg_f, postop_only, arm, delitotal_n, arm_n, delitotal_perc) |>
+  select(refid, refid_c, arm_id, study, design_f_lab, country, surg_f, postop_only, arm, delitotal_n, arm_n, delitotal_perc, delirium_inc_prop) |>
   arrange(refid_c, arm_id) |>
   # collapse arms
   # group_by(refid) |>  filter(n() > 2) |>  ungroup() |> # verify collapsed arms; verified 2023-03-09
   mutate(
+    delirium_inc_prop = ifelse(delirium_inc_prop == TRUE, "Incidence Proportion", "Maximum Daily"),
     arm = fct_collapse(arm, "Plac/None" = c("Plac", "None")),
     across(c(arm, design_f_lab, surg_f), ~ fct_drop(.x)),
     delitotal_n = case_when(
@@ -876,6 +874,13 @@ all_to_boxplot_dat <- delirium_meta_dat |>
   mutate(deli_prop = delitotal_n / arm_n,
          surg_f = "Any") 
 
+# placebo/none to add
+plac_none_to_boxplot_dat <- delirium_meta_dat |>
+  filter(arm == "Plac/None") |> 
+  filter(design_f_lab == "Randomized Clinical Trial") |> 
+  mutate(deli_prop = delitotal_n / arm_n,
+         surg_f = "Plac/None") 
+
 delirium_meta_dat |>
   # filter(arm == "Plac/None") |>
   filter(design_f_lab == "Randomized Clinical Trial") |>
@@ -883,14 +888,15 @@ delirium_meta_dat |>
     deli_prop = delitotal_n / arm_n
   ) |>
   bind_rows(all_to_boxplot_dat) |>
+  bind_rows(plac_none_to_boxplot_dat) |>
   mutate(
-        surg_f = fct_rev(factor(surg_f, levels = c("Ortho", "Cardiac", "GI/Abd", "Thoracic", "Oralmax", "Spine", "Various", "Any")))
+        surg_f = fct_rev(factor(surg_f, levels = c("Ortho", "Cardiac", "GI/Abd", "Thoracic", "Oralmax", "Spine", "Various", "Any", "Plac/None")))
   ) |> 
   ggplot(aes(deli_prop, surg_f)) +
   geom_boxplot(width = 0.4, outlier.size = 1.3) +
   # geom_point(aes(color = arm)) +
   geom_jitter(size = 1.3, aes(color = arm)) +
-  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00", "#D4AC0D", "#a65628", "#f781bf", "#273746")) +
+  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00", "#D4AC0D", "#a65628", "#273746")) +
   labs(y = "", x = "Incidence Proportion") +
   scale_x_continuous(limits = c(0, 1), labels = scales::percent) +
   theme(
@@ -1024,7 +1030,7 @@ netmeta_nma <- netmeta(
 
 # pairwise for metabin
 pairwise_dat <- pairs_dat |> 
-  select(refid, studlab, treat1, treat2, event1, n1, event2, n2, country, surg_f, year, postop_only1 ) |> 
+  select(refid, studlab, treat1, treat2, event1, n1, event2, n2, country, surg_f, year, postop_only1, delirium_inc_prop) |> 
   rename(postop_only = postop_only1, study = studlab) |> 
   mutate(china_vs_other = ifelse(country == "China", "China", "Other countries")) |> 
   unite(to_select, treat1:treat2, sep = "|", remove = FALSE) |> 
@@ -1093,7 +1099,7 @@ netgraph(netmeta_melram_nma,
 
 ```
 
-<foot_mg>  Dex: Dexmedetomidine; Ket: Ketamine; Mel/Ram: Melatonin or ramelteon; Mid: Midazolam; MS: Morphine sulfate; Plac/None: Placebo or no intervention; Prop: Propofol; Rhyth: Rhythim. </foot_mg> 
+<foot_mg>  Dex: Dexmedetomidine; Ket: Ketamine; Mel/Ram: Melatonin or ramelteon; Mid: Midazolam; MS: Morphine sulfate; Plac/None: Placebo or no intervention; Prop: Propofol. </foot_mg> 
 
 <br/>
 
@@ -1125,8 +1131,8 @@ dex_plac_refid <- pairwise_dat |>
 dex_meta_dat <- pairwise_dat |> 
   left_join(rob_meta_dat, by = "refid") |> 
   filter(refid %in% dex_plac_refid) |> 
-  select(study, year, event2, n2, event1, n1, D1:Overall, china_vs_other, postop_only) |> 
-  mutate(postop_only = ifelse(!is.na(postop_only), "Only postop", "Includes other times"))
+  select(study, year, event2, n2, event1, n1, D1:Overall, china_vs_other, postop_only, delirium_inc_prop) |> 
+  mutate(postop_only = ifelse(!is.na(postop_only), "Only postop", "Includes other times")) 
 
 # dex_meta_dat |> 
 #   summarize(tot = sum(n2) + sum(n1))
@@ -1183,7 +1189,53 @@ forest(dex_plac_meta,
 
 <br/>
 
-<a id="figure-5"></a>
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention according to reporting incidence proportion. </font>
+
+```{r dex_meta_sens_incidence_prop, fig.width = 14, fig.height = 10, fig.align = "left"}
+dex_plac_meta <- metabin(event2, n2, event1, n1,
+  data = dex_meta_dat,
+  studlab = study,
+  sm = "RR",
+  method = "MH",
+  method.tau = "PM",
+  hakn = TRUE,
+  prediction = TRUE,
+  allstudies = TRUE,
+  subgroup = delirium_inc_prop
+  )
+
+forest(dex_plac_meta,
+  allstudies = TRUE,
+  common = TRUE,
+  label.e = "Dex     ",
+  label.c = "Plac/None  ",
+  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
+  just.addcols.right = "right",
+  digits = 2,
+  digits.tau2 = 1,
+  overall.hetstat = TRUE,
+  print.I2.ci = TRUE,
+  prediction = TRUE,
+  fs.xlab = 11,
+  pooled.events = TRUE,
+  subgroup = TRUE,
+  print.subgroup.name = FALSE,
+  print.pval.Q = FALSE,
+  # text.subgroup.nohet = TRUE,
+  # colgap.forest.left = "10mm",
+  # colgap.forest.right = "10mm",
+  # colgap.left = "2mm",
+    xlim = c(0.1, 3),
+  # at = c(0.1, 0.5, 1, c, ...),
+  xlab = "Favors: Dexmedetomidine               Placebo/None",
+  addrows.below.overall = 4,
+  text.addline1 = paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval))
+)
+```
+<foot_mg>  Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias; +: low risk of bias; ?: some concerns; - high risk of bias. </foot_mg> <a id="figure-4"></a>
+:::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention --- trials from China vs. other countries. </font>
@@ -1488,9 +1540,9 @@ nma_melram_league <- netleague(netmeta_melram_nma,
 
 as_tibble(nma_melram_league$random) |>
   mutate(
-    across(V1:V8, ~ str_replace(.x, " \\(", "<br>\\(")),
+    across(V1:V7, ~ str_replace(.x, " \\(", "<br>\\(")),
     # across(V1:V8, ~ str_replace(.x, "\\]", "\\)")),
-    across(V1:V8, ~ ifelse(.x == ".", "", .x))
+    across(V1:V7, ~ ifelse(.x == ".", "", .x))
   ) |>
   gt(id = "one") |>
   fmt_markdown(columns = everything()) |>
@@ -1501,12 +1553,12 @@ as_tibble(nma_melram_league$random) |>
   tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V5, rows = V5 %in% trts_melram)) |>
   tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V6, rows = V6 %in% trts_melram)) |>
   tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V7, rows = V7 %in% trts_melram)) |>
-  tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V8, rows = V8 %in% trts_melram)) |>
+  # tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V8, rows = V8 %in% trts_melram)) |>
   rm_stubhead() |>
   gt_theme_mg() |>
   tab_options(column_labels.hidden = TRUE, table.font.size = px(14)) |>
-  tab_style(style = cell_text(align = "center"), locations = cells_body(V1:V8)) |>
-  tab_footnote("Dex: Dexmedetomidine; Ket: Ketamine; Mel/Ram: Melatonin or Ramelteon; Mid: Midazolam; MS: Morphine; Preg: Pregabalin; Prop: Propofol; Rhyth: Rhythim; Plac/None: Placebo or no comparator.")
+  tab_style(style = cell_text(align = "center"), locations = cells_body(V1:V7)) |>
+  tab_footnote("Dex: Dexmedetomidine; Ket: Ketamine; Mel/Ram: Melatonin or Ramelteon; Mid: Midazolam; MS: Morphine; Prop: Propofol; Plac/None: Placebo or no comparator.")
 
 # tab_info(temp)
 
@@ -1536,7 +1588,7 @@ netsplit(netmeta_melram_nma, order = trts_melram) %>%
   )
 ```
 
-<foot_mg> Dex: Dexmedetomidine; Ket: Ketamine; Mel: Melatonin; Ram: Ramelteon; Mid: Midazolam; MS: Morphine; Preg: Pregabalin; Prop: Propofol; Rhyth: Rhythim; Plac/None: Placebo or no comparator. </foot_mg> 
+<foot_mg> Dex: Dexmedetomidine; Ket: Ketamine; Mel/Ram: Melatonin/Ramelteon; Mid: Midazolam; MS: Morphine;  Prop: Propofol; Plac/None: Placebo or no comparator. </foot_mg> 
 :::
 
 <br/>

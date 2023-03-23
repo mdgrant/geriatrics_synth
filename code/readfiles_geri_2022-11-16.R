@@ -2,9 +2,9 @@
 library(conflicted)
 library(janitor)
 library(robvis)
-library(meta)
-library(netmeta)
-library(metasens)
+suppressPackageStartupMessages(library(meta))
+suppressPackageStartupMessages(library(netmeta))
+suppressPackageStartupMessages(library(metasens))
 library(skimr)
 library(htmltools)
 library(reactable)
@@ -530,4 +530,4 @@ color_3 <- "#7fb3d5"
 color_4 <- "#c39bd3"
 
 #### save for use ------------------------------------- (2023-03-13 22:53) @----
-# save.image(paste0("/Users/mgrant/Documents/_projects01/asa/_geriatric/geriatrics_synth/data/geri_data_", format(Sys.Date()), ".Rdata"))
+save.image(paste0("/Users/mgrant/Documents/_projects01/asa/_geriatric/geriatrics_synth/data/geri_data_", format(Sys.Date()), ".Rdata"))

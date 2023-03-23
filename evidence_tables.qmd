@@ -22,17 +22,6 @@ link-citations: no
 nocite: '@*'
 ---
 
-<!-- ```{=html} -->
-<!-- :target {  /* fix target location so caption appears */ -->
-<!--     display: block; -->
-<!--     position: relative; -->
-<!--     top: -60px; -->
-<!--     visibility: display; -->
-<!-- } -->
-
-<!-- </style> -->
-<!-- ``` -->
-
 ```{css, echo = FALSE}
 :target {  /* fix target location so caption appears */
     display: block;
