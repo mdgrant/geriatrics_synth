@@ -38,6 +38,12 @@ proc_freq <- function(df, a, b){
     gt::gt(.)
 }
 
+tab_lst <- function(data, vars){
+  data %>%
+    select({{vars}}) %>%
+    map(~ tabyl(.))
+}
+
 # convenience function to view record(s) for refid from dataset
 view_rec <- function(data_set, refid_select) {
   data_set |>
