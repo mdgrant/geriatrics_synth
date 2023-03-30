@@ -16,7 +16,7 @@ tables:
         sep: " -- "
 bibliography: "bib/kq6.bib"
 csl: jama.csl
-link-citations: no
+link-citations: false
 nocite: '@*'
 ---
 
@@ -26,14 +26,13 @@ nocite: '@*'
 
 Among older patients undergoing surgery and anesthesia, do dexmedetomidine, ketamine, ramelteon, or melatonin administered during the perioperative period decrease the risk of postoperative delirium or other adverse cognitive outcomes?
 
-:::{.callout-note collapse=true appearance='default' icon=true}
+::: {.callout-note collapse="true" appearance="default" icon="true"}
 ## DRAFT results last updated `r lubridate::now()`
-2023-03-21 Added sensitivity analysis according to delirium incidence proportion approximated by maximum daily incidence where incidence proportion was not reported.  
+
+2023-03-21 Added sensitivity analysis according to delirium incidence proportion approximated by maximum daily incidence where incidence proportion was not reported.
 
 2023-03-19 Updated dexmedetomidine and melatonin/ramelteon results with 3 additional studies reporting daily, but not overall, incidence proportion.
 :::
-
-<!-- setup -------------------------------------------- (2022-12-24 16:56) @ --->
 
 ```{r read_data}
 #| include: false
@@ -56,7 +55,7 @@ dichot_dat <- data_kq(dichot_dat, kq6_refid) |>
 # rob_dat <- data_kq(rob_dat, kq6_refid) 
 ```
 
-```{r rob2_data} 
+```{r rob2_data}
 # identify studies with disagreements
 # CODE: * rob data
 rob2_conflict_refid <- rob_dat |> 
@@ -420,7 +419,7 @@ dex_by_arm <- drugs_dat |>
   rename_with(~ gsub("dexmed_", "", .x, fixed = TRUE)) |>
   mutate(
     across(pre:unspec, ~ gsub("proph_med_", "", .x, fixed = TRUE)),
-    across(pre:unspec, ~ notna_to_x(.x, "\U2582")),
+    across(pre:unspec, ~ notna_to_x(.x, "▂")),
     maintain_range = ifelse(!is.na(maintain_low + maintain_up), paste0(maintain, " (", maintain_low, "–", maintain_up, ")"), maintain),
     maintain_range = str_replace(maintain_range, "NA ", ""),
     loading = ifelse(loading == "0", "", loading),
@@ -482,8 +481,8 @@ dex_by_arm |>
     sedation_only_tab = "Sed",
     age_table = "Age",
     pre_mmse = "MMSE",
-    loading = "Loading",
-    maintain_range = md("Maintenance/hr"),
+    loading = "Load",
+    maintain_range = md("Maint/hr"),
     postdose = md("Postop"),
     pre = "Pre",
     ind = "Ind",
@@ -492,26 +491,22 @@ dex_by_arm |>
     # drug_f = md("Comparator <br/> Detail")
   ) |>
   fmt_markdown(columns = c(study_l, pre_mmse, age_table, pre, ind, intr, post)) |>
-  tab_spanner(label = "Dexmedetomidine Dose mcg/kg", columns = c(loading, maintain_range, postdose), level = 1) |>
+  tab_spanner(label = "Dexmedetomidine mcg/kg", columns = c(loading, maintain_range, postdose), level = 1) |>
   # tab_spanner(label = "Maintenance/hr", columns = c(loading, maintain_range, postdose), level = 1) |>
   tab_spanner(label = "ASA", columns = c(asa_ps_incl)) |>
   tab_spanner(label = "Anesthetic", columns = c(volatile_tab:sedation_only_tab)) |>
-  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(loading:postdose))) |>
-  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(loading, maintain_range, postdose, pre:post))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(age_table, pre_mmse, loading:postdose))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(loading, maintain_range, postdose))) |>
   tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(drug_recode_abbr, study_l, pre:post))) |>
   tab_style(style = cell_text(font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
-  tab_style(style = cell_text(size = px(8)), locations = cells_column_labels(columns = c(volatile_tab:sedation_only_tab))) |>
-  tab_style(style = cell_text(size = px(10)), locations = cells_column_labels(columns = c(pre:post, maintain_range))) |>
+  tab_style(style = cell_text(size = px(10)), locations = cells_column_labels(columns = c(volatile_tab, regional_tab, sedation_only_tab,pre:post))) |>
+  tab_style(style = cell_text(size = px(8)), locations = cells_column_labels(columns = c(tiva_tab))) |>
   tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n, drug_recode_abbr), rows = str_detect(drug_recode_abbr, "Dex"))) |>
   tab_style(style = cell_text(align = "right"), locations = cells_body(columns = c(arm_n))) |>
   sub_missing(columns = everything(), rows = everything(), missing_text = "") |>
   sub_values(values = c("NS"), replacement = "—") |>
   gt_theme_mg() |>
   cols_width(
-    pre ~ px(30),
-    ind ~ px(30),
-    intr ~ px(30),
-    post ~ px(32),
     study_l ~ px(165),
     arm_n ~ px(45),
     drug_recode_abbr ~ px(90),
@@ -523,12 +518,16 @@ dex_by_arm |>
     age_table ~ px(100),
     pre_mmse ~ px(90),
     loading ~ px(60),
-    maintain_range ~ px(100),
-    postdose ~ px(70),
+    maintain_range ~ px(90),
+    postdose ~ px(60),
+    pre ~ px(30),
+    ind ~ px(30),
+    intr ~ px(30),
+    post ~ px(35)
   ) |>
   opt_css(css = "#one .gt_column_spanner {border-bottom-style: hidden;}") |>
-  tab_footnote("GI: gastrointestinal; Abd: abdominal (includes hepatic); Ortho: orthopedic; Various: more that one procedure category; Oralmax: oral and maxillofacial; Ophtho; ophthalmologic; Dex: Dexmedetomidine; Ulin: Ulinastatin; Hal: Haloperidol; Mid: Midazolam; Mid/Prop: Midazolam/propofol; Mid/Seve: Midazolam/sevoflurane; Preg: Pregabalin; Prop: Propofol; Rhyth: Rhythim; Plac; placebo; PS: physical status; Vol: volatile; TIVA: total intravenous anesthesia; Reg: regional; MMSE: Mini-Mental State Exam; Pre: preoperative; Ind: induction; Intr: intraoperative; Post(op): postoperative; —: unspecified.") |>
-  tab_footnote("Range if reported in parentheses.", locations = cells_column_labels(columns = maintain_range)) |> 
+  tab_footnote("GI: gastrointestinal; Abd: abdominal (includes hepatic); Ortho: orthopedic; Various: more that one procedure category; Oralmax: oral and maxillofacial; Ophtho; ophthalmologic; Dex: Dexmedetomidine; Ulin: Ulinastatin; Hal: Haloperidol; Mid: Midazolam; Mid/Prop: Midazolam/propofol; Mid/Seve: Midazolam/sevoflurane; Preg: Pregabalin; Prop: Propofol; Plac; placebo; PS: physical status; Vol: volatile; TIVA: total intravenous anesthesia; Reg: regional; MMSE: Mini-Mental State Exam; Pre: preoperative; Ind: induction; Intr: intraoperative; Post(op): postoperative; —: unspecified.") |>
+  tab_footnote("Maintenance range if reported in parentheses.", locations = cells_column_labels(columns = maintain_range)) |> 
   tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |> 
   tab_footnote(md("ASA Physical Status of patients included (proportions can be found here[link to table add])."), locations = cells_column_labels(columns = c(asa_ps_incl))) |> 
   tab_footnote(md("Given as a single dose."), locations = cells_body(columns = maintain_range, rows = maintain_range %in% c("100", "200", "400")))
@@ -994,7 +993,7 @@ delirium_total_gt_mel_ram |>
   tab_footnote("Maximum of reported daily incidence.", locations = cells_body(columns = n_percent, rows = refid %in% refid_max_of_days))
 ```
 
-### *Meta-analyses*
+### *Pooled*
 
 ```{r nma_meta_dat}
 #| eval: true
@@ -1070,7 +1069,7 @@ netmeta_melram_nma <- netmeta(
 
 <font size = 4> `r figure_ref()` Randomized clinical trials and comparators reporting overall incidence of delirium. </font>
 
-```{r delirium_nma_plot, warning = FALSE, fig.height = 5, fig.align = "left"}
+```{r delirium_nma_plot, warning = FALSE, fig.dim = c(6, 5), out.width = "40%", fig.align = "center"}
 # ```{r delirium_nma_plot, fig.height = 8, fig.align = "left", warning = FALSE}
 #| eval: true
 #| # CODE: network plot
@@ -1099,7 +1098,7 @@ netgraph(netmeta_melram_nma,
 
 ```
 
-<foot_mg>  Dex: Dexmedetomidine; Ket: Ketamine; Mel/Ram: Melatonin or ramelteon; Mid: Midazolam; MS: Morphine sulfate; Plac/None: Placebo or no intervention; Prop: Propofol. </foot_mg> 
+<foot_mg> Dex: Dexmedetomidine; Ket: Ketamine; Mel/Ram: Melatonin or ramelteon; Mid: Midazolam; MS: Morphine sulfate; Plac/None: Placebo or no intervention; Prop: Propofol. </foot_mg>
 
 <br/>
 
@@ -1107,7 +1106,7 @@ netgraph(netmeta_melram_nma,
 
 #### Dexmedetomidine
 
-<font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention. </font>
+<font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention (randomized clinical trials). </font>
 
 ```{r nma_dat, fig.width = 14, fig.height = 8, fig.align = "left"}
 # ```{r nma_dat, out.width = 50%, out.height = 100%}
@@ -1154,6 +1153,21 @@ temp_meta <- dex_plac_meta
 temp_meta <- update(temp_meta, subgroup = NULL, sm = "OR")
 temp_metabias <- metabias(temp_meta, method.bias = "Harbord", k.min = 10)
 
+# proportion primary or secondary outcome
+prim_delirium_temp <- study_char_dat |> 
+  filter(refid %in% dex_plac_refid) |> 
+  mutate(percent = mean(!is.na(prim_delirium))) |> 
+  select(percent) |> 
+  distinct() |> 
+  pull()
+
+sec_delirium_temp <- study_char_dat |> 
+  filter(refid %in% dex_plac_refid) |> 
+  mutate(percent = mean(!is.na(sec_delirium))) |> 
+  select(percent) |> 
+  distinct() |> 
+  pull()
+
 # summary(dex_plac_meta)
 forest(dex_plac_meta,
   allstudies = TRUE,
@@ -1182,15 +1196,19 @@ forest(dex_plac_meta,
   xlab = "Favors: Dexmedetomidine               Placebo/None",
   addrows.below.overall = 4,
   text.addline1 = paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval)),
-  text.addline2 = "He 2018, Huyan 2019, Gao 2021, and Lu 2021 incidence proportion based on the maximum daily reported."
+  text.addline2 = paste0("Delirium a designated primary outcome in ", digit1(prim_delirium_temp * 100), "%; a secondary outcome in ", digit1(sec_delirium_temp * 100), "%.")
 )
-```
-<foot_mg>  Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias; +: low risk of bias; ?: some concerns; - high risk of bias. </foot_mg> <a id="figure-4"></a>
 
+rm(prim_delirium_temp, sec_delirium_temp)
+
+```
+
+<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/>
+Risk of bias ratings: + low, ? some concerns, - high. </foot_mg> <a id="figure-4"></a>
 <br/>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention according to reporting incidence proportion. </font>
+#### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention according to reporting incidence proportion (randomized clinical trials). </font>
 
 ```{r dex_meta_sens_incidence_prop, fig.width = 14, fig.height = 10, fig.align = "left"}
 dex_plac_meta <- metabin(event2, n2, event1, n1,
@@ -1234,11 +1252,13 @@ forest(dex_plac_meta,
   text.addline1 = paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval))
 )
 ```
-<foot_mg>  Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias; +: low risk of bias; ?: some concerns; - high risk of bias. </foot_mg> <a id="figure-4"></a>
+
+<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/>
+Risk of bias ratings: + low, ? some concerns, - high. </foot_mg> <a id="figure-4"></a>
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention --- trials from China vs. other countries. </font>
+#### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention --- trials from China vs. other countries (randomized clinical trials). </font>
 
 ```{r nma_dat_china, fig.width = 14, fig.height = 10, fig.align = "left"}
 dex_plac_meta_china <- metabin(event2, n2, event1, n1,
@@ -1289,11 +1309,12 @@ forest(dex_plac_meta_china,
 
 ```
 
-<foot_mg>  Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias; +: low risk of bias; ?: some concerns; - high risk of bias. </foot_mg> 
+<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/>
+Risk of bias ratings: + low, ? some concerns, - high. </foot_mg>
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention --- postoperative administration only vs. other times. </font>
+#### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention --- postoperative administration only vs. other times (randomized clinical trials). </font>
 
 ```{r nma_dat_postop, fig.width = 14, fig.height = 10, fig.align = "left"}
 dex_plac_meta_postop <- metabin(event2, n2, event1, n1,
@@ -1338,13 +1359,16 @@ forest(dex_plac_meta_postop,
 
 ```
 
-<foot_mg>  Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias; +: low risk of bias; ?: some concerns; - high risk of bias. </foot_mg> 
+<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/>
+Risk of bias ratings: + low, ? some concerns, - high.</foot_mg>
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention small study effects --- funnel plot and limit meta-analysis. </font>
 
-```{r dex_plac_meta_funnel_limit, out.width = "85%", out.height = "100%", fig.align = "left"}
+```{r dex_plac_meta_funnel_limit, fig.dim = c(7, 5.5), out.width = "70%", fig.align = "center"}
+# {r name, fig.dim = c(6, 6), out.width = "60%", fig.align = "center"}
+# {r dex_plac_meta_funnel_limit, out.width = "85%", out.height = "100%", fig.align = "center"}
 par(mar = c(4, 4, 2, 1))
 
 limit_colors <- c("#AAB7B8", "#D5DBDB", "#F4F6F6")
@@ -1360,27 +1384,22 @@ legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#A
 text(1.2, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .9)
 ```
 
-<foot_mg>  Estimates (95% CI) from random effects models --- unadjusted `r paste0(digit2(exp(temp_limit_meta$TE.random)), " (", digit2(exp(temp_limit_meta$lower.random)), "–", digit2(exp(temp_limit_meta$upper.random)), ")")`; adjusted for small study effects: `r paste0(digit2(exp(temp_limit_meta$TE.adjust)), " (", digit2(exp(temp_limit_meta$lower.adjust)), "–", digit2(exp(temp_limit_meta$upper.adjust)), ")")`.</font>
+<foot_mg> Estimates (95% CI) from random effects models --- unadjusted `r paste0(digit2(exp(temp_limit_meta$TE.random)), " (", digit2(exp(temp_limit_meta$lower.random)), "–", digit2(exp(temp_limit_meta$upper.random)), ")")`; adjusted for small study effects: `r paste0(digit2(exp(temp_limit_meta$TE.adjust)), " (", digit2(exp(temp_limit_meta$lower.adjust)), "–", digit2(exp(temp_limit_meta$upper.adjust)), ")")`.</font>
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()` Summary risk of bias from randomized clinical trials of dexmedetomidine compared with placebo or no intervention. </font>
 
 ```{r rob2_summary_dex_plac, fig.height = 3, out.width = "60%"}
-rob_temp_dat <- rob2_reconciled_dat |> 
-  filter(refid %in% dex_plac_refid) |> 
-  select(-refid)
-
-rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind")
+rob_summary_fun(cogfunc_refid)
 ```
-
 :::
 
 <br/>
 
 #### Ketamine
 
-<font size = 4> `r figure_ref()` Ketamine compared with placebo. </font>
+<font size = 4> `r figure_ref()` Ketamine compared with placebo (randomized clinical trials). </font>
 
 ```{r nma_ket_dat, fig.width = 14, fig.height = 3, fig.align = "left"}
 # ```{r nma_dat, out.width = 50%, out.height = 100%}
@@ -1437,13 +1456,13 @@ forest(ket_plac_meta,
 )
 ```
 
-<foot_mg>  D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias; +: low risk of bias; ?: some concerns; - high risk of bias. </foot_mg> 
-
+<foot_mg> D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/>
+Risk of bias ratings: + low, ? some concerns, - high. </foot_mg>
 <br/>
 
 #### Melatonin/Ramelteon
 
-<font size = 4> `r figure_ref()` Melatonin and ramelteon compared with placebo. </font>
+<font size = 4> `r figure_ref()` Melatonin and ramelteon compared with placebo (randomized clinical trials). </font>
 
 ```{r nma_mel_ram_dat, fig.width = 14, fig.height = 6.5, fig.align = "left"}
 # ```{r nma_dat, out.width = 50%, out.height = 100%}
@@ -1504,18 +1523,89 @@ forest(mel_ram_plac_meta,
 )
 
 ```
-
-<foot_mg>  Mel: melatonin; Ram: ramelteon; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias; +: low risk of bias; ?: some concerns; - high risk of bias. </foot_mg> 
-
+<a id="figure-11"></a>
+<foot_mg> Mel: melatonin; Ram: ramelteon; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/>
+Risk of bias ratings: + low, ? some concerns, - high.</foot_mg>
 <br/>
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <font size = 4> `r figure_ref()` Ramelteon compared with placebo (before-after studies). </font>
+
+```{r mel_ram_bef_after_meta, fig.width = 14, fig.height = 3, fig.align = "left"}
+mel_ram_bef_aft_dat <- delirium_meta_dat |> 
+  group_by(refid) |>
+  filter(any(arm %in% c("Ram", "Mel"))) |>
+  filter(design_f_lab == "Before-After/Time Series") |>
+  ungroup()
+
+pairwise_dat <- pairwise(
+    treat = arm,
+    event = delitotal_n,
+    n = arm_n,
+    studlab = study,
+    data = mel_ram_bef_aft_dat,
+    sm = "RR",
+    keep.all.comparisons = TRUE
+  ) |> 
+  left_join(robinsi_dat |> select(-study), by = "refid") |> 
+  select(study, year, event2, n2, event1, n1, D1:Overall, treat2, treat1) |> 
+  mutate(treat2 = "Ramelteon",
+         treat1 = "None") |> 
+  group_by(study) |> 
+  slice(1) |> 
+  ungroup()
+# TODO: after reconcile robins-i fix
+
+mel_ram_bef_aft_meta <- metabin(event2, n2, event1, n1,
+  data = pairwise_dat,
+  studlab = study,
+  sm = "RR",
+  method = "MH",
+  method.tau = "PM",
+  hakn = FALSE,
+  prediction = FALSE,
+  allstudies = TRUE
+)
+  
+forest(mel_ram_bef_aft_meta,
+  allstudies = TRUE,
+  random = FALSE,
+  label.e = "Ramelteon",
+  label.c = "Placebo",
+  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "Overall"),
+  rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "All"),
+  just.addcols.right = "right",
+  digits = 2,
+  digits.tau2 = 1,
+  overall.hetstat = FALSE,
+  print.I2.ci = TRUE,
+  prediction = TRUE,
+  fs.xlab = 11,
+  pooled.events = TRUE,
+  print.pval.Q = FALSE,
+  # colgap.forest.left = "10mm",
+  # colgap.forest.right = "10mm",
+  # colgap.left = "2mm",
+  xlim = c(0.1, 2),  # at = c(0.1, 0.5, 1, c, ...),
+  xlab = "Favors: Ramelteon                   None",
+  addrows.below.overall = 4,
+  text.addline1 = "Continuity correction of 0.5 in studies with zero cell frequencies."
+  # text.addline1 = paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval))
+)
+```
+
+<foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/>
+Risk of bias ratings: ++ low, + moderate, - serious, - - critical; NI: no information; NA: not applicable.</foot_mg>
+:::
 
 #### All Comparators
 
-<font size = 4> `r figure_ref()` Network meta-analysis including all comparators.</font>
+<font size = 4> `r figure_ref()` Network meta-analysis of delirium incidence including all comparators.</font>
 
-```{r nmaForest, fig.width = 6, fig.height = 3.3, fig.align = "center"}
+```{r nmaForest, fig.dim = c(6, 3.3), out.width = "45%", fig.align = "center"}
 #| eval: true
 # CODE: network meta results
+# fig.width = 6, fig.height = 3.3, fig.align = "center"}
 par(mar = c(1, 1, 1, 1))
 forest(netmeta_melram_nma,
        xlab = "Risk Ratio")
@@ -1523,7 +1613,7 @@ forest(netmeta_melram_nma,
        # at = c(0.01, .1, 0.5, 1, 2))
 ```
 
-<foot_mg> Dex: Dexmedetomidine; Ket: Ketamine; Mel/Ram: Melatonin or Ramelteon; Mid: Midazolam; MS: Morphine; Preg: Pregabalin; Prop: Propofol; Rhyth: Rhythim; Plac/None: Placebo or no comparator. </foot_mg>
+<foot_mg> Dex: Dexmedetomidine; Ket: Ketamine; Mel/Ram: Melatonin or Ramelteon; Mid: Midazolam; MS: Morphine; Prop: Propofol; Plac/None: Placebo or no comparator. </foot_mg>
 
 <br/>
 
@@ -1567,7 +1657,7 @@ as_tibble(nma_melram_league$random) |>
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()` Comparison adjusted funnel plot. </font>
 
-```{r, out.height = "90%", out.width = "90%"}
+```{r compare_adj_fun_delirium, fig.dim = c(7, 5.5), out.width = "70%", fig.align = "center"}
 par(mar = c(4, 4, 2, 1), bty = "n", xaxt = "s", yaxt = "s")
 funnel(netmeta_melram_nma,
   order = trts_melram
@@ -1588,7 +1678,7 @@ netsplit(netmeta_melram_nma, order = trts_melram) %>%
   )
 ```
 
-<foot_mg> Dex: Dexmedetomidine; Ket: Ketamine; Mel/Ram: Melatonin/Ramelteon; Mid: Midazolam; MS: Morphine;  Prop: Propofol; Plac/None: Placebo or no comparator. </foot_mg> 
+<foot_mg> Dex: Dexmedetomidine; Ket: Ketamine; Mel/Ram: Melatonin/Ramelteon; Mid: Midazolam; MS: Morphine; Prop: Propofol; Plac/None: Placebo or no comparator. </foot_mg>
 :::
 
 <br/>
@@ -1597,69 +1687,241 @@ netsplit(netmeta_melram_nma, order = trts_melram) %>%
 
 ## **Complications**
 
-## **Mortality**
-
-<font size = 4> `r table_ref()` Reported in-hospital, 30-, 90-, and 1-year mortality by comparator and surgical category.</font>
-
-```{r non_missings_mortality}
+```{r complications_check_missing}
 #| eval: false
-# NOTE: !verified non missing mortality incl effects; all have ns
-temp_mort <- dichot_dat |>
-  select(refid, study, starts_with("mort")) |>
-  filter(if_any(starts_with("mort"), ~ !is.na(.x)))
+## check missings other than n ------------------------ (2023-03-23 12:52) @----
+missing_non_n_fun <- function(var_prefix) {
+  dichot_dat |>
+    filter(if_any(!!paste0(var_prefix, "_per"):!!paste0(var_prefix, "_95high"), ~ !is.na(.x)) & is.na(!!paste0(var_prefix, "_n")))
+}
+variables_temp <- c("cardarr", "intub", "airleak", "gastro", "medical", "pulcongest", "respfail", "pe", "ssi", "thromb", "kidneyinj", "myoinfarct", "othcomp", "pneum", "infect", "cardiac", "stroke", "pulm", "cardiac")
+map(variables_temp, missing_non_n_fun)
+## bruit force ---------------------------------------- (2023-03-23 16:39) @----
+# dichot_dat |> 
+#   filter(!is.na(d_complication)) |> 
+#   filter(if_any(cardarr_per:cardarr_95high, ~ !is.na(.x)) & is.na(cardarr_n))
+#   filter(if_any(intub_per:intub_95high, ~ !is.na(.x)) & is.na(intub_n))
+#   filter(if_any(airleak_per:airleak_95high, ~ !is.na(.x)) & is.na(airleak_n))
+#   filter(if_any(gastro_per:gastro_95high, ~ !is.na(.x)) & is.na(gastro_n))
+#   filter(if_any(medical_per:medical_95high, ~ !is.na(.x)) & is.na(medical_n))
+#   filter(if_any(pulcongest_per:pulcongest_95high, ~ !is.na(.x)) & is.na(pulcongest_n))
+#   filter(if_any(respfail_per:respfail_95high, ~ !is.na(.x)) & is.na(respfail_n))
+#   filter(if_any(pe_per:pe_95high, ~ !is.na(.x)) & is.na(pe_n))
+#   filter(if_any(ssi_per:ssi_95high, ~ !is.na(.x)) & is.na(ssi_n))
+#   filter(if_any(thromb_per:thromb_95high, ~ !is.na(.x)) & is.na(thromb_n))
+#   filter(if_any(kidneyinj_per:kidneyinj_95high, ~ !is.na(.x)) & is.na(kidneyinj_n))
+#   filter(if_any(myoinfarct_per:myoinfarct_95high, ~ !is.na(.x)) & is.na(myoinfarct_n))
+#   filter(if_any(othcomp_per:othcomp_95high, ~ !is.na(.x)) & is.na(othcomp_n))
+#   filter(if_any(pneum_per:pneum_95high, ~ !is.na(.x)) & is.na(pneum_n))
+#   filter(if_any(infect_per:infect_95high, ~ !is.na(.x)) & is.na(infect_n))
+#   filter(if_any(cardiac_per:cardiac_95high, ~ !is.na(.x)) & is.na(cardiac_n)) 
+#   filter(if_any(stroke_per:stroke_95high, ~ !is.na(.x)) & is.na(stroke_n))
+#   filter(if_any(pulm_per:pulm_95high, ~ !is.na(.x)) & is.na(pulm_n))
+#   filter(if_any(cardiac_per:cardiac_95high, ~ !is.na(.x)) & is.na(cardiac_n))
 
-skim(temp_mort)
-writexl::write_xlsx(temp_mort, "/Users/mgrant/Desktop/temp_mort.xlsx")
 ```
 
-```{r mortality_data}
-# CODE: mortality_dat create data including all reported, hosp, 30, 60, 90, 1-ear
-mortality_total_tab_fun <- function(refids, mort_est, mort_period) {
-  # referent values to calculate rr or rd
-  mortality_rr_ref <- dichot_dat |>
-    mutate(
-      mort_period = mort_period,
-      mort_n = {{ mort_est }},
-      ref_mort_n = mort_n,
-      ref_arm_n = arm_n
-    ) |>
-    select(refid, refid_c, arm_id, year, study, study_l, design_f_lab, mort_n, arm_n, ref_mort_n, ref_arm_n, mort_period) |>
-    filter(!is.na(mort_n)) |>
-    filter(refid %in% refids) |>
-    arrange(refid_c, arm_id) |>
-    # rename(ref_mort_n = mort_n, ref_arm_n = arm_n) |>
-    group_by(refid_c) |>
-    mutate(
-      ref_arm_n = ifelse(row_number() > 1, NA, ref_arm_n),
-      ref_mort_n = ifelse(row_number() > 1, NA, ref_mort_n)
-    ) |>
-    fill(ref_arm_n, ref_mort_n) |>
-    mutate(
-      ref_arm_n = ifelse(row_number() == 1, NA, ref_arm_n),
-      ref_mort_n = ifelse(row_number() == 1, NA, ref_mort_n)
-    ) |>
-    ungroup()
-}
+## **Mortality**
 
-mortality_dat <- bind_rows(
-  mortality_total_tab_fun(kq6_refid, morthosp_n, "Hospital"),
-  mortality_total_tab_fun(kq6_refid, mort30_n, "30d"),
-  mortality_total_tab_fun(kq6_refid, mort90_n, "90d"),
-  mortality_total_tab_fun(kq6_refid, mort1_n, "1yr")) |>
+```{r mortality_data}
+#| eval: true
+mortality_dat <- dichot_dat |>
+  filter(if_any(starts_with("mort"), ~ !is.na(.x))) |> 
+  select(refid, refid_c, arm_id, year, study, study_l, design_f_lab, arm_n,  matches("_n|per") & starts_with("mort")) |> 
+  pivot_longer(
+    cols = starts_with("mort"),
+    names_to = "estimand",
+    values_to = "estimate",
+    values_drop_na = TRUE
+  ) |>
+  mutate(
+    mort_period = str_remove(estimand, "_.*"),
+    estimand = str_replace(estimand, ".*_(.*)$", "\\1")
+  ) |>
+  pivot_wider(
+    names_from = estimand,
+    values_from = estimate
+  ) |>
+  mutate(
+    mort_period = case_when(
+      str_detect(mort_period, "hosp") ~ "Hospital",
+      str_detect(mort_period, "mort30") ~ "30-day",
+      str_detect(mort_period, "mort90") ~ "90-day",
+      str_detect(mort_period, "mort1") ~ "1-year"
+    ),
+    per = per/100
+  ) |>
+  rename(mort_n = n, mort_per_rep = per) |>
+  arrange(refid_c, arm_id) |>
+  mutate(
+    ref_arm_n = arm_n,
+    ref_mort_n = mort_n
+  ) |>
+  group_by(refid_c) |>
+  mutate(
+    ref_arm_n = ifelse(row_number() > 1, NA, ref_arm_n),
+    ref_mort_n = ifelse(row_number() > 1, NA, ref_mort_n)
+  ) |>
+  fill(ref_arm_n, ref_mort_n) |>
+  mutate(
+    ref_arm_n = ifelse(row_number() == 1, NA, ref_arm_n),
+    ref_mort_n = ifelse(row_number() == 1, NA, ref_mort_n)
+  ) |>
+  ungroup() |> 
   left_join(study_char_dat |> select(refid, surgs_single_f), by = "refid") |>
   left_join(table_age_mn_med, by = c("refid", "arm_id")) |>
   left_join(drugs_dat |> select(refid, arm_id, drug_recode_abbr), by = c("refid", "arm_id")) |>
   left_join(asa_combine |> select(refid, arm_id, asa_ps_incl), by = c("refid", "arm_id")) |> 
   mutate(mort_percent = mort_n/arm_n,
-         mort_period = factor(mort_period, levels = c("Hospital", "30d", "90d", "1yr"))) |>
-  relocate(mort_percent, .after = arm_n) |> 
-  relocate(arm_n, drug_recode_abbr, asa_ps_incl, age_table, .after = study_l)
+         mort_period = factor(mort_period, levels = c("Hospital", "30-day", "90-day", "1-year"))) |>
+  select(refid, refid_c, arm_id, year, study, study_l, arm_n, drug_recode_abbr, asa_ps_incl, age_table, design_f_lab, mort_n, mort_percent, ref_mort_n, ref_arm_n, mort_period, mort_per_rep, surgs_single_f)
+
+dex_mort_refid <- refid_detect_select_fun(mortality_dat, drug_recode_abbr, "Dex")
+ket_mort_refid <- refid_detect_select_fun(mortality_dat, drug_recode_abbr, "Ket")
+mel_ram_mort_refid <- refid_detect_select_fun(mortality_dat, drug_recode_abbr, "Mel|Ram")
+
+# skim(mortality_dat)
 ```
 
-```{r mortality_gt}
+### Dexmedetomidine
+
+<font size = 4> `r table_ref()` Reported in-hospital, 30-, 90-, and 1-year mortality in dexmedetomidine randomized clinical trials by comparator and surgical category.</font>
+
+```{r mortality_dex_gt}
 #| eval: true
 mortality_dat |>
   arrange(mort_period, surgs_single_f, year, study, arm_id) |>
+  filter(refid %in% dex_mort_refid) |> 
+  group_by(study_l) |>
+  mutate(
+    surgs_single_f = as.character(surgs_single_f),
+    study_l = ifelse(row_number() == 1, study_l, NA),
+    study = ifelse(row_number() == 1, study, NA),
+    across(c(surgs_single_f, asa_ps_incl,), ~ ifelse(row_number() > 1, NA, .x)),
+    # bar = bar_prop(50, color_1),
+    bar = case_when(
+      str_detect(drug_recode_abbr, "Mel|Ram") ~ bar_prop(mort_percent * 100, "#0E6655"),
+      str_detect(drug_recode_abbr, "Ulin|MS|Prop") ~ bar_prop(mort_percent * 100, "#F39C12"),
+      str_detect(drug_recode_abbr, "Dex") ~ bar_prop(mort_percent * 100, "#A93226"),
+      .default = bar_prop(mort_percent * 100, color_1)
+    ),
+  ) |>
+  ungroup() |>
+  mutate(
+    # de Jonghe 2014 reported in hospital and 90-day
+    study_l = ifelse(refid == 16552 & arm_id == 1, "[de Jonghe 2014](evidence_tables.html#16552)", study_l),
+    surgs_single_f = ifelse(refid == 16552 & arm_id == 1, "Ortho", surgs_single_f),
+    rd_ci = ifelse(!is.na(ref_mort_n), rd_per_ci_fun(mort_n, arm_n, ref_mort_n, ref_arm_n, digits = 1), "—"),
+    mort_n_percent = n_per_fun(mort_n, arm_n, 1)
+  ) |> 
+  rename(drug_recode = drug_recode_abbr) |> 
+  relocate(surgs_single_f, .before = asa_ps_incl) |> 
+  relocate(mort_n_percent, .before = bar) |> 
+  select(-mort_n) |> 
+  arrange(year, refid_c, arm_id) |> 
+  group_by(mort_period) |> 
+  gt(id = "one") |> 
+  cols_hide(c(refid, refid_c, arm_id, year, study, design_f_lab, mort_percent, ref_mort_n, ref_arm_n, mort_per_rep)) |>
+  row_group_order(groups = c("Hospital", "30-day", "90-day", "1-year")) |> 
+  cols_label(
+    study_l = "Study",
+    arm_n = "N",
+    drug_recode = "Drug",
+    surgs_single_f = "Surgery",
+    age_table = "Age",
+    asa_ps_incl = "PS",
+    mort_n_percent = "N (%)",
+    bar = md("0 - 100%"),
+    rd_ci = "RD (95% CI)"
+  ) |> 
+  fmt_markdown(columns = c(study_l, bar, age_table)) |>
+  tab_spanner(label = "Mortality", columns = c(mort_n_percent, bar)) |> 
+  tab_spanner(label = "ASA", columns = c(asa_ps_incl)) |> 
+  gt_theme_mg() |> 
+  tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(study, drug_recode, surgs_single_f))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, age_table, asa_ps_incl, mort_n_percent, rd_ci))) |>
+  tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study, drug_recode, surgs_single_f, bar))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(mort_n_percent, rd_ci))) |>
+  tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |> 
+  tab_style(style = list(cell_text(color = "#0E6655")), locations = cells_body(columns = c(arm_n, drug_recode, age_table, mort_n_percent), rows = str_detect(drug_recode, "Mel|Ram"))) |> 
+  tab_style(style = list(cell_text(color = "#F39C12")), locations = cells_body(columns = c(arm_n, drug_recode, age_table, mort_n_percent), rows = str_detect(drug_recode, "Ulin|MS|Prop"))) |>
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n, drug_recode, age_table, mort_n_percent), rows = str_detect(drug_recode, "Dex"))) |> 
+  sub_missing(columns = everything(), rows = everything(), missing_text = "") |> 
+  cols_width(
+    study_l ~ px(140),
+    arm_n ~ px(45),
+    drug_recode ~ px(70),
+    surgs_single_f ~ px(95),
+    age_table ~ px(100),
+    asa_ps_incl ~ px(60),
+    mort_n_percent ~ px(80),
+    bar ~ px(100),
+    rd_ci ~ px(145)
+  ) |> 
+  # opt_css(css = "#one .gt_column_spanner {border-bottom-style: hidden;}") |>
+  tab_footnote("ASA PS: American Society of Anesthesiologists Physical Status; RD: risk difference; GI: gastrointestinal; Abd: abdominal (includes hepatic); Ortho: orthopedic; Various: more that one procedure category; Dex: Dexmedetomidine; Ulin: Ulinastatin; MS: morphine sulfate; Plac; placebo.") |> 
+  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table))) |> 
+  tab_footnote("Different lengths of follow-up from the same trial.", locations = cells_body(columns = study_l, rows = study %in% c("Su 2016", "Zhang 2019b"))) 
+
+```
+
+```{r mortality_dex_meta}
+#| eval: true
+mortality_dex_meta_dat <- mortality_dat |>
+  filter(refid %in% dex_mort_refid, mort_period == "Hospital") |>
+  rename(arm = drug_recode_abbr) |> 
+  filter(!str_detect(arm, "Ulin")) |> 
+  select(refid, study, arm, mort_n, arm_n)
+
+trts_mort_dex <- levels(fct_drop(mortality_dex_meta_dat$arm))
+
+pairwise_mort_dex_dat <- pairwise(
+  treat = arm,
+  event = mort_n,
+  n = arm_n,
+  studlab = study,
+  allstudies = TRUE,
+  data = mortality_dex_meta_dat,
+  sm = "RD",
+  keep.all.comparisons = TRUE
+)
+
+netmeta_mort_dex_nma <- netmeta(
+  pairwise_mort_dex_dat,
+  random = FALSE,
+  prediction = FALSE,
+  seq = trts_mort_dex,
+  sm = "RD",
+  reference.group = "Plac"
+)
+
+forest(netmeta_mort_dex_nma, pscale = 100)
+
+```
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+### <font size = 4> `r figure_ref()` Summary risk of bias from dexmedetomidine randomized clinical trials reporting mortality. </font>
+
+```{r rob2_summary_dex_mort, fig.height = 3, out.width = "60%"}
+rob_summary_fun(dex_mort_refid)
+```
+:::
+
+### Ketamine
+
+No studies
+
+<br/>
+
+### Melatonin/Ramelteon
+
+<font size = 4> `r table_ref()` Reported in-hospital, 30-, 90-, and 1-year mortality in melatonin and ramelteon studies by comparator and surgical category.</font>
+
+```{r mortality_mel_ram_gt}
+#| eval: true
+mortality_dat |>
+  arrange(mort_period, surgs_single_f, year, study, arm_id) |>
+  filter(refid %in% mel_ram_mort_refid) |> 
   group_by(study_l) |>
   mutate(
     surgs_single_f = as.character(surgs_single_f),
@@ -1688,8 +1950,9 @@ mortality_dat |>
   select(-mort_n) |> 
   group_by(mort_period) |> 
   gt(id = "one") |> 
-  cols_hide(c(refid, refid_c, arm_id, year, study, design_f_lab, mort_percent, ref_mort_n, ref_arm_n)) |>
-  row_group_order(groups = c("Hospital", "30d", "90d", "1yr")) |> 
+  cols_hide(c(refid, refid_c, arm_id, year, study, design_f_lab, mort_percent, ref_mort_n, ref_arm_n, mort_per_rep)) |>
+  row_group_order(groups = c("Hospital", "30-day", "90-day")) |> 
+  # row_group_order(groups = c("Hospital", "30 Day", "90 Day", "1 Year")) |> 
   cols_label(
     study_l = "Study",
     arm_n = "N",
@@ -1698,7 +1961,7 @@ mortality_dat |>
     age_table = "Age",
     asa_ps_incl = "PS",
     mort_n_percent = "N (%)",
-    bar = md(""),
+    bar = md("0 - 100%"),
     rd_ci = "RD (95% CI)"
   ) |> 
   fmt_markdown(columns = c(study_l, bar, age_table)) |>
@@ -1710,9 +1973,9 @@ mortality_dat |>
   tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study, drug_recode, surgs_single_f, bar))) |>
   tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(mort_n_percent, rd_ci))) |>
   tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |> 
-  tab_style(style = list(cell_text(color = "#0E6655")), locations = cells_body(columns = c(arm_n:mort_n_percent), rows = str_detect(drug_recode, "Mel|Ram"))) |> 
-  tab_style(style = list(cell_text(color = "#F39C12")), locations = cells_body(columns = c(arm_n:mort_n_percent), rows = str_detect(drug_recode, "Ulin|MS|Prop"))) |>
-  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:mort_n_percent), rows = str_detect(drug_recode, "Dex"))) |> 
+  tab_style(style = list(cell_text(color = "#0E6655")), locations = cells_body(columns = c(arm_n, drug_recode, age_table, mort_n_percent), rows = str_detect(drug_recode, "Mel|Ram"))) |> 
+  tab_style(style = list(cell_text(color = "#F39C12")), locations = cells_body(columns = c(arm_n, drug_recode, age_table, mort_n_percent), rows = str_detect(drug_recode, "Ulin|MS|Prop"))) |>
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n, drug_recode, age_table, mort_n_percent), rows = str_detect(drug_recode, "Dex"))) |> 
   sub_missing(columns = everything(), rows = everything(), missing_text = "") |> 
   cols_width(
     study_l ~ px(140),
@@ -1726,10 +1989,86 @@ mortality_dat |>
     rd_ci ~ px(145)
   ) |> 
   # opt_css(css = "#one .gt_column_spanner {border-bottom-style: hidden;}") |>
-  tab_footnote("ASA PS: American Society of Anesthesiologists Physical Status; RD: risk difference; GI: gastrointestinal; Abd: abdominal (includes hepatic); Ortho: orthopedic; Various: more that one procedure category;  Dex: Dexmedetomidine; Ulin: Ulinastatin; Hal: Haloperidol; Mid: Midazolam; Mid/Prop: Midazolam/propofol; Mid/Seve: Midazolam/sevoflurane; Preg: Pregabalin; Prop: Propofol; Rhyth: Rhythim; Plac; placebo;") |> 
+  tab_footnote("ASA PS: American Society of Anesthesiologists Physical Status; RD: risk difference; GI: gastrointestinal; Abd: abdominal (includes hepatic); Ortho: orthopedic; Various: more that one procedure category; Ram: ramelteon; Mel: melatonin; Plac; placebo.") |> 
   tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table))) |> 
-  tab_footnote("Different lengths of follow-up from the same trial.", locations = cells_body(columns = study_l, rows = study %in% c("Su 2016", "Zhang 2019b"))) 
+  tab_footnote("Before-after design.", locations = cells_body(columns = study_l, rows = study %in% c("Hokuto 2020"))) 
 ```
+
+### *Pooled*
+
+```{r dex_mort_meta, fig.width = 14, fig.height = 8, fig.align = "left"}
+# ```{r nma_dat, out.width = 50%, out.height = 100%}
+# risk of bias
+rob_meta_dat <- rob2_reconciled_dat |> 
+  select(-Study) |> 
+  mutate(across(D1:Overall,
+         ~ case_when(
+           .x == "Low" ~ "+",
+           .x == "Some concerns" ~ "?",
+           .x == "High" ~ "–"
+           # .x == "Low" ~ "<p style='color:green;'>U2295</p>",
+           # .x == "Some concerns" ~ "<p style='color:yellow;'>?</p>",
+           # .x == "High" ~ "<p style=='color:red;'>U2296</p>"
+         ))) 
+
+dex_mort_meta_dat <- pairwise_mort_dex_dat |> 
+  mutate(year = str_extract(study, "\\d{4}")) |> 
+  left_join(rob_meta_dat, by = "refid") |> 
+  filter(refid %in% dex_plac_refid) |> 
+  filter(treat1 == "Plac" & treat2 == "Dex") |> 
+  select(study, year, event2, n2, event1, n1, D1:Overall)
+
+dex_plac_mort_meta <- metabin(event2, n2, event1, n1,
+  data = dex_mort_meta_dat,
+  studlab = study,
+  sm = "RD",
+  method = "MH",
+  method.tau = "PM",
+  hakn = FALSE,
+  prediction = TRUE,
+  allstudies = TRUE,
+  # subgroup = china_vs_other
+  )
+
+# summary(dex_plac_meta)
+forest(dex_plac_mort_meta,
+  allstudies = TRUE,
+  common = TRUE,
+  label.e = "Dex     ",
+  label.c = "Plac/None  ",
+  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
+  just.addcols.right = "right",
+  digits.TE = 1,
+  digits.tau2 = 1,
+  overall.hetstat = TRUE,
+  print.I2.ci = TRUE,
+  prediction = FALSE,
+  fs.xlab = 11,
+  pooled.events = TRUE,
+  pscale = 100,
+  digits = 1, 
+  # subgroup = TRUE,
+  # print.subgroup.name = FALSE,
+  print.pval.Q = FALSE,
+  # text.subgroup.nohet = TRUE,
+  # colgap.forest.left = "10mm",
+  # colgap.forest.right = "10mm",
+  # colgap.left = "2mm",
+  # xlim = c(0.1, 3),
+  # at = c(0.1, 0.5, 1, c, ...),
+  xlab = "Favors: Dexmedetomidine               Placebo/None",
+  addrows.below.overall = 4
+)
+```
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+### <font size = 4> `r figure_ref()` Summary risk of bias from melatonin and ramelteon randomized clinical trials reporting mortality. </font>
+
+```{r rob2_summary_mel_ram_mort, fig.height = 3, out.width = "60%"}
+rob_summary_fun(mel_ram_mort_refid)
+```
+:::
 
 ## Study Characteristics
 
