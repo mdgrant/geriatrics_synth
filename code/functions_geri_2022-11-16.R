@@ -201,6 +201,15 @@ by_study_xlsx <- function(refids, kq_dat, name) {
   saveWorkbook(wb, path, overwrite = TRUE)
 }
 
+# select refids for variable str_detect
+refid_detect_select_fun <- function(data_select, var_select, string_select) {
+  data_select |>
+    filter(str_detect({{ var_select }}, string_select)) |>
+    select(refid) |>
+    distinct() |>
+    pull(refid)
+}
+
 ## by_study_xlsx usage -------------------------------- (2023-03-06 22:52) @----
 # add design to tibble if not study characteristics file
 # temp_dat <- left_join(study_arm_dat, study_char_dat |> select(refid, design_f), by = "refid") |>
@@ -376,3 +385,15 @@ collapse_dichot <- function(data_dat, study, arms, variable) {
 
 # make base graphs pretty
 par(bty = "n", xaxt = "l", yaxt = "l")
+
+
+## proportion primary or secondary outcome ------------ (2023-04-01 09:58) @----
+prim_sec_out_fun <- function(outcome, refids) {
+  temp <- study_char_dat |>
+    filter(refid %in% refids) |>
+    mutate(percent = digit1((mean(!is.na({{ outcome }})) * 100))) |>
+    select(percent) |>
+    distinct() |>
+    pull()
+  paste0(temp, "%")
+}

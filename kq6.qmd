@@ -55,33 +55,6 @@ dichot_dat <- data_kq(dichot_dat, kq6_refid) |>
 # rob_dat <- data_kq(rob_dat, kq6_refid) 
 ```
 
-```{r rob2_data}
-# identify studies with disagreements
-# CODE: * rob data
-rob2_conflict_refid <- rob_dat |> 
-  select(refid, starts_with("assessor")) |> 
-  distinct() |> 
-  group_by(refid) |> 
-    filter(n() > 1) |> 
-  ungroup() |> 
-  select(refid) |> 
-  distinct()
-
-# reconciled only kq6
-rob2_reconciled_dat <- rob_dat |>
-  select(refid, user, starts_with("assessor")) |>
-  filter(!refid %in% rob2_conflict_refid) |>
-  group_by(refid) |>
-  slice(1) |>
-  ungroup() |>
-  left_join(study_char_dat |> select(refid, study), by = "refid") |>
-  mutate(year = str_extract(study, "\\d{4}")) |> 
-  arrange(year, study) |> 
-  rename_with(~ str_replace(.x, "assessor_domain", "D")) |>
-  rename(Overall = assessor_overall, Study = study) |>
-  select(refid, Study, D1:Overall)
-```
-
 ```{r delirium_refids_check}
 #| eval = FALSE
 # any of delirium_dichot_refid, delirium_contin_refid, delirium_likert_refid 
@@ -929,7 +902,7 @@ refid_max_of_days <- delirium_total_tab |>
 
 ```{r delirium_total_dex_gt}
 delirium_total_gt_fun("Dex") |>
-  tab_footnote("RR: risk ratio; MMSE: Mini-Mental State Examination; Dex: Dexmedetomidine; Mid: Midazolam; Prop: Propofol; MS: Morphine; Preg: Pregabalin; Prop: Propofol; Rhyth: Rhythim; Plac: placebo; CAM: Confusion Assessment Method; DSM: Diagnostic and Statistical Manual of Mental Disorders; ICDSC: Intensive Care Delirium Screening Checklist; Psych: psychiatrist interview; NS; not specified.") |>
+  tab_footnote("RR: risk ratio; MMSE: Mini-Mental State Examination; Dex: Dexmedetomidine; Mid: Midazolam; Prop: Propofol; MS: Morphine; Preg: Pregabalin; Prop: Propofol; Rhyth: Rhythim; Plac: placebo;  DSM: Diagnostic and Statistical Manual of Mental Disorders; ICDSC: Intensive Care Delirium Screening Checklist; Psych: psychiatrist interview; NS; not specified.") |>
   # tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
   tab_footnote("Days over which incidence proportion assessed. Stay indicates over patient hospital stay.", locations = cells_column_labels(columns = delitotal_time)) |>
   tab_footnote("Tool reported in the `Chinese Expert Consensus on the Prevention and Treatment of Postoperative Delirium in Elderly Patients.'", locations = cells_body(columns = scale_delirium, rows = scale_delirium == "Note")) |> 
@@ -954,9 +927,9 @@ delirium_total_tab <- delirium_total_tab_fun(ket_refid) |>
 delirium_total_gt_ket <- delirium_total_gt_fun("Ket")
 # tab_info(delirium_total_gt_ket)
 delirium_total_gt_ket |>
-  tab_footnote("RR: risk ratio; MMSE: Mini-Mental State Examination; Ket: ketamine; Plac: placebo; Hal: haloperidol; ICDSC: Intensive Care Delirium Screening Checklist; Psych: psychiatrist interview; NS; not specified.") |>
+  tab_footnote("RR: risk ratio; Ket: ketamine; Plac: placebo; Prop: propofol; Hal: haloperidol; ICDSC: Intensive Care Delirium Screening Checklist;  CAM: Confusion Assessment Method.") |>
   # tab_footnote(md("Mean <u>Med</u> (SD) {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
-  tab_footnote("Days over which incidence proportion assessed. Stay indicates over patient hospital stay.", locations = cells_column_labels(columns = delitotal_time))
+  tab_footnote("Days over which incidence assessed. Stay indicates duration of hospital stay.", locations = cells_column_labels(columns = delitotal_time))
 ```
 
 ### Melatonin/Ramelteon
@@ -1110,32 +1083,6 @@ netgraph(netmeta_melram_nma,
 
 ```{r nma_dat, fig.width = 14, fig.height = 8, fig.align = "left"}
 # ```{r nma_dat, out.width = 50%, out.height = 100%}
-# risk of bias
-rob_meta_dat <- rob2_reconciled_dat |> 
-  select(-Study) |> 
-  mutate(across(D1:Overall,
-         ~ case_when(
-           .x == "Low" ~ "+",
-           .x == "Some concerns" ~ "?",
-           .x == "High" ~ "–"
-           # .x == "Low" ~ "<p style='color:green;'>U2295</p>",
-           # .x == "Some concerns" ~ "<p style='color:yellow;'>?</p>",
-           # .x == "High" ~ "<p style=='color:red;'>U2296</p>"
-         ))) 
-
-dex_plac_refid <- pairwise_dat |> 
-  filter(str_detect(to_select, "Plac") & str_detect(to_select, "Dex")) |> 
-  pull(refid)
-
-dex_meta_dat <- pairwise_dat |> 
-  left_join(rob_meta_dat, by = "refid") |> 
-  filter(refid %in% dex_plac_refid) |> 
-  select(study, year, event2, n2, event1, n1, D1:Overall, china_vs_other, postop_only, delirium_inc_prop) |> 
-  mutate(postop_only = ifelse(!is.na(postop_only), "Only postop", "Includes other times")) 
-
-# dex_meta_dat |> 
-#   summarize(tot = sum(n2) + sum(n1))
-
 dex_plac_meta <- metabin(event2, n2, event1, n1,
   data = dex_meta_dat,
   studlab = study,
@@ -1196,11 +1143,8 @@ forest(dex_plac_meta,
   xlab = "Favors: Dexmedetomidine               Placebo/None",
   addrows.below.overall = 4,
   text.addline1 = paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval)),
-  text.addline2 = paste0("Delirium a designated primary outcome in ", digit1(prim_delirium_temp * 100), "%; a secondary outcome in ", digit1(sec_delirium_temp * 100), "%.")
+  text.addline2 = paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, dex_plac_refid), "; a secondary outcome in ", prim_sec_out_fun(prim_delirium, dex_plac_refid), ".")
 )
-
-rm(prim_delirium_temp, sec_delirium_temp)
-
 ```
 
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/>
@@ -1409,7 +1353,7 @@ ket_plac_refid <- pairwise_dat |>
   pull(refid)
 
 ket_meta_dat <- pairwise_dat |> 
-  left_join(rob_meta_dat, by = "refid") |> 
+  left_join(rob2_meta_dat, by = "refid") |> 
   filter(refid %in% ket_plac_refid) |> 
   select(study, year, event2, n2, event1, n1, D1:Overall, china_vs_other)
 
@@ -1473,7 +1417,7 @@ mel_ram_plac_refid <- pairwise_dat |>
   pull(refid)
 
 mel_ram_meta_dat <- pairwise_dat |> 
-  left_join(rob_meta_dat, by = "refid") |> 
+  left_join(rob2_meta_dat, by = "refid") |> 
   filter(refid %in% mel_ram_plac_refid) |> 
   select(study, year, event2, n2, event1, n1, D1:Overall, treat2, treat1) |> 
   filter(!treat2 == c("Mid")) |> 
@@ -1896,7 +1840,6 @@ netmeta_mort_dex_nma <- netmeta(
 )
 
 forest(netmeta_mort_dex_nma, pscale = 100)
-
 ```
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
@@ -1996,24 +1939,15 @@ mortality_dat |>
 
 ### *Pooled*
 
-```{r dex_mort_meta, fig.width = 14, fig.height = 8, fig.align = "left"}
-# ```{r nma_dat, out.width = 50%, out.height = 100%}
-# risk of bias
-rob_meta_dat <- rob2_reconciled_dat |> 
-  select(-Study) |> 
-  mutate(across(D1:Overall,
-         ~ case_when(
-           .x == "Low" ~ "+",
-           .x == "Some concerns" ~ "?",
-           .x == "High" ~ "–"
-           # .x == "Low" ~ "<p style='color:green;'>U2295</p>",
-           # .x == "Some concerns" ~ "<p style='color:yellow;'>?</p>",
-           # .x == "High" ~ "<p style=='color:red;'>U2296</p>"
-         ))) 
+#### Dexmedetomidine
 
+<font size = 4> `r figure_ref()` Mortalty Dexmedetomidine compared with placebo or no intervention (randomized clinical trials). </font>
+
+```{r dex_mort_meta, fig.dim = c(14, 3.8), fig.align = "center"}
+# ```{r nma_dat, out.width = 50%, out.height = 100%}
 dex_mort_meta_dat <- pairwise_mort_dex_dat |> 
   mutate(year = str_extract(study, "\\d{4}")) |> 
-  left_join(rob_meta_dat, by = "refid") |> 
+  left_join(rob2_meta_dat, by = "refid") |> 
   filter(refid %in% dex_plac_refid) |> 
   filter(treat1 == "Plac" & treat2 == "Dex") |> 
   select(study, year, event2, n2, event1, n1, D1:Overall)
@@ -2085,7 +2019,7 @@ rob_temp_dat <- rob2_reconciled_dat |>
   filter(!is.na(Study)) |> 
   select(-refid)
 
-rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind")
+rob_summary(rob2_meta_dat, tool = "ROB2", colour = "colourblind")
 ```
 
 <font size = 4> `r figure_ref()` Risk of bias assessment for randomized clinical trials. </font>
