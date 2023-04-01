@@ -423,3 +423,26 @@ delirium_total_gt_fun <- function(drug_f_abbr){
     )
 }
 
+## summary rob function ------------------------------- (2023-03-23 11:52) @----
+rob_summary_fun <- function(rob_refids) {
+  rob_temp_dat <- rob2_dat |>
+    filter(refid %in% {{ rob_refids }}) |>
+    select(Study, D1:Overall)
+    # select(-refid)
+  rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind")
+}
+
+robinsi_summary_fun <- function(robinsi_refids) {
+  rob_temp_dat <- robinsi_dat |>
+    filter(refid %in% {{ robinsi_refids }}) |>
+    select(-refid)
+  rob_summary(rob_temp_dat, tool = "ROBINS-I", colour = "colourblind")
+}
+
+# rob_summary(
+#   data = robinsi_dat |> select(-refid),
+#   tool = "ROBINS-I",
+#   colour = "colourblind"
+# )
+#
+# rob_traffic_light(robinsi_dat |> select(-refid), psize = 4, tool = "ROBINS-I", colour = "colourblind")

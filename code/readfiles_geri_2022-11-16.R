@@ -18,7 +18,7 @@ conflicts_prefer(dplyr::filter)
 # knitr::opts_chunk$set(echo = FALSE, out.format = "html")
 knitr::opts_chunk$set(echo = FALSE)
 set_gtsummary_theme(theme_gtsummary_journal(journal = "jama"))
-settings.meta(CIbracket = "(")
+settings.meta(CIbracket = "(", CIseparator = ", ")
 
 ## data files ----------------------------------------- (2022-11-16 14:19) @----
 data_files <- as_tibble(list.files("data/"))
@@ -37,6 +37,7 @@ contin_out_file <- read_file_mg("contOutcomes")
 dichot_out_file <- read_file_mg("dichotOutcomes")
 likert_out_file <- read_file_mg("likertOutcomes")
 rob_file        <- read_file_mg("rob_2")
+nrsi_file       <- read_file_mg("nrsi")
 
 # display file characteristics
 a <- as.character(file.mtime(paste0("data/", study_char_file)))
@@ -143,7 +144,7 @@ study_char_dat <- read_csv(path_csv(study_char_file)) |>
   ) |>
   relocate(c(design_f, design_f_lab), .after = design) |>
   select(-ris_code, -level, -study_char_k) |>
-  select(refid, starts_with("design"), study, study_l, year, author:comment, linked_references, labels, title) # does not include factorial
+  select(refid, starts_with("design"), study, study_l, year, author:comment, linked_references, labels, title, starts_with("reli")) # does not include factorial
 
 ## add surgery classifications ------------------------ (2023-03-04 13:56) @----
 surgs <- study_char_dat |>
@@ -478,6 +479,96 @@ study_refs_dat <- read_csv(path_csv(study_refs_file), col_types = str_c(c("n", r
 rob_dat <- read_csv(path_csv(rob_file)) |>
   clean_names()
 
+rob2_conflict_refid <- rob_dat |>
+  select(refid, starts_with("assessor")) |>
+  distinct() |>
+  group_by(refid) |>
+  filter(n() > 1) |>
+  ungroup() |>
+  select(refid) |>
+  distinct()
+
+# reconciled only kq6
+rob2_dat <- rob_dat |>
+  select(refid, user, starts_with("assessor")) |>
+  filter(!refid %in% rob2_conflict_refid) |>
+  group_by(refid) |>
+  slice(1) |>
+  ungroup() |>
+  left_join(study_char_dat |> select(refid, study), by = "refid") |>
+  mutate(year = str_extract(study, "\\d{4}")) |>
+  arrange(year, study) |>
+  rename_with(~ str_replace(.x, "assessor_domain", "D")) |>
+  rename(Overall = assessor_overall, Study = study) |>
+  mutate(
+    randomization_process = D1,
+    deviations_intervention = D2,
+    missing_outcome = D3,
+    measurement = D4,
+    reporting = D5,
+    overall = Overall,
+  ) |>
+  # select(-Study) |>
+  mutate(across(
+    D1:Overall,
+    ~ case_when(
+      .x == "Low" ~ "+",
+      .x == "Some concerns" ~ "?",
+      .x == "High" ~ "–"
+      # .x == "Low" ~ "<p style='color:green;'>U2295</p>",
+      # .x == "Some concerns" ~ "<p style='color:yellow;'>?</p>",
+      # .x == "High" ~ "<p style=='color:red;'>U2296</p>"
+    )
+  ))
+
+rob2_meta_dat <- rob2_dat |>
+  select(refid, D1:Overall)
+
+rob2_dat <- rob2_dat |>
+  select(refid, Study, randomization_process:overall) |>
+  rename(
+    D1 = randomization_process,
+    D2 = deviations_intervention,
+    D3 = missing_outcome,
+    D4 = measurement,
+    D5 = reporting,
+    Overall = overall
+  )
+
+
+## nsri ----------------------------------------------- (2023-03-28 15:27) @----
+robinsi_dat <- read_csv(path_csv(nrsi_file)) |>
+  clean_names() |>
+  select(!c(author:level, ends_with("comment"))) |>
+  left_join(study_char_dat |> select(refid, study), by = "refid") |>
+  relocate(study, .before = refid) |>
+  mutate(Study = study, D1 = clinconfound, D2 = clinselect, D3 = clinclass, D4 = clindev, D5 = clinmiss, D6 = clinmeasure, D7 = clinreport, Overall = clinoverall) |>
+  mutate(across(
+    D1:Overall,
+    ~ case_when(
+      .x == "Low" ~ "++",
+      .x == "Moderate" ~ "++",
+      .x == "Serious" ~ "-",
+      .x == "Critical" ~ "- -",
+      .x == "No information" ~ "NI",
+      .x == "Not applicable" ~ "NA",
+      .default = "Missing"
+      # .x == "Low" ~ "<p style='color:green;'>U2295</p>",
+      # .x == "Some concerns" ~ "<p style='color:yellow;'>?</p>",
+      # .x == "High" ~ "<p style=='color:red;'>U2296</p>"
+    )
+  ))
+
+# Risk of bias ratings: ++ low, + moderate, - serious, -- critical; NI: no information; NA: not applicable.
+
+# rob_summary(
+#   data = robinsi_dat |> select(-refid),
+#   tool = "ROBINS-I",
+#   colour = "colourblind"
+# )
+#
+# rob_traffic_light(robinsi_dat |> select(-refid), psize = 4, tool = "ROBINS-I", colour = "colourblind")
+
 ## delete temporary files ----------------------------- (2022-12-24 13:23) @----
 rm(list = ls(pattern = ".*file"))
 
@@ -530,4 +621,4 @@ color_3 <- "#7fb3d5"
 color_4 <- "#c39bd3"
 
 #### save for use ------------------------------------- (2023-03-13 22:53) @----
-save.image(paste0("/Users/mgrant/Documents/_projects01/asa/_geriatric/geriatrics_synth/data/geri_data_", format(Sys.Date()), ".Rdata"))
+save.image(paste0("/Users/mgrant/Documents/_projects01/asa/_geriatric/geriatrics_synth/data/geri_data_", str_replace(format(Sys.time()), " ", "_"), ".Rdata"))

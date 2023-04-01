@@ -1083,6 +1083,16 @@ netgraph(netmeta_melram_nma,
 
 ```{r nma_dat, fig.width = 14, fig.height = 8, fig.align = "left"}
 # ```{r nma_dat, out.width = 50%, out.height = 100%}
+dex_plac_refid <- pairwise_dat |> 
+  filter(str_detect(to_select, "Plac") & str_detect(to_select, "Dex")) |> 
+  pull(refid)
+
+dex_meta_dat <- pairwise_dat |> 
+  left_join(rob2_meta_dat, by = "refid") |> 
+  filter(refid %in% dex_plac_refid) |> 
+  select(study, year, event2, n2, event1, n1, D1:Overall, china_vs_other, postop_only, delirium_inc_prop) |> 
+  mutate(postop_only = ifelse(!is.na(postop_only), "Only postop", "Includes other times")) 
+
 dex_plac_meta <- metabin(event2, n2, event1, n1,
   data = dex_meta_dat,
   studlab = study,
@@ -1099,21 +1109,6 @@ dex_plac_meta <- metabin(event2, n2, event1, n1,
 temp_meta <- dex_plac_meta
 temp_meta <- update(temp_meta, subgroup = NULL, sm = "OR")
 temp_metabias <- metabias(temp_meta, method.bias = "Harbord", k.min = 10)
-
-# proportion primary or secondary outcome
-prim_delirium_temp <- study_char_dat |> 
-  filter(refid %in% dex_plac_refid) |> 
-  mutate(percent = mean(!is.na(prim_delirium))) |> 
-  select(percent) |> 
-  distinct() |> 
-  pull()
-
-sec_delirium_temp <- study_char_dat |> 
-  filter(refid %in% dex_plac_refid) |> 
-  mutate(percent = mean(!is.na(sec_delirium))) |> 
-  select(percent) |> 
-  distinct() |> 
-  pull()
 
 # summary(dex_plac_meta)
 forest(dex_plac_meta,
@@ -1143,13 +1138,11 @@ forest(dex_plac_meta,
   xlab = "Favors: Dexmedetomidine               Placebo/None",
   addrows.below.overall = 4,
   text.addline1 = paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval)),
-  text.addline2 = paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, dex_plac_refid), "; a secondary outcome in ", prim_sec_out_fun(prim_delirium, dex_plac_refid), ".")
+  text.addline2 = paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, dex_plac_refid), "; a secondary outcome in ", prim_sec_out_fun(sec_delirium, dex_plac_refid), ".")
 )
 ```
 
-<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/>
-Risk of bias ratings: + low, ? some concerns, - high. </foot_mg> <a id="figure-4"></a>
-<br/>
+<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high. </foot_mg> <a id="figure-4"></a> <br/>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention according to reporting incidence proportion (randomized clinical trials). </font>
@@ -1196,9 +1189,7 @@ forest(dex_plac_meta,
   text.addline1 = paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval))
 )
 ```
-
-<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/>
-Risk of bias ratings: + low, ? some concerns, - high. </foot_mg> <a id="figure-4"></a>
+<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high. </foot_mg> <a id="figure-4"></a>
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
@@ -1253,8 +1244,7 @@ forest(dex_plac_meta_china,
 
 ```
 
-<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/>
-Risk of bias ratings: + low, ? some concerns, - high. </foot_mg>
+<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high. </foot_mg>
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
@@ -1303,8 +1293,7 @@ forest(dex_plac_meta_postop,
 
 ```
 
-<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/>
-Risk of bias ratings: + low, ? some concerns, - high.</foot_mg>
+<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high.</foot_mg>
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
@@ -1400,9 +1389,7 @@ forest(ket_plac_meta,
 )
 ```
 
-<foot_mg> D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/>
-Risk of bias ratings: + low, ? some concerns, - high. </foot_mg>
-<br/>
+<foot_mg> D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high. </foot_mg> <br/>
 
 #### Melatonin/Ramelteon
 
@@ -1467,10 +1454,8 @@ forest(mel_ram_plac_meta,
 )
 
 ```
-<a id="figure-11"></a>
-<foot_mg> Mel: melatonin; Ram: ramelteon; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/>
-Risk of bias ratings: + low, ? some concerns, - high.</foot_mg>
-<br/>
+
+<a id="figure-11"></a> <foot_mg> Mel: melatonin; Ram: ramelteon; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high.</foot_mg> <br/>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()` Ramelteon compared with placebo (before-after studies). </font>
@@ -1538,8 +1523,7 @@ forest(mel_ram_bef_aft_meta,
 )
 ```
 
-<foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/>
-Risk of bias ratings: ++ low, + moderate, - serious, - - critical; NI: no information; NA: not applicable.</foot_mg>
+<foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable.</foot_mg>
 :::
 
 #### All Comparators
@@ -1826,20 +1810,33 @@ pairwise_mort_dex_dat <- pairwise(
   studlab = study,
   allstudies = TRUE,
   data = mortality_dex_meta_dat,
-  sm = "RD",
+  sm = "RR",
   keep.all.comparisons = TRUE
 )
 
-netmeta_mort_dex_nma <- netmeta(
-  pairwise_mort_dex_dat,
-  random = FALSE,
-  prediction = FALSE,
-  seq = trts_mort_dex,
-  sm = "RD",
-  reference.group = "Plac"
-)
-
-forest(netmeta_mort_dex_nma, pscale = 100)
+# dex_plac_refid <- pairwise_dat |> 
+#   filter(str_detect(to_select, "Plac") & str_detect(to_select, "Dex")) |> 
+#   pull(refid)
+# 
+# mort_dex_nma <- netmeta(
+#   pairwise_mort_dex_dat,
+#   random = FALSE,
+#   prediction = FALSE,
+#   seq = trts_mort_dex,
+#   sm = "RR",
+#   reference.group = "Plac"
+# )
+# 
+# forest(mort_dex_nma, pscale = 100)
+# netsplit(mort_dex_nma, order = trts_mort_dex) %>%
+#   forest(.,
+#     show = "all",
+#     xlab = "Risk Difference",
+#     xlim = c(-4, 4),
+#     pscale = 100,
+#     # leftcols = c("studlab", "k"),
+#     rightlabs = c("RD", "(95% CI)")
+#   )
 ```
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
@@ -1941,14 +1938,13 @@ mortality_dat |>
 
 #### Dexmedetomidine
 
-<font size = 4> `r figure_ref()` Mortalty Dexmedetomidine compared with placebo or no intervention (randomized clinical trials). </font>
+<font size = 4> `r figure_ref()` Risk difference in mortality -- dexmedetomidine compared with placebo or no intervention (randomized clinical trials). </font>
 
 ```{r dex_mort_meta, fig.dim = c(14, 3.8), fig.align = "center"}
 # ```{r nma_dat, out.width = 50%, out.height = 100%}
 dex_mort_meta_dat <- pairwise_mort_dex_dat |> 
   mutate(year = str_extract(study, "\\d{4}")) |> 
   left_join(rob2_meta_dat, by = "refid") |> 
-  filter(refid %in% dex_plac_refid) |> 
   filter(treat1 == "Plac" & treat2 == "Dex") |> 
   select(study, year, event2, n2, event1, n1, D1:Overall)
 
@@ -1959,7 +1955,7 @@ dex_plac_mort_meta <- metabin(event2, n2, event1, n1,
   method = "MH",
   method.tau = "PM",
   hakn = FALSE,
-  prediction = TRUE,
+  prediction = FALSE,
   allstudies = TRUE,
   # subgroup = china_vs_other
   )
@@ -1969,9 +1965,9 @@ forest(dex_plac_mort_meta,
   allstudies = TRUE,
   common = TRUE,
   label.e = "Dex     ",
-  label.c = "Plac/None  ",
+  label.c = "Plac     ",
   rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
-  rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
+  rightlabs = c("RD", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
   just.addcols.right = "right",
   digits.TE = 1,
   digits.tau2 = 1,
@@ -1995,6 +1991,7 @@ forest(dex_plac_mort_meta,
   addrows.below.overall = 4
 )
 ```
+<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high. </foot_mg> <a id="figure-4"></a>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 ### <font size = 4> `r figure_ref()` Summary risk of bias from melatonin and ramelteon randomized clinical trials reporting mortality. </font>
@@ -2015,11 +2012,11 @@ rob_summary_fun(mel_ram_mort_refid)
 <font size = 4> `r figure_ref()` Summary risk of bias assessment for all included randomized clinical trials. </font>
 
 ```{r rob2_summary_overall, fig.height = 3, out.width = "60%"}
-rob_temp_dat <- rob2_reconciled_dat |>
-  filter(!is.na(Study)) |> 
+rob_temp_dat <- rob2_dat |>
+  filter(!is.na(Study) & refid %in% kq6_refid) |> 
   select(-refid)
 
-rob_summary(rob2_meta_dat, tool = "ROB2", colour = "colourblind")
+rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind")
 ```
 
 <font size = 4> `r figure_ref()` Risk of bias assessment for randomized clinical trials. </font>
