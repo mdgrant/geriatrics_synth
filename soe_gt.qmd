@@ -53,7 +53,7 @@ grade_foot <- paste0("Very low: ", vlow, "; Low: ", low, "; Moderate: ", mod, ";
 #| include: false
 ## soeKq6Data (updated 2022/01/20 09:18) ----------------------------------
 col_types_soe <- c("numeric", rep("text", 5), "numeric", rep("text", 19))
-soe_kq6.dat <- readxl::read_xlsx("data/soe_2023-03-11.xlsx", range = "A1:Z4", sheet = "soe_kq6", col_types = col_types_soe) |>
+soe_kq6.dat <- readxl::read_xlsx("data/soe_2023-03-11.xlsx", range = "A1:Z5", sheet = "soe_kq6", col_types = col_types_soe) |>
   clean_names() |>
   mutate(
     n_s = paste0(n_studies, " <br/>(", n_pts, ")"),
@@ -74,7 +74,7 @@ soe_kq6.dat <- readxl::read_xlsx("data/soe_2023-03-11.xlsx", range = "A1:Z4", sh
 
 ## (updated 2021/11/17 11:44) soe_summary ---------------------------------
 soe_summary <- soe_kq6.dat |>
-  select(n, comparison, outcome, n_s, grade, acc, out_import, summary, result_links, compare_group) |>
+  select(n, comparison, outcome, n_s, design, grade, acc, out_import, summary, result_links, compare_group) |>
   mutate(
     grade = case_when(
       grade == "very low" ~ vlow,
@@ -118,6 +118,7 @@ soe_summary |>
   cols_hide(c(n, comparison)) |>
   cols_label(
     outcome = "Outcome",
+    design = "Study Design",
     n_s = "Studies (Pts)",
     grade = "GRADE",
     acc = "ACCF AHA",
@@ -132,6 +133,7 @@ soe_summary |>
   gt_theme_mg() |>
   cols_width(
     outcome ~ px(120),
+    design ~ px(90),
     n_s ~ px(85),
     grade ~ px(60),
     acc ~ px(60),
@@ -141,7 +143,8 @@ soe_summary |>
   ) |>
   tab_footnote("Pts: patients; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; ACCF/AHA: American College of Cardiology Foundation/American Heart Association; RR: risk ratio.") |>
   tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
-  tab_footnote("Limited +; Important ++; Critical +++.", locations = cells_column_labels(columns = out_import))
+  tab_footnote("Limited +; Important ++; Critical +++.", locations = cells_column_labels(columns = out_import)) |> 
+  tab_footnote("Common effects model.", locations = cells_body(columns = summary, rows = str_detect(n, "5.04")))
 
 ```
 
