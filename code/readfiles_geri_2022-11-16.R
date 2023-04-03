@@ -64,7 +64,7 @@ write_delim(data.frame(z), "used_files_dates.txt", delim = "--", col_names = FAL
 rm(a, b, c, d, e, f, g, z)
 
 ## study characteristics  ----------------------------- (2022-11-16 14:22) @----
-# study_char.dat <- suppressWarnings(read_csv(path_csv(study_char_file))) |>
+# DATA: 2023-04-03 study_char_dat: study characteristics; adds surgeries; YYYY[a-z] as nec; links to evidence tables
 design_levels <- c(
   "rct",
   "cluster",
@@ -179,7 +179,6 @@ study_char_dat <- study_char_dat |>
 
 ## add linked references ------------------------------ (2023-02-18 12:27) @----
 # study_l_w_linked includes study with links to both studies
-# DATA:
 # study_w_linked:
 # study_w_linked_date: only date
 # study_l_w_linked: adds link to evidence table from linked study added to study_l
@@ -476,6 +475,11 @@ study_refs_dat <- read_csv(path_csv(study_refs_file), col_types = str_c(c("n", r
 # type_col(study_refs.dat) |> arrange(desc(mode)) |> View()
 
 ## risk of bias 2.0 ----------------------------------- (2023-03-07 10:43) @----
+# DATA: 2023-04-03 rob_dat: ROB 2.0 all fields
+# DATA: 2023-04-03 rob2_conflict_refid: refids w/conflicts in any assessor field
+# DATA: 2023-04-03 rob2_dat: assessor fields; D1:Overall as actual ratings for use in robvis
+# DATA: 2023-04-03 rob2_meta_day: D1:Overall as +?- for use in forest plots
+
 rob_dat <- read_csv(path_csv(rob_file)) |>
   clean_names()
 
@@ -537,7 +541,10 @@ rob2_dat <- rob2_dat |>
 
 
 ## nsri ----------------------------------------------- (2023-03-28 15:27) @----
-robinsi_dat <- read_csv(path_csv(nrsi_file)) |>
+# DATA: 2023-04-03 robinsi_all dat: all ratings for use in robvis; DOES NOT EXCLUDE APPRAIAL CONFLICTS
+# DATA: 2023-04-03 robinsi_dat: ratings for use in robvis; DOES NOT EXCLUDE APPRAIAL CONFLICTS
+# DATA: 2023-04-03 robinsi_meta_dat: ratings for use in forest plots; DOES NOT EXCLUDE APPRAIAL CONFLICTS
+robinsi_all_dat <- read_csv(path_csv(nrsi_file)) |>
   clean_names() |>
   select(!c(author:level, ends_with("comment"))) |>
   left_join(study_char_dat |> select(refid, study), by = "refid") |>
@@ -559,15 +566,35 @@ robinsi_dat <- read_csv(path_csv(nrsi_file)) |>
     )
   ))
 
-# Risk of bias ratings: ++ low, + moderate, - serious, -- critical; NI: no information; NA: not applicable.
+robinsi_dat <- robinsi_all_dat |>
+  select(Study, clinconfound:clinoverall) |>
+  rename(D1 = clinconfound, D2 = clinselect, D3 = clinclass, D4 = clindev, D5 = clinmiss, D6 = clinmeasure, D7 = clinreport, Overall = clinoverall) |>
+  group_by(Study) |>
+  slice(1) |>
+  ungroup() |>
+  select(Study, D1:Overall)
+# FIXME: 2023-04-03 select 1st assessment robinsi needs updating
 
+robinsi_meta_dat <- robinsi_all_dat |>
+  group_by(Study) |>
+  slice(1) |>
+  ungroup() |>
+  select(refid, Study, D1:Overall)
+# FIXME: 2023-04-03 select 1st assessment robinsi needs updating
+
+# check files
 # rob_summary(
-#   data = robinsi_dat |> select(-refid),
+#   data = robinsi_dat,
 #   tool = "ROBINS-I",
 #   colour = "colourblind"
 # )
 #
-# rob_traffic_light(robinsi_dat |> select(-refid), psize = 4, tool = "ROBINS-I", colour = "colourblind")
+# rob_traffic_light(
+#   data = robinsi_dat,
+#   tool = "ROBINS-I",
+#   psize = 4,
+#   colour = "colourblind"
+# )
 
 ## delete temporary files ----------------------------- (2022-12-24 13:23) @----
 rm(list = ls(pattern = ".*file"))
