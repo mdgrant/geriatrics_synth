@@ -36,7 +36,7 @@ knitr::opts_chunk$set(echo = FALSE)
 source("code/functions_geri_2022-11-16.R")
 ```
 
-```{r}
+```{r soe_grade_refs}
 # grade footnote
 vlow <-  '<span><span class="quality-sign">⨁</span><span class="quality-sign">◯</span><span class="quality-sign">◯</span><span class="quality-sign">◯</span>'
 low <- '<span><span class="quality-sign">⨁</span><span class="quality-sign">⨁</span><span class="quality-sign">◯</span><span class="quality-sign">◯</span>'
@@ -82,7 +82,10 @@ soe_summary <- soe_kq6.dat |>
       grade == "moderate" ~ mod, 
       grade == "high" ~ high
     )
-  )
+  )  
+  # mutate(
+  #   summary = paste(summary, " <br/> <br/>")
+  # )
 
 ## (updated 2021/11/17 11:44) domain_summary ------------------------------
 domain_summary <- soe_kq6.dat |> 
@@ -127,6 +130,10 @@ soe_summary |>
     result_links = "Result Detail"
   ) |>
   fmt_markdown(columns = c(outcome, n_s, grade, summary, result_links)) |>
+  # tab_row_group(
+  #   label = "powerful",
+  #   rows = outcome == "Delirium incidence"
+  # ) |>
   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(n_s, grade, acc, out_import, summary))) |>
   tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(n_s, grade, acc, out_import, summary))) |>
   tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(outcome, summary, result_links))) |>
@@ -141,10 +148,12 @@ soe_summary |>
     summary ~ px(350),
     result_links ~ px(150)
   ) |>
+  opt_vertical_padding(scale = 1.5) |> 
+  tab_style(style = "vertical-align:top", locations = cells_body(columns = everything())) |> 
   tab_footnote("Pts: patients; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; ACCF/AHA: American College of Cardiology Foundation/American Heart Association; RR: risk ratio.") |>
   tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
   tab_footnote("Limited +; Important ++; Critical +++.", locations = cells_column_labels(columns = out_import)) |> 
-  tab_footnote("Common effects model.", locations = cells_body(columns = summary, rows = str_detect(n, "5.04")))
+  tab_footnote("Common effects model.", locations = cells_body(columns = summary, rows = str_detect(n, "5.04"))) 
 
 ```
 
@@ -203,7 +212,7 @@ domain_footnotes <- glue_collapse(domain_footnotes, sep = "<br>")
 kq6_domain |> 
   mutate(n_s = paste0(n_studies, "<br>(", n_pts, ")")) |> 
   mutate(space = "") |> 
-  left_join(soe_kq6.dat |> select(comparison, compare_group)) |> 
+  left_join(soe_kq6.dat |> select(compare_group, n), by = "n") |>
   group_by(compare_group) |> 
   select(outcome, design, space, n_s, rob, consist, direct, prec, other) |> 
   gt(id = "one") |> 
@@ -221,7 +230,7 @@ kq6_domain |>
   ) |>
   fmt_markdown(columns = c(n_s:other)) |> 
   tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(rob:other))) |>
-  # tab_style(style = "padding-right:80px",        locations = cells_column_labels(columns = c(design))) |> 
+  # tab_style(style = "padding-right:80px",       locations = cells_column_labels(columns = c(design))) |> 
   # tab_style(style = "padding-left:10px",        locations = cells_body(columns = c(design))) |>
   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(design))) |> 
   tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(design))) |>
