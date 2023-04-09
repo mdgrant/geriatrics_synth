@@ -1,9 +1,11 @@
 /* css styles */
 
 foot_mg {
-  font-size: 14px;
-  line-height: 0.9;
+  font-size: 13px;
+  line-height: 0.6;
   color: black;
+  padding-top: 0px;
+  padding-bottom: 0px;
 }
 
 p {
@@ -16,18 +18,6 @@ p {
 
 #one tr:hover {
     background-color: #D5D8DC;
-}
-
-#one .gt_footnote_marks {
-    font-style: normal;
-    font-weight: normal;
-    font-size: 75%;
-    vertical-align: 0.4em;
-}
-
-#one span.gt_column_spanner {
-  border-bottom-style: hidden;
-  border-bottom-color: #FFFFFF;
 }
 
 .navbar-dark, span.menu-text {
