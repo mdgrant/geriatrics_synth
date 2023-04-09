@@ -1,7 +1,9 @@
 ## preliminaries -------------------------------------- (2022-11-16 11:49) @----
-library(conflicted)
+# in .Rprofile
+# library(conflicted)
+# library(tidyverse)
+# conflicts_prefer(dplyr::filter)
 library(janitor)
-library(robvis)
 suppressPackageStartupMessages(library(meta))
 suppressPackageStartupMessages(library(netmeta))
 suppressPackageStartupMessages(library(metasens))
@@ -13,8 +15,7 @@ library(gt, quietly = TRUE)
 library(gtsummary)
 library(gtExtras)
 library(glue)
-library(tidyverse)
-conflicts_prefer(dplyr::filter)
+library(robvis)
 # knitr::opts_chunk$set(echo = FALSE, out.format = "html")
 knitr::opts_chunk$set(echo = FALSE)
 set_gtsummary_theme(theme_gtsummary_journal(journal = "jama"))
@@ -554,7 +555,7 @@ robinsi_all_dat <- read_csv(path_csv(nrsi_file)) |>
     D1:Overall,
     ~ case_when(
       .x == "Low" ~ "++",
-      .x == "Moderate" ~ "++",
+      .x == "Moderate" ~ "+",
       .x == "Serious" ~ "-",
       .x == "Critical" ~ "- -",
       .x == "No information" ~ "NI",
@@ -566,13 +567,23 @@ robinsi_all_dat <- read_csv(path_csv(nrsi_file)) |>
     )
   ))
 
+# conflicts
+# robinsi_all_dat |>
+#   group_by(refid) |>
+#   distinct() |>
+#   filter(n() > 1) |>
+#   ungroup() |>
+#   select(refid) |>
+#   distinct()
+
 robinsi_dat <- robinsi_all_dat |>
-  select(Study, clinconfound:clinoverall) |>
+  select(refid, Study, clinconfound:clinoverall) |>
   rename(D1 = clinconfound, D2 = clinselect, D3 = clinclass, D4 = clindev, D5 = clinmiss, D6 = clinmeasure, D7 = clinreport, Overall = clinoverall) |>
   group_by(Study) |>
   slice(1) |>
   ungroup() |>
-  select(Study, D1:Overall)
+  select(refid, Study, D1:Overall) |>
+  mutate(across(D1:D7, ~ ifelse(.x == "No information", "No Information", .x)))
 # FIXME: 2023-04-03 select 1st assessment robinsi needs updating
 
 robinsi_meta_dat <- robinsi_all_dat |>
@@ -584,7 +595,7 @@ robinsi_meta_dat <- robinsi_all_dat |>
 
 # check files
 # rob_summary(
-#   data = robinsi_dat,
+#   data = robinsi_dat |> select(-refid),
 #   tool = "ROBINS-I",
 #   colour = "colourblind"
 # )
@@ -608,6 +619,14 @@ kq5_refid <- kq_refids(kq5_inapp_meds)
 kq6_refid <- kq_refids(kq6_proph_meds)
 kq7_refid <- kq_refids(kq7_postop_reg)
 kq8_refid <- kq_refids(kq8_pacu_screen)
+# studies with kq5 and kq6 arms
+kq56_refid <- study_arm_dat |>
+  group_by(refid) |>
+  filter(any(kq == "kq5") & any(kq == "kq6")) |>
+  ungroup() |>
+  select(refid) |>
+  distinct() |>
+  pull(refid)
 
 ## delirium outcomes refids; not other ---------------- (2023-02-13 21:16) @----
 delirium_dichot_refid <- c(refid_reported_outcome(dichot_dat, c(d_delirium, d_deli_duration))) |>
@@ -647,5 +666,8 @@ color_2 <- "#76d7c4"
 color_3 <- "#7fb3d5"
 color_4 <- "#c39bd3"
 
+## retracted pubmed trials----------------------------- (2023-04-07 12:13) @----
+# retracted_pubmed <- read.csv("data/retracted_trials_2023-04-07.csv")
+
 #### save for use ------------------------------------- (2023-03-13 22:53) @----
-save.image(paste0("/Users/mgrant/Documents/_projects01/asa/_geriatric/geriatrics_synth/data/geri_data_", str_replace(format(Sys.time()), " ", "_"), ".Rdata"))
+save.image(paste0("data/geri_data_", str_replace_all(format(Sys.time()), "\\s|:", "-"), ".Rdata"))
