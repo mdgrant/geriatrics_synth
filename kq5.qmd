@@ -134,23 +134,24 @@ study_char_dat |>
 
 ```{r included}
 # CODE: drug classes by study
+# DATA: drug_classes: categorize PIMs single or multiple (concatenated) by refid
 # note different from drug_classes data created later
 drug_classes <- study_arm_dat |>
   select(refid, design_f, study, arm_id, arm_n, contains("kq5")) |>
   select(refid, design_f, study, arm_id, arm_n, kq5_antichol:kq5_nonbenzo_other_spec) |>
   select(!contains("spec")) |>
   select(!contains("drug")) |>
-  filter(if_any(starts_with("kq"), ~ !is.na(.))) |>
+  filter(if_any(starts_with("kq"), ~ !is.na(.))) |>                  # arms with relevant drugs; other all NA
   rename_all(~ str_replace(., "kq5_", "")) |>
-  unite(agents, antichol:nonbenzo, na.rm = TRUE, sep = "|") |>
+  unite(agents, antichol:nonbenzo, na.rm = TRUE, sep = "|") |>       # multiple PIMs
   mutate(
-    agents = str_replace(agents, "antichol", "Anticholinergic"),
-    agents = str_replace(agents, "antipsych", "Antipsychotic"),
-    agents = str_replace(agents, "benzo", "Benzodiazepine"),
-    agents = str_replace(agents, "corticoster", "Corticosteroid"),
-    agents = str_replace(agents, "nsaid", "NSAID"),
-    agents = str_replace(agents, "h2antag", "H2 Blocker"),
-    agents = str_replace(agents, "nonBenzodiazepine", "Nonbenzodiazepine hypnotic")
+    agents = str_replace(agents, "antichol", "Anticholinergics"),
+    agents = str_replace(agents, "antipsych", "Antipsychotics"),
+    agents = str_replace(agents, "benzo", "Benzodiazepines"),
+    agents = str_replace(agents, "corticoster", "Corticosteroids"),
+    agents = str_replace(agents, "nsaid", "NSAIDs"),
+    agents = str_replace(agents, "h2antag", "H2 blockers"),
+    agents = str_replace(agents, "nonBenzodiazepine", "Nonbenzodiazepine hypnotics")
   ) |> 
   select(refid, study, agents) |>
   distinct() |>
@@ -230,33 +231,15 @@ included_dat |>
 ```{r}
 #| include: false
 # CODE: drug pim classes by study
+# DATA: drug_classes
 ## pim drug class by study ---------------------------- (2023-01-10 16:20) @----
-drug_classes <- study_arm_dat |> 
-  select(refid, design_f, study, arm_id, arm_n, contains("kq5")) |> 
-  select(!c(arm_kq5_pim:kq5_inapp_med_dosenote, "kq5_notes", contains("spec"), contains("drug"))) |> 
-  filter(if_any(starts_with("kq"), ~ !is.na(.))) |> # remove arms no pim
-  rename_all(~ str_replace(., "kq5_", "")) |> 
-  unite(agents, antichol:nonbenzo, na.rm = TRUE, sep = "|") |> 
-  mutate(agents = str_remove_all(agents, "_y"),
-         agents = case_when(
-           refid %in% c(246, 3727, 7722) ~ "Multiple", # Jeong 246 preop, Mangusan 3727
-           agents == "antichol" ~ "Anticholinergics",
-           agents == "antipsych" ~ "Antipsychotics",
-           agents == "benzo" ~ "Benzodiazepines",
-           agents == "corticoster" ~ "Corticosteroids",
-           agents == "nsaid" ~ "NSAIDs",
-           agents == "h2antag" ~ "H2 blockers",
-           agents == "nonbenzo" ~ "Nonbenzodiazepine hypnotics"
-         )) |> 
-  # find pim drugs for a given trial even if in > 1 arm
-  select(refid, study, agents) |> 
-  distinct() |> 
-  group_by(study) |> 
-  mutate(agents_up = paste0(agents, collapse = "|")) |> 
-  slice(1) |> 
-  ungroup() |> 
-  select(-c(study, agents))
-
+# replace multiple with "Multiple"; 
+# FIXME: need to enter Duprey 7722 all arms
+drug_classes <- drug_classes |> 
+  mutate(agents_up = ifelse(str_count(agents_up, "\\|") > 0, "Multiple", agents_up),
+  # temp fix for Duprey until data entered
+  agents_up = ifelse(refid == 7722, "Multiple", agents_up))
+  
 ## get factor labels and levels for drugs ------------- (2023-01-10 16:20) @----
 drug_f_levels <- read_csv("data/kq5_levels_labels.csv") |> pull(level)
 drug_f_labels <- read_csv("data/kq5_levels_labels.csv") |> pull(label)
@@ -264,6 +247,7 @@ drug_f_labels <- read_csv("data/kq5_levels_labels.csv") |> pull(label)
 ## table by arm --------------------------------------- (2023-01-10 16:21) @----
 # by arm pim and comparator --------------------------- (2023-01-15 15:24) @----
 kq5_by_arm_tab <- study_arm_dat |>
+  # filter(refid == 9620) |> 
   select(refid, design_f_lab, study, study_l, arm_id, arm_n, contains(c("kq5", "kq6")), anti_cortico_drug, starts_with("inapp"), anesth_type) |>
   rename(
     control_desc_kq5 = kq5_control_desc,
@@ -287,7 +271,7 @@ kq5_by_arm_tab <- study_arm_dat |>
   unite("other_spec", contains("other_spec"), sep = "|", na.rm = TRUE, remove = TRUE) |>
   unite("control_desc", contains("control_desc"), sep = "|", na.rm = TRUE, remove = TRUE) |>
   # intervention timing
-  unite("time_admin", c(inapp_med_pre:inapp_med_unspec), sep = "|", na.rm = TRUE, remove = FALSE) |> 
+  unite("time_admin", c(inapp_med_pre:inapp_med_unspec), sep = "|", na.rm = TRUE, remove = FALSE) |>
   mutate(
     drug = na_if(drug, ""),
     control_desc_recode = case_when(
@@ -299,15 +283,18 @@ kq5_by_arm_tab <- study_arm_dat |>
     arm_kq56 = str_replace(arm_kq56, "kq[5-6]_", ""),
     drug = str_replace(drug, "^\\w*_", ""),
     drug = ifelse(drug == "other" & !is.na(other_spec), tolower(substr(other_spec, 1, 5)), drug),
+    # Aizawa 2002 diazepam and flunitrazepam
+    drug = ifelse(refid == 9620 & arm_id == 2, "diaz_flun", drug),
     # from kq6
     drug = case_when(
-      refid == 742 & arm_id == 1 ~ "propofol", 
+      refid == 742 & arm_id == 1 ~ "propofol",
       arm_kq56 == "dexmedetomidine" ~ "dexmedetomidine",
       arm_kq56 == "ketamine" ~ "ketamine",
       arm_kq56 == "melatonin" ~ "melatonin",
       drug == "any" & arm_kq56 == "benzo" ~ "anybenz",
       drug == "any" & arm_kq56 == "antipsych" ~ "anyantipsych",
       other_spec == "omeprazole" ~ "omepr",
+      other_spec == "oxazepam" ~ "oxazepam",
       refid == 9157 & arm_kq56 == "control" ~ "propofol",
       is.na(drug) & !is.na(arm_kq56) ~ arm_kq56,
       refid == 246 ~ "various", # Jeong 2016
@@ -316,14 +303,14 @@ kq5_by_arm_tab <- study_arm_dat |>
     drug_f = factor(drug,
       levels = drug_f_levels,
       labels = drug_f_labels,
-    ), 
+    ),
     per_day = case_when(
       inapp_med_doseperday == 1 ~ "qd",
       inapp_med_doseperday == 2 ~ "bid",
       inapp_med_doseperday == 3 ~ "tid",
       TRUE ~ NA_character_
     ),
-    dose_sched = paste0(inapp_med_dose, dose_measure, " (", per_day, "×", inapp_med_days,  "d)"),
+    dose_sched = paste0(inapp_med_dose, dose_measure, " (", per_day, "×", inapp_med_days, "d)"),
     # remove missings
     dose_sched = str_replace_all(dose_sched, "×NAd|NA×|NAd|NA", ""),
     dose_sched = str_replace_all(dose_sched, "\\(\\)", ""),
@@ -340,15 +327,16 @@ kq5_by_arm_tab <- study_arm_dat |>
     time_admin = ifelse(time_admin == "Unspec", "Unspecified", time_admin),
     # create categorization for no-pim
     drug_f_nopim = fct_collapse(drug_f,
-                                "No PIM" = c("Propofol", "Omeprazole", "Other", "Placebo", "Control", "None", "Ketamine", "Dexmedetomidine"))
+      "No PIM" = c("Propofol", "Omeprazole", "Other", "Placebo", "Control", "None", "Ketamine", "Dexmedetomidine")
+    )
     # placebo, missing, none
     # drug_f = as.character(drug_f),
     # drug_f = ifelse(is.na(drug_f), firstup(arm_kq56), drug_f)
   ) |>
-  left_join(drug_classes, by = "refid")  # note by study, NOT arm
+  left_join(drug_classes, by = "refid") # note by study, NOT arm
 
 # save file for use in KQ6
-write_csv(kq5_by_arm_tab |> select(refid, arm_id, agents_up, drug_f, other_spec, control_desc), "data/kq5_drug_by_arm.csv")
+write_csv(kq5_by_arm_tab |> filter(refid %in% kq56_refid) |> select(refid, arm_id, agents_up, drug_f, other_spec, control_desc), "data/kq56_drug_by_arm.csv")
 
 # data for analysis variables 
 kq5_by_arm_tab <- kq5_by_arm_tab |> 
