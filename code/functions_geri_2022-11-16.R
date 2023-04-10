@@ -354,7 +354,12 @@ prim_sec_out_fun <- function(outcome, refids) {
 }
 
 
-# gt style file
+## total for soe table from pariwise ------------------ (2023-04-10 10:03) @----
+total_meta <- function(data_meta) {
+  data_meta |> summarize(total = sum(n1 + n2))
+}
+
+## gt style file --------------------------------------- (2023-04-10 10:03) @----
 gt_theme_mg <- function(data) {
   data %>%
     opt_row_striping() |>
