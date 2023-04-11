@@ -36,8 +36,9 @@ nocite: '@*'
 
 <!-- setup -------------------------------------------- (2022-12-24 16:56) @ --->
 
-```{r, file = "code/readfiles_geri_2022-11-16.R"}
+```{r read_data}
 #| include: false
+source("code/load_data.R")
 ```
 
 ```{r evidenceTables}
