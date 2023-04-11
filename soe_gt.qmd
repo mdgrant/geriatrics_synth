@@ -82,14 +82,12 @@ soe_summary <- soe_kq6.dat |>
       grade == "moderate" ~ mod, 
       grade == "high" ~ high
     )
-  )  
-  # mutate(
-  #   summary = paste(summary, " <br/> <br/>")
-  # )
+  ) 
 
 ## (updated 2021/11/17 11:44) domain_summary ------------------------------
 domain_summary <- soe_kq6.dat |> 
   select(n, comparison, outcome, design, n_studies, n_pts, rob, consist, direct, prec, other, summary, ends_with("foot")) |> 
+  # sentence case and add period if missing
   mutate(design = str_to_sentence(design),
          consist_foot = ifelse(!grepl("\\.$", consist_foot) & !is.na(consist_foot), paste0(consist_foot, "."), consist_foot),
          direct_foot  = ifelse(!grepl("\\.$", direct_foot ) & !is.na(direct_foot ), paste0(direct_foot , "."), direct_foot ),
@@ -148,12 +146,16 @@ soe_summary |>
     summary ~ px(350),
     result_links ~ px(150)
   ) |>
-  opt_vertical_padding(scale = 1.5) |> 
-  tab_style(style = "vertical-align:top", locations = cells_body(columns = everything())) |> 
+  opt_footnote_marks(marks = "numbers") |>
+  # tab_style(style = "vertical-align:top", locations = cells_body(columns = everything())) |> 
   tab_footnote("Pts: patients; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; ACCF/AHA: American College of Cardiology Foundation/American Heart Association; RR: risk ratio.") |>
   tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
+  tab_footnote("A: high-quality evidence from more than 1 RCT; B-R: moderate-quality evidence from more than 1 RCT; B-NR: moderate-quality evidence from more than one observational study; C-LD: randomized or non-randomized observational or registry studies with limited data; C-EO: consensus of expert opinion.", locations = cells_column_labels(columns = acc)) |>
   tab_footnote("Limited +; Important ++; Critical +++.", locations = cells_column_labels(columns = out_import)) |> 
-  tab_footnote("Common effects model.", locations = cells_body(columns = summary, rows = str_detect(n, "5.04"))) 
+  tab_footnote("Common effects model.", locations = cells_body(columns = summary, rows = str_detect(n, "5.14"))) |> 
+  tab_footnote("Network meta-analysis results were consistent.", locations = cells_body(columns = summary, rows = str_detect(n, "5.11"))) |> 
+  tab_footnote("Results from the largest trial (N = 650 analyzed) were not consistent with an effect.", locations = cells_body(columns = summary, rows = str_detect(n, "5.12"))) |> 
+  tab_footnote("Network meta-anlaysis yielded narrower 95% confidence interval attributable to pairwise result incorportating Hartung-Knapp adjustment.", locations = cells_body(columns = summary, rows = str_detect(n, "5.13")))
 
 ```
 
@@ -247,7 +249,8 @@ kq6_domain |>
     prec ~ px(120),
     other ~ px(120)
   ) |> 
-  tab_footnote("RCT: randomized clincal trial") |> 
+  tab_footnote("If not specified in footnotes, all references are to 95% confidence and prediction intervals.") |>
+  tab_footnote("RCT: randomized clincal trial; RR: risk ratio; OR: odds ratio.") |> 
   tab_footnote(md(domain_footnotes))
 ```
 
