@@ -1987,7 +1987,7 @@ forest(dex_plac_mort_meta,
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high – . 
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention small study effects --- funnel plot and limit meta-analysis. </font>
+#### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention small study effects --- funnel plot. </font>
 
 ```{r dex_plac_meta_funnel_limit_mort, fig.dim = c(7, 5.5), out.width = "70%", fig.align = "center"}
 # {r name, fig.dim = c(6, 6), out.width = "60%", fig.align = "center"}
@@ -2015,10 +2015,6 @@ legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#A
 ```
 <foot_mg> `r paste0("Thompson test for small study effects P = ", digit2(thompson), ".")` `r rm(thompson)`<br/> 
 :::
-
-</foot_mg> <a id="figure-4"></a>
-
-<br/>
 
 #### Melatonin/Ramelteon
 
