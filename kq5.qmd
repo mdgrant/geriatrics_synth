@@ -8,6 +8,8 @@ toc_float:
 tbl-cap-location: "top"
 page-layout: full
 css: styles.css
+execute:
+  cache: true
 tables:
       style: Table
       caption:
@@ -287,6 +289,7 @@ kq5_by_arm_tab <- study_arm_dat |>
     drug = ifelse(refid == 9620 & arm_id == 2, "diaz_flun", drug),
     # from kq6
     drug = case_when(
+      refid == 181 & arm_id == 1 ~ "nonsurg",
       refid == 742 & arm_id == 1 ~ "propofol",
       arm_kq56 == "dexmedetomidine" ~ "dexmedetomidine",
       arm_kq56 == "ketamine" ~ "ketamine",
