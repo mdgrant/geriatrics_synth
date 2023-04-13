@@ -230,6 +230,23 @@ age_for_tables <- function(x) {
   )
 }
 
+los_for_tables <- function(x) {
+  mutate(x,
+         los_sd = ifelse(is.na(los_sd) & !is.na(los_95l + los_95u), (los_95u - los_95l) / (1.96 * 2) * sqrt(arm_n), los_sd),
+         los_table =
+           case_when(
+             !is.na(los_m + los_sd) ~ paste0(digit1(los_m), " (", digit1(los_sd), ")"),
+             !is.na(los_m + los_rl + los_ru) ~ paste0(digit1(los_m), " [", digit0(los_rl), "-", digit0(los_ru), "]"),
+             !is.na(los_med + los_rl + los_ru) ~ paste0("<u>",digit1(los_med), "</u>", " [", digit0(los_rl), "-", digit0(los_ru), "]"),
+             !is.na(los_med + los_iqrl + los_iqru) ~ paste0("<u>", digit1(los_med), "</u>", " {", digit0(los_iqrl), "-", digit0(los_iqru), "}"),
+             !is.na(los_m) ~ as.character(digit1(los_m)),
+             !is.na(los_med) ~ paste0("<u>", digit1(los_med), "</u>"),
+             .default = ""
+           )
+  ) |>
+    select(los_table)
+}
+
 # mean med uncertainty summary column header md("Mean <u>Med</u> (SD) [Range] {IQR}")
 # example mmse1_dat <- mean_med_table(likert_dat, "mmse_", 1, 0)
 mean_med_table <- function(data, variable_select, observation_n, digs = 0) {
@@ -418,7 +435,7 @@ gt_theme_mg <- function(data) {
     font-style: normal;
     font-weight: normal;
     font-size: 85%;
-    vertical-align: -2px;
+    vertical-align: 2px;
     }
   "
   )

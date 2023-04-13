@@ -29,15 +29,15 @@ Among older patients undergoing surgery and anesthesia, do dexmedetomidine, keta
 ::: {.callout-note collapse="true" appearance="default" icon="true"}
 ## DRAFT results last updated `r lubridate::now()`
 
-2023-04-13 mortality added 
+2023-04-13 mortality and length of stay added 
 
-2023-04-11 delirium incidence completed with updated GRADE and risk of bias assessment conflicts adjudicated.
+2023-04-11 delirium incidence completed with updated GRADE and risk of bias assessment conflicts adjudicated
 
-2023-04-09 added studies from search update 2023-03-17; sensitivity analysis by risk of bias appraisals for delirium. 
+2023-04-09 added studies from search update 2023-03-17; sensitivity analysis by risk of bias appraisals for delirium
 
-2023-03-21 added sensitivity analysis according to delirium incidence proportion approximated by maximum daily incidence where incidence proportion was not reported.
+2023-03-21 added sensitivity analysis according to delirium incidence proportion approximated by maximum daily incidence where incidence proportion was not reported
 
-2023-03-19 updated dexmedetomidine and melatonin/ramelteon results with 3 additional studies reporting daily, but not overall, incidence proportion.
+2023-03-19 updated dexmedetomidine and melatonin/ramelteon results with 3 additional studies reporting daily, but not overall, incidence proportion
 :::
 
 ```{r read_data}
@@ -1556,8 +1556,85 @@ netsplit(netmeta_melram_nma, order = trts_melram) %>%
 ## **Delayed NCR/NCD** 
 
 ```{r}
-# RESUME: Complications
+# RESUME: delayed ncr
 ```
+
+## **Length of Stay**
+
+<font size = 4> `r table_ref()` Length of stay according to procedure classification and comparator. </font>
+
+```{r length_of_stay}
+#| eval: true
+
+los_tab <- contin_dat |>
+  mutate(los_for_tables(contin_dat)) |>
+  filter(if_any(los_m:los_diff_pval, ~ !is.na(.))) |>
+  left_join(drugs_dat |> select(refid, arm_id, drug_recode_abbr), by = c("refid", "arm_id")) |>
+  left_join(table_age_mn_med, by = c("refid", "arm_id")) |> # age_table
+  left_join(study_arm_dat |> select(refid, arm_id, asa_ps_incl), by = c("refid", "arm_id")) |>
+  left_join(surgs |> select(refid, surgs_single_f), by = c("refid")) |>
+  mutate(
+    refid_arm_id = paste0(refid, "-", arm_id),
+    surg_groups = paste0(surgs_single_f, " - ", design_f_lab),
+    mean_med = case_when(
+      !is.na(los_m) ~ los_m,
+      !is.na(los_med) ~ los_med
+    ),
+    drug_recode_abbr = fct_drop(drug_recode_abbr),
+    calc_prop_25d = 100 * mean_med / 25,
+    bar = case_when(
+      str_detect(drug_recode_abbr, "Dex") ~ bar_prop(calc_prop_25d, color_1),
+      str_detect(drug_recode_abbr, "Ket") ~ bar_prop(calc_prop_25d, color_2),
+      str_detect(drug_recode_abbr, "Mel|Ram") ~ bar_prop(calc_prop_25d, color_3),
+      .default = bar_prop(calc_prop_25d, color_4)
+    )
+  ) |>
+  # select(refid, arm_id, arm_n, drug_recode_abbr, age_table, asa_ps_incl, surg_groups, study, los_table, bar, starts_with(("los"))) |>
+  arrange(surg_groups, year, study, arm_id) |> 
+  select(refid, refid_arm_id, study, study_l, arm_n, drug_recode_abbr, asa_ps_incl, age_table, los_table, bar, surg_groups)
+
+# temp |> tabyl(drug_recode_abbr)
+
+los_tab |>
+  group_by(study) |>
+  mutate(study_l = ifelse(row_number() > 1, "", study_l)) |>
+  ungroup() |>
+  group_by(surg_groups) |>
+  gt(id = "one") |>
+  row_group_order(groups = c("Cardiac - Randomized Clinical Trial", "Ortho - Randomized Clinical Trial", "GI/Abd - Randomized Clinical Trial", "GI/Abd - Before-After/Time Series", "Thoracic - Randomized Clinical Trial", "Thoracic - Before-After/Time Series", "Various - Randomized Clinical Trial", "Oralmax - Randomized Clinical Trial", "Spine - Prospective Cohort" )) |> 
+  cols_hide(c(refid, refid_arm_id, study)) |>
+  cols_label(
+    study_l = "Study",
+    arm_n = " N",
+    drug_recode_abbr = "Comparator",
+    asa_ps_incl = "PS",
+    age_table = "    Age",
+    los_table = "    LOS",
+    bar = "0 – 25 days"
+  ) |>
+  gt_theme_mg() |> 
+  cols_width(
+    study_l ~ px(165),
+    arm_n ~ px(45),
+    drug_recode_abbr ~ px(80),
+    asa_ps_incl ~ px(60),
+    age_table ~ px(100),
+    los_table ~ px(100),
+    bar ~ px(120)
+    )  |> 
+  fmt_markdown(columns = c(study_l, bar, age_table, los_table)) |> 
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, drug_recode_abbr,  bar))) |>
+  tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(study_l, age_table, los_table))) |>
+  tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study_l, age_table, los_table, bar, drug_recode_abbr, asa_ps_incl))) |> 
+  tab_style(style = list(cell_text(color = color_1)), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(drug_recode_abbr, "Dex"))) |> 
+  tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(drug_recode_abbr, "Ket"))) |> 
+  tab_style(style = list(cell_text(color = color_3)), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(drug_recode_abbr, "Mel|Ram"))) |> 
+  tab_footnote(md("NS: not stated")) |> 
+  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, los_table))) |> 
+  tab_footnote(md("ASA Physical Status."), locations = cells_column_labels(columns = c(asa_ps_incl)))
+  
+```
+
 
 ## **Complications**
 
