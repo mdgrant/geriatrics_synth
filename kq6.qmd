@@ -29,6 +29,8 @@ Among older patients undergoing surgery and anesthesia, do dexmedetomidine, keta
 ::: {.callout-note collapse="true" appearance="default" icon="true"}
 ## DRAFT results last updated `r lubridate::now()`
 
+2023-04-13 mortality added 
+
 2023-04-11 delirium incidence completed with updated GRADE and risk of bias assessment conflicts adjudicated.
 
 2023-04-09 added studies from search update 2023-03-17; sensitivity analysis by risk of bias appraisals for delirium. 
@@ -1832,10 +1834,6 @@ pairwise_mort_mel_ram_dat <- pairwise(
 #     # leftcols = c("studlab", "k"),
 #     rightlabs = c("RD", "(95% CI)")
 #   )
-
-
-
-
 ```
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
@@ -2042,6 +2040,7 @@ mel_ram_mort_meta_dat <- pairwise_mort_mel_ram_dat |>
   filter(treat1 == "Plac/None" & treat2 == "Mel/Ram") |> 
   select(study, year, event2, n2, event1, n1, D1:Overall, mort_period, refid)
 
+# total_meta(mel_ram_mort_meta_dat)
 # refid_meta_fun(mel_ram_mort_meta_dat)
 
 mel_ram_plac_mort_meta <- metabin(event2, n2, event1, n1,
@@ -2082,7 +2081,6 @@ forest(mel_ram_plac_mort_meta,
 )
 ```
 <foot_mg> Mel: melatonin; Ram: ramelteon; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high – . </foot_mg> <a id="figure-4"></a>
-
 
 ## Study Characteristics
 
