@@ -361,12 +361,14 @@ total_meta <- function(data_meta) {
 
 ## refids from meta to clipboard ---------------------- (2023-04-12 09:35) @----
 refid_meta_fun <- function(data_meta){
-  data_meta |>
+  temp <- data_meta |>
     select(refid) |>
     distinct() |>
     pull(refid) |>
-    toString() |>
-    clipr::write_clip()
+    toString()
+
+  clipr::write_clip(temp)
+  return(temp)
 }
 
 ## gt style file --------------------------------------- (2023-04-10 10:03) @----
@@ -409,15 +411,15 @@ gt_theme_mg <- function(data) {
       locations = cells_row_groups()
     ) |>
     opt_footnote_marks(marks = "letters") |>
-    opt_footnote_spec(spec_ref = "^x", spec_ftr = "^x")
-  # opt_css(
-  #   css = "
-  #   #one .gt_footnote_marks {
-  #   font-style: normal;
-  #   font-weight: normal;
-  #   font-size: 75%;
-  #   vertical-align: 0.4em;
-  #   }
-  # "
-  # )
+    opt_footnote_spec(spec_ref = "^x", spec_ftr = "^x") |>
+  opt_css(
+    css = "
+    #one .gt_footnote_marks {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 85%;
+    vertical-align: -2px;
+    }
+  "
+  )
 }
