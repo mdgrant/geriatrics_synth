@@ -1156,7 +1156,7 @@ forest(data_meta,
 )  
 }
 
-dex_meta_forest_fun(dex_plac_meta)
+dex_meta_forest_fun(dex_plac_meta, flag = FALSE)
 ```
 
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high – . <a id="figure-4"></a><br/>
@@ -1551,7 +1551,11 @@ netsplit(netmeta_melram_nma, order = trts_melram) %>%
 
 <br/>
 
-## **Delayed NCR/NCD**
+## **Delayed NCR/NCD** 
+
+```{r}
+# RESUME: Complications
+```
 
 ## **Complications**
 
@@ -1560,10 +1564,14 @@ netsplit(netmeta_melram_nma, order = trts_melram) %>%
 ## check missings other than n ------------------------ (2023-03-23 12:52) @----
 missing_non_n_fun <- function(var_prefix) {
   dichot_dat %>%
-    filter(if_any(!!paste0(var_prefix, "_per"):!!paste0(var_prefix, "_95high"), ~ !is.na(.x)) & is.na(!!paste0(var_prefix, "_n")))
+    filter(if_any(!!paste0(var_prefix, "_per"):!!paste0(var_prefix, "_95high"), ~ !is.na(.x))) |>
+    select(refid, study, arm_n, comp_update_arm_n, !!paste0(var_prefix, "_n"):!!paste0(var_prefix, "_95high"))
 }
-variables_temp <- c("cardarr", "intub", "airleak", "gastro", "medical", "pulcongest", "respfail", "pe", "ssi", "thromb", "kidneyinj", "myoinfarct", "othcomp", "pneum", "infect", "cardiac", "stroke", "pulm", "cardiac")
-map(variables_temp, missing_non_n_fun)
+
+variables_temp <- c("cardarr", "intub", "airleak", "gastro", "medical", "pulcongest", "respfail", "pe", "ssi", "thromb", "kidneyinj", "myoinfarct", "othcomp", "pneum", "infect", "cardiac", "stroke", "pulm", "cardiac", "clavien1", "clavien2", "clavien3", "clavien4", "clavien5")
+
+adverse_events_dat <- map(variables_temp, missing_non_n_fun)
+
 ## bruit force ---------------------------------------- (2023-03-23 16:39) @----
 # dichot_dat |> 
 #   filter(!is.na(d_complication)) |> 
@@ -1595,7 +1603,13 @@ map(variables_temp, missing_non_n_fun)
 #| eval: true
 mortality_dat <- dichot_dat |>
   filter(if_any(starts_with("mort"), ~ !is.na(.x))) |> 
-  select(refid, refid_c, arm_id, year, study, study_l, design_f_lab, arm_n,  matches("_n|per") & starts_with("mort")) |> 
+  # filter(arm_n != mort_update_arm_n) |> 
+  # select(refid, arm_n, mort_update_arm_n)
+  mutate(
+    # arm_n use mort_update_arm_n if different
+    arm_n = ifelse(!is.na(mort_update_arm_n), mort_update_arm_n, arm_n)
+  ) |> 
+  select(refid, refid_c, arm_id, year, study, study_l, design_f_lab, arm_n, matches("_n|per") & starts_with("mort"), -mort_update_arm_n) |> 
   pivot_longer(
     cols = starts_with("mort"),
     names_to = "estimand",
