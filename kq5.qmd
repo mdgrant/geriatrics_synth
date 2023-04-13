@@ -8,8 +8,6 @@ toc_float:
 tbl-cap-location: "top"
 page-layout: full
 css: styles.css
-execute:
-  cache: true
 tables:
       style: Table
       caption:
