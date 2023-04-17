@@ -120,98 +120,6 @@ study_char_dat |>
 
 <!-- design, enrollment, centers ... ------------------- (2022-12-28 10:44) @ --->
 
-```{r drugs_by_arm}
-#| label: design_contry_surg
-#| tbl-cap: Study design, enrollment, centers, country, and surgery (see [References](#references) for citations).
-#| message: false
-# CODE: * drugs & recode drugs/comparators so that usable; "other" category recoded to comparator
-# DATA: drugs_dat <- study_arm_dat include drug arm data; adds kq5/6 arms
-## drugs; from kq6, add kq5 arm drugs ----------------- (2023-01-16 13:46) @----
-# drugs for kq5 studies; needed to fill in "missings" for kq6 arms coded as kq5 arms
-kq5_drug_by_arm <- read_csv("data/kq56_drug_by_arm.csv") |>
-  rename(drug = drug_f) |> # arm drug
-  mutate(drug = as.character(drug)) |> 
-  select(refid, arm_id, drug, control_desc)
-
-drugs_dat <- study_arm_dat |>
-  # filter(refid %in% c(2598, 13171)) |> 
-  select(refid, design_f_lab, study, study_l, study_l_w_linked, study_id, arm_id, arm_n, arm_kq6_proph_meds, kq6_control_desc:kq6_notes, multiple_kq) |>
-  rename_with(~ str_replace(., "kq6_", ""), everything()) |>
-  rename_with(~ str_replace(., "dex_", "dexmed_"), everything()) |>
-  mutate(
-    dexmed = ifelse(refid == 13171, NA, dexmed),
-    drug = case_when(
-      !is.na(dexmed) ~ dexmed,
-      !is.na(ketamine) ~ ketamine,
-      !is.na(melatonin) ~ melatonin,
-      !is.na(ramelteon) ~ ramelteon,
-      !is.na(ulinastatin) ~ ulinastatin, # all missing
-      !is.na(none) ~ none
-    ),
-    drug = str_replace(drug, "kq6_", ""),
-    drug = firstup(drug)
-  ) |>
-  relocate(drug, .after = arm_n) |>
-  # update drug and control description for "kq5" arms
-  left_join(kq5_drug_by_arm, by = c("refid", "arm_id")) |>
-  mutate(
-    drug = coalesce(drug.x, drug.y),
-    control_desc = coalesce(control_desc.x, control_desc.y),
-    control_desc = firstup(control_desc),
-    arm_proph_meds = ifelse(is.na(arm_proph_meds), "kq5_arm", arm_proph_meds),
-  ) |>
-  select(-matches("\\.x|\\.y")) |>
-  mutate(
-  # FIXME: temporary fix for 13171
-    drug = ifelse(refid == 13171 & arm_id == 1, "None", drug),
-    drug_f = fct(drug,
-      levels = c("Dexmedetomidine", "Ketamine", "Melatonin", "Ramelteon", "Ulinastatin", "Midazolam", "Oxazepam", "Haloperidol", "None", "Placebo", "Other")
-    ),
-    drug_f = fct_collapse(drug_f, "Control" = c("None", "Placebo", "Other"))
-  ) |>
-  group_by(refid) |>
-  mutate(
-    drug_study = case_when( # study drug
-      if_any(drug_f, ~ . == "Dexmedetomidine") ~ "Dexmedetomidine",
-      if_any(drug_f, ~ . == "Ketamine") ~ "Ketamine",
-      if_any(drug_f, ~ . == "Melatonin") ~ "Melatonin",
-      if_any(drug_f, ~ . == "Ramelteon") ~ "Ramelteon",
-      if_any(drug_f, ~ . == "Ulinastatin") ~ "Ulinastatin"
-      # TRUE ~ "MISSING" # NA_character_ for verification
-    ),
-    drug_study = fct(drug_study, levels = c("Dexmedetomidine", "Ketamine", "Melatonin", "Ramelteon", "Ulinastatin")),
-    drug_recode = case_when(
-      str_detect(other_spec, "Midazolam and propofol") ~ "Midazolam/propofol",
-      str_detect(other_spec, "Midazolam and sevoflurane") ~ "Midazolam/sevoflurane",
-      str_detect(other_spec, "[Mm]idazolam") ~ "Midazolam",
-      str_detect(other_spec, "[Ss]ufentanil") ~ "Sufentanil",
-      # str_detect(other_spec, "[Rr]hythim") ~ "Rhythim",
-      str_detect(other_spec, "[Pp]ropofol") ~ "Propofol",
-      str_detect(other_spec, "[Mm]orphine") ~ "Morphine",
-      str_detect(other_spec, "[Pp]regabalin") ~ "Pregabalin",
-      .default = drug
-    ),
-    drug_recode = ifelse(refid == 2748 & arm_id == 4, "Dexmedetomidine/Pregabalin", drug_recode),
-    drug_recode = ifelse(refid == 13406 & arm_id == 3, "Dexmedetomidine/Ulinastatin", drug_recode),
-    drug_recode = ifelse(refid == 13393 & arm_id == 1, "Dexmedetomidine/Ulinastatin", drug_recode),
-    # FIXME: check Mahrose
-    drug_recode = ifelse(refid == 13171 & arm_id == 2, "Melatonin/Dexmedetomidine", drug_recode),
-    drug_recode = ifelse(refid == 13171 & arm_id == 1, "Dexmedetomidine", drug_recode),
-    # HERE
-    drug_recode = fct(drug_recode,
-      levels = c("Dexmedetomidine", "Dexmedetomidine/Pregabalin", "Dexmedetomidine/Ulinastatin", "Ketamine", "Melatonin", "Melatonin/Dexmedetomidine","Ramelteon", "Ulinastatin", "Haloperidol", "Midazolam", "Oxazepam", "Midazolam/propofol", "Midazolam/sevoflurane", "Morphine", "Pregabalin", "Propofol", "Sufentanil", "Placebo", "None")
-    ),
-    drug_recode_abbr = fct_recode(drug_recode, Dex = "Dexmedetomidine", "Dex/Preg" = "Dexmedetomidine/Pregabalin", "Dex/Ulin" = "Dexmedetomidine/Ulinastatin", Ket = "Ketamine", Mel = "Melatonin", "Mel/Dex" = "Melatonin/Dexmedetomidine", Ram = "Ramelteon", Ulin = "Ulinastatin", Hal = "Haloperidol", Mid = "Midazolam", Oxaz = "Oxazepam", "Mid/Prop" = "Midazolam/propofol", "Mid/Sevo" = "Midazolam/sevoflurane", MS = "Morphine", Preg = "Pregabalin", Prop = "Propofol", Sufen = "Sufentanil", Plac = "Placebo"),
-  ) |>
-  ungroup() |>
-  relocate(c(drug, drug_f, drug_recode, drug_recode_abbr, drug_study), .after = arm_id) |>
-  relocate(c(other_spec, interv_desc, control_desc), .after = last_col()) |>
-  arrange(refid, drug_study) |>
-# FIXME: 2598  
-  fill(drug_study) |>
-  arrange(refid, arm_id)
-```
-
 ```{r included_studies_table}
 #| echo: false
 included_dat <- study_char_dat |>
@@ -230,29 +138,8 @@ included_dat <- study_char_dat |>
   mutate(
     surgs = ifelse(str_count(surgs, "\\|") > 3, "Various", surgs)
   ) |>
-  # left_join(drugs_dat |> group_by(refid) |> slice(1) |> ungroup() |> select(refid, drug_study), by = "refid") |>
-  # # create new factor for table as gt not arranging properly
-  # mutate(
-  #   drug_design = fct(paste0(drug_study, " - ", design_f_lab),
-  #     levels = c(
-  #       "Dexmedetomidine - Randomized Clinical Trial",
-  #       "Dexmedetomidine - Nonrandomized Trial",
-  #       "Ketamine - Randomized Clinical Trial",
-  #       "Ketamine - Prospective Cohort",
-  #       "Melatonin - Randomized Clinical Trial",
-  #       "Ramelteon - Randomized Clinical Trial",
-  #       "Ramelteon - Before-After/Time Series",
-  #       "Ulinastatin - Randomized Clinical Trial"
-  #     )
-  #   )
-  # ) |>
   arrange(design_f, surgs, study_l) |>
   select(refid, design_f, study_l, centers, n_enroll, country, surgs, non_vh_hdi)
-# 
-# included_dat |>
-#   mutate(drug_design = paste(drug_study, design_f_lab)) |>
-#   filter(str_detect(drug_design, "NA"))
-#   
 
 included_dat |>
   group_by(design_f) |>
@@ -270,8 +157,8 @@ included_dat |>
   cols_width(
     refid ~ px(60),
     study_l ~ px(200),
-    centers ~ px(45),
-    n_enroll ~ px(55),
+    centers ~ px(60),
+    n_enroll ~ px(60),
     country ~ px(100),
     surgs ~ px(220)
   ) |> 

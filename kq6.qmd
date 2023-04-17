@@ -43,24 +43,29 @@ Among older patients undergoing surgery and anesthesia, do dexmedetomidine, keta
 ```{r read_data}
 #| include: false
 # CODE: * read data
+# FIXME: ? delete 13734 
 # FIXME: revise with purrr
 source("code/load_data.R")
 settings.meta(CIbracket = "(")
 # load("data/geri_data_2023-03-13.Rdata")
-kq6_refid <- kq6_refid[!kq6_refid %in% 13734]
+kq6_refid <- kq6_refid[!kq6_refid %in% 13734] # Fan 2017b rhythim 
 study_char_dat <- data_kq(study_char_dat, kq6_refid) 
 study_arm_dat <- data_kq(study_arm_dat, kq6_refid) 
 contin_dat <- data_kq(contin_dat, kq6_refid) 
 likert_dat <- data_kq(likert_dat, kq6_refid) 
-# VARIABLE: delirium_inc_prop <lgl> [dichot_dat] if used max of daily
+# VARIABLE: delirium_inc_prop <lgl> [dichot_dat] reported incidence proportion
+# VARIABLE: neurocog_inc_prop <lgl> [dichot_dat] reported incidence proportion
 # VARIABLE: delirium_day_max <num> [dichot_dat] max of daily 
+# VARIABLE: neurocog_day_max <num> [dichot_dat] max of daily 
+
 dichot_dat <- data_kq(dichot_dat, kq6_refid) |>
   mutate(
     delirium_inc_prop = !is.na(delitotal_n), 
     delirium_day_max = pmax(delirium_n1, delirium_n2, delirium_n3, delilast_n, na.rm = TRUE),
-    delitotal_n = ifelse(is.na(delitotal_n), delirium_day_max, delitotal_n)
-  )
-
+    delitotal_n = ifelse(is.na(delitotal_n), delirium_day_max, delitotal_n),
+  ) |> 
+  relocate(delirium_day_max, .after = delitotal_n) 
+  
 # rob_dat <- data_kq(rob_dat, kq6_refid) 
 ```
 
@@ -160,6 +165,8 @@ study_char_dat |>
 <!-- design, enrollment, centers ... ------------------- (2022-12-28 10:44) @ --->
 
 ```{r drugs_by_arm}
+#| label: design_contry_surg
+#| tbl-cap: Study design, enrollment, centers, country, and surgery (see [References](#references) for citations).
 #| message: false
 # CODE: * drugs & recode drugs/comparators so that usable; "other" category recoded to comparator
 # DATA: drugs_dat <- study_arm_dat include drug arm data; adds kq5/6 arms
@@ -230,7 +237,7 @@ drugs_dat <- study_arm_dat |>
     ),
     drug_recode = ifelse(refid == 2748 & arm_id == 4, "Dexmedetomidine/Pregabalin", drug_recode),
     drug_recode = ifelse(refid == 13406 & arm_id == 3, "Dexmedetomidine/Ulinastatin", drug_recode),
-    drug_recode = ifelse(refid == 13393 & arm_id == 2, "Dexmedetomidine/Ulinastatin", drug_recode),
+    drug_recode = ifelse(refid == 13393 & arm_id == 1, "Dexmedetomidine/Ulinastatin", drug_recode),
     # FIXME: check Mahrose
     drug_recode = ifelse(refid == 13171 & arm_id == 2, "Melatonin/Dexmedetomidine", drug_recode),
     drug_recode = ifelse(refid == 13171 & arm_id == 1, "Dexmedetomidine", drug_recode),
@@ -338,8 +345,8 @@ included_dat |>
   cols_width(
     refid ~ px(60),
     study_l ~ px(200),
-    centers ~ px(40),
-    n_enroll ~ px(55),
+    centers ~ px(60),
+    n_enroll ~ px(60),
     country ~ px(100),
     surgs ~ px(220)
   ) |> 
@@ -911,7 +918,8 @@ delirium_total_gt_fun("Dex") |>
   tab_footnote("Reported only daily incidence.", locations = cells_body(columns = delitotal_time, rows = delitotal_time == "Note")) |> 
   tab_footnote("Maximum of reported daily incidence.", locations = cells_body(columns = n_percent, rows = refid %in% refid_max_of_days)) |> 
   tab_footnote("Primary outcome was delirium on postoperative day 1 — OR 0.32 (95% CI, 0.10–0.83)", locations = cells_body(columns = study_l, rows = str_detect(study_l, "Qu 2023")))
-  
+
+rm(refid_max_of_days)
 ```
 
 ### Ketamine
@@ -966,6 +974,8 @@ delirium_total_gt_mel_ram |>
   tab_footnote("Days over which incidence proportion assessed. Stay indicates over patient hospital stay.", locations = cells_column_labels(columns = delitotal_time)) |> 
   tab_footnote("Reported only daily incidence.", locations = cells_body(columns = delitotal_time, rows = delitotal_time == "Note")) |> 
   tab_footnote("Maximum of reported daily incidence.", locations = cells_body(columns = n_percent, rows = refid %in% refid_max_of_days))
+
+rm(refid_max_of_days)
 ```
 
 ### *Pooled*
@@ -1351,7 +1361,7 @@ forest(mel_ram_plac_meta,
   allstudies = TRUE,
   common = TRUE,
   label.e = "Mel/Ram",
-  label.c = "Placebo",
+  label.c = "Plac/None",
   rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
   rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
   just.addcols.right = "right",
@@ -1555,8 +1565,112 @@ netsplit(netmeta_melram_nma, order = trts_melram) %>%
 
 ## **Delayed NCR/NCD** 
 
-```{r}
-# RESUME: delayed ncr
+```{r dncr_ncd_dat}
+#| eval: false
+# CODE: neurocog meta data munge; here to produce figure
+# VARIABLE: postop_only <lgl> from study arm only post-op administration [postop_only_dat]
+
+## ncd_dat -------------------------------------------- (2023-04-15 15:55) @----
+ncd_dat <- dichot_dat |>
+  filter(if_any(c(neurocog_n1, neurocog_n2, neurocog_n3, neurocog_last_n, neurocog_total_n), ~ !is.na(.x))) |>
+  # > 30 day exam
+  filter(if_any(matches("neurocog.*time.*"), ~ .x > 30)) |> 
+  # select(refid, study, arm_n, neurocog_update_arm_n, neurocog_n1, neurocog_n2, neurocog_n3, neurocog_last_n, neurocog_total_n, matches("neurocog.*time")) |> 
+  mutate(
+    arm_n = ifelse(!is.na(neurocog_update_arm_n), neurocog_update_arm_n, arm_n),
+    ncd_time = case_when(
+      neurocog_time1 > 30 ~ neurocog_time1,
+      neurocog_time2 > 30 ~ neurocog_time2,
+      neurocog_time3 > 30 ~ neurocog_time3,
+      neurocog_last_time > 30 ~ neurocog_last_time,
+      neurocog_total_n > 30 ~ neurocog_total_time,
+      .default = NA
+    ),
+   neurocog_total_n = case_when(
+      neurocog_time1 > 30 ~ neurocog_n1,
+      neurocog_time2 > 30 ~ neurocog_n2,
+      neurocog_time3 > 30 ~ neurocog_n3,
+      neurocog_last_time > 30 ~ neurocog_last_n,
+      neurocog_total_time > 30 ~ neurocog_total_n
+    )
+  ) |> 
+  # add drug (arm), country, surgery, postop only
+  left_join(drugs_dat |> select(refid, arm_id, drug_recode_abbr), by = c("refid", "arm_id")) |>
+  left_join(study_char_dat |> select(refid, country), by = "refid") |>
+  left_join(surgs |> select(refid, surgs_single_f), by = c("refid")) |>
+  left_join(postop_only_dat, by = "refid") |>
+  rename(arm = drug_recode_abbr, surg_f = surgs_single_f) |>
+  select(refid, refid_c, arm_id, study, design_f_lab, country, surg_f, postop_only, arm, neurocog_total_n, arm_n,  ncd_time) |>
+  arrange(refid_c, arm_id) |>
+  mutate(
+    year = as.numeric(str_extract(study, "\\d{4}")),
+    # neurocog_inc_prop = ifelse(neurocog_inc_prop == TRUE, "Incidence Proportion", "Maximum Daily"),
+    arm = fct_collapse(arm, "Plac/None" = c("Plac", "None")),
+    across(c(arm, design_f_lab, surg_f), ~ fct_drop(.x)),
+  )
+
+## dncr_dat ------------------------------------------- (2023-04-15 15:55) @----
+dncr_dat <- dichot_dat |>
+  filter(if_any(c(neurocog_n1, neurocog_n2, neurocog_n3, neurocog_last_n, neurocog_total_n), ~ !is.na(.x))) |>
+  # > 30 day exam
+  filter(if_any(matches("neurocog.*time.*"), ~ .x <= 30)) |>
+  # select(refid, study, arm_n, neurocog_update_arm_n, neurocog_n1, neurocog_n2, neurocog_n3, neurocog_last_n, neurocog_total_n, matches("neurocog.*time")) |>
+  mutate(
+    arm_n = ifelse(!is.na(neurocog_update_arm_n), neurocog_update_arm_n, arm_n),
+    neurocog_n1 = ifelse(neurocog_time1 > 30, NA, neurocog_n1),
+    neurocog_n2 = ifelse(neurocog_time2 > 30, NA, neurocog_n2),
+    neurocog_n3 = ifelse(neurocog_time3 > 30, NA, neurocog_n3),
+    neurocog_last_n = ifelse(neurocog_last_time > 30, NA, neurocog_last_n),
+    neurocog_total_n = ifelse(neurocog_total_time > 30, NA, neurocog_total_n),
+    neurocog_time1 = ifelse(neurocog_time1 > 30, NA, neurocog_time1),
+    neurocog_time2 = ifelse(neurocog_time2 > 30, NA, neurocog_time2),
+    neurocog_time3 = ifelse(neurocog_time3 > 30, NA, neurocog_time3),
+    neurocog_last_time = ifelse(neurocog_last_time > 30, NA, neurocog_last_time),
+    neurocog_total_time = ifelse(neurocog_total_time > 30, NA, neurocog_total_time),
+    dncr_time = pmax(neurocog_time1, neurocog_time2, neurocog_time3, neurocog_last_time, neurocog_total_time, na.rm = TRUE),
+    neurocog_total_n = case_when(
+      neurocog_time1 == dncr_time ~ neurocog_n1,
+      neurocog_time2 == dncr_time ~ neurocog_n2,
+      neurocog_time3 == dncr_time ~ neurocog_n3,
+      neurocog_last_time == dncr_time ~ neurocog_last_n,
+      neurocog_total_time == dncr_time ~ neurocog_total_n
+    )
+  ) |>
+  # find longest f/u
+  # add drug (arm), country, surgery, postop only
+  left_join(drugs_dat |> select(refid, arm_id, drug_recode_abbr), by = c("refid", "arm_id")) |>
+  left_join(study_char_dat |> select(refid, country), by = "refid") |>
+  left_join(surgs |> select(refid, surgs_single_f), by = c("refid")) |>
+  left_join(postop_only_dat, by = "refid") |>
+  rename(arm = drug_recode_abbr, surg_f = surgs_single_f) |>
+  select(refid, refid_c, arm_id, study, design_f_lab, country, surg_f, postop_only, arm, neurocog_total_n, arm_n, dncr_time) |>
+  arrange(refid_c, arm_id) |>
+  mutate(
+    year = as.numeric(str_extract(study, "\\d{4}")),
+    # neurocog_inc_prop = ifelse(neurocog_inc_prop == TRUE, "Incidence Proportion", "Maximum Daily"),
+    arm = fct_collapse(arm, "Plac/None" = c("Plac", "None")),
+    across(c(arm, design_f_lab, surg_f), ~ fct_drop(.x)),
+  )
+
+dncr_rr_ref <- dncr_dat |>
+  select(refid, refid_c, arm_id, neurocog_total_n, arm_n) |>
+  arrange(refid_c, arm_id) |>
+  rename(ref_neurocog_n = neurocog_total_n, ref_arm_n = arm_n) |>
+  group_by(refid_c) |>
+  mutate(
+    ref_arm_n = ifelse(row_number() > 1, NA, ref_arm_n),
+    ref_neurocog_n = ifelse(row_number() > 1, NA, ref_neurocog_n)
+  ) |>
+  fill(ref_arm_n, ref_neurocog_n) |>
+  mutate(
+    ref_arm_n = ifelse(row_number() == 1, NA, ref_arm_n),
+    ref_neurocog_n = ifelse(row_number() == 1, NA, ref_neurocog_n)
+  ) |>
+  select(-refid)
+
+
+
+
 ```
 
 ## **Length of Stay**
