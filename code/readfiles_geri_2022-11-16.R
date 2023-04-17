@@ -3,6 +3,7 @@
 # library(conflicted)
 # library(tidyverse)
 # conflicts_prefer(dplyr::filter)
+rm(list = ls()) # avoid including errant files
 library(janitor)
 suppressPackageStartupMessages(library(meta))
 suppressPackageStartupMessages(library(netmeta))
