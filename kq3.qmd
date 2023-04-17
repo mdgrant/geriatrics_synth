@@ -27,6 +27,7 @@ Among patients 65 years or older \[geriatric\] undergoing surgery, does regional
 #| include: false
 source("code/load_data.R")
 settings.meta(CIbracket = "(")
+kq3_refid <- kq3_refid[kq3_refid != 813]
 # load("data/geri_data_2023-03-13.Rdata")
 study_char_dat <- data_kq(study_char_dat, kq3_refid)
 study_arm_dat <- data_kq(study_arm_dat, kq3_refid)
