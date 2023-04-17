@@ -74,3 +74,6 @@ div.callout-note.callout {
 	 display: block;
 }
 
+.table-caption {
+  text-align: left;
+}

@@ -23,9 +23,11 @@ Among patients 65 years or older \[geriatric\] undergoing surgery, does regional
 
 <!-- setup -------------------------------------------- (2022-12-24 16:56) @ --->
 
-```{r, read_data}
+```{r read_data}
 #| include: false
-source("code/readfiles_geri_2022-11-16.R")
+source("code/load_data.R")
+settings.meta(CIbracket = "(")
+# load("data/geri_data_2023-03-13.Rdata")
 study_char_dat <- data_kq(study_char_dat, kq3_refid)
 study_arm_dat <- data_kq(study_arm_dat, kq3_refid)
 contin_dat <- data_kq(contin_dat, kq3_refid)
@@ -33,26 +35,278 @@ dichot_dat <- data_kq(dichot_dat, kq3_refid)
 likert_dat <- data_kq(likert_dat, kq3_refid)
 ```
 
-<!-- kq5..._dat files --------------------------------- (2022-12-28 08:41) @ --->
+## Outcome Importance Rankings
 
-```{r, data}
-# note working file not renamed
-study_char_dat <- study_char_dat |> 
-  filter(refid %in% kq3_refid) |> 
-  arrange(design_f)
+<font size = 4> `r table_ref()` Rankings of the 5 most important outcomes (11 respondents). </font>
 
-study_arm_dat <- study_arm_dat |> 
-  filter(refid %in% kq3_refid) |> 
-  arrange(design_f)
-```
-
-<!-- ## Outcome Importance Rankings -->
-
-<!-- <font size = 4> `r table_ref()` Rankings of the 5 most important outcomes (11 respondents). </font> -->
-
-```{r, outcome_priority}
+```{r outcome_priority}
 #| include: true
-#| eval: false
+#| eval: true
 outcome_dat <- rankings("KQ3")
 outcome_tab(outcome_dat, 11)
 ```
+
+### Reporting Frequency
+
+<font size = 4> `r table_ref()` Dichotomous or count outcomes. </font>
+
+```{r dichot_outcome_freq}
+# CODE: reporting frequency tabulation
+dichot_freq_fun(dichot_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; NCD: neurocognitive disorder; QoR: quality of recovery; ")
+```
+
+<font size = 4> `r table_ref()` Continuous outcomes. </font>
+
+```{r cont_outcome_freq}
+contin_freq_fun(contin_dat)
+```
+
+<font size = 4> `r table_ref()` Likert or ordinal outcomes. </font>
+
+```{r likert_outcome_freq}
+likert_freq_fun(likert_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; NCD: neurocognitive disorder; QoR: quality of recovery; ")
+```
+
+
+## **Included Studies**
+
+<font size = 4> `r table_ref()` Number of studies by design. </font>
+
+<!-- Number of studies by design ----------------------- (2022-12-28 10:44) @ --->
+
+```{r studies_design}
+# CODE: study design table — design and number; no duplicate counting
+study_char_dat |>
+  arrange(year) |> 
+  group_by(linked_references_all_refid) |> # count 1 for multiple pubs from single study
+  slice(1) |> 
+  ungroup() |> 
+  # select(refid, study, linked_references_all_refid, design_f_lab) |> # to check studies > 1 report
+  select(refid, study, design_f_lab) |>
+  group_by(design_f_lab, .drop = TRUE) |>
+  summarise(total = n()) |>
+  adorn_totals("row") |>
+  gt(id = "one") |>
+  cols_label(design_f_lab = "Design", total = "Studies") |>
+  cols_width(
+    # design_f_lab ~ px(200),
+    design_f_lab ~ "1.8in",
+    total ~ ".5in"
+  ) |>
+  gt_theme_mg() |> 
+  tab_style(
+    style = list(
+      cell_fill(color = "#E4F3FE"),
+      cell_text(weight = "bold"),
+      cell_borders(sides = c("top", "bottom"), color = "#9A9EA1", style = "solid", weight = px(1.3))
+    ),
+    locations = cells_body(
+      rows = design_f_lab == "Total"
+    )
+  ) |> 
+  tab_style(
+    style = list(
+      cell_text(align = "left")),
+      locations = cells_body(
+        columns = design_f_lab
+      )
+    ) 
+  # tab_footnote("Counted randomized clinical trials with more than 1 publication only once (applied to 2 trials with 2 publications).")
+```
+
+### Design, centers, country, and surgery
+
+<font size = 4> `r table_ref()` Study design, enrollment, centers, country, and surgery (see [References](#references) for citations). </font>
+
+<!-- design, enrollment, centers ... ------------------- (2022-12-28 10:44) @ --->
+
+```{r drugs_by_arm}
+#| label: design_contry_surg
+#| tbl-cap: Study design, enrollment, centers, country, and surgery (see [References](#references) for citations).
+#| message: false
+# CODE: * drugs & recode drugs/comparators so that usable; "other" category recoded to comparator
+# DATA: drugs_dat <- study_arm_dat include drug arm data; adds kq5/6 arms
+## drugs; from kq6, add kq5 arm drugs ----------------- (2023-01-16 13:46) @----
+# drugs for kq5 studies; needed to fill in "missings" for kq6 arms coded as kq5 arms
+kq5_drug_by_arm <- read_csv("data/kq56_drug_by_arm.csv") |>
+  rename(drug = drug_f) |> # arm drug
+  mutate(drug = as.character(drug)) |> 
+  select(refid, arm_id, drug, control_desc)
+
+drugs_dat <- study_arm_dat |>
+  # filter(refid %in% c(2598, 13171)) |> 
+  select(refid, design_f_lab, study, study_l, study_l_w_linked, study_id, arm_id, arm_n, arm_kq6_proph_meds, kq6_control_desc:kq6_notes, multiple_kq) |>
+  rename_with(~ str_replace(., "kq6_", ""), everything()) |>
+  rename_with(~ str_replace(., "dex_", "dexmed_"), everything()) |>
+  mutate(
+    dexmed = ifelse(refid == 13171, NA, dexmed),
+    drug = case_when(
+      !is.na(dexmed) ~ dexmed,
+      !is.na(ketamine) ~ ketamine,
+      !is.na(melatonin) ~ melatonin,
+      !is.na(ramelteon) ~ ramelteon,
+      !is.na(ulinastatin) ~ ulinastatin, # all missing
+      !is.na(none) ~ none
+    ),
+    drug = str_replace(drug, "kq6_", ""),
+    drug = firstup(drug)
+  ) |>
+  relocate(drug, .after = arm_n) |>
+  # update drug and control description for "kq5" arms
+  left_join(kq5_drug_by_arm, by = c("refid", "arm_id")) |>
+  mutate(
+    drug = coalesce(drug.x, drug.y),
+    control_desc = coalesce(control_desc.x, control_desc.y),
+    control_desc = firstup(control_desc),
+    arm_proph_meds = ifelse(is.na(arm_proph_meds), "kq5_arm", arm_proph_meds),
+  ) |>
+  select(-matches("\\.x|\\.y")) |>
+  mutate(
+  # FIXME: temporary fix for 13171
+    drug = ifelse(refid == 13171 & arm_id == 1, "None", drug),
+    drug_f = fct(drug,
+      levels = c("Dexmedetomidine", "Ketamine", "Melatonin", "Ramelteon", "Ulinastatin", "Midazolam", "Oxazepam", "Haloperidol", "None", "Placebo", "Other")
+    ),
+    drug_f = fct_collapse(drug_f, "Control" = c("None", "Placebo", "Other"))
+  ) |>
+  group_by(refid) |>
+  mutate(
+    drug_study = case_when( # study drug
+      if_any(drug_f, ~ . == "Dexmedetomidine") ~ "Dexmedetomidine",
+      if_any(drug_f, ~ . == "Ketamine") ~ "Ketamine",
+      if_any(drug_f, ~ . == "Melatonin") ~ "Melatonin",
+      if_any(drug_f, ~ . == "Ramelteon") ~ "Ramelteon",
+      if_any(drug_f, ~ . == "Ulinastatin") ~ "Ulinastatin"
+      # TRUE ~ "MISSING" # NA_character_ for verification
+    ),
+    drug_study = fct(drug_study, levels = c("Dexmedetomidine", "Ketamine", "Melatonin", "Ramelteon", "Ulinastatin")),
+    drug_recode = case_when(
+      str_detect(other_spec, "Midazolam and propofol") ~ "Midazolam/propofol",
+      str_detect(other_spec, "Midazolam and sevoflurane") ~ "Midazolam/sevoflurane",
+      str_detect(other_spec, "[Mm]idazolam") ~ "Midazolam",
+      str_detect(other_spec, "[Ss]ufentanil") ~ "Sufentanil",
+      # str_detect(other_spec, "[Rr]hythim") ~ "Rhythim",
+      str_detect(other_spec, "[Pp]ropofol") ~ "Propofol",
+      str_detect(other_spec, "[Mm]orphine") ~ "Morphine",
+      str_detect(other_spec, "[Pp]regabalin") ~ "Pregabalin",
+      .default = drug
+    ),
+    drug_recode = ifelse(refid == 2748 & arm_id == 4, "Dexmedetomidine/Pregabalin", drug_recode),
+    drug_recode = ifelse(refid == 13406 & arm_id == 3, "Dexmedetomidine/Ulinastatin", drug_recode),
+    drug_recode = ifelse(refid == 13393 & arm_id == 1, "Dexmedetomidine/Ulinastatin", drug_recode),
+    # FIXME: check Mahrose
+    drug_recode = ifelse(refid == 13171 & arm_id == 2, "Melatonin/Dexmedetomidine", drug_recode),
+    drug_recode = ifelse(refid == 13171 & arm_id == 1, "Dexmedetomidine", drug_recode),
+    # HERE
+    drug_recode = fct(drug_recode,
+      levels = c("Dexmedetomidine", "Dexmedetomidine/Pregabalin", "Dexmedetomidine/Ulinastatin", "Ketamine", "Melatonin", "Melatonin/Dexmedetomidine","Ramelteon", "Ulinastatin", "Haloperidol", "Midazolam", "Oxazepam", "Midazolam/propofol", "Midazolam/sevoflurane", "Morphine", "Pregabalin", "Propofol", "Sufentanil", "Placebo", "None")
+    ),
+    drug_recode_abbr = fct_recode(drug_recode, Dex = "Dexmedetomidine", "Dex/Preg" = "Dexmedetomidine/Pregabalin", "Dex/Ulin" = "Dexmedetomidine/Ulinastatin", Ket = "Ketamine", Mel = "Melatonin", "Mel/Dex" = "Melatonin/Dexmedetomidine", Ram = "Ramelteon", Ulin = "Ulinastatin", Hal = "Haloperidol", Mid = "Midazolam", Oxaz = "Oxazepam", "Mid/Prop" = "Midazolam/propofol", "Mid/Sevo" = "Midazolam/sevoflurane", MS = "Morphine", Preg = "Pregabalin", Prop = "Propofol", Sufen = "Sufentanil", Plac = "Placebo"),
+  ) |>
+  ungroup() |>
+  relocate(c(drug, drug_f, drug_recode, drug_recode_abbr, drug_study), .after = arm_id) |>
+  relocate(c(other_spec, interv_desc, control_desc), .after = last_col()) |>
+  arrange(refid, drug_study) |>
+# FIXME: 2598  
+  fill(drug_study) |>
+  arrange(refid, arm_id)
+```
+
+```{r included_studies_table}
+#| echo: false
+included_dat <- study_char_dat |>
+  mutate(study_l = study_l_w_linked) |> 
+  select(refid, starts_with("design"), study_l, year, n_enroll, n_analyze, centers, country, non_vh_hdi, starts_with("surg")) |>
+  # select(refid, study, starts_with("surg")) |> # compile surgeries
+  rename_with(~ gsub("surg_", "", .x, fixed = TRUE)) |>
+  mutate(across(various:other, ~ gsub("surg_", "", .x, fixed = TRUE)),
+    ortho_any = ifelse(if_any(contains("ortho"), ~ !is.na(.x)), "ortho", NA),
+    opth = ifelse(str_detect(other_desc, "[Cc]ataract") | !is.na(opth), "optho", opth),
+    gi = ifelse(!is.na(colorectal) | !is.na(gi_other) | !is.na(abdominal), "GI/Abdominal", NA),
+    across(c(various, cardiac, gyn, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, spine, thoracic, urol, vasc, other), ~ firstup(.x)),
+  ) |>
+  unite("surgs", various, cardiac, gyn, gi, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, spine, thoracic, urol, vasc, other, sep = "|", remove = FALSE, na.rm = TRUE) |>
+  select(-c(various, abdominal, cardiac, colorectal, gyn, gi, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, spine, thoracic, urol, vasc, other, design_other, gi_other, starts_with("ortho"), list, other_desc, starts_with("hip"))) |>
+  mutate(
+    surgs = ifelse(str_count(surgs, "\\|") > 3, "Various", surgs)
+  ) |>
+  # left_join(drugs_dat |> group_by(refid) |> slice(1) |> ungroup() |> select(refid, drug_study), by = "refid") |>
+  # # create new factor for table as gt not arranging properly
+  # mutate(
+  #   drug_design = fct(paste0(drug_study, " - ", design_f_lab),
+  #     levels = c(
+  #       "Dexmedetomidine - Randomized Clinical Trial",
+  #       "Dexmedetomidine - Nonrandomized Trial",
+  #       "Ketamine - Randomized Clinical Trial",
+  #       "Ketamine - Prospective Cohort",
+  #       "Melatonin - Randomized Clinical Trial",
+  #       "Ramelteon - Randomized Clinical Trial",
+  #       "Ramelteon - Before-After/Time Series",
+  #       "Ulinastatin - Randomized Clinical Trial"
+  #     )
+  #   )
+  # ) |>
+  arrange(design_f, surgs, study_l) |>
+  select(refid, design_f, study_l, centers, n_enroll, country, surgs, non_vh_hdi)
+# 
+# included_dat |>
+#   mutate(drug_design = paste(drug_study, design_f_lab)) |>
+#   filter(str_detect(drug_design, "NA"))
+#   
+
+included_dat |>
+  group_by(design_f) |>
+  gt(id = "one") |>
+  cols_label(
+    refid = "ID",
+    study_l = "Study",
+    n_enroll = "Enrolled",
+    country = "Country",
+    centers = "Centers",
+    surgs = "Surgery"
+   ) |>
+  cols_hide(non_vh_hdi) |>
+    fmt_markdown(columns = c(study_l)) |> 
+  cols_width(
+    refid ~ px(60),
+    study_l ~ px(200),
+    centers ~ px(45),
+    n_enroll ~ px(55),
+    country ~ px(100),
+    surgs ~ px(220)
+  ) |> 
+  # opt_horizontal_padding(scale = 2) |>
+  gt_theme_mg() |>
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c("refid"))) |> 
+  opt_footnote_marks(marks = "letters") |> 
+  tab_footnote(footnote = md("Various indicates more than 4 different types of surgery."), locations = cells_column_labels(columns = surgs)) |>
+  tab_footnote(footnote = md("Non very-high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."), 
+               locations = cells_column_labels(columns = country)) |>
+  tab_footnote(footnote = md("Non very-high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."), 
+               locations = cells_body(columns = country, rows = !is.na(non_vh_hdi))) |>
+  # tab_footnote(footnote = "Studies examining drugs not directly relevant to recommendations but potentially relevant to the evidence space (eg, a connected network) were included.",  locations = cells_row_groups(groups = )) |> 
+  tab_footnote("GI: gastrointestinal; Ortho: orthopedic; Neuro: neurological; Oralmax: oral maxillofacial; Vasc: vascular.")
+
+
+```
+
+#### Country Summary
+
+<font size = 4> `r table_ref()` Summary of studies by country where conducted. </font>
+
+```{r country}
+# CODE: table of countries
+study_char_dat |>
+  select(country) |>
+  tbl_summary(
+    sort = everything() ~ "frequency",
+    label = list(country ~ "Country")
+  ) |>
+  modify_header(label ~ "") |> 
+  as_gt(id = "one") |> 
+  gt_theme_mg()
+
+```
+
+
+

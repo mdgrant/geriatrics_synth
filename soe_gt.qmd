@@ -159,7 +159,6 @@ soe_summary |>
   tab_footnote("Network meta-anlaysis yielded narrower 95% confidence interval attributable to pairwise result incorportating Hartung-Knapp adjustment.", locations = cells_body(columns = summary, rows = str_detect(n, "5.13")))
 
 ```
-
 ### GRADE Domains
 
 <br>
