@@ -141,12 +141,16 @@ study_char_dat <- read_csv(path_csv(study_char_file)) |>
     design_f_abbrev = fct_collapse(design_f_abbrev, Other = c("Other", "Paired")),
     country = ifelse(grepl("USA", country), "USA", country),
     country = ifelse(grepl("UK", country), "UK", country),
-    study_l = paste0("[", study, "]", "(", "evidence_tables.html#", refid, ")"), #, " [@", refid, "]")
-    linked_study = ifelse(!is.na(linked_references), "Yes", "No")
+    study_l = paste0("[", study, "]", "(", "evidence_tables.html#", refid, ")"), # , " [@", refid, "]")
+    linked_study = ifelse(!is.na(linked_references), "Yes", "No"),
+    neuro_threshold = factor(neuro_threshold,
+      levels = c("mmselt24", "mmselt26", "mmselt27", "spmsqgt2", "diffge1sd", "diffge2sd", "diffgt20per", "diffgt2pts", "zleneg196", "zlt196", "zge196", "zgt2", "lowscore", "custom", "notspec", "diff075sd", "mincogle2", "mocale25"),
+      labels = c("MMSE <24", "MMSE <26", "MMSE <27", "SPMSQ >2", "Difference from baseline ≥1 SD", "Difference from baseline ≥2 SD", "Difference from baseline >20%", "Difference from baseline >2 pts", "Z ≤-1.96", "Z <1.96", "Z ≥1.96", "Z >2", "Low score not specified", "Custom scoring", "Not specified", "Difference from baseline 0.75 SD", "MiniCog ≤2", "MoCA ≤25")
+    )
   ) |>
   relocate(c(design_f, design_f_lab), .after = design) |>
   select(-ris_code, -level, -study_char_k) |>
-  select(refid, starts_with("design"), study, study_l, year, author:comment, linked_references, labels, title, starts_with("reli")) # does not include factorial
+  select(refid, starts_with("design"), study, study_l, year, author:comment, linked_references, labels, title, starts_with("reli"), neuro_threshold) # does not include factorial
 
 ## add surgery classifications ------------------------ (2023-03-04 13:56) @----
 surgs <- study_char_dat |>
