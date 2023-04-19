@@ -28,6 +28,7 @@ Among older patients undergoing surgery and anesthesia, do dexmedetomidine, keta
 
 ::: {.callout-note collapse="true" appearance="default" icon="true"}
 ## DRAFT results last updated `r lubridate::now()`
+2023-04-19 delayed neurocognitive recovery added
 
 2023-04-13 mortality and length of stay added
 
