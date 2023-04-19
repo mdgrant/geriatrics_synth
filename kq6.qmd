@@ -1552,11 +1552,14 @@ netsplit(netmeta_melram_nma, order = trts_melram) %>%
     rightlabs = c("RR", "(95% CI)")
   )
 ```
-
 <foot_mg> Dex: Dexmedetomidine; Ket: Ketamine; Mel/Ram: Melatonin/Ramelteon; Mid: Midazolam; MS: Morphine; Prop: Propofol; Plac/None: Placebo or no comparator. </foot_mg>
 :::
 
 <br/>
+
+```{r}
+#| eval: false
+```
 
 ## **Delayed NCR**
 
@@ -1806,15 +1809,19 @@ No studies
 
 <br/>
 
-```{r}
-#| eval: false
+## **Neurocognitive Disorders
+
+<font size = 4> `r table_ref()` Neurocognitive disorders and ascertainment. Reported in dexmedetomidine and melatonin trials. </font>
+
+```{r ncd_dat}
+#| eval: true
 
 ## ncd_dat -------------------------------------------- (2023-04-15 15:55) @----
 ncd_dat <- dichot_dat |>
   filter(if_any(c(neurocog_n1, neurocog_n2, neurocog_n3, neurocog_last_n, neurocog_total_n), ~ !is.na(.x))) |>
   # > 30 day exam
-  filter(if_any(matches("neurocog.*time.*"), ~ .x > 30)) |> 
-  # select(refid, study, arm_n, neurocog_update_arm_n, neurocog_n1, neurocog_n2, neurocog_n3, neurocog_last_n, neurocog_total_n, matches("neurocog.*time")) |> 
+  filter(if_any(matches("neurocog.*time.*"), ~ .x > 30)) |>
+  # select(refid, study, arm_n, neurocog_update_arm_n, neurocog_n1, neurocog_n2, neurocog_n3, neurocog_last_n, neurocog_total_n, matches("neurocog.*time")) |>
   mutate(
     arm_n = ifelse(!is.na(neurocog_update_arm_n), neurocog_update_arm_n, arm_n),
     ncd_time = case_when(
@@ -1825,29 +1832,48 @@ ncd_dat <- dichot_dat |>
       neurocog_total_n > 30 ~ neurocog_total_time,
       .default = NA
     ),
-   neurocog_total_n = case_when(
+    neurocog_total_n = case_when(
       neurocog_time1 > 30 ~ neurocog_n1,
       neurocog_time2 > 30 ~ neurocog_n2,
       neurocog_time3 > 30 ~ neurocog_n3,
       neurocog_last_time > 30 ~ neurocog_last_n,
       neurocog_total_time > 30 ~ neurocog_total_n
-    )
-  ) |> 
+    ),
+    neurocog_prop = neurocog_total_n / arm_n,
+    neurocog_nper = n_per_fun(neurocog_total_n, arm_n, 1)
+  ) |>
   # add drug (arm), country, surgery, postop only
-  left_join(drugs_dat |> select(refid, arm_id, drug_recode_abbr), by = c("refid", "arm_id")) |>
   left_join(study_char_dat |> select(refid, country), by = "refid") |>
   left_join(surgs |> select(refid, surgs_single_f), by = c("refid")) |>
-  left_join(postop_only_dat, by = "refid") |>
+  left_join(drugs_dat |> select(refid, arm_id, drug_recode_abbr), by = c("refid", "arm_id")) |>
+  left_join(table_mn_med |> select(refid, arm_id, pre_mmse), by = c("refid", "arm_id")) |>
+  left_join(postop_only_dat, by = "refid") |> # 2023-04-18 none postop only
   rename(arm = drug_recode_abbr, surg_f = surgs_single_f) |>
-  select(refid, refid_c, arm_id, study, design_f_lab, country, surg_f, postop_only, arm, neurocog_total_n, arm_n,  ncd_time) |>
+  # select(refid, refid_c, arm_id, study, design_f_lab, country, surg_f, postop_only, arm, pre_mmse, neurocog_total_n, arm_n, ncd_time, neurocog_prop, neurocog_nper) |>
   arrange(refid_c, arm_id) |>
   mutate(
     year = as.numeric(str_extract(study, "\\d{4}")),
     # neurocog_inc_prop = ifelse(neurocog_inc_prop == TRUE, "Incidence Proportion", "Maximum Daily"),
     arm = fct_collapse(arm, "Plac/None" = c("Plac", "None")),
     across(c(arm, design_f_lab, surg_f), ~ fct_drop(.x)),
-  )
-
+    bar = case_when(
+      str_detect(arm, "Dex|Ket|Mel|Ram") ~ bar_prop(neurocog_prop * 100, "#969696"),
+      str_detect(arm, "Plac") ~ bar_prop(neurocog_prop * 100, color_3),
+      .default = bar_prop(neurocog_prop * 100, color_1)
+    ),
+    year = as.numeric(str_extract(study, "\\d{4}")),
+    # arm = fct_collapse(arm, "Plac/None" = c("Plac", "None")),
+    across(c(arm, design_f_lab, surg_f), ~ fct_drop(.x)),
+    scale_mmse = ifelse(!is.na(neurocog_mmse), "\U2713", NA),
+    scale_dst = ifelse(!is.na(neurocog_dst) | str_detect(neurocog_scale_otherspec, "[Dd]igit"), "\U2713", NA),
+    scale_moca = ifelse(str_detect(neurocog_scale_otherspec, "MoCA|Montreal"), "\U2713", NA),
+    scale_other = neurocog_scale_otherspec,
+    scale_other = str_to_title(str_replace(scale_other, "Digit [Ss]ymbol [Tt]est; |Digit symbol substitution test; |Montreal Cognitive Assessment \\(MoCA\\)|MoCA", "")),
+    scale_other = ifelse(scale_other == "", NA, scale_other),
+    scale_other = str_replace_all(scale_other, "Pocd", "POCD"),
+    scale_other_tf = ifelse(!is.na(scale_other), "\U2713", NA)
+  ) |>
+  select(refid, refid_c, year, arm_id, study, study_l, design_f_lab, pre_mmse, country, surg_f, postop_only, arm, pre_mmse, ncd_time, neurocog_total_n, arm_n, arm, neurocog_nper, neurocog_prop, bar, scale_mmse:scale_other_tf)
 
 
 ncd_rr_ref <- ncd_dat |>
@@ -1866,7 +1892,16 @@ ncd_rr_ref <- ncd_dat |>
   ) |>
   select(-refid)
 
+ncd_dat <- ncd_dat |>
+  left_join(ncd_rr_ref, by = c("refid_c", "arm_id")) |>
+  mutate(rr_ci = ifelse(!is.na(ref_arm_n), rr_ci_fun(neurocog_total_n, arm_n, ref_neurocog_n, ref_arm_n), "—")) |>
+  select(refid, year, design_f_lab, study, study_l, arm_id, arm_n, arm, pre_mmse, scale_mmse:scale_other_tf, ncd_time, neurocog_nper, bar, rr_ci)
 ```
+
+
+
+
+
 
 ## **Length of Stay**
 
