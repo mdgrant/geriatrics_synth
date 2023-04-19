@@ -8,6 +8,14 @@ foot_mg {
   padding-bottom: 0px;
 }
 
+wf-mg {
+  font-size: 13px;
+  line-height: .4;
+  color: black;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
 p {
   line-height: 1.1;
 }
@@ -68,10 +76,6 @@ div.callout-note.callout {
     font-size: .9rem;
     font-weight: 400;
     opacity: 100%;
-}
-
-.sidebar nav[role="doc-toc"] ul {
-	 display: block;
 }
 
 .table-caption {
