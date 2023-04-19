@@ -16,7 +16,7 @@ path_csv <- function(name_csv){
 # function to pull refids
 kq_refids <- function(kq_id) {
   study_char_dat |>
-    filter(!is.na({{kq_id}})) |>
+    filter(!is.na({{ kq_id }})) |>
     pull(refid)
 }
 
