@@ -17,7 +17,7 @@ tables:
 bibliography: "bib/kq6.bib"
 csl: jama.csl
 link-citations: false
-# nocite: '@*'
+nocite: '@*'
 ---
 
 <!-- kq6.bib updated 2023-02-21 -->
@@ -29,7 +29,7 @@ Among older patients undergoing surgery and anesthesia, do dexmedetomidine, keta
 ::: {.callout-note collapse="true" appearance="default" icon="true"}
 ## DRAFT results last updated `r lubridate::now()`
 
-2023-04-20 delayed neurocognitive recovery and neurocognitive disorders pairwise meta-analysis added
+2023-04-20 delayed neurocognitive recovery and neurocognitive disorders pairwise and network meta-analyses added
 
 2023-04-19 delayed neurocognitive recovery and neurocognitive disorders added (Evered et al. 2018 Anesthesiology nomenclature)
 
@@ -52,7 +52,7 @@ Among older patients undergoing surgery and anesthesia, do dexmedetomidine, keta
 source("code/load_data.R")
 settings.meta(CIbracket = "(")
 # load("data/geri_data_2023-03-13.Rdata")
-kq6_refid <- kq6_refid[kq6_refid != 13734] # Fan 2017b rhythim 
+kq6_refid <- kq6_refid[!kq6_refid %in% c(13734, 5269)] # Fan 2017b rhythim, Gao 2021 duplicate 
 study_char_dat <- data_kq(study_char_dat, kq6_refid)
 study_arm_dat <- data_kq(study_arm_dat, kq6_refid) 
 contin_dat <- data_kq(contin_dat, kq6_refid) 
@@ -81,7 +81,7 @@ kq6_refid %in% cogfunc_refid
 kq6_refid[!kq6_refid %in% c(delirium_refid, cogfunc_refid)]
 ```
 
-## **Outcome Rankings**
+## **Outcome Importance Rankings**
 
 <font size = 4> `r table_ref()`</font> Rankings for the 5 most important outcomes (11 respondents).
 
@@ -1925,7 +1925,7 @@ netgraph(
 
 <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention (randomized clinical trials, delayed neurocognitive recover). </font>
 
-```{r dncr_dex_plac_meta, fig.width = 14, fig.height = 6, fig.align = "left", warning = FALSE}
+```{r dncr_dex_plac_meta, fig.width = 14, fig.height = 5.5, fig.align = "left", warning = FALSE}
 #| eval: true
 
 dex_meta_dat <- pairs_dat |>
@@ -1985,7 +1985,12 @@ forest(dex_plac_meta,
 
 ```
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <a id="figure-4"></a><br/> 
-0.5 added to cells of studies without events in one arm.<br/>`r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_pocd, dex_meta_dat$refid), "; a secondary outcome in ", prim_sec_out_fun(sec_pocd, dex_meta_dat$refid), ".")`</foot_mg><br/>
+0.5 added to cells of studies without events in one arm.<br/>
+`r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> 
+`r paste0("Neurocognitive recovery a designated primary outcome in ", prim_sec_out_fun(prim_pocd, dex_meta_dat$refid), "; a secondary outcome in ", prim_sec_out_fun(sec_pocd, dex_meta_dat$refid), ".")`<br/>
+Note: Gao 2021 identified in the search was presumably an overlapping sample of Gao 2020 and excluded.<br/>
+The result might be considered credible and convincing to a skeptic given plausible evidence for risk ratios less than 0.74 (assuming a 25% incidence of delayed neurocognitive recovery; see [Matthews 2019](https://www.tandfonline.com/doi/full/10.1080/00031305.2018.1543136)).
+</foot_mg><br/>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention according to risk of bias appraisal (randomized clinical trials; delayed neurocognitive recovery). </font>
@@ -2034,6 +2039,89 @@ rob_summary_fun(dex_meta_dat$refid)
 ```
 :::
 
+#### All Comparators
+
+<font size = 4> `r figure_ref()` Network meta-analysis of delayed neurocognitive recovery including all comparators.</font>
+
+```{r dncr_nma_forest, fig.dim = c(6, 3.3), out.width = "45%", fig.align = "center"}
+#| eval: true
+# CODE: network meta results
+# fig.width = 6, fig.height = 3.3, fig.align = "center"}
+par(mar = c(1, 1, 1, 1))
+forest(netmeta_dncr_nma,
+  xlab = "Risk Ratio",
+  xlim = c(.15, 2),
+  at = c(0.2, 0.5, 1, 2)
+)
+```
+<foot_mg> Dex: Dexmedetomidine; Ket: ketamine; Hal: haloperidol; Mid: midazolam; Prop: propofol; Ulin: ulinastatin; Plac/None: Placebo or no intervention; Prop: Propofol. </foot_mg>
+
+<br/>
+
+<font size = 4> `r table_ref()` League table of risk ratios and 95% confidence intervals from network meta-analysis (random effects model). Comparisons from direct evidence displayed in the upper diagonal; network comparisons shown on the lower diagonal. </font>
+
+```{r dncr_nma_league}
+#| results: asis
+nma_dncr_league <- netleague(netmeta_dncr_nma,
+  digits = 2,
+  common = FALSE,
+  # direct = FALSE,
+  seq = trts
+)
+
+as_tibble(nma_dncr_league$random) |>
+  mutate(
+    across(V1:V8, ~ str_replace(.x, " \\(", "<br>\\(")),
+    # across(V1:V8, ~ str_replace(.x, "\\]", "\\)")),
+    across(V1:V8, ~ ifelse(.x == ".", "", .x))
+  ) |>
+  gt(id = "one") |>
+  fmt_markdown(columns = everything()) |>
+  tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V1, rows = V1 %in% trts)) |>
+  tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V2, rows = V2 %in% trts)) |>
+  tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V3, rows = V3 %in% trts)) |>
+  tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V4, rows = V4 %in% trts)) |>
+  tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V5, rows = V5 %in% trts)) |>
+  tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V6, rows = V6 %in% trts)) |>
+  tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V7, rows = V7 %in% trts)) |>
+  tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V8, rows = V8 %in% trts)) |>
+  rm_stubhead() |>
+  gt_theme_mg() |>
+  tab_options(column_labels.hidden = TRUE, table.font.size = px(14)) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_body(V1:V8)) |>
+  tab_footnote("Dex: Dexmedetomidine; Ket: ketamine; Hal: haloperidol; Mid: midazolam; Prop: propofol; Ulin: ulinastatin; Prop: Propofol; Plac/None: Placebo or no intervention.")
+
+# tab_info(temp)
+```
+
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <font size = 4> `r figure_ref()` Comparison adjusted funnel plot (delayed neurocognitive recovery). </font>
+
+```{r compare_adj_fun_dncr, fig.dim = c(7, 5.5), out.width = "70%", fig.align = "center"}
+par(mar = c(4, 4, 2, 1), bty = "n", xaxt = "s", yaxt = "s")
+funnel(netmeta_dncr_nma,
+  order = trts
+)
+```
+:::
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <font size = 4> `r figure_ref()` Comparison of direct and indirect evidence in network meta-analysis (node splitting forest plot, delayed neurocognitive recovery). </font>
+
+```{r, fig.height = 11, fig.width = 7, out.width = "60%", out.height = "60%", fig.align = 'center'}
+netsplit(netmeta_dncr_nma, order = trts) %>%
+  forest(.,
+    xlab = "Risk Ratio",
+    # xlim = c(0.15, 2),
+    leftcols = c("studlab", "k"),
+    rightlabs = c("RR", "(95% CI)")
+  )
+```
+<foot_mg> Dex: Dexmedetomidine; Ket: Ketamine; Mel/Ram: Melatonin/Ramelteon; Mid: Midazolam; MS: Morphine; Prop: Propofol; Plac/None: Placebo or no comparator. </foot_mg>
+:::
+
+<br/>
 
 ## **Neurocognitive Disorders**
 
