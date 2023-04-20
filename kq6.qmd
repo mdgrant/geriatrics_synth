@@ -29,6 +29,8 @@ Among older patients undergoing surgery and anesthesia, do dexmedetomidine, keta
 ::: {.callout-note collapse="true" appearance="default" icon="true"}
 ## DRAFT results last updated `r lubridate::now()`
 
+2023-04-20 delayed neurocognitive recovery and neurocognitive disorders pairwise meta-analysis added
+
 2023-04-19 delayed neurocognitive recovery and neurocognitive disorders added (Evered et al. 2018 Anesthesiology nomenclature)
 
 2023-04-13 mortality and length of stay added
@@ -1921,11 +1923,10 @@ netgraph(
 
 #### Dexmedetomidine
 
-<font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention (randomized clinical trials). </font>
+<font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention (randomized clinical trials, delayed neurocognitive recover). </font>
 
 ```{r dncr_dex_plac_meta, fig.width = 14, fig.height = 6, fig.align = "left", warning = FALSE}
-# TODO: HERE
-# ```{r nma_dat, out.width = 50%, out.height = 100%}
+#| eval: true
 
 dex_meta_dat <- pairs_dat |>
   unite(to_select, treat1, treat2, sep = "/") |> 
@@ -1938,7 +1939,8 @@ dex_meta_dat <- pairs_dat |>
       Overall == "?" ~ "Some Concerns",
       Overall == "–" ~ "High"
     )
-  )
+  ) |> 
+  arrange(study)
 
 dex_plac_meta <- metabin(event2, n2, event1, n1,
   data = dex_meta_dat,
@@ -1971,7 +1973,7 @@ forest(dex_plac_meta,
   print.I2.ci = TRUE,
   prediction = TRUE,
   # subgroup = flag,
-  prediction.subgroup = flag,
+  # prediction.subgroup = flag,
   # print.subgroup.name = FALSE,
   fs.xlab = 11,
   pooled.events = TRUE,
