@@ -28,6 +28,7 @@ Among older patients undergoing surgery and anesthesia, do dexmedetomidine, keta
 
 ::: {.callout-note collapse="true" appearance="default" icon="true"}
 ## DRAFT results last updated `r lubridate::now()`
+
 2023-04-19 delayed neurocognitive recovery and neurocognitive disorders added (Evered et al. 2018 Anesthesiology nomenclature)
 
 2023-04-13 mortality and length of stay added
@@ -78,7 +79,7 @@ kq6_refid %in% cogfunc_refid
 kq6_refid[!kq6_refid %in% c(delirium_refid, cogfunc_refid)]
 ```
 
-## **Outcome Importance Rankings**
+## **Outcome Rankings**
 
 <font size = 4> `r table_ref()`</font> Rankings for the 5 most important outcomes (11 respondents).
 
@@ -367,7 +368,7 @@ locations = cells_row_groups(groups = )) |>
 
 ```
 
-#### Country Summary
+### Country Summary
 
 <font size = 4> `r table_ref()` Summary of studies by country where conducted. </font>
 
@@ -981,7 +982,7 @@ rm(refid_max_of_days)
 
 ### *Pooled*
 
-```{r nma_meta_dat}
+```{r delirium_nma_meta_dat}
 #| eval: true
 # CODE: * delirium meta data, pairwise and network (netmeta)
 nma_rct_dat <- delirium_meta_dat |> 
@@ -1640,6 +1641,11 @@ dncr_rr_ref <- dncr_dat |>
   ) |>
   select(-refid)
 
+#| DATA: neurocog_allarms_meta_dat for subsequent pooling, arms not collapsed
+neurocog_allarms_meta_dat <- dncr_dat |> 
+  select(refid, study, design_f_lab, year, arm_id, arm, neurocog_total_n, arm_n) |> 
+  filter(study != "Lu 2017") # both dex arms; different dose
+
 dncr_dat <- dncr_dat |> 
   left_join(dncr_rr_ref, by = c("refid_c", "arm_id")) |> 
   mutate(rr_ci = ifelse(!is.na(ref_arm_n), rr_ci_fun(neurocog_total_n, arm_n, ref_neurocog_n, ref_arm_n), "—")) |> 
@@ -1737,7 +1743,7 @@ dncr_dat |>
 
 ### Ketamine
 
-<font size = 4> `r table_ref()` Delayed neurocognitive recovery incidence and ascertainment in randomized clinical trials of ketamine </font>
+<font size = 4> `r table_ref()` Delayed neurocognitive recovery incidence and ascertainment in randomized clinical trials of ketamine. </font>
 
 ```{r dncr_ket_gt}
 #| eval: true
@@ -1808,6 +1814,224 @@ dncr_dat |>
 No studies
 
 <br/>
+
+### *Pooled*
+
+```{r dncr_meta_dat}
+#| eval: true
+# NOTE: 2023-04-20 adding ketamine studies to dexmedetomidine dncr would not connect any network; so left distinct
+neurocog_meta_dat <- neurocog_allarms_meta_dat |>
+  # collapse arms
+  mutate(
+    neurocog_total_n = case_when(
+      study == "Zhou 2019b" & arm_id == 3 ~ collapse_dichot(neurocog_allarms_meta_dat, "Zhou 2019b", c(3, 4), neurocog_total_n),
+      study == "Zhao 2020" & arm_id == 2 ~ collapse_dichot(neurocog_allarms_meta_dat, "Zhao 2020", c(2, 3, 4), neurocog_total_n),
+      study == "Li 2021b" & arm_id == 2 ~ collapse_dichot(neurocog_allarms_meta_dat, "Li 2021b", c(2, 3, 4), neurocog_total_n),
+      .default = neurocog_total_n
+    ),
+    arm_n = case_when(
+      study == "Zhou 2019b" & arm_id == 3 ~ collapse_dichot(neurocog_allarms_meta_dat, "Zhou 2019b", c(3, 4), arm_n),
+      study == "Zhao 2020" & arm_id == 2 ~ collapse_dichot(neurocog_allarms_meta_dat, "Zhao 2020", c(2, 3, 4), arm_n),
+      study == "Li 2021b" & arm_id == 2 ~ collapse_dichot(neurocog_allarms_meta_dat, "Li 2021b", c(2, 3, 4), arm_n),
+      .default = arm_n
+    )
+  ) |>
+  filter(!(study %in% c("Zhou 2019b") & arm_id %in% c(4))) |>
+  filter(!(study %in% c("Zhao 2020") & arm_id %in% c(3, 4))) |>
+  filter(!(study %in% c("Li 2021b") & arm_id %in% c(3, 4))) |>
+  # add potential subgroups
+  left_join(study_char_dat |> select(refid, country), by = "refid") |>
+  left_join(surgs |> select(refid, surgs_single_f), by = c("refid")) |>
+  # NOTE: 2023-04-20 no dexmedetomidine studies included in dncr pooled results administered only postop
+  left_join(postop_only_dat, by = "refid") 
+
+```
+
+```{r dncr_meta}
+#| eval: true
+# CODE: dncr meta data, pairwise and network (netmeta)
+nma_dncr_dat <- neurocog_meta_dat |>
+  # mutate(arm = fct_collapse(arm, "Benzo" = c("Oxaz", "Mid"))) |>
+  filter(design_f_lab == "Randomized Clinical Trial") |>
+  # filter(surg_f == "Cardiac") |>
+  # filter(postop_only == TRUE) |>
+  # filter(!country == "China") |> 
+  mutate(across(c(arm, design_f_lab), ~ fct_drop(.x)))
+
+trts <- levels(nma_dncr_dat$arm)
+
+pairs_dat <- pairwise(
+  treat = arm,
+  event = neurocog_total_n,
+  n = arm_n,
+  studlab = study,
+  data = nma_dncr_dat,
+  sm = "RR",
+  keep.all.comparisons = TRUE
+)
+
+netmeta_dncr_nma <- netmeta(
+  pairs_dat,
+  random = TRUE,
+  prediction = TRUE,
+  seq = trts,
+  sm = "RR",
+  reference.group = "Plac/None"
+)
+
+```
+
+#### Comparator Network
+
+<font size = 4> `r figure_ref()` Randomized clinical trials and comparators reporting delayed neurocognitive recovery. </font>
+
+```{r dncr_nma_plot, warning = FALSE, fig.dim = c(6, 5), out.width = "50%", fig.align = "center"}
+#| eval: true
+# CODE: dncr network plot
+
+par(mfrow = c(1, 1), mar = c(1, 1, 1, 1))
+
+netgraph(
+  netmeta_dncr_nma,
+  lwd = 4,
+  plastic = FALSE,
+  thickness = TRUE,
+  points = TRUE,
+  alpha.transparency = 2,
+  col = "azure3",
+  col.points = "#F39C12",
+  number.of.studies = TRUE,
+  # seq = trts_melram,
+  rescale.pointsize = TRUE,
+  # cex.points = c(1, 2, 3, 4, 5),
+  # cex.points = node_size$n/40,
+  cex.points = netmeta_dncr_nma$n.trts,
+  labels = paste0(trts, "\n(n=", round(n.trts), ")"),
+  col.number.of.studies = "black",
+  cex.number.of.studies = 1.2,
+  col.highlight = "white",
+  bg.number.of.studies = c("#FFFFFF"),
+  offset = .02
+)
+
+# forest(netmeta_dncr_nma)
+
+```
+<foot_mg> Dex: Dexmedetomidine; Ket: ketamine; Hal: haloperidol; Mid: midazolam; Prop: propofol; Ulin: ulinastatin; Plac/None: Placebo or no intervention; Prop: Propofol. </foot_mg>
+
+#### Dexmedetomidine
+
+<font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention (randomized clinical trials). </font>
+
+```{r dncr_dex_plac_meta, fig.width = 14, fig.height = 6, fig.align = "left", warning = FALSE}
+# TODO: HERE
+# ```{r nma_dat, out.width = 50%, out.height = 100%}
+
+dex_meta_dat <- pairs_dat |>
+  unite(to_select, treat1, treat2, sep = "/") |> 
+  filter(str_detect(to_select, c("Plac")) & str_detect(to_select, "Dex") & !str_detect(to_select, "Ulin")) |> 
+  left_join(rob2_meta_dat, by = "refid") |>
+  select(refid, study, year, event2, n2, event1, n1, D1:Overall, country, surgs_single_f) |>
+  mutate(
+    rob = case_when(
+      Overall == "+" ~ "Low",
+      Overall == "?" ~ "Some Concerns",
+      Overall == "–" ~ "High"
+    )
+  )
+
+dex_plac_meta <- metabin(event2, n2, event1, n1,
+  data = dex_meta_dat,
+  studlab = study,
+  sm = "RR",
+  method = "MH",
+  method.tau = "PM",
+  hakn = TRUE,
+  prediction = TRUE,
+  allstudies = TRUE,
+  )
+
+# small study effects; here to have result of Harbord test
+temp_meta <- dex_plac_meta
+temp_meta <- update(temp_meta, subgroup = NULL, sm = "OR")
+temp_metabias <- metabias(temp_meta, method.bias = "Harbord", k.min = 10)
+
+# summary(dex_plac_meta)
+forest(dex_plac_meta,
+  allstudies = TRUE,
+  common = TRUE,
+  label.e = "Dex     ",
+  label.c = "Plac/None  ",
+  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  rightlabs = c("RR ", "(95% CI)   ", "D1", "D2", "D3", "D4", "D5", "All"),
+  just.addcols.right = "right",
+  digits = 2,
+  digits.tau2 = 1,
+  overall.hetstat = TRUE,
+  print.I2.ci = TRUE,
+  prediction = TRUE,
+  # subgroup = flag,
+  prediction.subgroup = flag,
+  # print.subgroup.name = FALSE,
+  fs.xlab = 11,
+  pooled.events = TRUE,
+  print.pval.Q = FALSE,
+  xlim = c(0.1, 3),
+  xlab = "Favors: Dexmedetomidine               Placebo/None",
+  addrows.below.overall = 4
+)  
+
+```
+<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <a id="figure-4"></a><br/> 
+0.5 added to cells of studies without events in one arm.<br/>`r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_pocd, dex_meta_dat$refid), "; a secondary outcome in ", prim_sec_out_fun(sec_pocd, dex_meta_dat$refid), ".")`</foot_mg><br/>
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention according to risk of bias appraisal (randomized clinical trials; delayed neurocognitive recovery). </font>
+
+```{r dncr_rob_meta, fig.width = 14, fig.height = 8, fig.align = "left"}
+# TODO: HERE
+rob_meta <- update(dex_plac_meta, subgroup = rob)
+
+dex_meta_forest_fun(rob_meta, TRUE)
+
+rm(rob_meta)
+```
+
+<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>0.5 added to cells of studies without events in one arm. </foot_mg>
+:::
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention small study effects --- funnel plot and limit meta-analysis (delayed neurocognitive recovery). </font>
+
+```{r dex_plac_dncr_meta_funnel_limit, fig.dim = c(7, 5.5), out.width = "70%", fig.align = "center"}
+# {r name, fig.dim = c(6, 6), out.width = "60%", fig.align = "center"}
+# {r dex_plac_meta_funnel_limit, out.width = "85%", out.height = "100%", fig.align = "center"}
+par(mar = c(4, 4, 2, 1))
+
+limit_colors <- c("#AAB7B8", "#D5DBDB", "#F4F6F6")
+
+temp_limit_meta <- limitmeta(temp_meta)
+
+par(bty = "n", xaxt = "s", yaxt = "s")
+
+funnel(temp_limit_meta, pch = 20, contour = c(0.9, 0.95, 0.99), col.contour = limit_colors, studlab = TRUE, pos.studlab = 4, fs.smlab = 6, ff.smlab = "italic")
+
+legend(0.03, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#AAB7B8", "#D5DBDB", "#F4F6F6"), bty = "n")
+
+text(1.2, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .9)
+```
+
+<foot_mg> Estimates (95% CI) from random effects models --- unadjusted `r paste0(digit2(exp(temp_limit_meta$TE.random)), " (", digit2(exp(temp_limit_meta$lower.random)), "–", digit2(exp(temp_limit_meta$upper.random)), ")")`; adjusted for small study effects: `r paste0(digit2(exp(temp_limit_meta$TE.adjust)), " (", digit2(exp(temp_limit_meta$lower.adjust)), "–", digit2(exp(temp_limit_meta$upper.adjust)), ")")`.</font>
+:::
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <font size = 4> `r figure_ref()` Summary risk of bias from randomized clinical trials of dexmedetomidine compared with placebo or no intervention (delayed neurocognitive recovery). </font>
+
+```{r rob2_summary_dncr_dex_plac, fig.height = 3, out.width = "60%"}
+rob_summary_fun(dex_meta_dat$refid)
+```
+:::
+
 
 ## **Neurocognitive Disorders**
 
@@ -1964,14 +2188,12 @@ ncd_dat |>
 
 No studies
 
-
 ## **Length of Stay**
 
 <font size = 4> `r table_ref()` Length of stay according to procedure classification and comparator. </font>
 
 ```{r length_of_stay}
 #| eval: true
-
 los_tab <- contin_dat |>
   mutate(los_for_tables(contin_dat)) |>
   filter(if_any(los_m:los_diff_pval, ~ !is.na(.))) |>
