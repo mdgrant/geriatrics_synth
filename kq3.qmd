@@ -257,35 +257,6 @@ ortho_proc <- study_char_dat |>
 ```
 
 ```{r reg_gen_tab}
-
-reg_gen_tab <- read.xlsx("data/KQ3Table_Interventions_2023-04-21.xlsx", sheet = "KQ3", rows = c(4:134), skipEmptyCols = TRUE) |>
-  clean_names() |>
-  select(-asa_ps_incl) |>
-  remove_empty(which = c("rows", "cols")) |>
-  rename(arm = studyarm_k) |>
-  rename_with(~ str_replace(.x, "kq3_", "")) |>
-  fill(refid, study) |>
-  filter(suppressWarnings(!is.na(as.numeric(refid)))) |>
-  mutate(across(everything(), ~ str_replace(.x, "ü", "\U2713")),
-    across(c(refid, arm_id), ~ as.numeric(.x)),
-    arm = factor(arm, levels = c("reg", "reg-diaz", "reg-mepivacaine", "reg-midaz", "reg-propo", "reg-ropivacaine", "gen"), labels = c("Reg", "Reg-Diaz", "Reg-Mep", "Reg-Mid", "Reg-Prop", "Reg-Rop", "Gen")),
-    year = as.numeric(str_extract(study, "\\d{4}")),
-  ) |>
-  left_join(ortho_proc |> select(refid, ortho), by = c("refid")) |>
-  left_join(table_age_mn_med, by = c("refid", "arm_id")) |>
-  left_join(study_char_dat |> select(refid, surgs, study_l), by = c("refid")) |>
-  left_join(study_arm_dat |> select(refid, arm_id, asa_ps_incl), by = c("refid", "arm_id")) |>
-  mutate(
-    surgs = paste(surgs, ortho),
-    surgs = str_replace(surgs, " Other", ""),
-    surgs = str_replace(surgs, "Ortho ", "Ortho — "),
-    surgs = str_replace(surgs, "\\s{1}$", "")
-  ) |>
-  relocate(asa_ps_incl, .after = arm) |>
-  relocate(year, .after = study) |>
-  select(refid, arm_id, study, study_l, arm_n, arm, asa_ps_incl, age_table, pre_mmse, volatile, tiva, ns, reg_spinal, reg_epidural, reg_cse, surgs, ortho, year) |>
-  arrange(surgs, year, study, desc(arm))
-
 reg_gen_tab <- study_arm_dat |>
   select(refid, refid_c, arm_id, study, year, arm_n, arm, asa_ps_incl, kq3_reg_spinal, kq3_reg_epidural, kq3_reg_cse, kq3_reg_block, kq3_reg_ns, kq3_reg_sedation, kq3_gen_type, kq3_gen_desflurane:kq3_gen_inhaleother) |>
   left_join(study_char_dat |> select(refid, study_l, surg_ortho_tka, surg_ortho_tha, surg_ortho_hipfx, surg_ortho_other, surg_list, surgs), by = "refid") |>
