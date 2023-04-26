@@ -13,4 +13,5 @@ table_mn_med <- mean_med_table_single(study_arm_dat, "pre_mmse_", 0) |>
 table_age_mn_med <- study_arm_dat |>
   select(starts_with("age_"), arm_n, refid, arm_id) |>
   age_for_tables() |>
-  select(refid, arm_id, age_table)
+  select(refid, arm_id, age_table) |>
+  mutate(age_table = ifelse(refid == 1400, "≥60", age_table)) # Papaiannou 2005
