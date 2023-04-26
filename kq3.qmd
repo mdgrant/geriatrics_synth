@@ -11,10 +11,10 @@ tables:
       caption:
         pre: "Table "
         sep: " -- "
-# bibliography: "bib/kq3.bib"
-# csl: jama.csl
-# link-citations: yes
-# nocite: '@*'
+bibliography: "bib/kq3.bib"
+csl: jama.csl
+link-citations: no
+nocite: '@*'
 ---
 
 ## Key Question
@@ -37,15 +37,13 @@ kq3_refid <- kq3_refid[kq3_refid != 813] # retrospective cohort
 
 study_char_dat <- data_kq(study_char_dat, kq3_refid)
 
+## VARIABLE: kq3_anesth_neur, kq3_anesth_reg, kq3_anesth_gen, kq3_anesth_neur_type, kq3_anesth_gen_type  — anesthetic and type, no specifics recorded for regional
 study_arm_dat <- data_kq(study_arm_dat, kq3_refid) |>
-  mutate(arm = arm_kq3_reg_gen) |>
-  relocate(arm, .before = arm_kq3_reg_gen) 
-  # general, neuraxial, regional
-
-temp <- data_kq(study_arm_dat, kq3_refid) |>
+  # delete anesthetic variables not relevant (avoid potential confusion)
+  select(-c(inhalation:anes_ns)) |> 
   mutate(arm = arm_kq3_reg_gen) |>
   relocate(arm, .before = arm_kq3_reg_gen) |> 
-  # general, neuraxial, regional
+  # add general, neuraxial, regional
   mutate(
     kq3_anesth_neur = ifelse(if_any(c(kq3_reg_spinal, kq3_reg_epidural, kq3_reg_cse), ~ !is.na(.x)), "Neuraxial", NA),
     kq3_anesth_reg  = ifelse(!is.na(kq3_reg_block), "Regional", NA),
@@ -58,35 +56,35 @@ temp <- data_kq(study_arm_dat, kq3_refid) |>
     kq3_anesth_gen_type = kq3_gen_type) |> 
   relocate(kq3_anesth_neur:kq3_anesth_gen_type, .before = kq3_gen_type)
 
-## VARIABLE: kq3_anesth_neur, kq3_anesth_reg, kq3_anesth_gen, kq3_anesth_neur_type, kq3_anesth_gen_type  — anesthetic and type, no specifics recorded for regional
     
 contin_dat <- data_kq(contin_dat, kq3_refid) |>
   left_join(study_arm_dat |> select(refid, arm_id, arm), by = c("refid", "arm_id")) |>
   relocate(arm, .after = arm_id)
 
+## VARIABLE: delirium_inc_prop <lgl> to indicate incidence proportion reported (prior to replacing missings with max daily occurrence)
 dichot_dat <- data_kq(dichot_dat, kq3_refid) |>
   left_join(study_arm_dat |> select(refid, arm_id, arm), by = c("refid", "arm_id")) |>
-  relocate(arm, .after = arm_id)
+  relocate(arm, .after = arm_id) |>
+  # if incidence proportion for delirium not reported use the max of days
+  mutate(
+    delirium_inc_prop = !is.na(delitotal_n),
+    delirium_day_max = pmax(delirium_n1, delirium_n2, delirium_n3, delilast_n, na.rm = TRUE),
+    delitotal_n = ifelse(is.na(delitotal_n), delirium_day_max, delitotal_n),
+  ) |>
+  relocate(delirium_day_max, .after = delitotal_n)
 
 likert_dat <- data_kq(likert_dat, kq3_refid) |>
   left_join(study_arm_dat |> select(refid, arm_id, arm), by = c("refid", "arm_id")) |>
   relocate(arm, .after = arm_id)
 
-dichot_dat <- data_kq(dichot_dat, kq3_refid) |>
-  mutate(
-    delirium_inc_prop = !is.na(delitotal_n), 
-    delirium_day_max = pmax(delirium_n1, delirium_n2, delirium_n3, delilast_n, na.rm = TRUE),
-    delitotal_n = ifelse(is.na(delitotal_n), delirium_day_max, delitotal_n),
-  ) |> 
-  relocate(delirium_day_max, .after = delitotal_n) 
 ```
 
 ```{r delirium_refids_check}
 #| eval = FALSE
 # any of delirium_dichot_refid, delirium_contin_refid, delirium_likert_refid 
-kq6_refid %in% delirium_refid
-kq6_refid %in% cogfunc_refid
-kq6_refid[!kq6_refid %in% c(delirium_refid, cogfunc_refid)]
+kq3_refid[kq3_refid %in% delirium_refid]
+kq3_refid[kq3_refid %in% cogfunc_refid]
+kq3_refid[!kq3_refid %in% c(delirium_refid, cogfunc_refid)]
 ```
 
 ## Outcome Importance Rankings
@@ -162,7 +160,7 @@ study_char_dat |>
         columns = design_f_lab
       )
     ) |> 
-  tab_footnote("Counted trials with more than 1 publication only once (applied to 1 trial with 2 publications).")
+  tab_footnote("Studies with multiple publications counted only once (applied to 1 trial with 2 publications).")
 ```
 
 ### Design, centers, country, and surgery
@@ -172,21 +170,13 @@ study_char_dat |>
 ```{r included_studies_table}
 #| echo: false
 included_dat <- study_char_dat |>
-  mutate(study_l = study_l_w_linked) |> 
-  select(refid, starts_with("design"), study_l, year, n_enroll, n_analyze, centers, country, non_vh_hdi, starts_with("surg")) |>
-  # select(refid, study, starts_with("surg")) |> # compile surgeries
-  rename_with(~ gsub("surg_", "", .x, fixed = TRUE)) |>
-  mutate(across(various:other, ~ gsub("surg_", "", .x, fixed = TRUE)),
-    ortho_any = ifelse(if_any(contains("ortho"), ~ !is.na(.x)), "ortho", NA),
-    opth = ifelse(str_detect(other_desc, "[Cc]ataract") | !is.na(opth), "optho", opth),
-    gi = ifelse(!is.na(colorectal) | !is.na(gi_other) | !is.na(abdominal), "GI/Abdominal", NA),
-    across(c(various, cardiac, gyn, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, spine, thoracic, urol, vasc, other), ~ firstup(.x)),
-  ) |>
-  unite("surgs", various, cardiac, gyn, gi, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, spine, thoracic, urol, vasc, other, sep = "|", remove = FALSE, na.rm = TRUE) |>
-  select(-c(various, abdominal, cardiac, colorectal, gyn, gi, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, spine, thoracic, urol, vasc, other, design_other, gi_other, starts_with("ortho"), list, other_desc, starts_with("hip"))) |>
+  mutate(study_l = study_l_w_linked) |>
+  select(refid, starts_with("design"), study_l, year, n_enroll, n_analyze, centers, country, non_vh_hdi) |>
+  left_join(surgs |> select(refid, surgs), by = "refid") |>
   mutate(
     surgs = ifelse(str_count(surgs, "\\|") > 3, "Various", surgs),
-    surgs = factor(surgs, levels = c("Ortho", "Urol", "GI/Abdominal", "Neuro", "Neuro|Vasc", "Other", "Cardiac", "Gyn", "Gyn|Ortho|Urol|Vasc", "Headneck", "Optho", "Various", "Vasc"))
+    # edit levels by kq
+    surgs = factor(surgs, levels = c("Ortho", "Urol", "GI/Abdominal", "Neuro", "Neuro|Vasc", "Cardiac", "Gyn", "Gyn|Ortho|Urol|Vasc", "Headneck", "Ophtho", "Other", "Spine", "Various", "Vasc"))
   ) |>
   arrange(design_f, surgs, study_l) |>
   select(refid, design_f, study_l, centers, n_enroll, country, surgs, non_vh_hdi)
@@ -233,7 +223,6 @@ included_dat |>
 <font size = 4> `r table_ref()` Summary of studies by country where conducted. </font>
 
 ```{r country}
-# CODE: table of countries
 study_char_dat |>
   select(country) |>
   tbl_summary(
@@ -248,23 +237,27 @@ study_char_dat |>
 
 ## **Comparators**
 
-### Regional vs. General 
+### Neuraxial/Regional vs. General 
 
 <font size = 4> `r table_ref()` Selected characteristics of randomized trials comparing general and regional anesthesia. </font>
 
 ```{r arm_data}
-ortho_proc <- study_char_dat |> 
-  select(refid, study, surg_ortho_tka, surg_ortho_tha, surg_ortho_hipfx, surg_ortho_other, surg_list) |> 
-  mutate(across(contains("ortho"), ~ str_replace_all(.x, "surg_ortho_", ""))) |> 
-  unite(ortho, surg_ortho_tka:surg_ortho_other, sep = "|", remove = FALSE, na.rm = TRUE) |> 
+ortho_proc <- study_char_dat |>
+  select(refid, study, surg_ortho_tka, surg_ortho_tha, surg_ortho_hipfx, surg_ortho_other, surg_list) |>
+  mutate(across(contains("ortho"), ~ str_replace_all(.x, "surg_ortho_", ""))) |>
+  unite(ortho, surg_ortho_tka:surg_ortho_other, sep = "|", remove = FALSE, na.rm = TRUE) |>
   mutate(
     ortho = str_replace(ortho, "tka", "TKA"),
     ortho = str_replace(ortho, "tha", "THA"),
     ortho = str_replace(ortho, "hipfx", "HipFx"),
-    ortho = str_replace(ortho, "other", "Other"))
+    ortho = str_replace(ortho, "other", "Other"),
+    surg_list = firstup(surg_list),
+    surg_list = str_replace(surg_list, "\\.$", "")
+  )
 ```
 
 ```{r reg_gen_tab}
+
 reg_gen_tab <- read.xlsx("data/KQ3Table_Interventions_2023-04-21.xlsx", sheet = "KQ3", rows = c(4:134), skipEmptyCols = TRUE) |>
   clean_names() |>
   select(-asa_ps_incl) |>
@@ -292,6 +285,33 @@ reg_gen_tab <- read.xlsx("data/KQ3Table_Interventions_2023-04-21.xlsx", sheet = 
   relocate(year, .after = study) |>
   select(refid, arm_id, study, study_l, arm_n, arm, asa_ps_incl, age_table, pre_mmse, volatile, tiva, ns, reg_spinal, reg_epidural, reg_cse, surgs, ortho, year) |>
   arrange(surgs, year, study, desc(arm))
+
+reg_gen_tab <- study_arm_dat |>
+  select(refid, refid_c, arm_id, study, year, arm_n, arm, asa_ps_incl, kq3_reg_spinal, kq3_reg_epidural, kq3_reg_cse, kq3_reg_block, kq3_reg_ns, kq3_reg_sedation, kq3_gen_type, kq3_gen_desflurane:kq3_gen_inhaleother) |>
+  left_join(study_char_dat |> select(refid, study_l, surg_ortho_tka, surg_ortho_tha, surg_ortho_hipfx, surg_ortho_other, surg_list, surgs), by = "refid") |>
+  left_join(ortho_proc |> select(refid, ortho), by = c("refid")) |>
+  left_join(table_age_mn_med, by = c("refid", "arm_id")) |>
+  left_join(table_mn_med |> select(refid, arm_id, pre_mmse), by = c("refid", "arm_id")) |>
+  mutate(
+    # volatile_spec = if_any(kq3_gen_desflurane:kq3_gen_inhaleother, ~ !is.na(.x), "\U2713", NA), # verifies kq3_gen_type
+    volatile = ifelse(kq3_gen_type == "inhalation", "\U2715", NA),
+    tiva = ifelse(kq3_gen_type == "tiva", "\U25CF", NA),
+    tiva_inhal = ifelse(kq3_gen_type == "tiva_inhal", "\U2713", NA),
+    tiva_inhal = ifelse(kq3_gen_type == "tiva_inhal", "\U2713", NA),
+    kq3_reg_block = notna_to_x(kq3_reg_block, "\U00D7"),
+    notrep = ifelse(kq3_gen_type == "notrep", "\U2716", NA),
+    across(c(kq3_reg_spinal, kq3_reg_epidural, kq3_reg_cse), ~ ifelse(!is.na(.x), "\U2713", NA)),
+    arm = ifelse(!is.na(kq3_reg_block) & arm != "general", "block", arm),
+    arm = factor(arm, levels = c("general", "block", "regional"), labels = c("Gen", "Block", "Neur")),
+    surgs = paste(surgs, ortho),
+    surgs = str_replace(surgs, " Other", ""),
+    surgs = str_replace(surgs, "Ortho ", "Ortho — "),
+    surgs = str_replace(surgs, "\\s{1}$", "")
+  ) |>
+  rename_with(~ str_replace(.x, "kq3_", "")) |>
+  select(refid, arm_id, study, study_l, arm_n, arm, asa_ps_incl, age_table, pre_mmse, volatile, tiva, tiva_inhal, notrep, reg_spinal, reg_epidural, reg_cse, reg_block, surgs, year, ortho) |>
+  arrange(surgs, year, study, arm)
+
 ```
 
 ```{r reg_gen_gt}
@@ -301,7 +321,7 @@ reg_gen_tab |>
   gt(id = "one") |>
   row_group_order(groups = c("Ortho — HipFx", "Ortho — HipFx|Other", "Ortho — TKA|THA|HipFx|Other", "Ortho — TKA", "Ortho — THA", "Ortho", "Urol", "GI/Abdominal", "Neuro", "Neuro|Vasc", "Cardiac", "Gyn", "Gyn|Ortho|Urol|Vasc", "Headneck", "Ophtho", "Other", "Various TKA|THA|Other", "Vasc")) |>
   # "Cardiac", "GI/Abdominal", "Gyn", "Gyn|Ortho|Urol|Vasc", "Headneck", "Neuro", "Neuro|Vasc", "Ophtho", "Ortho", "Ortho — HipFx", "Ortho — HipFx|Other", "Ortho —  THA", "Ortho — TKA", "Ortho — TKA|THA|HipFx|Other", "Other", "Urol", "Various TKA|THA|Other", and "Vasc".
-  cols_hide(c(refid, arm_id, study, year, ortho)) |>
+  cols_hide(c(refid, arm_id, study, year, ortho, tiva_inhal)) |>
   cols_label(
     study_l          = "Study",
     arm_n            = " N",
@@ -311,14 +331,15 @@ reg_gen_tab |>
     pre_mmse         = "MMSE",
     volatile         = "Vol",
     tiva             = "TIVA",
-    ns               = "NS",
+    notrep           = "NS",
     reg_spinal       = "Spinal",
     reg_epidural     = "Epid",
-    reg_cse          = "CSE"
+    reg_cse          = "CSE",
+    reg_block        = "Block"
   ) |>
-  tab_spanner(label = "General", columns = c(volatile:ns), level = 1) |>
+  tab_spanner(label = "General", columns = c(volatile:notrep), level = 1) |>
   tab_spanner(label = "ASA", columns = c(asa_ps_incl), level = 1) |>
-  tab_spanner(label = "Regional", columns = c(reg_spinal:reg_cse), level = 1) |>
+  tab_spanner(label = "Neuraxial", columns = c(reg_spinal:reg_cse), level = 1) |>
   fmt_markdown(columns = c(study_l, age_table, pre_mmse)) |>
   # fmt_number(VARIABLE, decimals = 0) |>
   sub_missing(columns = everything(), missing_text = "") |>
@@ -332,10 +353,11 @@ reg_gen_tab |>
     pre_mmse ~ px(100),
     volatile ~ px(40),
     tiva ~ px(40),
-    ns ~ px(40),
+    notrep ~ px(40),
     reg_spinal ~ px(45),
     reg_epidural ~ px(40),
-    reg_cse ~ px(40)
+    reg_cse ~ px(40),
+    reg_block ~ px(45)
   ) |>
   # tab_style(style = cell_text(align = "left"),        locations = cells_column_labels(columns = c())) |>
   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(asa_ps_incl))) |>
@@ -344,11 +366,19 @@ reg_gen_tab |>
   tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(volatile:reg_cse))) |>
   # tab_style(style = cell_text(align = "right"),       locations = cells_body(columns = c())) |>
   tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
-  # tab_style(style = list(cell_text(color = color_1)), locations = cells_body(columns = c(arm_n:reg_cse), rows = str_detect(arm, "Reg"))) |>
-  tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:reg_cse), rows = str_detect(arm, "Reg"))) |>
-  tab_footnote(md("Gen: general; Reg: regional; PS: physical stutus; Vol: volatile; TIVA: total intravenous anesthesia; NS: not stated; Epid: epidural; CSE: combined spinal and regional; Ortho: orthopedic; Urol: urology; GI: gastrointestinal; Neuro: neurologic; Gyn: gynecologic; Vasc: vascular; Ophtho: opthalomogic; Fx: fracture; TKA: total knee arthroplasty; THA: total hip arthroplasty; Diaz: diazepam; Mep: mepivicaine; Mid: midazolam; Prop: propofol; Rop: ropivacaine.")) |>
+  # tab_style(style = list(cell_text(color = color_1)), locations = cells_body(columns = c(arm_n:reg_cse), rows = str_detect(arm, "Neur"))) |>
+  tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:reg_cse), rows = str_detect(arm, "Neur"))) |>
+  tab_style(style = list(cell_text(color = color_3)), locations = cells_body(columns = c(arm_n:reg_cse), rows = str_detect(arm, "Block"))) |>
+  tab_footnote(md("Gen: general; Neur: neuraxial; PS: physical stutus; Vol: volatile; TIVA: total intravenous anesthesia; NS: not stated; Epid: epidural; CSE: combined spinal and regional; Ortho: orthopedic; Urol: urology; GI: gastrointestinal; Neuro: neurologic; Gyn: gynecologic; Vasc: vascular; Ophtho: opthalomogic; Fx: fracture; TKA: total knee arthroplasty; THA: total hip arthroplasty; Diaz: diazepam; Mep: mepivicaine; Mid: midazolam; Prop: propofol; Rop: ropivacaine.")) |>
   tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |> 
-  tab_footnote("Not included in pooled results owing to size.", locations = cells_body(columns = study_l, rows = str_detect(study_l, "Neuman 2016")))
+  tab_footnote("Not included in pooled results owing to size.", locations = cells_body(columns = study_l, rows = str_detect(study_l, "Neuman 2016"))) |> 
+  tab_footnote("Diazepam.", locations = cells_body(columns = arm, rows = study == "Salonia 2006" & arm_id == 2)) |> 
+  tab_footnote("Propofol.", locations = cells_body(columns = arm, rows = study == "Salonia 2006" & arm_id == 3)) |> 
+  tab_footnote("Midazolam.", locations = cells_body(columns = arm, rows = study == "Salonia 2006" & arm_id == 4)) |> 
+  tab_footnote("Fopivacaine.", locations = cells_body(columns = arm, rows = study == "Sellbrant 2021" & arm_id == 2)) |> 
+  tab_footnote("Mepivacaine.", locations = cells_body(columns = arm, rows = study == "Sellbrant 2021" & arm_id == 3)) |> 
+  gtsave(filename = "/Users/mgrant/Desktop/comparators.html", inline_css = TRUE)
+
 ```
 
 ## **Delirium Incidence**
@@ -624,3 +654,5 @@ path <- glue::glue("/Users/mgrant/Desktop/{name}.xlsx")
 saveWorkbook(wb, "/Users/mgrant/Desktop/kq3.xlsx", overwrite = TRUE)
 
 ```
+
+## References {#references}
