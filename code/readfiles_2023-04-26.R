@@ -27,7 +27,7 @@ data_files <- as_tibble(list.files("data/"))
 # data_files # for debug
 
 # utility functions
-source("code/functions_geri_2022-11-16.R")
+source("code/functions_2023-04-26.R")
 
 # functions for tables that are repetitive
 source("code/table_functions.R")
@@ -666,13 +666,31 @@ source("code/summary_mn_med_2023-02-27.R")
 
 # color palate
 # color palate
-color_1 <- "#FA8B8B"
-color_2 <- "#76d7c4"
-color_3 <- "#7fb3d5"
-color_4 <- "#c39bd3"
+color_1 <- "#0E6655"
+color_2 <- "#A93226"
+color_3 <- "#104E8B"
+color_4 <- "#F39C12"
+gray_mg <- "#969696"
+
+# color_1 <- "#FA8B8B"
+# color_2 <- "#76d7c4"
+# color_3 <- "#7fb3d5"
+# color_4 <- "#c39bd3"
+
 
 ## retracted pubmed trials----------------------------- (2023-04-07 12:13) @----
 # retracted_pubmed <- read.csv("data/retracted_trials_2023-04-07.csv")
 
+## verify all distinct arms --------------------------- (2023-04-25 12:51) @----
+study_arm_dat |>
+  group_by(refid) |>
+  mutate(count = n(),
+         distinct_count = n_distinct(arm_id)) |>
+  select(refid, count, distinct_count) |>
+  filter(count != distinct_count)
+
+
 #### save for use ------------------------------------- (2023-03-13 22:53) @----
 save.image(paste0("data/geri_data_", str_replace_all(format(Sys.time()), "\\s|:", "-"), ".Rdata"))
+
+

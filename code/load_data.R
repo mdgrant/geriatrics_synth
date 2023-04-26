@@ -32,5 +32,5 @@ data_file <- read_file_mg("geri_data")
 
 load(paste0("data/", data_file))
 
-source("code/functions_geri_2022-11-16.R")
+source("code/functions_2023-04-26.R")
 source("code/table_functions.R")

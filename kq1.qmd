@@ -3,7 +3,7 @@ title: "KQ 1 Expanded Preoperative Evaluation"
 editor: source
 toc-title: "Expanded Preoperative Evaluation"
 toc-location: "left"
-tbl-cap-location: "top"
+cap-location: "top"
 page-layout: full
 css: styles.css
 tables:
@@ -25,7 +25,7 @@ Among patients 65 years or older \[geriatric\] anticipating surgery and anesthes
 
 ```{r, read_data}
 #| include: false
-source("code/readfiles_geri_2022-11-16.R")
+source("code/load_data.R")
 ```
 
 <!-- kq5..._dat files --------------------------------- (2022-12-28 08:41) @ --->
@@ -47,9 +47,33 @@ study_arm_dat <- study_arm_dat |>
 
 ```{r, outcome_priority}
 #| include: true
-#| eval: false
+#| eval: true
 outcome_dat <- rankings("KQ1")
 outcome_tab(outcome_dat, 11)
 ```
+
+### Reporting Frequency
+
+<font size = 4> `r table_ref()` Dichotomous or count outcomes. </font>
+
+```{r dichot_outcome_freq}
+# CODE: reporting frequency tabulation
+dichot_freq_fun(dichot_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; NCD: neurocognitive disorder; QoR: quality of recovery; ")
+```
+
+<font size = 4> `r table_ref()` Continuous outcomes. </font>
+
+```{r cont_outcome_freq}
+contin_freq_fun(contin_dat)
+```
+
+<font size = 4> `r table_ref()` Likert or ordinal outcomes. </font>
+
+```{r likert_outcome_freq}
+likert_freq_fun(likert_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; NCD: neurocognitive disorder; QoR: quality of recovery; ")
+```
+
+
+
 
 <!-- ![](assets/pim_outcome.png){fig-align="left" width="3.5in"} -->

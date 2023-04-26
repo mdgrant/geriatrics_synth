@@ -388,7 +388,7 @@ study_char_dat |>
 
 ```
 
-## **Interventions**
+## **Comparators**
 
 #### Dexmedetomidine
 
@@ -797,7 +797,7 @@ delirium_meta_dat <- dichot_dat |>
   left_join(surgs |> select(refid, surgs_single_f), by = c("refid")) |>
   left_join(postop_only_dat, by = "refid") |> 
   rename(arm = drug_recode_abbr, surg_f = surgs_single_f) |> 
-  select(refid, refid_c, arm_id, study, design_f_lab, country, surg_f, postop_only, arm, delitotal_n, arm_n, delitotal_perc, delirium_inc_prop) |>
+  select(refid, refid_c, arm_id, year, study, design_f_lab, country, surg_f, postop_only, arm, delitotal_n, arm_n, delitotal_perc, delirium_inc_prop) |>
   arrange(refid_c, arm_id) |>
   # collapse arms
   # group_by(refid) |>  filter(n() > 2) |>  ungroup() |> # verify collapsed arms; verified 2023-03-09
@@ -816,8 +816,7 @@ delirium_meta_dat <- dichot_dat |>
       study == "Avidan 2017" & arm_id == 2 ~ collapse_dichot(dichot_dat, "Avidan 2017", c(2, 3), arm_n),
       study == "Zhao 2020" & arm_id == 2 ~ collapse_dichot(dichot_dat, "Zhao 2020", c(2, 3, 4), arm_n),
       .default = arm_n
-    ),
-    year = as.numeric(str_extract(study, "\\d{4}"))
+    )
   ) |>
   filter(!(study == "He 2018" & arm_id == 2)) |> 
   filter(!(study %in% c("Lee 2018a", "Avidan 2017") & arm_id == 3)) |>
@@ -826,7 +825,8 @@ delirium_meta_dat <- dichot_dat |>
   filter(!(study %in% c("Hollinger 2021") & arm_id %in% c(2))) |> # remove haldol arm
   filter(!study == "Mahrose 2021") # compares different doses
 
-# TODO: Compare calculated and reported percentages; verified 2023-04-08
+## calculated vs reported percentages; 2023-04-08 ----- (2023-04-24 18:21) @----
+# calculated vs reported percentages; verified 2023-04-08
 # temp <- delirium_meta_dat |>
 #   mutate(
 #     calc_percent = delitotal_n / arm_n * 100,
@@ -1256,7 +1256,7 @@ legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#A
 text(1.2, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .9)
 ```
 
-<foot_mg> Estimates (95% CI) from random effects models --- unadjusted `r paste0(digit2(exp(temp_limit_meta$TE.random)), " (", digit2(exp(temp_limit_meta$lower.random)), "–", digit2(exp(temp_limit_meta$upper.random)), ")")`; adjusted for small study effects: `r paste0(digit2(exp(temp_limit_meta$TE.adjust)), " (", digit2(exp(temp_limit_meta$lower.adjust)), "–", digit2(exp(temp_limit_meta$upper.adjust)), ")")`.</font>
+<foot_mg> Estimates (odds ratio and 95% CI) from random effects models --- unadjusted `r paste0(digit2(exp(temp_limit_meta$TE.random)), " (", digit2(exp(temp_limit_meta$lower.random)), "–", digit2(exp(temp_limit_meta$upper.random)), ")")`; adjusted for small study effects: `r paste0(digit2(exp(temp_limit_meta$TE.adjust)), " (", digit2(exp(temp_limit_meta$lower.adjust)), "–", digit2(exp(temp_limit_meta$upper.adjust)), ")")`.</font>
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
@@ -1406,7 +1406,7 @@ legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#A
 text(1.2, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .9)
 ```
 
-<foot_mg> Estimates (95% CI) from random effects models --- unadjusted OR `r paste0(digit2(exp(temp_limit_meta$TE.random)), " (", digit2(exp(temp_limit_meta$lower.random)), "–", digit2(exp(temp_limit_meta$upper.random)), ")")`; adjusted for small study effects: `r paste0(digit2(exp(temp_limit_meta$TE.adjust)), " (", digit2(exp(temp_limit_meta$lower.adjust)), "–", digit2(exp(temp_limit_meta$upper.adjust)), ")")`.</font>
+<foot_mg> Estimates (odds ratio and 95% CI) from random effects models --- unadjusted OR `r paste0(digit2(exp(temp_limit_meta$TE.random)), " (", digit2(exp(temp_limit_meta$lower.random)), "–", digit2(exp(temp_limit_meta$upper.random)), ")")`; adjusted for small study effects: `r paste0(digit2(exp(temp_limit_meta$TE.adjust)), " (", digit2(exp(temp_limit_meta$lower.adjust)), "–", digit2(exp(temp_limit_meta$upper.adjust)), ")")`.</font>
 :::
 
 <font size = 4> `r figure_ref()` Ramelteon compared with placebo (before-after studies). </font>
@@ -2028,7 +2028,7 @@ legend(0.03, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#
 text(1.2, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .9)
 ```
 
-<foot_mg> Estimates (95% CI) from random effects models --- unadjusted `r paste0(digit2(exp(temp_limit_meta$TE.random)), " (", digit2(exp(temp_limit_meta$lower.random)), "–", digit2(exp(temp_limit_meta$upper.random)), ")")`; adjusted for small study effects: `r paste0(digit2(exp(temp_limit_meta$TE.adjust)), " (", digit2(exp(temp_limit_meta$lower.adjust)), "–", digit2(exp(temp_limit_meta$upper.adjust)), ")")`.</font>
+<foot_mg> Estimates (odds ratio and 95% CI) from random effects models --- unadjusted `r paste0(digit2(exp(temp_limit_meta$TE.random)), " (", digit2(exp(temp_limit_meta$lower.random)), "–", digit2(exp(temp_limit_meta$upper.random)), ")")`; adjusted for small study effects: `r paste0(digit2(exp(temp_limit_meta$TE.adjust)), " (", digit2(exp(temp_limit_meta$lower.adjust)), "–", digit2(exp(temp_limit_meta$upper.adjust)), ")")`.</font>
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}

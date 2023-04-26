@@ -33,7 +33,7 @@ library(glue)
 library(tidyverse)
 conflicts_prefer(dplyr::filter)
 knitr::opts_chunk$set(echo = FALSE)
-source("code/functions_geri_2022-11-16.R")
+source("code/functions_2023-04-26.R")
 ```
 
 ```{r soe_grade_refs}

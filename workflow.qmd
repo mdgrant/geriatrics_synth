@@ -1,0 +1,54 @@
+---
+title: "Geriatrics Workflow"
+editor: source
+toc-title: "Workflow"
+toc-location: "left"
+toc-depth: 4
+toc_float: 
+  collapsed: false
+tbl-cap-location: "top"
+page-layout: full
+css: styles.css
+tables:
+      style: Table
+      caption:
+        pre: "Table "
+        sep: " -- "
+---
+
+# Workflow
+
+
+```{mermaid align="right"}
+%%| fig-width: 5
+flowchart LR
+R[Data Import<br/>readfiles] --> study_char[study_char_dat]
+study_char --> char_munge[link refs<br/>AuYYYYletter]
+R --> DI[Data import] --> Annot[Annotate data<br><br>View data dictionary<br>to assist coding]
+R --> Do[Data overview] --> F[Observation filtration<br>Missing data patterns<br>Data about data]
+R --> P[Data processing] --> DP[Recode<br>Transform<br>Reshape<br>Merge<br>Aggregate<br>Manipulate]
+R --> Des[Descriptive statistics<br>Univariate or simple<br>stratification]
+R --> An[Analysis<br>Stay close to data] --> DA[Descriptive<br><br>Avoid tables by using<br>nonparametric smoothers] & FA[Formal]
+R --> CP[Caching<br>Parallel computing<br>Simulation]
+```
+
+```{mermaid}
+%%| fig-width: 5
+flowchart LR
+R[summaries] --> mn_med[means/medians<br/>table_mn_med<br/>pre_mmse<br/>mmse times<br/>moca]
+R --> age_mn_med[table_age_mn_med]
+R --> surgs[surgery] --> surgs_vars[surgs <br/>surgs_single ]
+
+```
+
+```{mermaid align="right"}
+flowchart LR
+R[dichot_dat] --> dncr_dat[dncr_dat<br>up to 30 days]
+dncr_dat --> neurocog_meta_dat[neurocog_meta_dat<br/>for later pooling]
+
+R[dichot_dat] --> ncd_dat[ncd_dat<br/> > 30 days]
+```
+
+
+
+

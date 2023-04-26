@@ -19,7 +19,7 @@ tables:
 ```{r}
 #| message: false
 #| echo: false
-source("code/readfiles_geri_2022-11-16.R")
+source("code/load_data.R")
 ```
 
 ## For all included key questions 
@@ -110,11 +110,6 @@ outcome_tab_all(rankings_dat, 77)
 ```
 
 ### Outcomes reported across all studies and questions (abstracted as of 2023-01-21)
-
-```{r, read_data}
-#| include: false
-source("code/readfiles_geri_2022-11-16.R")
-```
 
 <font size = 4> `r table_ref()` Dichotomous or count outcomes. </font>
 

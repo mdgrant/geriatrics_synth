@@ -178,6 +178,7 @@ data_kq <- function(data, refids) {
     filter(refid %in% refids) |>
     arrange(design_f)
 }
+
 # refid not missing by outcome
 refid_reported_outcome <- function(data_dat, vars) {
   data_dat |>
@@ -262,11 +263,11 @@ mean_med_table <- function(data, variable_select, observation_n, digs = 0) {
       sd_f = formatC(sd, digits = 1, format = "f"),
       table =
         case_when(
-          !is.na(m + sd) ~ paste0(formatC(m, digits = digs, format = "f"), " (", sd_f, ")"),
-          !is.na(m + rl + ru) ~ paste0(formatC(m, digits = digs, format = "f"), " [", formatC(rl, digits = digs, format = "f"), "-", formatC(ru, digits = digs, format = "f"), "]"),
+          !is.na(m + sd) ~ paste0(formatC(m, digits = digs + 1, format = "f"), " (", sd_f, ")"),
+          !is.na(m + rl + ru) ~ paste0(formatC(m, digits = digs + 1, format = "f"), " [", formatC(rl, digits = digs, format = "f"), "-", formatC(ru, digits = digs, format = "f"), "]"),
           !is.na(med + rl + ru) ~ paste0("<u>", formatC(med, digits = digs, format = "f"), "</u>", " [", formatC(rl, digits = digs, format = "f"), "-", formatC(ru, digits = digs, format = "f"), "]"),
           !is.na(med + iqrl + iqru) ~ paste0("<u>", formatC(med, digits = digs, format = "f"), "</u>", " {", formatC(iqrl, digits = digs, format = "f"), "-", formatC(iqru, digits = digs, format = "f"), "}"),
-          !is.na(m) ~ as.character(formatC(m, digits = digs, format = "f")),
+          !is.na(m) ~ as.character(formatC(m, digits = digs + 1, format = "f")),
           !is.na(med) ~ paste0("<u>", formatC(med, digits = digs, format = "f"), "</u>"),
           .default = ""
         )
@@ -290,11 +291,11 @@ mean_med_table_single <- function(data, variable_select, digs = 1) {
       sd_f = formatC(sd, digits = 1, format = "f"),
       table =
         case_when(
-          !is.na(m + sd) ~ paste0(formatC(m, digits = digs, format = "f"), " (", sd_f, ")"),
-          !is.na(m + rl + ru) ~ paste0(formatC(m, digits = digs, format = "f"), " [", formatC(rl, digits = digs, format = "f"), "-", formatC(ru, digits = digs, format = "f"), "]"),
+          !is.na(m + sd) ~ paste0(formatC(m, digits = digs + 1, format = "f"), " (", sd_f, ")"),
+          !is.na(m + rl + ru) ~ paste0(formatC(m, digits = digs + 1, format = "f"), " [", formatC(rl, digits = digs, format = "f"), "-", formatC(ru, digits = digs, format = "f"), "]"),
           !is.na(med + rl + ru) ~ paste0("<u>", formatC(med, digits = digs, format = "f"), "</u>", " [", formatC(rl, digits = digs, format = "f"), "-", formatC(ru, digits = digs, format = "f"), "]"),
           !is.na(med + iqrl + iqru) ~ paste0("<u>", formatC(med, digits = digs, format = "f"), "</u>", " {", formatC(iqrl, digits = digs, format = "f"), "-", formatC(iqru, digits = digs, format = "f"), "}"),
-          !is.na(m) ~ as.character(formatC(m, digits = digs, format = "f")),
+          !is.na(m) ~ as.character(formatC(m + 1, digits = digs + 1, format = "f")),
           !is.na(med) ~ paste0("<u>", formatC(med, digits = digs, format = "f"), "</u>"),
           .default = ""
         )
@@ -435,7 +436,7 @@ gt_theme_mg <- function(data) {
     font-style: normal;
     font-weight: normal;
     font-size: 85%;
-    vertical-align: 2px;
+    vertical-align: 0px;
     }
   "
   )
