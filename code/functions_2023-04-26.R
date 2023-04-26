@@ -74,7 +74,7 @@ view_all <- function(refid){
 }
 
 # replace nonmissing with U00D7
-notna_to_x <- function(variable, symbol) {
+notna_to_x <- function(variable, symbol = "\U00D7") {
   # ifelse(!is.na(variable), "\U00D7", NA)
   ifelse(!is.na(variable), symbol, NA)
 }
