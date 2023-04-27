@@ -348,7 +348,7 @@ asa_combine <- study_arm_dat |>
       asa_all == "1_1_1_1_0_0_0_0" ~ paste0(asa_1, "|", asa_2, "|", asa_3, "|", asa_4),
       asa_all == "0_1_1_0_0_0_0_0" ~ paste0("  |", asa_2, "|", asa_3, "|  "),
       asa_all == "1_1_1_0_0_0_0_0" ~ paste0(asa_1, "|", asa_2, "|", asa_3, "|  "),
-      asa_all == "0_0_0_0_0_0_0_0" ~ "NS",
+      asa_all == "0_0_0_0_0_0_0_0" ~ "NR",
       .default = NA
     ),
     asa_ps_incl = case_when(
@@ -366,14 +366,14 @@ asa_combine <- study_arm_dat |>
       asa_all == "1_1_1_1_0_0_0_0" ~ "1234",
       asa_all == "0_1_1_0_0_0_0_0" ~ " 23 ",
       asa_all == "1_1_1_0_0_0_0_0" ~ "123 ",
-      asa_all == "0_0_0_0_0_0_0_0" ~ "NS",
+      asa_all == "0_0_0_0_0_0_0_0" ~ "NR",
       .default = NA
     ),
     asa_ps1_incl = str_detect(asa_ps_incl, "1"),
     asa_ps2_incl = str_detect(asa_ps_incl, "2"),
     asa_ps3_incl = str_detect(asa_ps_incl, "3"),
     asa_ps4_incl = str_detect(asa_ps_incl, "4"),
-    asa_psns_incl = str_detect(asa_ps_incl, "NS")
+    asa_psns_incl = str_detect(asa_ps_incl, "NR")
   ) |>
   select(refid, arm_id, asa_all_combine:asa_psns_incl)
 
