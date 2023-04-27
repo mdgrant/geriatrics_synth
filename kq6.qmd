@@ -2727,23 +2727,12 @@ mortality_dat |>
   tab_footnote("Before-after design.", locations = cells_body(columns = study_l, rows = study %in% c("Hokuto 2020")))
 ```
 
-<!-- ::: {.callout-note collapse="true" appearance="minimal" icon="false"} -->
-
-<!-- ### <font size = 4> `r figure_ref()` Summary risk of bias from melatonin and ramelteon randomized clinical trials reporting mortality. </font> -->
-
-<!-- ```{r rob2_summary_mel_ram_mort, fig.height = 3, out.width = "60%"} -->
-
-<!-- rob_summary_fun(mel_ram_mort_refid) -->
-
-<!-- ``` -->
-
-<!-- ::: -->
 
 ### *Pooled*
 
 #### Dexmedetomidine
 
-<font size = 4> `r figure_ref()` Risk difference for hospital mortality -- dexmedetomidine compared with placebo or no intervention (randomized clinical trials). </font>
+<font size = 4> `r figure_ref()` Risk ratio for hospital mortality -- dexmedetomidine compared with placebo or no intervention (randomized clinical trials). </font>
 
 ```{r dex_mort_meta, fig.dim = c(14, 7), fig.align = "center"}
 # ```{r nma_dat, out.width = 50%, out.height = 100%}
@@ -2831,7 +2820,7 @@ legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#A
 
 #### Melatonin/Ramelteon
 
-<font size = 4> `r figure_ref()` Risk difference for hospital mortality -- melatonin or ramelteon compared with placebo or no intervention (randomized clinical trials). </font>
+<font size = 4> `r figure_ref()` Risk ratio for hospital mortality -- melatonin or ramelteon compared with placebo or no intervention (randomized clinical trials). </font>
 
 ```{r mel_ram_mort_meta, fig.dim = c(14, 4), fig.align = "center"}
 # ```{r nma_dat, out.width = 50%, out.height = 100%}
@@ -2847,7 +2836,7 @@ mel_ram_mort_meta_dat <- pairwise_mort_mel_ram_dat |>
 mel_ram_plac_mort_meta <- metabin(event2, n2, event1, n1,
   data = mel_ram_mort_meta_dat,
   studlab = study,
-  sm = "RD",
+  sm = "RR",
   method = "MH",
   method.tau = "PM",
   hakn = FALSE,
@@ -2863,7 +2852,7 @@ forest(mel_ram_plac_mort_meta,
   label.e = "Mel/Ram     ",
   label.c = "Plac/None ",
   rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
-  rightlabs = c("RD", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
+  rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
   just.addcols.right = "right",
   digits.TE = 1,
   digits.tau2 = 1,
