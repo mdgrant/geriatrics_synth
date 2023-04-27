@@ -121,7 +121,7 @@ study_char_dat |>
         columns = design_f_lab
       )
     ) |> 
-  tab_footnote("Counted randomized clinical trials with more than 1 publication only once (applies to 1 trial with 2 publications).")
+  tab_footnote("Studies with multiple publications counted only once (applies to 1 trial with 2 publications).")
 ```
 
 ## Design, centers, country, surgery
