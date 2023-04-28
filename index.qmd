@@ -7,13 +7,11 @@ Draft materials **(not to be cited).**
 
 Corrections, suggestions, or comments can be sent to [Mark Grant](mailto:m.grant@asahq.org).
 
-[Expanded Preoperative Screening](kq1.html)
-
-[Postoperative Delirium Screening](kq8.html)
+[Screening: Expanded Preop & Postop Delirium](kq1.html)
 
 [Prehabilitation](kq2.html)
 
-[Regional vs. General Anesthesia](kq3.html)
+[Regional vs. General](kq3.html)
 
 [Intravenous vs. Inhaled Anesthesia](kq4.html)
 

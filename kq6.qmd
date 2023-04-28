@@ -1922,7 +1922,7 @@ netgraph(
 
 #### Dexmedetomidine
 
-<font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention (randomized clinical trials, delayed neurocognitive recover). </font>
+<font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention (randomized clinical trials, delayed neurocognitive recovery). </font>
 
 ```{r dncr_dex_plac_meta, fig.width = 14, fig.height = 5.5, fig.align = "left", warning = FALSE}
 #| eval: true
@@ -2354,44 +2354,164 @@ los_tab |>
 
 ## **Complications**
 
-```{r complications_check_missing}
-#| eval: false
-## check missings other than n ------------------------ (2023-03-23 12:52) @----
-missing_non_n_fun <- function(var_prefix) {
+<font size = 4> `r table_ref()` Report complications in dexmedetomidine studies — cardiac, MI, stroke, pulmonary, pneumonia, acute kidney injury. </font
+
+```{r complications_dat}
+#| eval: true
+complications_all <- c("medical", "surg", "cardiac", "gastro", "neuro", "pulm", "thromb", "infect", "fall", "stroke", "othcomp", "asppneum", "atelec", "bronch", "cardarr", "myoinfarct", "ssi", "sepsis", "uti", "pneum", "pthorax", "airleak", "pulcongest", "pe", "pinfiltrate", "respfail", "intub", "upperair", "vent48", "kidneyinj", "nerveinj", "clavien1", "clavien2", "clavien3", "clavien4", "clavien5")
+
+complications_kq6_fun <- function(var_prefix) {
   dichot_dat %>%
     filter(if_any(!!paste0(var_prefix, "_per"):!!paste0(var_prefix, "_95high"), ~ !is.na(.x))) |>
-    select(refid, study, arm_id, arm_n, comp_update_arm_n, !!paste0(var_prefix, "_n"):!!paste0(var_prefix, "_95high")) |> 
-    left_join(drugs_dat |> select(refid, arm_id, drug_recode_abbr), by = c("refid", "arm_id")) |> 
-    relocate(drug_recode_abbr, .after = arm_id)
+    select(refid, year, study, arm_id, arm_n, comp_update_arm_n, !!paste0(var_prefix, "_n"):!!paste0(var_prefix, "_95high")) |>
+    left_join(drugs_dat |> select(refid, arm_id, drug_recode_abbr), by = c("refid", "arm_id")) |>
+    relocate(drug_recode_abbr, .after = arm_id) |>
+    rename(arm = drug_recode_abbr) |>
+    mutate(complication = var_prefix) |>
+    rename_with(~ str_replace(.x, "95", "ci_"), .cols = everything()) |>
+    rename_with(~ str_replace(.x, "^.*_", ""), .cols = c(8:15)) |>
+    arrange(complication, year, study, arm_id)
 }
 
-variables_temp <- c("cardarr", "intub", "airleak", "gastro", "medical", "pulcongest", "respfail", "pe", "ssi", "thromb", "kidneyinj", "myoinfarct", "othcomp", "pneum", "infect", "cardiac", "stroke", "pulm", "cardiac", "clavien1", "clavien2", "clavien3", "clavien4", "clavien5")
+# adverse event data includes all reported complications
+adverse_events_dat <- map_df(complications_all, complications_kq6_fun) |>
+  mutate(
+    arm_n = ifelse(!is.na(comp_update_arm_n), comp_update_arm_n, arm_n),
+    calc_per = n / arm_n * 100,
+    n_per = n_per_fun(n, arm_n, 1),
+    diff = per - calc_per
+  )
 
-adverse_events_dat <- map(variables_temp, missing_non_n_fun)
+adverse_events_dat <- adverse_events_dat |> 
+  left_join(study_char_dat |> select(refid, study_l, surgs_single, design_f_lab), by = "refid") |> 
+  left_join(table_age_mn_med, by = c("refid", "arm_id")) |> 
+  arrange(complication, surgs_single, year, study, arm_id) |> 
+  mutate(
+    study_compl = paste0(study, complication), 
+    ref_arm_n = arm_n,
+    ref_n = n
+  ) |>
+  group_by(study_compl) |>
+  mutate(
+    ref_arm_n = ifelse(row_number() > 1, NA, ref_arm_n),
+    ref_n = ifelse(row_number() > 1, NA, ref_n)
+  ) |>
+  fill(ref_arm_n, ref_n) |>
+  mutate(
+    ref_arm_n = ifelse(row_number() == 1, NA, ref_arm_n),
+    ref_n = ifelse(row_number() == 1, NA, ref_n)
+  ) |>
+  ungroup() |> 
+  mutate(
+    rd_ci = ifelse(!is.na(ref_n), rd_per_ci_fun(n, arm_n, ref_n, ref_arm_n, digits = 1), "—"),
+    bar = case_when(
+      str_detect(arm, "Dex|Ket|Mel|Ram") ~ bar_prop(calc_per, "#969696"),
+      str_detect(arm, "Plac|None") ~ bar_prop(calc_per, color_4),
+      .default = bar_prop(calc_per, color_2))) |> 
+  select(refid, year, arm_id, study, study_l, study_compl, arm_n, arm, n, age_table, surgs_single, n_per, bar, rd_ci, complication, design_f_lab)
 
-## bruit force ---------------------------------------- (2023-03-23 16:39) @----
-# dichot_dat |> 
-#   filter(!is.na(d_complication)) |> 
-#   filter(if_any(cardarr_per:cardarr_95high, ~ !is.na(.x)) & is.na(cardarr_n))
-#   filter(if_any(intub_per:intub_95high, ~ !is.na(.x)) & is.na(intub_n))
-#   filter(if_any(airleak_per:airleak_95high, ~ !is.na(.x)) & is.na(airleak_n))
-#   filter(if_any(gastro_per:gastro_95high, ~ !is.na(.x)) & is.na(gastro_n))
-#   filter(if_any(medical_per:medical_95high, ~ !is.na(.x)) & is.na(medical_n))
-#   filter(if_any(pulcongest_per:pulcongest_95high, ~ !is.na(.x)) & is.na(pulcongest_n))
-#   filter(if_any(respfail_per:respfail_95high, ~ !is.na(.x)) & is.na(respfail_n))
-#   filter(if_any(pe_per:pe_95high, ~ !is.na(.x)) & is.na(pe_n))
-#   filter(if_any(ssi_per:ssi_95high, ~ !is.na(.x)) & is.na(ssi_n))
-#   filter(if_any(thromb_per:thromb_95high, ~ !is.na(.x)) & is.na(thromb_n))
-#   filter(if_any(kidneyinj_per:kidneyinj_95high, ~ !is.na(.x)) & is.na(kidneyinj_n))
-#   filter(if_any(myoinfarct_per:myoinfarct_95high, ~ !is.na(.x)) & is.na(myoinfarct_n))
-#   filter(if_any(othcomp_per:othcomp_95high, ~ !is.na(.x)) & is.na(othcomp_n))
-#   filter(if_any(pneum_per:pneum_95high, ~ !is.na(.x)) & is.na(pneum_n))
-#   filter(if_any(infect_per:infect_95high, ~ !is.na(.x)) & is.na(infect_n))
-#   filter(if_any(cardiac_per:cardiac_95high, ~ !is.na(.x)) & is.na(cardiac_n)) 
-#   filter(if_any(stroke_per:stroke_95high, ~ !is.na(.x)) & is.na(stroke_n))
-#   filter(if_any(pulm_per:pulm_95high, ~ !is.na(.x)) & is.na(pulm_n))
-#   filter(if_any(cardiac_per:cardiac_95high, ~ !is.na(.x)) & is.na(cardiac_n))
+```
 
+```{r complications_dex_gt}
+adverse_events_dat |> 
+  filter(!refid %in% mel_ram_refid) |> 
+  filter(complication %in% c("cardiac", "pulm", "stroke", "infect", "myoinfarct", "pneum", "kidneyinj")) |> 
+  mutate(complication = factor(complication, levels = c("cardiac", "pulm", "stroke", "infect", "myoinfarct", "pneum", "kidneyinj"), labels = c("Cardiac", "Pulmonary", "Stroke", "Infectious (not SSI)", "MI", "Pneumonia", "AKI"))) |> 
+  mutate(study_l = ifelse(row_number() > 1, "", study_l), .by = study_compl) |>
+  group_by(complication) |>
+  gt(id = "one") |>
+  row_group_order(groups = c("Cardiac", "Pulmonary", "Stroke", "Infectious (not SSI)", "MI", "Pneumonia", "AKI")) |>
+  cols_hide(c(refid, year, study, arm_id, n, study, study_compl, design_f_lab)) |>
+  cols_label(
+    study_l          = "Study",
+    arm_n            = " N",
+    arm              =  "Arm",
+    age_table        = "    Age",
+    surgs_single     = "Surgery",
+    n_per            = "N (%)",
+    bar              = "0 – 100%",
+    rd_ci            = "RD (95% CI)"
+  ) |>
+  # tab_spanner(label = "", columns = c(VARIABLES), level = 1) |>
+  fmt_markdown(columns = c(study_l, bar, age_table)) |>
+  # fmt_number(VARIABLE, decimals = 0) |>
+  sub_missing(columns = everything(), missing_text = "") |>
+  gt_theme_mg() |>
+  cols_width(
+    study_l          ~ px(140),
+    arm_n            ~ px(45),
+    arm              ~ px(60),
+    age_table        ~ px(100),
+    surgs_single     ~ px(80),
+    n_per            ~ px(80),
+    bar              ~ px(100),
+    rd_ci            ~ px(140)
+    ) |> 
+  tab_style(style = cell_text(align = "left"),        locations = cells_column_labels(columns = c(arm))) |>
+  tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(arm_n, rd_ci))) |>
+  # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c())) |>
+  tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(arm, age_table, rd_ci))) |> 
+  tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(rd_ci))) |> 
+  # tab_style(style = cell_text(align = "right"),       locations = cells_body(columns = c())) |>
+  # tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
+  # tab_style(style = list(cell_text(color = color_1)), locations = cells_body(columns = c(), rows = str_detect())) |>
+  # tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(), rows = str_detect())) |>
+  # tab_style(style = list(cell_text(color = color_3)), locations = cells_body(columns = c(), rows = str_detect())) 
+  tab_footnote(md("Before-After/Time Series"), locations = cells_body(columns = study_l, rows = study_l != "" & design_f_lab == "Before-After/Time Series")) |> 
+  tab_footnote(md("Nonrandomized Trial"), locations = cells_body(columns = study_l, rows = study_l != "" & design_f_lab == "Nonrandomized Trial"))
+  
+```
+
+<font size = 4> `r table_ref()` Report complications in ramelteon studies — cardiac, MI, stroke, pulmonary, pneumonia, acute kidney injury (all before-after designs). </font
+
+```{r complications_mel_ram_gt}
+adverse_events_dat |> 
+  filter(refid %in% mel_ram_refid) |> 
+  filter(complication %in% c("cardiac", "pulm", "pneum")) |> 
+  mutate(complication = factor(complication, levels =  c("cardiac", "pulm", "pneum"), labels = c("Cardiac", "Pulmonary", "Pneumonia"))) |> 
+  mutate(study_l = ifelse(row_number() > 1, "", study_l), .by = study_compl) |>
+  group_by(complication) |>
+  gt(id = "one") |>
+  row_group_order(groups = c("Cardiac", "Pulmonary", "Pneumonia")) |>
+  cols_hide(c(refid, year, study, arm_id, n, study, study_compl, design_f_lab)) |>
+  cols_label(
+    study_l          = "Study",
+    arm_n            = " N",
+    arm              =  "Arm",
+    age_table        = "    Age",
+    surgs_single     = "Surgery",
+    n_per            = "N (%)",
+    bar              = "0 – 100%",
+    rd_ci            = "RD (95% CI)"
+  ) |>
+  # tab_spanner(label = "", columns = c(VARIABLES), level = 1) |>
+  fmt_markdown(columns = c(study_l, bar, age_table)) |>
+  # fmt_number(VARIABLE, decimals = 0) |>
+  sub_missing(columns = everything(), missing_text = "") |>
+  gt_theme_mg() |>
+  cols_width(
+    study_l          ~ px(140),
+    arm_n            ~ px(45),
+    arm              ~ px(60),
+    age_table        ~ px(100),
+    surgs_single     ~ px(80),
+    n_per            ~ px(80),
+    bar              ~ px(100),
+    rd_ci            ~ px(140)
+    ) |> 
+  tab_style(style = cell_text(align = "left"),        locations = cells_column_labels(columns = c(arm))) |>
+  tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(arm_n, rd_ci))) |>
+  # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c())) |>
+  tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(arm, age_table, rd_ci))) |> 
+  tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(rd_ci))) |> 
+  # tab_style(style = cell_text(align = "right"),       locations = cells_body(columns = c())) |>
+  # tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
+  # tab_style(style = list(cell_text(color = color_1)), locations = cells_body(columns = c(), rows = str_detect())) |>
+  # tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(), rows = str_detect())) |>
+  # tab_style(style = list(cell_text(color = color_3)), locations = cells_body(columns = c(), rows = str_detect())) 
+  tab_footnote(md("Before-After/Time Series"), locations = cells_body(columns = study_l, rows = study_l != "" & design_f_lab == "Before-After/Time Series")) |> 
+  tab_footnote(md("Nonrandomized Trial"), locations = cells_body(columns = study_l, rows = study_l != "" & design_f_lab == "Nonrandomized Trial"))
+  
 ```
 
 ## **Mortality**
@@ -2873,11 +2993,7 @@ forest(mel_ram_plac_mort_meta,
 
 <foot_mg> Mel: melatonin; Ram: ramelteon; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . </foot_mg> <a id="figure-4"></a>
 
-## Study Characteristics
-
-```{r study_characteristics}
-
-```
+<!-- ## Study Characteristics -->
 
 ## Risk of Bias
 

@@ -19,13 +19,11 @@ website:
       - text: Key Question
         menu:
           - href: kq1.html
-            text: "Expanded Preoperative Evaluation"
-          - href: kq8.html
-            text: "Postoperative Delirium Screening"
+            text: "[Screening: Expanded Preop & Postop Delirium"
           - href: kq2.html
             text: "Prehabilitation"
           - href: kq3.html
-            text: "Regional vs. General Anesthesia"
+            text: "Regional vs. Regional Anesthesia"
           - href: kq4.html
             text: "Intravenous vs. Inhaled Anesthesia"
           - href: kq5.html
