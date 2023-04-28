@@ -2354,7 +2354,9 @@ los_tab |>
 
 ## **Complications**
 
-<font size = 4> `r table_ref()` Report complications in dexmedetomidine studies — cardiac, MI, stroke, pulmonary, pneumonia, acute kidney injury. </font
+### Dexmedetomidine
+
+<font size = 4> `r table_ref()` Report complications in dexmedetomidine studies — cardiac, MI, stroke, pulmonary, pneumonia, acute kidney injury. </font>
 
 ```{r complications_dat}
 #| eval: true
@@ -2462,7 +2464,14 @@ adverse_events_dat |>
   
 ```
 
-<font size = 4> `r table_ref()` Report complications in ramelteon studies — cardiac, MI, stroke, pulmonary, pneumonia, acute kidney injury (all before-after designs). </font
+### Ketamine
+
+No studies
+
+
+### Ramelteon
+
+<font size = 4> `r table_ref()` Report complications in ramelteon studies — cardiac, MI, stroke, pulmonary, pneumonia, acute kidney injury (all before-after designs). </font>
 
 ```{r complications_mel_ram_gt}
 adverse_events_dat |> 
