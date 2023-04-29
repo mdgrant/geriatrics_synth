@@ -365,8 +365,8 @@ delirium_total_gt_fun <- function(drug_f_abbr){
       delitotal_time = ifelse(row_number() > 1, "", delitotal_time),
       scale_delirium = ifelse(row_number() > 1, "", scale_delirium),
       bar = case_when(
-        str_detect(drug_recode_abbr, drug_f_abbr) ~ bar_prop(calc_percent, color_1),
-        .default = bar_prop(calc_percent, color_3)
+        str_detect(drug_recode_abbr, drug_f_abbr) ~ bar_prop(calc_percent, "#A93226"),
+        .default = bar_prop(calc_percent, "#969696")
       ),
     ) |>
     ungroup() |>

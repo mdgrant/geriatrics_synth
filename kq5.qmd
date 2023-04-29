@@ -222,9 +222,25 @@ included_dat |>
 
 ```
 
-<!-- add kq6 arms to studies -------------------------- (2023-01-06 10:59) @ --->
+### Country Summary
 
-<!-- consequence of data entry allowing only 1 kq per arm -->
+<font size = 4> `r table_ref()` Summary of studies by country where conducted. </font>
+
+```{r country}
+# CODE: table of countries
+study_char_dat |>
+  mutate(linked_references = ifelse(is.na(linked_references), refid, linked_references)) |> 
+  slice(1, .by = linked_references) |>
+  select(country) |>
+  tbl_summary(
+    sort = everything() ~ "frequency",
+    label = list(country ~ "Country")
+  ) |>
+  modify_header(label ~ "") |> 
+  as_gt(id = "one") |> 
+  gt_theme_mg()
+
+```
 
 ```{r}
 #| include: false

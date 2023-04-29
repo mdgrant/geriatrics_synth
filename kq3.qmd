@@ -228,6 +228,8 @@ included_dat |>
 
 ```{r country}
 study_char_dat |>
+  mutate(linked_references = ifelse(is.na(linked_references), refid, linked_references)) |> 
+  slice(1, .by = linked_references) |>
   select(country) |>
   tbl_summary(
     sort = everything() ~ "frequency",
@@ -239,7 +241,7 @@ study_char_dat |>
 
 ```
 
-## **Comparators**
+## **Interventions & Comparators**
 
 ### Regional vs. General
 

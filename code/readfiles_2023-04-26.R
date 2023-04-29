@@ -670,6 +670,7 @@ color_1 <- "#0E6655"
 color_2 <- "#A93226"
 color_3 <- "#104E8B"
 color_4 <- "#F39C12"
+color_5 <- "#969696"
 gray_mg <- "#969696"
 
 # color_1 <- "#FA8B8B"
