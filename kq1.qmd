@@ -21,34 +21,43 @@ tables:
 
 Among patients 65 years or older \[geriatric\] anticipating surgery and anesthesia, does expanded preoperative evaluation (e.g., for frailty, cognitive impairment, functional status, or psychosocial issues) lead to improved postoperative outcomes?
 
-<!-- setup -------------------------------------------- (2022-12-24 16:56) @ --->
-
 ```{r, read_data}
 #| include: false
 source("code/load_data.R")
 ```
 
-<!-- kq5..._dat files --------------------------------- (2022-12-28 08:41) @ --->
-
 ```{r, data}
 # note working file not renamed
 study_char_dat <- study_char_dat |> 
-  filter(refid %in% kq1_refid) |> 
+  filter(refid %in% c(kq1_refid, kq8_refid)) |> 
   arrange(design_f)
 
 study_arm_dat <- study_arm_dat |> 
-  filter(refid %in% kq1_refid) |> 
+  filter(refid %in% c(kq1_refid, kq8_refid)) |> 
   arrange(design_f)
 ```
 
-<!-- ## Outcome Importance Rankings -->
+## Outcome Importance Rankings
 
-<!-- <font size = 4> `r table_ref()` Rankings of the 5 most important outcomes (11 respondents). </font> -->
+### Expanded Preoperative Screening
 
-```{r, outcome_priority}
+<font size = 4> `r table_ref()` Rankings of the 5 most important outcomes (11 respondents). </font>
+
+```{r, outcome_priority_kq1}
 #| include: true
 #| eval: true
 outcome_dat <- rankings("KQ1")
+outcome_tab(outcome_dat, 11)
+```
+
+### Postop Delirium Screening
+
+<font size = 4> `r table_ref()` Rankings of the 5 most important outcomes (11 respondents). </font>
+
+```{r, outcome_priority_kq8}
+#| include: true
+#| eval: true
+outcome_dat <- rankings("KQ8")
 outcome_tab(outcome_dat, 11)
 ```
 
@@ -57,7 +66,6 @@ outcome_tab(outcome_dat, 11)
 <font size = 4> `r table_ref()` Dichotomous or count outcomes. </font>
 
 ```{r dichot_outcome_freq}
-# CODE: reporting frequency tabulation
 dichot_freq_fun(dichot_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; NCD: neurocognitive disorder; QoR: quality of recovery; ")
 ```
 
