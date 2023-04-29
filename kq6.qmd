@@ -2486,12 +2486,13 @@ adverse_events_dat |>
   # tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
   tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Dex"))) |>
   tab_style(style = list(cell_text(color = "#F39C12")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Ket|Mel|Ram"))) |>
-  tab_style(style = list(cell_text(color = "#969696")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Plac|None"))) |>
+  # tab_style(style = list(cell_text(color = "#969696")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Plac|None"))) |>
   tab_style(style = list(cell_text(color = "#104E8B")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = !str_detect(arm, "Ket|Mel|Ram|Dex|Plac|None"))) |>
   # tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(), rows = str_detect())) |>
   # tab_style(style = list(cell_text(color = color_3)), locations = cells_body(columns = c(), rows = str_detect())) 
   tab_footnote(md("Before-After/Time Series"), locations = cells_body(columns = study_l, rows = study_l != "" & design_f_lab == "Before-After/Time Series")) |> 
-  tab_footnote(md("Nonrandomized Trial"), locations = cells_body(columns = study_l, rows = study_l != "" & design_f_lab == "Nonrandomized Trial"))
+  tab_footnote(md("Nonrandomized Trial"), locations = cells_body(columns = study_l, rows = study_l != "" & design_f_lab == "Nonrandomized Trial")) |> 
+  tab_footnote("RD: risk difference; MI: myocardial infarction; AKI: acute kidney injury.")
 ```
 
 ### Ketamine
@@ -2545,7 +2546,7 @@ adverse_events_dat |>
   tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(rd_ci))) |> 
   tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Dex"))) |>
   tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Ket|Mel|Ram"))) |>
-  tab_style(style = list(cell_text(color = "#969696")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Plac|None"))) |>
+  # tab_style(style = list(cell_text(color = "#969696")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Plac|None"))) |>
   tab_style(style = list(cell_text(color = "#104E8B")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = !str_detect(arm, "Ket|Mel|Ram|Dex|Plac|None"))) |>
   # tab_style(style = cell_text(align = "right"),       locations = cells_body(columns = c())) |>
   # tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
