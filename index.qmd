@@ -1,13 +1,11 @@
 ---
-title: "Evidence Synthesis"
+title: "Sections"
 editor: source
 ---
 
-Draft materials **(not to be cited).**
+<br/>
 
-Corrections, suggestions, or comments can be sent to [Mark Grant](mailto:m.grant@asahq.org).
-
-[Expanded Preoperative and Postoperative Delirium Screening](kq1.html)
+[Expanded Preoperative Evaluation & Postoperative Delirium Screening](kq1.html)
 
 [Prehabilitation](kq2.html)
 
@@ -23,3 +21,8 @@ Corrections, suggestions, or comments can be sent to [Mark Grant](mailto:m.grant
 
 [Draft Protocol](protocol.html)
 
+<br/>
+
+Draft materials **(not to be cited).**
+
+Please send corrections, suggestions, or comments to [Mark Grant](mailto:m.grant@asahq.org).

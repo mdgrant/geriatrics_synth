@@ -19,7 +19,7 @@ website:
       - text: Key Question
         menu:
           - href: kq1.html
-            text: "Expanded Preop and Postop Delirium Screening"
+            text: "Expanded Preop Evaluation & Postop Delirium Screening"
           - href: kq2.html
             text: "Prehabilitation"
           - href: kq3.html

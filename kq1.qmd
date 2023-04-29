@@ -1,7 +1,7 @@
 ---
-title: "KQ 1 Expanded Preoperative Evaluation"
+title: "Expanded Preoperative and Postoperative Delirium Screening"
 editor: source
-toc-title: "Expanded Preoperative Evaluation"
+toc-title: "Expanded Preoperative and Postoperative Delirium Screening"
 toc-location: "left"
 cap-location: "top"
 page-layout: full
@@ -17,9 +17,11 @@ tables:
 # nocite: '@*'
 ---
 
-## Key Question
+## Key Questions
 
-Among patients 65 years or older \[geriatric\] anticipating surgery and anesthesia, does expanded preoperative evaluation (e.g., for frailty, cognitive impairment, functional status, or psychosocial issues) lead to improved postoperative outcomes?
+Among older patients anticipating surgery and anesthesia, does expanded preoperative evaluation (e.g., for frailty, cognitive impairment, functional status, or psychosocial issues) lead to improved postoperative outcomes?
+
+Does screening older patients for delirium in the post anesthesia care unit improve postoperative outcomes?
 
 ```{r, read_data}
 #| include: false
@@ -39,7 +41,7 @@ study_arm_dat <- study_arm_dat |>
 
 ## Outcome Importance Rankings
 
-### Expanded Preoperative Screening
+### Expanded Preoperative Evaluation
 
 <font size = 4> `r table_ref()` Rankings of the 5 most important outcomes (11 respondents). </font>
 
@@ -50,7 +52,7 @@ outcome_dat <- rankings("KQ1")
 outcome_tab(outcome_dat, 11)
 ```
 
-### Postop Delirium Screening
+### Postoperative Delirium Screening
 
 <font size = 4> `r table_ref()` Rankings of the 5 most important outcomes (11 respondents). </font>
 
@@ -61,7 +63,7 @@ outcome_dat <- rankings("KQ8")
 outcome_tab(outcome_dat, 11)
 ```
 
-### Reporting Frequency
+## Outcomes Reported
 
 <font size = 4> `r table_ref()` Dichotomous or count outcomes. </font>
 
