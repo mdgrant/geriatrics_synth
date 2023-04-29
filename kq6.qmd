@@ -20,14 +20,14 @@ link-citations: false
 nocite: '@*'
 ---
 
-<!-- kq6.bib updated 2023-02-21 -->
-
 ## **Key Question**
 
 Among older patients undergoing surgery and anesthesia, do dexmedetomidine, ketamine, ramelteon, or melatonin administered during the perioperative period decrease the risk of postoperative delirium or other adverse cognitive outcomes?
 
 ::: {.callout-note collapse="true" appearance="default" icon="true"}
 ## DRAFT results last updated `r lubridate::now()`
+
+2023-04-29 added assessment < or ≥3 days subgrouping to delayed neurocognitive recovery; country to LOS; edited colors throughout
 
 2023-04-20 delayed neurocognitive recovery and neurocognitive disorders pairwise and network meta-analyses added
 
@@ -119,7 +119,6 @@ likert_freq_fun(likert_dat, "ADL: activities of daily living; NCR: neurocognitiv
 
 <font size = 4> `r table_ref()` Number of studies by design. </font>
 
-
 ```{r studies_design}
 # CODE: study design table — design and number; no duplicate counting
 study_char_dat |>
@@ -165,7 +164,6 @@ study_char_dat |>
 
 <font size = 4> `r table_ref()` Study design, enrollment, centers, country, and surgery (see [References](#references) for citations). </font>
 
-<!-- design, enrollment, centers ... ------------------- (2022-12-28 10:44) @ --->
 
 ```{r drugs_by_arm}
 #| label: design_contry_surg
@@ -376,6 +374,8 @@ locations = cells_row_groups(groups = )) |>
 ```{r country}
 # CODE: table of countries
 study_char_dat |>
+  mutate(linked_references = ifelse(is.na(linked_references), refid, linked_references)) |> 
+  slice(1, .by = linked_references) |>
   select(country) |>
   tbl_summary(
     sort = everything() ~ "frequency",
@@ -387,7 +387,7 @@ study_char_dat |>
 
 ```
 
-## **Comparators**
+## **Interventions & Comparators**
 
 #### Dexmedetomidine
 
@@ -492,7 +492,7 @@ dex_by_arm |>
   tab_style(style = cell_text(font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
   tab_style(style = cell_text(size = px(10)), locations = cells_column_labels(columns = c(volatile_tab, regional_tab, sedation_only_tab,pre:post))) |>
   tab_style(style = cell_text(size = px(8)), locations = cells_column_labels(columns = c(tiva_tab))) |>
-  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n, drug_recode_abbr), rows = str_detect(drug_recode_abbr, "Dex"))) |>
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n, drug_recode_abbr:post), rows = str_detect(drug_recode_abbr, "Dex"))) |>
   tab_style(style = cell_text(align = "right"), locations = cells_body(columns = c(arm_n))) |>
   sub_missing(columns = everything(), rows = everything(), missing_text = "") |>
   sub_values(values = c("NS"), replacement = "—") |>
@@ -625,7 +625,7 @@ ket_by_arm |>
   tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(study_l, drug, dose, dose_iv, pre:post))) |>
   tab_style(style = cell_text(size = px(9)), locations = cells_column_labels(columns = c(volatile_tab:regional_tab))) |>
   tab_style(style = cell_text(size = px(10)), locations = cells_column_labels(columns = c(pre:post))) |>
-  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n, drug), rows = drug == "Ketamine")) |>
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n, drug:post), rows = drug == "Ketamine")) |>
   sub_missing(columns = everything(), rows = everything(), missing_text = "") |>
   sub_values(values = c("NS"), replacement = "—") |>
   # tab_row_group(label = "numbered", rows = 1:10) |> 
@@ -747,7 +747,7 @@ mel_ram_by_arm |>
   tab_style(style = cell_text(align = "left"), locations = cells_column_labels(columns = c(drug:post))) |>
   tab_style(style = cell_text(align = "right"), locations = cells_body(columns = c(arm_n))) |>
   tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(study_l, drug, dose, pre, post))) |>
-  tab_style(style = list(cell_text(color = "maroon")), locations = cells_body(columns = c(arm_n:drug), rows = drug %in% c("Melatonin", "Ramelteon"))) |>
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:post), rows = drug %in% c("Melatonin", "Ramelteon"))) |>
   tab_style(style = cell_text(size = px(9)), locations = cells_column_labels(columns = c(volatile_tab:regional_tab))) |>
   tab_style(style = cell_text(size = px(10)), locations = cells_column_labels(columns = c(pre, post))) |>
   sub_missing(columns = everything(), rows = everything(), missing_text = "") |>
@@ -1127,6 +1127,7 @@ dex_meta_dat <- pairwise_dat |>
     )
   )
 
+# toString(sort(dex_plac_refid))
 # total_meta(dex_meta_dat)
 
 dex_plac_meta <- metabin(event2, n2, event1, n1,
@@ -1135,9 +1136,9 @@ dex_plac_meta <- metabin(event2, n2, event1, n1,
   sm = "RR",
   method = "MH",
   method.tau = "PM",
-  hakn = TRUE,
+  hakn = FALSE,
   prediction = TRUE,
-  allstudies = TRUE,
+  allstudies = TRUE
   )
 
 # small study effects; here to have result of Harbord test
@@ -1172,7 +1173,7 @@ forest(data_meta,
 )  
 }
 
-dex_meta_forest_fun(dex_plac_meta, flag = FALSE)
+dex_meta_forest_fun(dex_plac_meta)
 ```
 
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <a id="figure-4"></a><br/> `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, dex_plac_refid), "; a secondary outcome in ", prim_sec_out_fun(sec_delirium, dex_plac_refid), ".")`</foot_mg><br/>
@@ -1349,7 +1350,7 @@ mel_ram_plac_meta <- metabin(event2, n2, event1, n1,
   sm = "RR",
   method = "MH",
   method.tau = "PM",
-  hakn = FALSE,
+  hakn = TRUE,
   prediction = TRUE,
   allstudies = TRUE,
   subgroup = mel_ram
@@ -1608,9 +1609,9 @@ dncr_dat <- dichot_dat |>
   arrange(refid_c, arm_id) |>
   mutate(
     bar = case_when(
-      str_detect(arm, "Dex|Ket|Mel|Ram") ~ bar_prop(neurocog_prop * 100, "#969696"),
-      str_detect(arm, "Plac") ~ bar_prop(neurocog_prop * 100, color_3),
-      .default = bar_prop(neurocog_prop * 100, color_1)),
+      str_detect(arm, "Dex|Ket|Mel|Ram") ~ bar_prop(neurocog_prop * 100, "#A93226"),
+      str_detect(arm, "Plac") ~ bar_prop(neurocog_prop * 100, "#969696"),
+      .default = bar_prop(neurocog_prop * 100, "#104E8B")),
     year = as.numeric(str_extract(study, "\\d{4}")),
     arm = fct_collapse(arm, "Plac/None" = c("Plac", "None")),
     across(c(arm, design_f_lab, surg_f), ~ fct_drop(.x)),
@@ -1644,7 +1645,7 @@ dncr_rr_ref <- dncr_dat |>
 
 #| DATA: neurocog_allarms_meta_dat for subsequent pooling, arms not collapsed
 neurocog_allarms_meta_dat <- dncr_dat |> 
-  select(refid, study, design_f_lab, year, arm_id, arm, neurocog_total_n, arm_n) |> 
+  select(refid, study, design_f_lab, year, arm_id, arm, neurocog_total_n, arm_n, dncr_time) |> 
   filter(study != "Lu 2017") # both dex arms; different dose
 
 dncr_dat <- dncr_dat |> 
@@ -1730,8 +1731,8 @@ dncr_dat |>
   tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(study, arm, pre_mmse))) |>
   tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(starts_with("scale"), dncr_time, rr_ci))) |>
   tab_style(style = cell_text(align = "right"),       locations = cells_body(columns = c(neurocog_nper))) |>
-  tab_style(style = list(cell_text(color = color_1)), locations = cells_body(columns = c(arm_n:pre_mmse, neurocog_nper), rows = !str_detect(arm, "Dex|Ket|Mel|Ram|Plac"))) |> 
-  tab_style(style = list(cell_text(color = color_3)), locations = cells_body(columns = c(arm_n:pre_mmse, neurocog_nper), rows = str_detect(arm, "Plac"))) |> 
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:pre_mmse, neurocog_nper), rows = str_detect(arm, "Dex|Ket|Mel|Ram"))) |> 
+  tab_style(style = list(cell_text(color = "#104E8B")), locations = cells_body(columns = c(arm_n:pre_mmse, neurocog_nper), rows = !str_detect(arm, "Dex|Ket|Mel|Ram|Plac"))) |>
   tab_footnote("Mini-Mental State Exam; DST: Digit Span Test; MoCA: Montreal Cognitive Assessment; RR: risk ratio; Dex: Dexmedetomidine; Mid: Midazolam; Prop: Propofol; Ulin: ulinastatin; Plac/None: placebo or no intervention.") |> 
   tab_footnote("Day of assessment.",                   locations = cells_column_labels(columns = c(dncr_time))) |> 
   tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |>
@@ -1801,8 +1802,8 @@ dncr_dat |>
   tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(study, arm, pre_mmse))) |>
   tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(starts_with("scale"), dncr_time, rr_ci))) |>
   tab_style(style = cell_text(align = "right"),       locations = cells_body(columns = c(neurocog_nper))) |>
-  tab_style(style = list(cell_text(color = color_1)), locations = cells_body(columns = c(arm_n:pre_mmse, neurocog_nper), rows = !str_detect(arm, "Dex|Ket|Mel|Ram|Plac"))) |> 
-  tab_style(style = list(cell_text(color = color_3)), locations = cells_body(columns = c(arm_n:pre_mmse, neurocog_nper), rows = str_detect(arm, "Plac"))) |> 
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:pre_mmse, neurocog_nper), rows = str_detect(arm, "Dex|Ket|Mel|Ram"))) |> 
+  tab_style(style = list(cell_text(color = "#104E8B")), locations = cells_body(columns = c(arm_n:pre_mmse, neurocog_nper), rows = !str_detect(arm, "Plac|Dex|Ket|Mel|Ram"))) |> 
   tab_footnote("Mini-Mental State Exam; DST: Digit Span Test; MoCA: Montreal Cognitive Assessment; RR: risk ratio; Ket: ketamine; Hal: haloperidol; Plac: placebo.") |> 
   tab_footnote("Day of assessment.",                   locations = cells_column_labels(columns = c(dncr_time))) |> 
   tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |>
@@ -1853,6 +1854,8 @@ neurocog_meta_dat <- neurocog_allarms_meta_dat |>
 # CODE: dncr meta data, pairwise and network (netmeta)
 nma_dncr_dat <- neurocog_meta_dat |>
   # mutate(arm = fct_collapse(arm, "Benzo" = c("Oxaz", "Mid"))) |>
+  mutate(time = ifelse(dncr_time < 3, "at <3 days", "at ≥3 days" )) |> 
+  select(-dncr_time) |> 
   filter(design_f_lab == "Randomized Clinical Trial") |>
   # filter(surg_f == "Cardiac") |>
   # filter(postop_only == TRUE) |>
@@ -1889,7 +1892,6 @@ netmeta_dncr_nma <- netmeta(
 ```{r dncr_nma_plot, warning = FALSE, fig.dim = c(6, 5), out.width = "50%", fig.align = "center"}
 #| eval: true
 # CODE: dncr network plot
-
 par(mfrow = c(1, 1), mar = c(1, 1, 1, 1))
 
 netgraph(
@@ -1926,12 +1928,11 @@ netgraph(
 
 ```{r dncr_dex_plac_meta, fig.width = 14, fig.height = 5.5, fig.align = "left", warning = FALSE}
 #| eval: true
-
 dex_meta_dat <- pairs_dat |>
   unite(to_select, treat1, treat2, sep = "/") |> 
   filter(str_detect(to_select, c("Plac")) & str_detect(to_select, "Dex") & !str_detect(to_select, "Ulin")) |> 
   left_join(rob2_meta_dat, by = "refid") |>
-  select(refid, study, year, event2, n2, event1, n1, D1:Overall, country, surgs_single_f) |>
+  select(refid, study, year, event2, n2, event1, n1, D1:Overall, country, surgs_single_f, time) |>
   mutate(
     rob = case_when(
       Overall == "+" ~ "Low",
@@ -1947,9 +1948,10 @@ dex_plac_meta <- metabin(event2, n2, event1, n1,
   sm = "RR",
   method = "MH",
   method.tau = "PM",
-  hakn = TRUE,
+  hakn = FALSE,
   prediction = TRUE,
   allstudies = TRUE,
+  subgroup = time
   )
 
 # small study effects; here to have result of Harbord test
@@ -1971,15 +1973,17 @@ forest(dex_plac_meta,
   overall.hetstat = TRUE,
   print.I2.ci = TRUE,
   prediction = TRUE,
-  # subgroup = flag,
-  # prediction.subgroup = flag,
-  # print.subgroup.name = FALSE,
+  subgroup = TRUE,
+  prediction.subgroup = FALSE,
+  print.subgroup.name = FALSE,
   fs.xlab = 11,
   pooled.events = TRUE,
   print.pval.Q = FALSE,
   xlim = c(0.1, 3),
   xlab = "Favors: Dexmedetomidine               Placebo/None",
-  addrows.below.overall = 4
+  addrows.below.overall = 4,
+  text.addline1 = "Hartung-Knapp adjustment not applied owing to subgroups — overall RR 0.55 (95% CI, 0.37–0.79) when used.",
+  text.addline2 = "Excluding studies with assessments at less than 3 days (95% prediction interval, 0.24–0.92)."
 )  
 
 ```
@@ -1992,15 +1996,35 @@ The result might be considered credible and convincing to a skeptic given plausi
 </foot_mg><br/>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention according to risk of bias appraisal (randomized clinical trials; delayed neurocognitive recovery). </font>
+#### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention according to risk of bias appraisals (randomized clinical trials; delayed neurocognitive recovery). </font>
 
 ```{r dncr_rob_meta, fig.width = 14, fig.height = 8, fig.align = "left"}
-# TODO: HERE
 rob_meta <- update(dex_plac_meta, subgroup = rob)
 
-dex_meta_forest_fun(rob_meta, TRUE)
+forest(rob_meta,
+  allstudies = TRUE,
+  random = TRUE,
+  label.e = "Dex     ",
+  label.c = "Plac/None  ",
+  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
+  just.addcols.right = "right",
+  digits = 2,
+  digits.tau2 = 1,
+  overall.hetstat = TRUE,
+  print.I2.ci = TRUE,
+  prediction = TRUE,
+  subgroup = TRUE,
+  prediction.subgroup = FALSE,
+  print.subgroup.name = FALSE,
+  fs.xlab = 11,
+  pooled.events = TRUE,
+  print.pval.Q = FALSE,
+  xlim = c(0.1, 3),
+  xlab = "Favors: Dexmedetomidine               Placebo/None",
+  addrows.below.overall = 4
+)  
 
-rm(rob_meta)
 ```
 
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>0.5 added to cells of studies without events in one arm. </foot_mg>
@@ -2022,9 +2046,9 @@ par(bty = "n", xaxt = "s", yaxt = "s")
 
 funnel(temp_limit_meta, pch = 20, contour = c(0.9, 0.95, 0.99), col.contour = limit_colors, studlab = TRUE, pos.studlab = 4, fs.smlab = 6, ff.smlab = "italic")
 
-legend(0.03, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#AAB7B8", "#D5DBDB", "#F4F6F6"), bty = "n")
+legend(0.05, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#AAB7B8", "#D5DBDB", "#F4F6F6"), bty = "n")
 
-text(1.2, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .9)
+text(0.95, 0.03, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .9)
 ```
 
 <foot_mg> Estimates (odds ratio and 95% CI) from random effects models --- unadjusted `r paste0(digit2(exp(temp_limit_meta$TE.random)), " (", digit2(exp(temp_limit_meta$lower.random)), "–", digit2(exp(temp_limit_meta$upper.random)), ")")`; adjusted for small study effects: `r paste0(digit2(exp(temp_limit_meta$TE.adjust)), " (", digit2(exp(temp_limit_meta$lower.adjust)), "–", digit2(exp(temp_limit_meta$upper.adjust)), ")")`.</font>
@@ -2092,7 +2116,6 @@ as_tibble(nma_dncr_league$random) |>
 
 # tab_info(temp)
 ```
-
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()` Comparison adjusted funnel plot (delayed neurocognitive recovery). </font>
@@ -2172,8 +2195,8 @@ ncd_dat <- dichot_dat |>
     # arm = fct_collapse(arm, "Plac/None" = c("Plac", "None")), # all placebo
     across(c(arm, design_f_lab, surg_f), ~ fct_drop(.x)),
     bar = case_when(
-      str_detect(arm, "Dex|Ket|Mel|Ram") ~ bar_prop(neurocog_prop * 100, "#969696"),
-      str_detect(arm, "Plac") ~ bar_prop(neurocog_prop * 100, color_3),
+      str_detect(arm, "Dex|Ket|Mel|Ram") ~ bar_prop(neurocog_prop * 100, "#A93226"),
+      str_detect(arm, "Plac") ~ bar_prop(neurocog_prop * 100, "#969696"),
       .default = bar_prop(neurocog_prop * 100, color_1)
     ),
     year = as.numeric(str_extract(study, "\\d{4}")),
@@ -2264,8 +2287,8 @@ ncd_dat |>
   tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(study, arm, pre_mmse))) |>
   tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(starts_with("scale"), ncd_time, rr_ci))) |>
   tab_style(style = cell_text(align = "right"),       locations = cells_body(columns = c(neurocog_nper))) |>
-  tab_style(style = list(cell_text(color = color_1)), locations = cells_body(columns = c(arm_n:pre_mmse, neurocog_nper), rows = !str_detect(arm, "Dex|Ket|Mel|Ram|Plac"))) |> 
-  tab_style(style = list(cell_text(color = color_3)), locations = cells_body(columns = c(arm_n:pre_mmse, neurocog_nper), rows = str_detect(arm, "Plac"))) |> 
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:pre_mmse, neurocog_nper), rows = str_detect(arm, "Dex|Ket|Mel|Ram"))) |> 
+  tab_style(style = list(cell_text(color = "#104E8B")), locations = cells_body(columns = c(arm_n:pre_mmse, neurocog_nper), rows = !str_detect(arm, "Plac|Dex|Ket|Mel|Ram"))) |> 
   tab_footnote("Mini-Mental State Exam; DST: Digit Span Test; MoCA: Montreal Cognitive Assessment; RR: risk ratio; Dex: dexmedetomidine: Mel: melatonin; Plac: placebo.") |> 
   tab_footnote("Day of assessment.",                   locations = cells_column_labels(columns = c(ncd_time))) |> 
   tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |> 
@@ -2274,7 +2297,6 @@ ncd_dat |>
 ```
 
 ### Melatonin/Ramelteon
-
 No studies
 
 ## **Length of Stay**
@@ -2283,6 +2305,7 @@ No studies
 
 ```{r length_of_stay}
 #| eval: true
+# RESUME:
 los_tab <- contin_dat |>
   mutate(los_for_tables(contin_dat)) |>
   filter(if_any(los_m:los_diff_pval, ~ !is.na(.))) |>
@@ -2290,6 +2313,7 @@ los_tab <- contin_dat |>
   left_join(table_age_mn_med, by = c("refid", "arm_id")) |> # age_table
   left_join(study_arm_dat |> select(refid, arm_id, asa_ps_incl), by = c("refid", "arm_id")) |>
   left_join(surgs |> select(refid, surgs_single_f), by = c("refid")) |>
+  left_join(study_char_dat |> select(refid, country), by = "refid" ) |> 
   mutate(
     refid_arm_id = paste0(refid, "-", arm_id),
     surg_groups = paste0(surgs_single_f, " - ", design_f_lab),
@@ -2300,25 +2324,25 @@ los_tab <- contin_dat |>
     drug_recode_abbr = fct_drop(drug_recode_abbr),
     calc_prop_25d = 100 * mean_med / 25,
     bar = case_when(
-      str_detect(drug_recode_abbr, "Dex") ~ bar_prop(calc_prop_25d, color_1),
-      str_detect(drug_recode_abbr, "Ket") ~ bar_prop(calc_prop_25d, color_2),
-      str_detect(drug_recode_abbr, "Mel|Ram") ~ bar_prop(calc_prop_25d, color_3),
-      .default = bar_prop(calc_prop_25d, color_4)
+      str_detect(drug_recode_abbr, "Dex") ~ bar_prop(calc_prop_25d, "#A93226"),
+      str_detect(drug_recode_abbr, "Ket") ~ bar_prop(calc_prop_25d, "#F39C12"),
+      str_detect(drug_recode_abbr, "Mel|Ram") ~ bar_prop(calc_prop_25d, "#104E8B"),
+      .default = bar_prop(calc_prop_25d, "#969696")
     )
   ) |>
   # select(refid, arm_id, arm_n, drug_recode_abbr, age_table, asa_ps_incl, surg_groups, study, los_table, bar, starts_with(("los"))) |>
   arrange(surg_groups, year, study, arm_id) |> 
-  select(refid, refid_arm_id, study, study_l, arm_n, drug_recode_abbr, asa_ps_incl, age_table, los_table, bar, surg_groups)
+  select(refid, refid_arm_id, study, study_l, arm_n, drug_recode_abbr, asa_ps_incl, age_table, los_table, bar, surg_groups, country)
 
 # temp |> tabyl(drug_recode_abbr)
 
 los_tab |>
-  group_by(study) |>
-  mutate(study_l = ifelse(row_number() > 1, "", study_l)) |>
-  ungroup() |>
+  mutate(study_l = ifelse(row_number() > 1, "", study_l),
+         country = ifelse(row_number() > 1, "", country),
+         .by = refid) |> 
   group_by(surg_groups) |>
   gt(id = "one") |>
-  row_group_order(groups = c("Cardiac - Randomized Clinical Trial", "Ortho - Randomized Clinical Trial", "GI/Abd - Randomized Clinical Trial", "GI/Abd - Before-After/Time Series", "Thoracic - Randomized Clinical Trial", "Thoracic - Before-After/Time Series", "Various - Randomized Clinical Trial", "Oralmax - Randomized Clinical Trial", "Spine - Prospective Cohort" )) |> 
+  row_group_order(groups = c("Cardiac - Randomized Clinical Trial", "Ortho - Randomized Clinical Trial", "GI/Abd - Randomized Clinical Trial", "Thoracic - Randomized Clinical Trial", "Various - Randomized Clinical Trial", "Oralmax - Randomized Clinical Trial", "GI/Abd - Before-After/Time Series", "Thoracic - Before-After/Time Series", "Spine - Prospective Cohort" )) |> 
   cols_hide(c(refid, refid_arm_id, study)) |>
   cols_label(
     study_l = "Study",
@@ -2327,7 +2351,8 @@ los_tab |>
     asa_ps_incl = "PS",
     age_table = "    Age",
     los_table = "    LOS",
-    bar = "0 – 25 days"
+    bar = "0 – 25 days",
+    country = "Country"
   ) |>
   gt_theme_mg() |> 
   cols_width(
@@ -2337,15 +2362,16 @@ los_tab |>
     asa_ps_incl ~ px(60),
     age_table ~ px(100),
     los_table ~ px(100),
-    bar ~ px(120)
+    bar ~ px(120),
+    country ~ px(80)
     )  |> 
   fmt_markdown(columns = c(study_l, bar, age_table, los_table)) |> 
   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, drug_recode_abbr,  bar))) |>
   tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(study_l, age_table, los_table))) |>
   tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study_l, age_table, los_table, bar, drug_recode_abbr, asa_ps_incl))) |> 
-  tab_style(style = list(cell_text(color = color_1)), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(drug_recode_abbr, "Dex"))) |> 
-  tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(drug_recode_abbr, "Ket"))) |> 
-  tab_style(style = list(cell_text(color = color_3)), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(drug_recode_abbr, "Mel|Ram"))) |> 
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(drug_recode_abbr, "Dex"))) |> 
+  tab_style(style = list(cell_text(color = "#F39C12")), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(drug_recode_abbr, "Ket"))) |> 
+  tab_style(style = list(cell_text(color = "#104E8B")), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(drug_recode_abbr, "Mel|Ram"))) |> 
   tab_footnote(md("NR: not reported")) |> 
   tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, los_table))) |> 
   tab_footnote(md("ASA Physical Status."), locations = cells_column_labels(columns = c(asa_ps_incl)))
@@ -2407,9 +2433,10 @@ adverse_events_dat <- adverse_events_dat |>
   mutate(
     rd_ci = ifelse(!is.na(ref_n), rd_per_ci_fun(n, arm_n, ref_n, ref_arm_n, digits = 1), "—"),
     bar = case_when(
-      str_detect(arm, "Dex|Ket|Mel|Ram") ~ bar_prop(calc_per, "#969696"),
-      str_detect(arm, "Plac|None") ~ bar_prop(calc_per, color_4),
-      .default = bar_prop(calc_per, color_2))) |> 
+      str_detect(arm, "Dex") ~ bar_prop(calc_per, "#A93226"),
+      str_detect(arm, "Ket|Mel|Ram") ~ bar_prop(calc_per, "#A93226"),
+      str_detect(arm, "Plac|None") ~ bar_prop(calc_per, "#969696"),
+      .default = bar_prop(calc_per, "#104E8B"))) |> 
   select(refid, year, arm_id, study, study_l, study_compl, arm_n, arm, n, age_table, surgs_single, n_per, bar, rd_ci, complication, design_f_lab)
 
 ```
@@ -2419,7 +2446,8 @@ adverse_events_dat |>
   filter(!refid %in% mel_ram_refid) |> 
   filter(complication %in% c("cardiac", "pulm", "stroke", "infect", "myoinfarct", "pneum", "kidneyinj")) |> 
   mutate(complication = factor(complication, levels = c("cardiac", "pulm", "stroke", "infect", "myoinfarct", "pneum", "kidneyinj"), labels = c("Cardiac", "Pulmonary", "Stroke", "Infectious (not SSI)", "MI", "Pneumonia", "AKI"))) |> 
-  mutate(study_l = ifelse(row_number() > 1, "", study_l), .by = study_compl) |>
+  mutate(study_l = ifelse(row_number() > 1, "", study_l), 
+         surgs_single = ifelse(row_number() > 1, "", surgs_single), .by = study_compl) |>
   group_by(complication) |>
   gt(id = "one") |>
   row_group_order(groups = c("Cardiac", "Pulmonary", "Stroke", "Infectious (not SSI)", "MI", "Pneumonia", "AKI")) |>
@@ -2452,16 +2480,18 @@ adverse_events_dat |>
   tab_style(style = cell_text(align = "left"),        locations = cells_column_labels(columns = c(arm))) |>
   tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(arm_n, rd_ci))) |>
   # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c())) |>
-  tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(arm, age_table, rd_ci))) |> 
+  tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(arm, age_table, rd_ci, surgs_single))) |> 
   tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(rd_ci))) |> 
   # tab_style(style = cell_text(align = "right"),       locations = cells_body(columns = c())) |>
   # tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
-  # tab_style(style = list(cell_text(color = color_1)), locations = cells_body(columns = c(), rows = str_detect())) |>
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Dex"))) |>
+  tab_style(style = list(cell_text(color = "#F39C12")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Ket|Mel|Ram"))) |>
+  tab_style(style = list(cell_text(color = "#969696")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Plac|None"))) |>
+  tab_style(style = list(cell_text(color = "#104E8B")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = !str_detect(arm, "Ket|Mel|Ram|Dex|Plac|None"))) |>
   # tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(), rows = str_detect())) |>
   # tab_style(style = list(cell_text(color = color_3)), locations = cells_body(columns = c(), rows = str_detect())) 
   tab_footnote(md("Before-After/Time Series"), locations = cells_body(columns = study_l, rows = study_l != "" & design_f_lab == "Before-After/Time Series")) |> 
   tab_footnote(md("Nonrandomized Trial"), locations = cells_body(columns = study_l, rows = study_l != "" & design_f_lab == "Nonrandomized Trial"))
-  
 ```
 
 ### Ketamine
@@ -2513,6 +2543,10 @@ adverse_events_dat |>
   # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c())) |>
   tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(arm, age_table, rd_ci))) |> 
   tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(rd_ci))) |> 
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Dex"))) |>
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Ket|Mel|Ram"))) |>
+  tab_style(style = list(cell_text(color = "#969696")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Plac|None"))) |>
+  tab_style(style = list(cell_text(color = "#104E8B")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = !str_detect(arm, "Ket|Mel|Ram|Dex|Plac|None"))) |>
   # tab_style(style = cell_text(align = "right"),       locations = cells_body(columns = c())) |>
   # tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
   # tab_style(style = list(cell_text(color = color_1)), locations = cells_body(columns = c(), rows = str_detect())) |>
@@ -2608,10 +2642,10 @@ mortality_dat |>
     across(c(surgs_single_f, asa_ps_incl,), ~ ifelse(row_number() > 1, NA, .x)),
     # bar = bar_prop(50, color_1),
     bar = case_when(
-      str_detect(drug_recode_abbr, "Mel|Ram") ~ bar_prop(mort_percent * 100, "#0E6655"),
-      str_detect(drug_recode_abbr, "Ulin|MS|Prop") ~ bar_prop(mort_percent * 100, "#F39C12"),
+      str_detect(drug_recode_abbr, "Mel|Ram") ~ bar_prop(mort_percent * 100, "#A93226"),
+      str_detect(drug_recode_abbr, "Ulin|MS|Prop") ~ bar_prop(mort_percent * 100, "#104E8B"),
       str_detect(drug_recode_abbr, "Dex") ~ bar_prop(mort_percent * 100, "#A93226"),
-      .default = bar_prop(mort_percent * 100, color_1)
+      .default = bar_prop(mort_percent * 100, "#969696")
     ),
   ) |>
   ungroup() |>
@@ -2651,8 +2685,8 @@ mortality_dat |>
   tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study, drug_recode, surgs_single_f, bar))) |>
   tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(mort_n_percent, rd_ci))) |>
   tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |> 
-  tab_style(style = list(cell_text(color = "#0E6655")), locations = cells_body(columns = c(arm_n, drug_recode, age_table, mort_n_percent), rows = str_detect(drug_recode, "Mel|Ram"))) |> 
-  tab_style(style = list(cell_text(color = "#F39C12")), locations = cells_body(columns = c(arm_n, drug_recode, age_table, mort_n_percent), rows = str_detect(drug_recode, "Ulin|MS|Prop"))) |>
+  # tab_style(style = list(cell_text(color = "#104E8B")), locations = cells_body(columns = c(arm_n, drug_recode, age_table, mort_n_percent), rows = str_detect(drug_recode, "Mel|Ram"))) |> 
+  tab_style(style = list(cell_text(color = "#104E8B")), locations = cells_body(columns = c(arm_n, drug_recode, age_table, mort_n_percent), rows = str_detect(drug_recode, "Ulin|MS|Prop"))) |>
   tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n, drug_recode, age_table, mort_n_percent), rows = str_detect(drug_recode, "Dex"))) |> 
   sub_missing(columns = everything(), rows = everything(), missing_text = "") |> 
   cols_width(
@@ -2791,10 +2825,10 @@ mortality_dat |>
     across(c(surgs_single_f, asa_ps_incl,), ~ ifelse(row_number() > 1, NA, .x)),
     # bar = bar_prop(50, color_1),
     bar = case_when(
-      str_detect(drug_recode_abbr, "Mel|Ram") ~ bar_prop(mort_percent * 100, "#0E6655"),
-      str_detect(drug_recode_abbr, "Ulin|MS|Prop") ~ bar_prop(mort_percent * 100, "#F39C12"),
+      str_detect(drug_recode_abbr, "Mel|Ram") ~ bar_prop(mort_percent * 100, "#A93226"),
+      str_detect(drug_recode_abbr, "Ulin|MS|Prop") ~ bar_prop(mort_percent * 100, "#104E8B"),
       str_detect(drug_recode_abbr, "Dex") ~ bar_prop(mort_percent * 100, "#A93226"),
-      .default = bar_prop(mort_percent * 100, color_1)
+      .default = bar_prop(mort_percent * 100, "#969696")
     ),
   ) |>
   ungroup() |>
@@ -2834,9 +2868,9 @@ mortality_dat |>
   tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study, drug_recode, surgs_single_f, bar))) |>
   tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(mort_n_percent, rd_ci))) |>
   tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |> 
-  tab_style(style = list(cell_text(color = "#0E6655")), locations = cells_body(columns = c(arm_n, drug_recode, age_table, mort_n_percent), rows = str_detect(drug_recode, "Mel|Ram"))) |> 
-  tab_style(style = list(cell_text(color = "#F39C12")), locations = cells_body(columns = c(arm_n, drug_recode, age_table, mort_n_percent), rows = str_detect(drug_recode, "Ulin|MS|Prop"))) |>
-  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n, drug_recode, age_table, mort_n_percent), rows = str_detect(drug_recode, "Dex"))) |> 
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n, drug_recode, age_table, mort_n_percent), rows = str_detect(drug_recode, "Mel|Ram"))) |> 
+  tab_style(style = list(cell_text(color = "#104E8B")), locations = cells_body(columns = c(arm_n, drug_recode, age_table, mort_n_percent), rows = str_detect(drug_recode, "Ulin|MS|Prop"))) |>
+  # tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n, drug_recode, age_table, mort_n_percent), rows = str_detect(drug_recode, "Dex"))) |> 
   sub_missing(columns = everything(), rows = everything(), missing_text = "") |> 
   cols_width(
     study_l ~ px(140),
@@ -2855,7 +2889,6 @@ mortality_dat |>
   tab_footnote("Randomized clinical trial.", locations = cells_body(columns = study_l, rows = !str_detect(study_l, "Hokuto") & !is.na(study_l))) |> 
   tab_footnote("Before-after design.", locations = cells_body(columns = study_l, rows = study %in% c("Hokuto 2020")))
 ```
-
 
 ### *Pooled*
 
@@ -3042,4 +3075,4 @@ rob_summary(robinsi_temp_dat, tool = "ROBINS-I", colour = "colourblind")
 rob_traffic_light(robinsi_temp_dat, psize = 4, tool = "ROBINS-I", colour = "colourblind")
 ```
 
-## References {#references}
+## **References** {#references}
