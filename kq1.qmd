@@ -1,9 +1,10 @@
 ---
-title: "Expanded Preoperative and Postoperative Delirium Screening"
+title: "Expanded Preoperative Evaluation & <br/> Postoperative Delirium Screening"
 editor: source
-toc-title: "Expanded Preoperative and Postoperative Delirium Screening"
+toc-title: "Expanded Preoperative Evaluation and Postoperative Delirium Screening"
 toc-location: "left"
 cap-location: "top"
+toc-depth: 4
 page-layout: full
 css: styles.css
 tables:
@@ -11,10 +12,10 @@ tables:
       caption:
         pre: "Table "
         sep: " -- "
-# bibliography: "bib/kq1.bib"
-# csl: jama.csl
-# link-citations: yes
-# nocite: '@*'
+bibliography: "bib/kq18.bib"
+csl: jama.csl
+link-citations: yes
+nocite: '@*'
 ---
 
 ## Key Questions
@@ -39,7 +40,7 @@ study_arm_dat <- study_arm_dat |>
   arrange(design_f)
 ```
 
-## Outcome Importance Rankings
+## **Outcome Importance Rankings**
 
 ### Expanded Preoperative Evaluation
 
@@ -63,7 +64,7 @@ outcome_dat <- rankings("KQ8")
 outcome_tab(outcome_dat, 11)
 ```
 
-## Outcomes Reported
+## **Outcomes Reported**
 
 <font size = 4> `r table_ref()` Dichotomous or count outcomes. </font>
 
@@ -83,7 +84,175 @@ contin_freq_fun(contin_dat)
 likert_freq_fun(likert_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; NCD: neurocognitive disorder; QoR: quality of recovery; ")
 ```
 
+## **Included Studies ⦁**
 
+<font size = 4> `r table_ref()` Number of studies by design. </font>
 
+```{r studies_design}
+# CODE: study design table — design and number; no duplicate counting
+study_char_dat |>
+  arrange(year) |> 
+  group_by(linked_references_all_refid) |> # count 1 for multiple pubs from single study
+  slice(1) |> 
+  ungroup() |> 
+  # select(refid, study, linked_references_all_refid, design_f_lab) |> # to check studies > 1 report
+  select(refid, study, design_f_lab) |>
+  group_by(design_f_lab, .drop = TRUE) |>
+  summarise(total = n()) |>
+  adorn_totals("row") |>
+  gt(id = "one") |>
+  cols_label(design_f_lab = "Design", total = "Studies") |>
+  cols_width(
+    # design_f_lab ~ px(200),
+    design_f_lab ~ "1.8in",
+    total ~ ".5in"
+  ) |>
+  gt_theme_mg() |> 
+  tab_style(
+    style = list(
+      cell_fill(color = "#E4F3FE"),
+      cell_text(weight = "bold"),
+      cell_borders(sides = c("top", "bottom"), color = "#9A9EA1", style = "solid", weight = px(1.3))
+    ),
+    locations = cells_body(
+      rows = design_f_lab == "Total"
+    )
+  ) |> 
+  tab_style(
+    style = list(
+      cell_text(align = "left")),
+      locations = cells_body(
+        columns = design_f_lab
+      )
+    )  |> 
+  tab_footnote("Studies with multiple publications counted only once (applied to 2 studies with 2 publications).")
+```
 
-<!-- ![](assets/pim_outcome.png){fig-align="left" width="3.5in"} -->
+### Design, centers, country, and surgery
+
+<font size = 4> `r table_ref()` Study design, enrollment, centers, country, and surgery (see [References](#references) for citations). </font>
+
+```{r included_studies_table}
+#| echo: false
+included_dat <- study_char_dat |>
+  mutate(study_l = study_l_w_linked) |>
+  select(refid, starts_with("design"), study_l, year, n_enroll, n_analyze, centers, country, non_vh_hdi) |>
+  left_join(surgs |> select(refid, surgs), by = "refid") |>
+  mutate(
+    surgs = ifelse(str_count(surgs, "\\|") > 3, "Various", surgs),
+    # edit levels by kq
+    surgs = factor(surgs, levels = c("Ortho", "Urol", "GI/Abdominal", "Neuro", "Neuro|Vasc", "Cardiac", "Gyn", "Gyn|Ortho|Urol|Vasc", "Headneck", "Ophtho", "Other", "Spine", "Various", "Vasc"))
+  ) |>
+  arrange(design_f, surgs, study_l) |>
+  select(refid, design_f, study_l, centers, n_enroll, country, surgs, non_vh_hdi)
+
+included_dat |>
+  gt(id = "one") |>
+  cols_label(
+    refid = "ID",
+    study_l = "Study",
+    n_enroll = "Enrolled",
+    country = "Country",
+    centers = "Centers",
+    surgs = "Surgery"
+   ) |>
+  cols_hide(c(non_vh_hdi, design_f)) |>
+    fmt_markdown(columns = c(study_l)) |> 
+  cols_width(
+    refid ~ px(60),
+    study_l ~ px(220),
+    centers ~ px(60),
+    n_enroll ~ px(60),
+    country ~ px(100),
+    surgs ~ px(150)
+  ) |> 
+  # opt_horizontal_padding(scale = 2) |>
+  sub_missing(columns = everything(), missing_text = " — ") |>
+  gt_theme_mg() |>
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c("refid"))) |> 
+  tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(surgs))) |>
+  tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(surgs))) |>
+  opt_footnote_marks(marks = "letters") |> 
+  tab_footnote(footnote = md("Various indicates more than 4 different types of surgery."), locations = cells_column_labels(columns = surgs)) |>
+  tab_footnote(footnote = md("Non very-high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."), 
+               locations = cells_column_labels(columns = country)) |>
+  tab_footnote(footnote = md("Non very-high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."), 
+               locations = cells_body(columns = country, rows = !is.na(non_vh_hdi))) |>
+  # tab_footnote(footnote = "Studies examining drugs not directly relevant to recommendations but potentially relevant to the evidence space (eg, a connected network) were included.",  locations = cells_row_groups(groups = )) |> 
+  tab_footnote("GI: gastrointestinal; Ortho: orthopedic; Neuro: neurological; Oralmax: oral maxillofacial; Vasc: vascular.")
+
+```
+
+#### Country Summary
+
+<font size = 4> `r table_ref()` Summary of studies by country where conducted. </font>
+
+```{r country}
+study_char_dat |> 
+  select(refid, country, starts_with("linked")) |> 
+  slice(1, .by = linked_references) |> 
+  filter(str_detect(linked_references, ","))
+
+study_char_dat |>
+  mutate(linked_references = ifelse(is.na(linked_references), refid, linked_references)) |> 
+  slice(1, .by = linked_references) |>
+  select(country) |>
+  tbl_summary(
+    sort = everything() ~ "frequency",
+    label = list(country ~ "Country")
+  ) |>
+  modify_header(label ~ "") |> 
+  as_gt(id = "one") |> 
+  gt_theme_mg()
+
+```
+
+## **Interventions & Comparators**
+
+### Intervention 1
+
+```{r}
+test <- c(1:5)
+```
+
+### Intervention 2
+
+```{r}
+test <- c(1:5)
+```
+
+## **Delirium Incidence**
+
+### Intervention 1
+
+```{r}
+test <- c(1:5)
+```
+
+### Intervention 2
+
+```{r}
+test <- c(1:5)
+```
+
+### *Pooled*
+
+```{r}
+test <- c(1:5)
+```
+
+#### Intervention 1
+
+```{r}
+test <- c(1:5)
+```
+
+#### Intervention 2
+
+```{r}
+test <- c(1:5)
+```
+
+## **Delayed Neurocognitive Recovery**
+
+## **References ⦁** {#references}
