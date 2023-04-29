@@ -188,11 +188,7 @@ included_dat |>
 <font size = 4> `r table_ref()` Summary of studies by country where conducted. </font>
 
 ```{r country}
-study_char_dat |> 
-  select(refid, country, starts_with("linked")) |> 
-  slice(1, .by = linked_references) |> 
-  filter(str_detect(linked_references, ","))
-
+#| echo: false
 study_char_dat |>
   mutate(linked_references = ifelse(is.na(linked_references), refid, linked_references)) |> 
   slice(1, .by = linked_references) |>
@@ -209,50 +205,6 @@ study_char_dat |>
 
 ## **Interventions & Comparators**
 
-### Intervention 1
 
-```{r}
-test <- c(1:5)
-```
-
-### Intervention 2
-
-```{r}
-test <- c(1:5)
-```
-
-## **Delirium Incidence**
-
-### Intervention 1
-
-```{r}
-test <- c(1:5)
-```
-
-### Intervention 2
-
-```{r}
-test <- c(1:5)
-```
-
-### *Pooled*
-
-```{r}
-test <- c(1:5)
-```
-
-#### Intervention 1
-
-```{r}
-test <- c(1:5)
-```
-
-#### Intervention 2
-
-```{r}
-test <- c(1:5)
-```
-
-## **Delayed Neurocognitive Recovery**
 
 ## **References ⦁** {#references}
