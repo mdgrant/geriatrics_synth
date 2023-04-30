@@ -1045,7 +1045,7 @@ ncd_dat |>
 
 ## **Length of Stay**
 
-<font size = 4> `r table_ref()` Length of stay according to procedure classification and comparator. </font>
+<!-- <font size = 4> `r table_ref()` Length of stay according to procedure classification and comparator. </font> -->
 
 ## **Complications**
 
@@ -1074,6 +1074,114 @@ for (i in 1:23) {
 path <- glue::glue("/Users/mgrant/Desktop/{name}.xlsx")
 saveWorkbook(wb, "/Users/mgrant/Desktop/kq3.xlsx", overwrite = TRUE)
 
+```
+
+<font size = 4> `r table_ref()` Report complications in regional vs. general anesthesia — cardiac, MI, stroke, pulmonary, pneumonia, acute kidney injury. </font>
+
+```{r}
+complications_all <- c("medical", "surg", "cardiac", "gastro", "neuro", "pulm", "thromb", "infect", "fall", "stroke", "othcomp", "asppneum", "atelec", "bronch", "cardarr", "myoinfarct", "ssi", "sepsis", "uti", "pneum", "pthorax", "airleak", "pulcongest", "pe", "pinfiltrate", "respfail", "intub", "upperair", "vent48", "kidneyinj", "nerveinj", "clavien1", "clavien2", "clavien3", "clavien4", "clavien5")
+
+complications_kq6_fun <- function(var_prefix) {
+  dichot_dat %>%
+    filter(if_any(!!paste0(var_prefix, "_per"):!!paste0(var_prefix, "_95high"), ~ !is.na(.x))) |>
+    select(refid, year, study, arm_id, arm, arm_n, comp_update_arm_n, !!paste0(var_prefix, "_n"):!!paste0(var_prefix, "_95high")) |>
+    mutate(complication = var_prefix) |>
+    rename_with(~ str_replace(.x, "95", "ci_"), .cols = everything()) |>
+    rename_with(~ str_replace(.x, "^.*_", ""), .cols = c(8:15)) |>
+    arrange(complication, year, study, arm_id)
+}
+
+# adverse event data includes all reported complications
+adverse_events_dat <- map_df(complications_all, complications_kq6_fun) |>
+  mutate(
+    arm_n = ifelse(!is.na(comp_update_arm_n), comp_update_arm_n, arm_n),
+    calc_per = n / arm_n * 100,
+    n_per = n_per_fun(n, arm_n, 1),
+    diff = per - calc_per
+  )
+
+adverse_events_dat <- adverse_events_dat |>
+  left_join(study_char_dat |> select(refid, study_l, surgs_single, design_f_lab), by = "refid") |>
+  left_join(table_age_mn_med, by = c("refid", "arm_id")) |>
+  arrange(complication, surgs_single, year, study, arm_id) |>
+  mutate(
+    study_compl = paste0(study, complication),
+    ref_arm_n = arm_n,
+    ref_n = n
+  ) |>
+  group_by(study_compl) |>
+  mutate(
+    ref_arm_n = ifelse(row_number() > 1, NA, ref_arm_n),
+    ref_n = ifelse(row_number() > 1, NA, ref_n)
+  ) |>
+  fill(ref_arm_n, ref_n) |>
+  mutate(
+    ref_arm_n = ifelse(row_number() == 1, NA, ref_arm_n),
+    ref_n = ifelse(row_number() == 1, NA, ref_n)
+  ) |>
+  ungroup() |>
+  mutate(
+    rd_ci = ifelse(!is.na(ref_n), rd_per_ci_fun(n, arm_n, ref_n, ref_arm_n, digits = 1), "—"),
+    bar = case_when(
+      # str_detect(arm, "Dex") ~ bar_prop(calc_per, "#A93226"),
+      # str_detect(arm, "Ket|Mel|Ram") ~ bar_prop(calc_per, "#A93226"),
+      str_detect(arm, "Gen") ~ bar_prop(calc_per, "#969696"),
+      .default = bar_prop(calc_per, "#A93226"))) |>
+  select(refid, year, arm_id, study, study_l, study_compl, arm_n, arm, n, age_table, surgs_single, n_per, bar, rd_ci, complication, design_f_lab)
+
+```
+
+```{r complications_gt}
+adverse_events_dat |>
+  filter(complication %in% c("cardiac", "pulm", "stroke", "infect", "myoinfarct", "pneum", "kidneyinj")) |>
+  mutate(complication = factor(complication, levels = c("cardiac", "pulm", "stroke", "infect", "myoinfarct", "pneum", "kidneyinj"), labels = c("Cardiac", "Pulmonary", "Stroke", "Infectious (not SSI)", "MI", "Pneumonia", "AKI"))) |>
+  mutate(study_l = ifelse(row_number() > 1, "", study_l),
+         surgs_single = ifelse(row_number() > 1, "", surgs_single), .by = study_compl) |>
+  group_by(complication) |>
+  gt(id = "one") |>
+  row_group_order(groups = c("Cardiac", "Pulmonary", "Stroke", "Infectious (not SSI)", "MI", "Pneumonia", "AKI")) |>
+  cols_hide(c(refid, year, study, arm_id, n, study, study_compl, design_f_lab)) |>
+  cols_label(
+    study_l          = "Study",
+    arm_n            = " N",
+    arm              =  "Arm",
+    age_table        = "    Age",
+    surgs_single     = "Surgery",
+    n_per            = "N (%)",
+    bar              = "0 – 100%",
+    rd_ci            = "RD (95% CI)"
+  ) |>
+  # tab_spanner(label = "", columns = c(VARIABLES), level = 1) |>
+  fmt_markdown(columns = c(study_l, bar, age_table)) |>
+  # fmt_number(VARIABLE, decimals = 0) |>
+  sub_missing(columns = everything(), missing_text = "") |>
+  gt_theme_mg() |>
+  cols_width(
+    study_l          ~ px(140),
+    arm_n            ~ px(45),
+    arm              ~ px(60),
+    age_table        ~ px(100),
+    surgs_single     ~ px(80),
+    n_per            ~ px(80),
+    bar              ~ px(100),
+    rd_ci            ~ px(140)
+  ) |>
+  tab_style(style = cell_text(align = "left"),        locations = cells_column_labels(columns = c(arm))) |>
+  tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(arm_n, rd_ci))) |>
+  # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c())) |>
+  tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(arm, age_table, rd_ci, surgs_single))) |>
+  tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(rd_ci))) |>
+  # tab_style(style = cell_text(align = "right"),       locations = cells_body(columns = c())) |>
+  # tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
+  tab_style(style = list(cell_text(color = "#969696")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Gen"))) |>
+  # tab_style(style = list(cell_text(color = "#F39C12")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Ket|Mel|Ram"))) |>
+  # tab_style(style = list(cell_text(color = "#969696")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Plac|None"))) |>
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = !str_detect(arm, "Gen")))
+  # tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(), rows = str_detect())) |>
+  # tab_style(style = list(cell_text(color = color_3)), locations = cells_body(columns = c(), rows = str_detect()))
+  # tab_footnote(md("Before-After/Time Series"), locations = cells_body(columns = study_l, rows = study_l != "" & design_f_lab == "Before-After/Time Series")) |>
+  # tab_footnote(md("Nonrandomized Trial"), locations = cells_body(columns = study_l, rows = study_l != "" & design_f_lab == "Nonrandomized Trial")) |>
+  # tab_footnote("RD: risk difference; MI: myocardial infarction; AKI: acute kidney injury.")
 ```
 
 ## **Mortality**

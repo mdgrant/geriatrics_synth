@@ -98,11 +98,7 @@ ul.task-list li input[type="checkbox"] {
     <ul class="dropdown-menu" aria-labelledby="nav-menu-key-question">    
         <li>
     <a class="dropdown-item" href="./kq1.html">
- <span class="dropdown-text">Expanded Preoperative Evaluation</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./kq8.html">
- <span class="dropdown-text">Postoperative Delirium Screening</span></a>
+ <span class="dropdown-text">Expanded Preop and Postop Delirium Screening</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./kq2.html">
@@ -198,7 +194,7 @@ ul.task-list li input[type="checkbox"] {
 <p>
 
 </p><pre class="mermaid mermaid-js" data-tooltip-selector="#mermaid-tooltip-1">flowchart LR
-R[Data Import&lt;br/&gt;readfiles_geri] --&gt; study_char[study_char_dat]
+R[Data Import&lt;br/&gt;readfiles] --&gt; study_char[study_char_dat]
 study_char --&gt; char_munge[link refs&lt;br/&gt;AuYYYYletter]
 R --&gt; DI[Data import] --&gt; Annot[Annotate data&lt;br&gt;&lt;br&gt;View data dictionary&lt;br&gt;to assist coding]
 R --&gt; Do[Data overview] --&gt; F[Observation filtration&lt;br&gt;Missing data patterns&lt;br&gt;Data about data]
