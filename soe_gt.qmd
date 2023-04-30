@@ -53,7 +53,7 @@ grade_foot <- paste0("Very low: ", vlow, "; Low: ", low, "; Moderate: ", mod, ";
 #| include: false
 ## soeKq6Data (updated 2022/01/20 09:18) ----------------------------------
 col_types_soe <- c("numeric", rep("text", 5), "numeric", rep("text", 19))
-soe_kq6.dat <- readxl::read_xlsx("data/soe_2023-04-27_local.xlsx", range = "A1:Z8", sheet = "soe_kq6", col_types = col_types_soe) |>
+soe_kq6.dat <- readxl::read_xlsx("data/soe_2023-04-27_local.xlsx", range = "A1:Z11", sheet = "soe_kq6", col_types = col_types_soe) |>
   clean_names() |>
   mutate(
     n_s = paste0(n_studies, " <br/>(", n_pts, ")"),
@@ -144,16 +144,17 @@ soe_summary |>
     grade ~ px(60),
     acc ~ px(60),
     out_import ~ px(90),
-    summary ~ px(350),
-    result_links ~ px(150)
+    summary ~ px(325),
+    result_links ~ px(175)
   ) |>
   opt_footnote_marks(marks = "numbers") |>
+  sub_values(values = c("NA <br/>(NA)"), replacement = "—") |>
   # tab_style(style = "vertical-align:top", locations = cells_body(columns = everything())) |> 
   tab_footnote("Pts: patients; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; ACCF/AHA: American College of Cardiology Foundation/American Heart Association; RR: risk ratio.") |>
   tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
   tab_footnote("A: high-quality evidence from more than 1 RCT; B-R: moderate-quality evidence from more than 1 RCT; B-NR: moderate-quality evidence from more than one observational study; C-LD: randomized or non-randomized observational or registry studies with limited data; C-EO: consensus of expert opinion.", locations = cells_column_labels(columns = acc)) |>
   tab_footnote("Limited +; Important ++; Critical +++.", locations = cells_column_labels(columns = out_import)) |> 
-  tab_footnote("Common effects model.", locations = cells_body(columns = summary, rows = str_detect(n, "5.14"))) |> 
+  tab_footnote("Common effects model.", locations = cells_body(columns = summary, rows = str_detect(n, "5.14"))) |>
   tab_footnote("Network meta-analysis results were consistent.", locations = cells_body(columns = summary, rows = str_detect(n, "5.11"))) |> 
   tab_footnote("Results from the largest trial (N = 650 analyzed) were not consistent with an effect.", locations = cells_body(columns = summary, rows = str_detect(n, "5.12"))) |> 
   tab_footnote("Network meta-anlaysis yielded narrower 95% confidence interval attributable to pairwise result incorportating Hartung-Knapp adjustment.", locations = cells_body(columns = summary, rows = str_detect(n, "5.13")))
@@ -212,6 +213,7 @@ domain_footnotes <- glue_collapse(domain_footnotes, sep = "<br>")
 
 ## (updated 2021/05/14 08:27) domain summary table ------------------------
 kq6_domain |> 
+  filter(!design == "No studies") |> 
   mutate(n_s = paste0(n_studies, "<br>(", n_pts, ")")) |> 
   mutate(space = "") |> 
   left_join(soe_kq6.dat |> select(compare_group, n), by = "n") |>
