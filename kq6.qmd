@@ -1926,9 +1926,10 @@ netgraph(
 
 <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention (randomized clinical trials, delayed neurocognitive recovery). </font>
 
-```{r dncr_dex_plac_meta, fig.width = 14, fig.height = 5.5, fig.align = "left", warning = FALSE}
+```{r dncr_dex_plac_meta, fig.width = 14, fig.height = 7.2, fig.align = "left", warning = FALSE}
 #| eval: true
 dex_meta_dat <- pairs_dat |>
+  arrange(time, year, study) |> 
   unite(to_select, treat1, treat2, sep = "/") |> 
   filter(str_detect(to_select, c("Plac")) & str_detect(to_select, "Dex") & !str_detect(to_select, "Ulin")) |> 
   left_join(rob2_meta_dat, by = "refid") |>
@@ -1958,9 +1959,11 @@ dex_plac_meta <- metabin(event2, n2, event1, n1,
 temp_meta <- dex_plac_meta
 temp_meta <- update(temp_meta, subgroup = NULL, sm = "OR")
 temp_metabias <- metabias(temp_meta, method.bias = "Harbord", k.min = 10)
+# trimfill(temp_meta)
 
 # summary(dex_plac_meta)
 forest(dex_plac_meta,
+  # sortvar = year,
   allstudies = TRUE,
   common = TRUE,
   label.e = "Dex     ",
@@ -1988,11 +1991,9 @@ forest(dex_plac_meta,
 
 ```
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <a id="figure-4"></a><br/> 
-0.5 added to cells of studies without events in one arm.<br/>
 `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> 
 `r paste0("Neurocognitive recovery a designated primary outcome in ", prim_sec_out_fun(prim_pocd, dex_meta_dat$refid), "; a secondary outcome in ", prim_sec_out_fun(sec_pocd, dex_meta_dat$refid), ".")`<br/>
-Note: Gao 2021 identified in the search was presumably an overlapping sample of Gao 2020 and excluded.<br/>
-The result might be considered credible and convincing to a skeptic given plausible evidence for risk ratios less than 0.74 (assuming a 25% incidence of delayed neurocognitive recovery; see [Matthews 2019](https://www.tandfonline.com/doi/full/10.1080/00031305.2018.1543136)).
+Note: Gao 2021 identified in the search was presumably an overlapping sample of Gao 2020 and excluded.
 </foot_mg><br/>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
@@ -2061,6 +2062,74 @@ text(0.95, 0.03, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = 
 rob_summary_fun(dex_meta_dat$refid)
 ```
 :::
+
+#### Ketamine
+
+<font size = 4> `r figure_ref()` Ketamine compared with placebo or no intervention (randomized clinical trials, delayed neurocognitive recovery). </font>
+
+```{r dncr_ket_plac_meta, fig.width = 14, fig.height = 5.0, fig.align = "left", warning = FALSE}
+#| eval: true
+ket_meta_dat <- pairs_dat |>
+  arrange(time, year, study) |>
+  unite(to_select, treat1, treat2, sep = "/") |>
+  filter(str_detect(to_select, c("Plac")) & str_detect(to_select, "Ket") & !str_detect(to_select, "Hal")) |>
+  left_join(rob2_meta_dat, by = "refid") |>
+  select(refid, study, year, event2, n2, event1, n1, D1:Overall, country, surgs_single_f, time) |>
+  mutate(
+    rob = case_when(
+      Overall == "+" ~ "Low",
+      Overall == "?" ~ "Some Concerns",
+      Overall == "–" ~ "High"
+    )
+  ) |>
+  arrange(study)
+
+ket_plac_meta <- metabin(event2, n2, event1, n1,
+  data = ket_meta_dat,
+  studlab = study,
+  sm = "RR",
+  method = "MH",
+  method.tau = "PM",
+  hakn = FALSE,
+  prediction = TRUE,
+  allstudies = TRUE,
+  subgroup = time
+)
+
+# small study effects; here to have result of Harbord test
+# temp_meta <- ket_plac_meta
+# temp_meta <- update(temp_meta, subgroup = NULL, sm = "OR")
+# temp_metabias <- metabias(temp_meta, method.bias = "Egger", k.min = 10)
+# trimfill(temp_meta)
+
+# summary(ket_plac_meta)
+forest(ket_plac_meta,
+  # sortvar = year,
+  allstudies = TRUE,
+  common = TRUE,
+  label.e = "Ketamine",
+  label.c = "Plac  ",
+  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  rightlabs = c("RR ", "(95% CI)   ", "D1", "D2", "D3", "D4", "D5", "All"),
+  just.addcols.right = "right",
+  digits = 2,
+  digits.tau2 = 1,
+  overall.hetstat = TRUE,
+  print.I2.ci = TRUE,
+  prediction = TRUE,
+  subgroup = TRUE,
+  prediction.subgroup = FALSE,
+  print.subgroup.name = FALSE,
+  fs.xlab = 11,
+  pooled.events = TRUE,
+  print.pval.Q = FALSE,
+  xlim = c(0.1, 3),
+  xlab = "Favors: Ketamine               Placebo/None",
+  addrows.below.overall = 4
+)
+```
+<foot_mg> Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/>
+Too few studies to examine small study effects. </foot_mg><br/>
 
 #### All Comparators
 
@@ -2905,8 +2974,8 @@ dex_mort_meta_dat <- pairwise_mort_dex_dat |>
   filter(treat1 == "Plac" & treat2 == "Dex") |> 
   select(study, year, event2, n2, event1, n1, D1:Overall, mort_period, refid)
 
-# total_meta(dex_mort_meta_dat)
-# refid_meta_fun(dex_mort_meta_dat)
+total_meta(dex_mort_meta_dat)
+refid_meta_fun(dex_mort_meta_dat)
 
 dex_plac_mort_meta <- metabin(event2, n2, event1, n1,
   data = dex_mort_meta_dat,
@@ -2921,6 +2990,11 @@ dex_plac_mort_meta <- metabin(event2, n2, event1, n1,
   subgroup = mort_period
 )
 
+# small study effects; here to have result of Harbord test
+temp_meta <- dex_plac_mort_meta
+temp_meta <- update(temp_meta, subgroup = NULL, sm = "OR")
+temp_metabias <- metabias(temp_meta, method.bias = "Harbord", k.min = 10)
+
 # summary(dex_plac_meta)
 forest(dex_plac_mort_meta,
   allstudies = TRUE,
@@ -2930,15 +3004,15 @@ forest(dex_plac_mort_meta,
   rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
   rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
   just.addcols.right = "right",
-  digits.TE = 1,
+  digits.TE = 3,
   digits.tau2 = 1,
   overall.hetstat = TRUE,
   print.I2.ci = TRUE,
-  prediction = FALSE,
+  prediction = TRUE,
   fs.xlab = 11,
   pooled.events = TRUE,
   pscale = 1000,
-  digits = 1, 
+  digits = 2, 
   subgroup = TRUE,
   print.subgroup.name = FALSE,
   print.pval.Q = FALSE,
@@ -2948,7 +3022,7 @@ forest(dex_plac_mort_meta,
 
 ```
 
-<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .
+<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/> `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, dex_plac_refid), "; a secondary outcome in ", prim_sec_out_fun(sec_delirium, dex_plac_refid), ".")`</foot_mg><br/>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention small study effects --- funnel plot. </font>
@@ -2957,7 +3031,7 @@ forest(dex_plac_mort_meta,
 # {r name, fig.dim = c(6, 6), out.width = "60%", fig.align = "center"}
 # {r dex_plac_meta_funnel_limit, out.width = "85%", out.height = "100%", fig.align = "center"}
 dex_plac_mort_meta <- update(dex_plac_mort_meta, sm = "OR", subgroup = NULL)
-thompson <- metabias(dex_plac_mort_meta, method.bias = "Thompson")$pval
+harbord <- metabias(dex_plac_mort_meta, method.bias = "Harbord")$pval
 # temp_limit_meta <- limitmeta(dex_plac_mort_meta)
 # limit_colors <- c("#AAB7B8", "#D5DBDB", "#F4F6F6")
 par(mar = c(4, 4, 2, 1))
@@ -2978,7 +3052,6 @@ legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#A
 # text(0.3, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .9)
 ```
 
-<foot_mg> `r paste0("Thompson test for small study effects P = ", digit2(thompson), ".")` `r rm(thompson)`<br/>
 :::
 
 #### Melatonin/Ramelteon
@@ -3011,7 +3084,7 @@ mel_ram_plac_mort_meta <- metabin(event2, n2, event1, n1,
 # summary(mel_ram_plac_meta)
 forest(mel_ram_plac_mort_meta,
   allstudies = TRUE,
-  random = FALSE,
+  random = TRUE,
   label.e = "Mel/Ram     ",
   label.c = "Plac/None ",
   rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
@@ -3025,7 +3098,7 @@ forest(mel_ram_plac_mort_meta,
   fs.xlab = 11,
   pooled.events = TRUE,
   pscale = 1000,
-  digits = 1, 
+  digits = 2, 
   subgroup = TRUE,
   print.subgroup.name = FALSE,
   print.pval.Q = FALSE,
