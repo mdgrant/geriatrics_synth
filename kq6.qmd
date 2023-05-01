@@ -1264,6 +1264,14 @@ text(1.2, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .
 
 ```{r rob2_summary_dex_plac, fig.height = 3, out.width = "60%"}
 rob_summary_fun(cogfunc_refid)
+
+rob_temp_dat <- rob2_dat |>
+  filter(refid %in% cogfunc_refid) |>
+  select(Study, D1:Overall)
+
+rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind", weighted = FALSE)
+
+
 ```
 :::
 
@@ -2568,7 +2576,6 @@ adverse_events_dat |>
 
 No studies
 
-
 ### Ramelteon
 
 <font size = 4> `r table_ref()` Report complications in ramelteon studies — cardiac, MI, stroke, pulmonary, pneumonia, acute kidney injury (all before-after designs). </font>
@@ -2974,8 +2981,8 @@ dex_mort_meta_dat <- pairwise_mort_dex_dat |>
   filter(treat1 == "Plac" & treat2 == "Dex") |> 
   select(study, year, event2, n2, event1, n1, D1:Overall, mort_period, refid)
 
-total_meta(dex_mort_meta_dat)
-refid_meta_fun(dex_mort_meta_dat)
+# total_meta(dex_mort_meta_dat)
+# refid_meta_fun(dex_mort_meta_dat)
 
 dex_plac_mort_meta <- metabin(event2, n2, event1, n1,
   data = dex_mort_meta_dat,
@@ -3122,7 +3129,7 @@ rob_temp_dat <- rob2_dat |>
   filter(!is.na(Study) & refid %in% kq6_refid) |> 
   select(-refid)
 
-rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind")
+rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind", weighted = FALSE)
 ```
 
 <font size = 4> `r figure_ref()` Risk of bias assessment for randomized clinical trials. </font>
@@ -3140,7 +3147,7 @@ robinsi_temp_dat <- robinsi_dat |>
   filter(!is.na(Study) & refid %in% kq6_refid) |> 
   select(-refid)
 
-rob_summary(robinsi_temp_dat, tool = "ROBINS-I", colour = "colourblind")
+rob_summary(robinsi_temp_dat, tool = "ROBINS-I", colour = "colourblind", weighted = FALSE)
 ```
 
 <font size = 4> `r figure_ref()` Risk of bias assessment for nonrandomized studies. </font>

@@ -13,7 +13,7 @@ tables:
         sep: " -- "
 # bibliography: "bib/kq1.bib"
 # csl: jama.csl
-# link-citations: yes
+# link-citations: false
 # nocite: '@*'
 ---
 

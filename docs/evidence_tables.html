@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.475">
+<meta name="generator" content="quarto-1.3.340">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -17,14 +17,15 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
-  margin: 0 0.8em 0.2em -1.6em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
 }
-.hanging div.csl-entry {
+.hanging-indent div.csl-entry {
   margin-left:2em;
   text-indent:-2em;
 }
@@ -38,8 +39,7 @@ div.csl-right-inline {
 }
 div.csl-indent {
   margin-left: 2em;
-}
-</style>
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -94,75 +94,77 @@ div.csl-indent {
     <span class="navbar-title">Geriatrics Evidence Synthesis</span>
     </a>
   </div>
+            <div id="quarto-search" class="" title="Search"></div>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./index.html">
+    <a class="nav-link" href="./index.html" rel="" target="">
  <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./soe_gt.html">
+    <a class="nav-link" href="./soe_gt.html" rel="" target="">
  <span class="menu-text">GRADE</span></a>
   </li>  
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-key-question" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-key-question" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
  <span class="menu-text">Key Question</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-key-question">    
         <li>
-    <a class="dropdown-item" href="./kq1.html">
- <span class="dropdown-text">Expanded Preop and Postop Delirium Screening</span></a>
+    <a class="dropdown-item" href="./kq1.html" rel="" target="">
+ <span class="dropdown-text">Expanded Preop Evaluation &amp; Postop Delirium Screening</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./kq2.html">
+    <a class="dropdown-item" href="./kq2.html" rel="" target="">
  <span class="dropdown-text">Prehabilitation</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./kq3.html">
+    <a class="dropdown-item" href="./kq3.html" rel="" target="">
  <span class="dropdown-text">Regional vs.&nbsp;General Anesthesia</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./kq4.html">
+    <a class="dropdown-item" href="./kq4.html" rel="" target="">
  <span class="dropdown-text">Intravenous vs.&nbsp;Inhaled Anesthesia</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./kq5.html">
+    <a class="dropdown-item" href="./kq5.html" rel="" target="">
  <span class="dropdown-text">Potentially Inappropriate Medications</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./kq6.html">
+    <a class="dropdown-item" href="./kq6.html" rel="" target="">
  <span class="dropdown-text">Delirium Prophylaxis</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-appendix" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-appendix" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
  <span class="menu-text">Appendix</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-appendix">    
         <li>
-    <a class="dropdown-item" href="./evidence_tables.html">
+    <a class="dropdown-item" href="./evidence_tables.html" rel="" target="">
  <span class="dropdown-text">Study-level evidence tables</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./outcome_rankings.html">
+    <a class="dropdown-item" href="./outcome_rankings.html" rel="" target="">
  <span class="dropdown-text">Outcome rankings</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./protocol.html">
+    <a class="dropdown-item" href="./protocol.html" rel="" target="">
  <span class="dropdown-text">Draft protocol</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="./about.html">
+    <a class="nav-link" href="./about.html" rel="" target="">
  <span class="menu-text">About</span></a>
   </li>  
 </ul>
-              <div id="quarto-search" class="" title="Search"></div>
+            <div class="quarto-navbar-tools ms-auto">
+</div>
           </div> <!-- /navcollapse -->
       </div> <!-- /container-fluid -->
     </nav>
@@ -170,7 +172,7 @@ div.csl-indent {
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
     <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">Study Design</h2>
    
@@ -183,6 +185,7 @@ div.csl-indent {
   </ul>
 </nav>
 </nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
     </div>
@@ -219,13 +222,7 @@ div.csl-indent {
 
 </div>
 <!-- setup -------------------------------------------- (2022-12-24 16:56) @ --->
-<div class="cell">
-
-</div>
 <!-- ## Key Question 5 -->
-<div class="cell">
-
-</div>
 <section id="randomized-clinical-trials" class="level2">
 <h2 class="anchored" data-anchor-id="randomized-clinical-trials">Randomized Clinical Trials</h2>
 <div class="cell">
@@ -4237,521 +4234,521 @@ opioid (aHR, 0.82; 95% CI, 0.62–1.11)</p>
 
 </section>
 
-<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body" role="doc-bibliography">
-<div id="ref-Adogwa2017" class="csl-entry" role="doc-biblioentry">
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body" role="list">
+<div id="ref-Adogwa2017" class="csl-entry" role="listitem">
 <div class="csl-left-margin">1. </div><div class="csl-right-inline">Adogwa O, Elsamadicy AA, Vuong VD, et al. Geriatric comanagement reduces perioperative complications and shortens duration of hospital stay after lumbar spine surgery: A prospective single-institution experience. <em>J Neurosurg Spine</em>. 2017;27(6):670-675. doi:<a href="https://doi.org/10.3171/2017.5.Spine17199">10.3171/2017.5.Spine17199</a></div>
 </div>
-<div id="ref-Aizawa2002" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Aizawa2002" class="csl-entry" role="listitem">
 <div class="csl-left-margin">2. </div><div class="csl-right-inline">Aizawa K, Kanai T, Saikawa Y, et al. A novel approach to the prevention of postoperative delirium in the elderly after gastrointestinal surgery. <em>Surg Today</em>. 2022;32(4):310-314. doi:<a href="https://doi.org/10.1007/s005950200044">10.1007/s005950200044</a></div>
 </div>
-<div id="ref-Avidan2017" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Avidan2017" class="csl-entry" role="listitem">
 <div class="csl-left-margin">3. </div><div class="csl-right-inline">Avidan MS, Maybrier HR, Abdallah AB, et al. Intraoperative ketamine for prevention of postoperative delirium or pain after major surgery in older adults: An international, multicentre, double-blind, randomised clinical trial. <em>Lancet</em>. 2017;390(10091):267-275. doi:<a href="https://doi.org/10.1016/s0140-6736(17)31467-8">10.1016/s0140-6736(17)31467-8</a></div>
 </div>
-<div id="ref-Azeem2018" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Azeem2018" class="csl-entry" role="listitem">
 <div class="csl-left-margin">4. </div><div class="csl-right-inline">Azeem TMA, Yosif NE, Alansary AM, Esmat IM, Mohamed AK. Dexmedetomidine vs morphine and midazolam in the prevention and treatment of delirium after adult cardiac surgery; a randomized, double-blinded clinical trial. <em>Saudi Journal of Anaesthesia</em>. 2018;12(2):190-197. doi:<a href="https://doi.org/10.4103/sja.SJA{\_}303{\_}17">10.4103/sja.SJA{\_}303{\_}17</a></div>
 </div>
-<div id="ref-Bakker2014" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Bakker2014" class="csl-entry" role="listitem">
 <div class="csl-left-margin">5. </div><div class="csl-right-inline">Bakker FC, Persoon A, Bredie SJH, et al. The CareWell in hospital program to improve the quality of care for frail elderly inpatients: Results of a before-after study with focus on surgical patients. <em>Am J Surg</em>. 2014;208(5):735-746. doi:<a href="https://doi.org/10.1016/j.amjsurg.2014.04.009 10.1016/j.amjsurg.2014.04.009. Epub 2014 Jun 27.">10.1016/j.amjsurg.2014.04.009 10.1016/j.amjsurg.2014.04.009. Epub 2014 Jun 27.</a></div>
 </div>
-<div id="ref-Barreto-Chang2022" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Barreto-Chang2022" class="csl-entry" role="listitem">
 <div class="csl-left-margin">6. </div><div class="csl-right-inline">Barreto Chang OL, Kreuzer M, Morgen DF, Possin KL, Garcia PS. Ketamine associated intraoperative electroencephalographic signatures of elderly patients with and without preoperative cognitive impairment. <em>Anesth Analg</em>. Published online June 22, 2022. doi:<a href="https://doi.org/10.1213/ANE.0000000000005875">10.1213/ANE.0000000000005875</a></div>
 </div>
-<div id="ref-Bellas2020" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Bellas2020" class="csl-entry" role="listitem">
 <div class="csl-left-margin">7. </div><div class="csl-right-inline">Bellas N, Stohler S, Staff I, et al. Impact of preoperative specialty consults on hospitalist comanagement of hip fracture patients. <em>J Hosp Med</em>. 2020;15(1):16-21. doi:<a href="https://doi.org/10.12788/jhm.3264">10.12788/jhm.3264</a></div>
 </div>
-<div id="ref-Bickel2008" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Bickel2008" class="csl-entry" role="listitem">
 <div class="csl-left-margin">8. </div><div class="csl-right-inline">Bickel H, Gradinger R, Kochs E, Förstl H. High risk of cognitive and functional decline after postoperative delirium. A three-year prospective study. <em>Dement Geriatr Cogn Disord</em>. 2008;26(1):26-31. doi:<a href="https://doi.org/10.1159/000140804">10.1159/000140804</a></div>
 </div>
-<div id="ref-Bjorkelund2010" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Bjorkelund2010" class="csl-entry" role="listitem">
 <div class="csl-left-margin">9. </div><div class="csl-right-inline">Bjorkelund KB, Hommel A, Thorngren KG, Gustafson L, Larsson S, Lundberg D. Reducing delirium in elderly patients with hip fracture: A multi-factorial intervention study. <em>Acta Anaesthesiol Scand</em>. 2010;54(6):678-688. doi:<a href="https://doi.org/10.1111/j.1399-6576.2010.02232.x 10.1111/j.1399-6576.2010.02232.x. Epub 2010 Mar 15.">10.1111/j.1399-6576.2010.02232.x 10.1111/j.1399-6576.2010.02232.x. Epub 2010 Mar 15.</a></div>
 </div>
-<div id="ref-Bornemann-Cimenti2016" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Bornemann-Cimenti2016" class="csl-entry" role="listitem">
 <div class="csl-left-margin">10. </div><div class="csl-right-inline">Bornemann-Cimenti H, Wejbora M, Michaeli K, Edler A, Sandner-Kiesling A. The effects of minimal-dose versus low-dose s-ketamine on opioid consumption, hyperalgesia, and postoperative delirium: A triple-blinded, randomized, active- and placebo-controlled clinical trial. <em>Minerva Anestesiol</em>. 2016;82(10):1069-1076. <a href="https://www.ncbi.nlm.nih.gov/pubmed/27327855">https://www.ncbi.nlm.nih.gov/pubmed/27327855</a></div>
 </div>
-<div id="ref-Braude2017" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Braude2017" class="csl-entry" role="listitem">
 <div class="csl-left-margin">11. </div><div class="csl-right-inline">Braude P, Goodman A, Elias T, et al. Evaluation and establishment of a ward-based geriatric liaison service for older urological surgical patients: Proactive care of older people undergoing surgery (POPS)-urology. <em>BJU Int</em>. 2017;120(1):123-129. doi:<a href="https://doi.org/10.1111/bju.13526">10.1111/bju.13526</a></div>
 </div>
-<div id="ref-Cai2012" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Cai2012" class="csl-entry" role="listitem">
 <div class="csl-left-margin">12. </div><div class="csl-right-inline">Cai Y, Hu H, Liu P, et al. Association between the apolipoprotein E4 and postoperative cognitive dysfunction in elderly patients undergoing intravenous anesthesia and inhalation anesthesia. <em>Anesthesiology</em>. 2012;116(1):84-93. doi:<a href="https://doi.org/10.1097/ALN.0b013e31823da7a2">10.1097/ALN.0b013e31823da7a2</a></div>
 </div>
-<div id="ref-Chawdhary2020" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Chawdhary2020" class="csl-entry" role="listitem">
 <div class="csl-left-margin">13. </div><div class="csl-right-inline">Chawdhary AA, Kulkarni A, Nozari A. Substitution of propofol for dexmedetomidine in the anaesthetic regimen does not ameliorate the post-operative cognitive decline in elderly patients. <em>Indian J Anaesth</em>. 2020;64(10):880-886. doi:<a href="https://doi.org/10.4103/ija.IJA{\_}365{\_}20">10.4103/ija.IJA{\_}365{\_}20</a></div>
 </div>
-<div id="ref-Chen2020" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Chen2020" class="csl-entry" role="listitem">
 <div class="csl-left-margin">14. </div><div class="csl-right-inline">Chen H, Li F. Effect of dexmedetomidine with different anesthetic dosage on neurocognitive function in elderly patients after operation based on neural network model. <em>World Neurosurg</em>. 2020;138:688-695. doi:<a href="https://doi.org/10.1016/j.wneu.2020.01.012">10.1016/j.wneu.2020.01.012</a></div>
 </div>
-<div id="ref-Chen2013" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Chen2013" class="csl-entry" role="listitem">
 <div class="csl-left-margin">15. </div><div class="csl-right-inline">Chen J, Yan J, Han X. Dexmedetomidine may benefit cognitive function after laparoscopic cholecystectomy in elderly patients. <em>Exp Ther Med</em>. 2013;5(2):489-494. doi:<a href="https://doi.org/10.3892/etm.2012.811">10.3892/etm.2012.811</a></div>
 </div>
-<div id="ref-Chitnis2022" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Chitnis2022" class="csl-entry" role="listitem">
 <div class="csl-left-margin">16. </div><div class="csl-right-inline">Chitnis S, Mullane D, Brohan J, et al. Dexmedetomidine use in intensive care unit sedation and postoperative recovery in elderly patients post-cardiac surgery (DIRECT). <em>J Cardiothorac Vasc Anesth</em>. 2022;36(3):880-892. doi:<a href="https://doi.org/10.1053/j.jvca.2021.09.024">10.1053/j.jvca.2021.09.024</a></div>
 </div>
-<div id="ref-Cho2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Cho2021" class="csl-entry" role="listitem">
 <div class="csl-left-margin">17. </div><div class="csl-right-inline">Cho HB, Kim MG, Park SY, et al. The influence of propofol-based total intravenous anesthesia on postoperative outcomes in end-stage renal disease patients: A retrospective observation study. <em>PLoS One</em>. 2022;16(7):e0254014. doi:<a href="https://doi.org/10.1371/journal.pone.0254014">10.1371/journal.pone.0254014</a></div>
 </div>
-<div id="ref-Choi2019" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Choi2019" class="csl-entry" role="listitem">
 <div class="csl-left-margin">18. </div><div class="csl-right-inline">Choi H, Shin B, Yoo H, et al. Early corticosteroid treatment for postoperative acute lung injury after lung cancer surgery. <em>Ther Adv Respir Dis</em>. 2022;13:1753466619840256. doi:<a href="https://doi.org/10.1177/1753466619840256">10.1177/1753466619840256</a></div>
 </div>
-<div id="ref-Coventry2017" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Coventry2017" class="csl-entry" role="listitem">
 <div class="csl-left-margin">19. </div><div class="csl-right-inline">Coventry LS, Nguyen A, Karahalios A, Roshan-Zamir S, Tran P. Comparison of 3 different perioperative care models for patients with hip fractures within 1 health service. <em>Geriatric Orthopaedic Surgery and Rehabilitation</em>. 2017;8(2):87-93. doi:<a href="https://doi.org/10.1177/2151458517692651">10.1177/2151458517692651</a></div>
 </div>
-<div id="ref-Dai2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Dai2021" class="csl-entry" role="listitem">
 <div class="csl-left-margin">20. </div><div class="csl-right-inline">Dai Z, Lin M, Li Y, et al. Sevoflurane-remifentanil versus propofol-remifentanil anesthesia during noncardiac surgery for patients with coronary artery disease - a prospective study between 2016 and 2017 at a single center. <em>Med Sci Monit</em>. 2022;27:e929835. doi:<a href="https://doi.org/10.12659/MSM.929835">10.12659/MSM.929835</a></div>
 </div>
-<div id="ref-Deiner2017" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Deiner2017" class="csl-entry" role="listitem">
 <div class="csl-left-margin">21. </div><div class="csl-right-inline">Deiner S, Luo X, Lin HM, et al. Intraoperative infusion of dexmedetomidine for prevention of postoperative delirium and cognitive dysfunction in elderly patients undergoing major elective noncardiac surgery: A randomized clinical trial. <em>JAMA Surg</em>. 2017;152(8):e171505. doi:<a href="https://doi.org/10.1001/jamasurg.2017.1505">10.1001/jamasurg.2017.1505</a></div>
 </div>
-<div id="ref-Deiner2015" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Deiner2015" class="csl-entry" role="listitem">
 <div class="csl-left-margin">22. </div><div class="csl-right-inline">Deiner S, Luo X, Silverstein JH, Sano M. Can intraoperative processed EEG predict postoperative cognitive dysfunction in the elderly? <em>Clin Ther</em>. 2015;37(12):2700-2705. doi:<a href="https://doi.org/10.1016/j.clinthera.2015.11.004">10.1016/j.clinthera.2015.11.004</a></div>
 </div>
-<div id="ref-Dieleman2012" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Dieleman2012" class="csl-entry" role="listitem">
 <div class="csl-left-margin">23. </div><div class="csl-right-inline">Dieleman JM, Nierich AP, Rosseel PM, et al. Intraoperative high-dose dexamethasone for cardiac surgery: A randomized controlled trial. <em>JAMA</em>. 2012;308(17):1761-1767. doi:<a href="https://doi.org/10.1001/jama.2012.14144">10.1001/jama.2012.14144</a></div>
 </div>
-<div id="ref-Ding2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Ding2021" class="csl-entry" role="listitem">
 <div class="csl-left-margin">24. </div><div class="csl-right-inline">Ding DF, Wang P, Jiang YX, Zhang XP, Shi W, Luo YW. Effects of apolipoprotein epsilon epsilon4 allele on early postoperative cognitive dysfunction after anesthesia. <em>Anaesthesist</em>. 2022;70(Suppl 1):60-67. doi:<a href="https://doi.org/10.1007/s00101-021-00972-1">10.1007/s00101-021-00972-1</a></div>
 </div>
-<div id="ref-Ding2015" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Ding2015" class="csl-entry" role="listitem">
 <div class="csl-left-margin">25. </div><div class="csl-right-inline">Ding L, Zhang H, Mi W, et al. Effects of dexmedetomidine on anesthesia recovery period and postoperative cognitive function of patients after robot-assisted laparoscopic radical cystectomy. <em>Int J Clin Exp Med</em>. 2015;8(7):11388-11395.</div>
 </div>
-<div id="ref-Djaiani2016" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Djaiani2016" class="csl-entry" role="listitem">
 <div class="csl-left-margin">26. </div><div class="csl-right-inline">Djaiani G, Silverton N, Fedorko L, et al. Dexmedetomidine versus propofol sedation reduces delirium after cardiac surgery: A randomized controlled trial. <em>Anesthesiology</em>. 2016;124(2):362-368. doi:<a href="https://doi.org/10.1097/aln.0000000000000951">10.1097/aln.0000000000000951</a></div>
 </div>
-<div id="ref-Du2019" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Du2019" class="csl-entry" role="listitem">
 <div class="csl-left-margin">27. </div><div class="csl-right-inline">Du X, Song F, Zhang X, Ma S. Protective efficacy of combined use of parecoxib and dexmedetomidine on postoperative hyperalgesia and early cognitive dysfunction after laparoscopic cholecystectomy for elderly patients. <em>Acta Cir Bras</em>. 2019;34(9):e201900905. doi:<a href="https://doi.org/10.1590/s0102-865020190090000005">10.1590/s0102-865020190090000005</a></div>
 </div>
-<div id="ref-Duprey2022" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Duprey2022" class="csl-entry" role="listitem">
 <div class="csl-left-margin">28. </div><div class="csl-right-inline">Duprey MS, Devlin JW, Griffith JL, et al. Association between perioperative medication use and postoperative delirium and cognition in older adults undergoing elective noncardiac surgery. <em>Anesth Analg</em>. 2022;134(6):1154-1163. doi:<a href="https://doi.org/10.1213/ANE.0000000000005959">10.1213/ANE.0000000000005959</a></div>
 </div>
-<div id="ref-Egawa2016" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Egawa2016" class="csl-entry" role="listitem">
 <div class="csl-left-margin">29. </div><div class="csl-right-inline">Egawa J, Inoue S, Nishiwada T, et al. Effects of anesthetics on early postoperative cognitive outcome and intraoperative cerebral oxygen balance in patients undergoing lung surgery: A randomized clinical trial. <em>Can J Anaesth</em>. 2016;63(10):1161-1169. doi:<a href="https://doi.org/10.1007/s12630-016-0700-4 10.1007/s12630-016-0700-4. Epub 2016 Jul 13.">10.1007/s12630-016-0700-4 10.1007/s12630-016-0700-4. Epub 2016 Jul 13.</a></div>
 </div>
-<div id="ref-Epple2001" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Epple2001" class="csl-entry" role="listitem">
 <div class="csl-left-margin">30. </div><div class="csl-right-inline">Epple J, Kubitz J, Schmidt H, et al. Comparative analysis of costs of total intravenous anaesthesia with propofol and remifentanil vs. Balanced anaesthesia with isoflurane and fentanyl. <em>Eur J Anaesthesiol</em>. 2001;18(1):20-28. doi:<a href="https://doi.org/10.1046/j.1365-2346.2001.00764.x 10.1046/j.1365-2346.2001.00764.x.">10.1046/j.1365-2346.2001.00764.x 10.1046/j.1365-2346.2001.00764.x.</a></div>
 </div>
-<div id="ref-Ernst2014" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Ernst2014" class="csl-entry" role="listitem">
 <div class="csl-left-margin">31. </div><div class="csl-right-inline">Ernst KF, Hall DE, Schmid KK, et al. Surgical palliative care consultations over time in relationship to systemwide frailty screening. <em>JAMA Surg</em>. 2014;149(11):1121-1126. doi:<a href="https://doi.org/10.1001/jamasurg.2014.1393">10.1001/jamasurg.2014.1393</a></div>
 </div>
-<div id="ref-Fan2017" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Fan2017" class="csl-entry" role="listitem">
 <div class="csl-left-margin">32. </div><div class="csl-right-inline">Fan GF, Hu Y, Zhang J, Chen L, He WS. Effect of dexmedetomidine on the postoperative cognitive function of patients undergoing radical resection of esophageal cancer. <em>Biomedical Research (India)</em>. 2017;28(18):7977-7980. <a href="https://www.embase.com/search/results?subaction=viewrecord&amp;id=L618931777&amp;from=export">https://www.embase.com/search/results?subaction=viewrecord&amp;id=L618931777&amp;from=export</a></div>
 </div>
-<div id="ref-Fan2017a" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Fan2017a" class="csl-entry" role="listitem">
 <div class="csl-left-margin">33. </div><div class="csl-right-inline">Fan Y, Yuan L, Ji M, Yang J, Gao D. The effect of melatonin on early postoperative cognitive decline in elderly patients undergoing hip arthroplasty: A randomized controlled trial. <em>J Clin Anesth</em>. 2017;39:77-81. doi:<a href="https://doi.org/10.1016/j.jclinane.2017.03.023">10.1016/j.jclinane.2017.03.023</a></div>
 </div>
-<div id="ref-Fazel2017" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Fazel2017" class="csl-entry" role="listitem">
 <div class="csl-left-margin">34. </div><div class="csl-right-inline">Fazel MR, Kheirkhah P, Atoof F. Sevoflurane versus propofol anesthesia on early postoperative cognitive function in older adults: A randomized controlled trial. <em>Middle East Journal of Anesthesiology</em>. 2017;24(3):237-241. <a href="https://www.scopus.com/inward/record.uri?eid=2-s2.0-85044359450&amp;partnerID=40&amp;md5=02bec86eb3177f36f760ecb5b5b1d42d">https://www.scopus.com/inward/record.uri?eid=2-s2.0-85044359450&amp;partnerID=40&amp;md5=02bec86eb3177f36f760ecb5b5b1d42d</a></div>
 </div>
-<div id="ref-Forsmo2016" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Forsmo2016" class="csl-entry" role="listitem">
 <div class="csl-left-margin">35. </div><div class="csl-right-inline">Forsmo HM, Pfeffer F, Rasdal A, et al. Compliance with enhanced recovery after surgery criteria and preoperative and postoperative counselling reduces length of hospital stay in colorectal surgery: Results of a randomized controlled trial. <em>Colorectal Dis</em>. 2022;18(6):603-611. doi:<a href="https://doi.org/10.1111/codi.13253">10.1111/codi.13253</a></div>
 </div>
-<div id="ref-Fukata2017" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Fukata2017" class="csl-entry" role="listitem">
 <div class="csl-left-margin">36. </div><div class="csl-right-inline">Fukata S, Kawabata Y, Fujishiro K, et al. Haloperidol prophylaxis for preventing aggravation of postoperative delirium in elderly patients: A randomized, open-label prospective trial. <em>Surg Today</em>. 2022;47(7):815-826. doi:<a href="https://doi.org/10.1007/s00595-016-1441-2">10.1007/s00595-016-1441-2</a></div>
 </div>
-<div id="ref-Fukata2014" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Fukata2014" class="csl-entry" role="listitem">
 <div class="csl-left-margin">37. </div><div class="csl-right-inline">Fukata S, Kawabata Y, Fujisiro K, et al. Haloperidol prophylaxis does not prevent postoperative delirium in elderly patients: A randomized, open-label prospective trial. <em>Surg Today</em>. 2022;44(12):2305-2313. doi:<a href="https://doi.org/10.1007/s00595-014-0859-7">10.1007/s00595-014-0859-7</a></div>
 </div>
-<div id="ref-Gao2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Gao2021" class="csl-entry" role="listitem">
 <div class="csl-left-margin">38. </div><div class="csl-right-inline">Gao Y, Yu H, Wang W, Wang Y, Teng J, Li F. Effect of dexmedetomidine on the neuroglobin expression in elderly patients with minimally invasive coronary artery bypass graft surgery. <em>Heart Surg Forum</em>. 2021;24(5):E776-e780. doi:<a href="https://doi.org/10.1532/hsf.4073">10.1532/hsf.4073</a></div>
 </div>
-<div id="ref-Gao2020" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Gao2020" class="csl-entry" role="listitem">
 <div class="csl-left-margin">39. </div><div class="csl-right-inline">Gao Y, Zhu X, Huang L, Teng J, Li F. Effects of dexmedetomidine on cerebral oxygen saturation and postoperative cognitive function in elderly patients undergoing minimally invasive coronary artery bypass surgery. <em>Clin Hemorheol Microcirc</em>. 2020;74(4):383-389. doi:<a href="https://doi.org/10.3233/ch-190590">10.3233/ch-190590</a></div>
 </div>
-<div id="ref-Ge2016" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Ge2016" class="csl-entry" role="listitem">
 <div class="csl-left-margin">40. </div><div class="csl-right-inline">Ge YL, Li X, Gao J, et al. Beneficial effects of intravenous dexmedetomidine on cognitive function and cerebral injury following a carotid endarterectomy. <em>Experimental and Therapeutic Medicine</em>. 2016;11(3):1128-1134. doi:<a href="https://doi.org/10.3892/etm.2016.2978">10.3892/etm.2016.2978</a></div>
 </div>
-<div id="ref-Geng2017" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Geng2017" class="csl-entry" role="listitem">
 <div class="csl-left-margin">41. </div><div class="csl-right-inline">Geng YJ, Wu QH, Zhang RQ. Effect of propofol, sevoflurane, and isoflurane on postoperative cognitive dysfunction following laparoscopic cholecystectomy in elderly patients: A randomized controlled trial. <em>J Clin Anesth</em>. 2017;38:165-171. doi:<a href="https://doi.org/10.1016/j.jclinane.2017.02.007 10.1016/j.jclinane.2017.02.007. Epub 2017 Feb 20.">10.1016/j.jclinane.2017.02.007 10.1016/j.jclinane.2017.02.007. Epub 2017 Feb 20.</a></div>
 </div>
-<div id="ref-Glumac2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Glumac2021" class="csl-entry" role="listitem">
 <div class="csl-left-margin">42. </div><div class="csl-right-inline">Glumac S, Kardum G, Sodic L, et al. Longitudinal assessment of preoperative dexamethasone administration on cognitive function after cardiac surgery: A 4-year follow-up of a randomized controlled trial. <em>BMC Anesthesiol</em>. 2022;21(1):129. doi:<a href="https://doi.org/10.1186/s12871-021-01348-z">10.1186/s12871-021-01348-z</a></div>
 </div>
-<div id="ref-Glumac2017" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Glumac2017" class="csl-entry" role="listitem">
 <div class="csl-left-margin">43. </div><div class="csl-right-inline">Glumac S, Kardum G, Sodic L, Supe-Domic D, Karanovic N. Effects of dexamethasone on early cognitive decline after cardiac surgery: A randomised controlled trial. <em>Eur J Anaesthesiol</em>. 2017;34(11):776-784. doi:<a href="https://doi.org/10.1097/eja.0000000000000647">10.1097/eja.0000000000000647</a></div>
 </div>
-<div id="ref-Goins2018" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Goins2018" class="csl-entry" role="listitem">
 <div class="csl-left-margin">44. </div><div class="csl-right-inline">Goins AE, Smeltz A, Ramm C, et al. General anesthesia for transcatheter aortic valve replacement: Total intravenous anesthesia is associated with less delirium as compared to volatile agent technique. <em>J Cardiothorac Vasc Anesth</em>. 2018;32(4):1570-1577. doi:<a href="https://doi.org/10.1053/j.jvca.2017.12.018">10.1053/j.jvca.2017.12.018</a></div>
 </div>
-<div id="ref-Guo2015" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Guo2015" class="csl-entry" role="listitem">
 <div class="csl-left-margin">45. </div><div class="csl-right-inline">Guo Y, Sun L, Zhang J, Li Q, Jiang H, Jiang W. Preventive effects of low-dose dexmedetomidine on postoperative cognitive function and recovery quality in elderly oral cancer patients. <em>Int J Clin Exp Med</em>. 2015;8(9):16183-16190.</div>
 </div>
-<div id="ref-Gupta2019" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Gupta2019" class="csl-entry" role="listitem">
 <div class="csl-left-margin">46. </div><div class="csl-right-inline">Gupta PK, Verma R, Kohli M, Shukla N, Kannaujia S. The effect of ramelteon on postoperative delirium in elderly patients: A randomised double-blind study. <em>Journal of Clinical and Diagnostic Research</em>. 2019;13(12):UC15-UC19. doi:<a href="https://doi.org/10.7860/JCDR/2019/42635.13384">10.7860/JCDR/2019/42635.13384</a></div>
 </div>
-<div id="ref-Hakim2012" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Hakim2012" class="csl-entry" role="listitem">
 <div class="csl-left-margin">47. </div><div class="csl-right-inline">Hakim SM, Othman AI, Naoum DO. Early treatment with risperidone for subsyndromal delirium after on-pump cardiac surgery in the elderly: A randomized trial. <em>Anesthesiology</em>. 2012;116(5):987-997. doi:<a href="https://doi.org/10.1097/ALN.0b013e31825153cc">10.1097/ALN.0b013e31825153cc</a></div>
 </div>
-<div id="ref-Hall2017" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Hall2017" class="csl-entry" role="listitem">
 <div class="csl-left-margin">48. </div><div class="csl-right-inline">Hall DE, Arya S, Schmid KK, et al. Association of a frailty screening initiative with postoperative survival at 30, 180, and 365 days. <em>JAMA Surg</em>. 2017;152(3):233-240. doi:<a href="https://doi.org/10.1001/jamasurg.2016.4219">10.1001/jamasurg.2016.4219</a></div>
 </div>
-<div id="ref-He2018" class="csl-entry" role="doc-biblioentry">
+<div id="ref-He2018" class="csl-entry" role="listitem">
 <div class="csl-left-margin">49. </div><div class="csl-right-inline">He F, Shen L, Zhong J. A study of dexmedetomidine in the prevention of postoperative delirium in elderly patients after vertebral osteotomy. <em>International Journal of Clinical and Experimental Medicine</em>. 2018;11(5):4984-4990. <a href="https://www.embase.com/search/results?subaction=viewrecord&amp;id=L622367989&amp;from=export">https://www.embase.com/search/results?subaction=viewrecord&amp;id=L622367989&amp;from=export</a></div>
 </div>
-<div id="ref-Heilmann2016" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Heilmann2016" class="csl-entry" role="listitem">
 <div class="csl-left-margin">50. </div><div class="csl-right-inline">Heilmann C, Stotz U, Burbaum C, et al. Short-term intervention to reduce anxiety before coronary artery bypass surgery–a randomised controlled trial. <em>J Clin Nurs</em>. 2022;25(3-4):351-361. doi:<a href="https://doi.org/10.1111/jocn.13055">10.1111/jocn.13055</a></div>
 </div>
-<div id="ref-Hempenius2013" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Hempenius2013" class="csl-entry" role="listitem">
 <div class="csl-left-margin">51. </div><div class="csl-right-inline">Hempenius L, Slaets JP, Asselt D van, Bock GH e, Wiggers T, Leeuwen BL van. Outcomes of a geriatric liaison intervention to prevent the development of postoperative delirium in frail elderly cancer patients: Report on a multicentre, randomized, controlled trial. <em>PLoS One</em>. 2013;8(6):e64834. doi:<a href="https://doi.org/10.1371/journal.pone.0064834">10.1371/journal.pone.0064834</a></div>
 </div>
-<div id="ref-Hempenius2016" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Hempenius2016" class="csl-entry" role="listitem">
 <div class="csl-left-margin">52. </div><div class="csl-right-inline">Hempenius L, Slaets JP, Asselt D van, Bock TH e, Wiggers T, Leeuwen BL van. Long term outcomes of a geriatric liaison intervention in frail elderly cancer patients. <em>PLoS One</em>. 2016;11(2):e0143364. doi:<a href="https://doi.org/10.1371/journal.pone.0143364">10.1371/journal.pone.0143364</a></div>
 </div>
-<div id="ref-Hokuto2020" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Hokuto2020" class="csl-entry" role="listitem">
 <div class="csl-left-margin">53. </div><div class="csl-right-inline">Hokuto D, Nomi T, Yoshikawa T, Matsuo Y, Kamitani N, Sho M. Preventative effects of ramelteon against postoperative delirium after elective liver resection. <em>PLoS One</em>. 2020;15(11):e0241673. doi:<a href="https://doi.org/10.1371/journal.pone.0241673">10.1371/journal.pone.0241673</a></div>
 </div>
-<div id="ref-Hollinger2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Hollinger2021" class="csl-entry" role="listitem">
 <div class="csl-left-margin">54. </div><div class="csl-right-inline">Hollinger A, Rüst CA, Riegger H, et al. Ketamine vs. Haloperidol for prevention of cognitive dysfunction and postoperative delirium: A phase IV multicentre randomised placebo-controlled double-blind clinical trial. <em>J Clin Anesth</em>. 2021;68:110099. doi:<a href="https://doi.org/10.1016/j.jclinane.2020.110099">10.1016/j.jclinane.2020.110099</a></div>
 </div>
-<div id="ref-Hong2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Hong2021" class="csl-entry" role="listitem">
 <div class="csl-left-margin">55. </div><div class="csl-right-inline">Hong H, Zhang DZ, Li M, et al. Impact of dexmedetomidine supplemented analgesia on delirium in patients recovering from orthopedic surgery: A randomized controlled trial. <em>BMC Anesthesiol</em>. 2021;21(1):223. doi:<a href="https://doi.org/10.1186/s12871-021-01441-3">10.1186/s12871-021-01441-3</a></div>
 </div>
-<div id="ref-Hongyu2019" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Hongyu2019" class="csl-entry" role="listitem">
 <div class="csl-left-margin">56. </div><div class="csl-right-inline">Hongyu X, Qingting W, Xiaoling S, Liwu Z, Ailing Y, Xin L. Penehyclidine hydrochloride on postoperatively cognitive function. <em>Med Hypotheses</em>. 2019;129:109246. doi:<a href="https://doi.org/10.1016/j.mehy.2019.109246">10.1016/j.mehy.2019.109246</a></div>
 </div>
-<div id="ref-Hu2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Hu2021" class="csl-entry" role="listitem">
 <div class="csl-left-margin">57. </div><div class="csl-right-inline">Hu J, Zhu M, Gao Z, et al. Dexmedetomidine for prevention of postoperative delirium in older adults undergoing oesophagectomy with total intravenous anaesthesia: A double-blind, randomised clinical trial. <em>Eur J Anaesthesiol</em>. 2021;38(Suppl 1):S9-s17. doi:<a href="https://doi.org/10.1097/eja.0000000000001382">10.1097/eja.0000000000001382</a></div>
 </div>
-<div id="ref-Hudetz2009" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Hudetz2009" class="csl-entry" role="listitem">
 <div class="csl-left-margin">58. </div><div class="csl-right-inline">Hudetz JA, Iqbal Z, Gandhi SD, et al. Ketamine attenuates post-operative cognitive dysfunction after cardiac surgery. <em>Acta Anaesthesiol Scand</em>. 2009;53(7):864-872. doi:<a href="https://doi.org/10.1111/j.1399-6576.2009.01978.x">10.1111/j.1399-6576.2009.01978.x</a></div>
 </div>
-<div id="ref-Hudetz2009a" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Hudetz2009a" class="csl-entry" role="listitem">
 <div class="csl-left-margin">59. </div><div class="csl-right-inline">Hudetz JA, Patterson KM, Iqbal Z, et al. Ketamine attenuates delirium after cardiac surgery with cardiopulmonary bypass. <em>J Cardiothorac Vasc Anesth</em>. 2009;23(5):651-657. doi:<a href="https://doi.org/10.1053/j.jvca.2008.12.021">10.1053/j.jvca.2008.12.021</a></div>
 </div>
-<div id="ref-Huyan2019" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Huyan2019" class="csl-entry" role="listitem">
 <div class="csl-left-margin">60. </div><div class="csl-right-inline">Huyan T, Hu X, Peng H, Zhu Z, Li Q, Zhang W. Perioperative dexmedetomidine reduces delirium in elderly patients after lung cancer surgery. <em>Psychiatr Danub</em>. 2019;31(1):95-101. doi:<a href="https://doi.org/10.24869/psyd.2019.95">10.24869/psyd.2019.95</a></div>
 </div>
-<div id="ref-Indrakusuma2015" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Indrakusuma2015" class="csl-entry" role="listitem">
 <div class="csl-left-margin">61. </div><div class="csl-right-inline">Indrakusuma R, Dunker MS, Peetoom JJ, Schreurs WH. Evaluation of preoperative geriatric assessment of elderly patients with colorectal carcinoma. A retrospective study. <em>Eur J Surg Oncol</em>. 2015;41(1):21-27. doi:<a href="https://doi.org/10.1016/j.ejso.2014.09.005">10.1016/j.ejso.2014.09.005</a></div>
 </div>
-<div id="ref-Jakobsen2007" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Jakobsen2007" class="csl-entry" role="listitem">
 <div class="csl-left-margin">62. </div><div class="csl-right-inline">Jakobsen CJ, Berg H, Hindsholm KB, Faddy N, Sloth E. The influence of propofol versus sevoflurane anesthesia on outcome in 10,535 cardiac surgical procedures. <em>J Cardiothorac Vasc Anesth</em>. 2007;21(5):664-671. doi:<a href="https://doi.org/10.1053/j.jvca.2007.03.002">10.1053/j.jvca.2007.03.002</a></div>
 </div>
-<div id="ref-Javaherforoosh-Zadeh2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Javaherforoosh-Zadeh2021" class="csl-entry" role="listitem">
 <div class="csl-left-margin">63. </div><div class="csl-right-inline">Javaherforoosh Zadeh F, Janatmakan F, Shafaeebejestan E, Jorairahmadi S. Effect of melatonin on delirium after on-pump coronary artery bypass graft surgery: A randomized clinical trial. <em>Iran J Med Sci</em>. 2022;46(2):120-127. doi:<a href="https://doi.org/10.30476/ijms.2020.82860.1146">10.30476/ijms.2020.82860.1146</a></div>
 </div>
-<div id="ref-Jellish2003" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Jellish2003" class="csl-entry" role="listitem">
 <div class="csl-left-margin">64. </div><div class="csl-right-inline">Jellish WS, Sheikh T, Baker WH, Louie EK, Slogoff S. Hemodynamic stability, myocardial ischemia, and perioperative outcome after carotid surgery with remifentanil/propofol or isoflurane/fentanyl anesthesia. <em>J Neurosurg Anesthesiol</em>. 2003;15(3):176-184. doi:<a href="https://doi.org/10.1097/00008506-200307000-00004">10.1097/00008506-200307000-00004</a></div>
 </div>
-<div id="ref-Jeong2016" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Jeong2016" class="csl-entry" role="listitem">
 <div class="csl-left-margin">65. </div><div class="csl-right-inline">Jeong YM, Lee E, Kim KI, et al. Association of pre-operative medication use with post-operative delirium in surgical oncology patients receiving comprehensive geriatric assessment. <em>BMC Geriatr</em>. 2016;16:134. doi:<a href="https://doi.org/10.1186/s12877-016-0311-5">10.1186/s12877-016-0311-5</a></div>
 </div>
-<div id="ref-Kalisvaart2005" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Kalisvaart2005" class="csl-entry" role="listitem">
 <div class="csl-left-margin">66. </div><div class="csl-right-inline">Kalisvaart KJ, Jonghe JF e, Bogaards MJ, et al. Haloperidol prophylaxis for elderly hip-surgery patients at risk for delirium: A randomized placebo-controlled study. <em>J Am Geriatr Soc</em>. 2022;53(10):1658-1666. doi:<a href="https://doi.org/10.1111/j.1532-5415.2005.53503.x">10.1111/j.1532-5415.2005.53503.x</a></div>
 </div>
-<div id="ref-Kishimoto2018" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Kishimoto2018" class="csl-entry" role="listitem">
 <div class="csl-left-margin">67. </div><div class="csl-right-inline">Kishimoto M, Yamana H, Inoue S, et al. Suspected periprosthetic joint infection after total knee arthroplasty under propofol versus sevoflurane anesthesia: A retrospective cohort study. <em>Can J Anaesth</em>. 2018;65(8):893-900. doi:<a href="https://doi.org/10.1007/s12630-018-1139-6">10.1007/s12630-018-1139-6</a></div>
 </div>
-<div id="ref-Konishi2018" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Konishi2018" class="csl-entry" role="listitem">
 <div class="csl-left-margin">68. </div><div class="csl-right-inline">Konishi Y, Evered LA, Scott DA, Silbert BS. Postoperative cognitive dysfunction after sevoflurane or propofol general anaesthesia in combination with spinal anaesthesia for hip arthroplasty. <em>Anaesth Intensive Care</em>. 2018;46(6):596-600. doi:<a href="https://doi.org/10.1177/0310057x1804600610">10.1177/0310057x1804600610</a></div>
 </div>
-<div id="ref-Koo2016" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Koo2016" class="csl-entry" role="listitem">
 <div class="csl-left-margin">69. </div><div class="csl-right-inline">Koo BW, Sim JB, Shin HJ, et al. Surgical site infection after colorectal surgery according to the main anesthetic agent: A retrospective comparison between volatile anesthetics and propofol. <em>Korean J Anesthesiol</em>. 2016;69(4):332-340. doi:<a href="https://doi.org/10.4097/kjae.2016.69.4.332">10.4097/kjae.2016.69.4.332</a></div>
 </div>
-<div id="ref-Kratz2015" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Kratz2015" class="csl-entry" role="listitem">
 <div class="csl-left-margin">70. </div><div class="csl-right-inline">Kratz T, Heinrich M, Schlauß E, Diefenbacher A. Preventing postoperative delirium. <em>Dtsch Arztebl Int</em>. 2015;112(17):289-296. doi:<a href="https://doi.org/10.3238/arztebl.2015.0289">10.3238/arztebl.2015.0289</a></div>
 </div>
-<div id="ref-Larsen2010" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Larsen2010" class="csl-entry" role="listitem">
 <div class="csl-left-margin">71. </div><div class="csl-right-inline">Larsen KA, Kelly SE, Stern TA, et al. Administration of olanzapine to prevent postoperative delirium in elderly joint-replacement patients: A randomized, controlled trial. <em>Psychosomatics</em>. 2022;51(5):409-418. doi:<a href="https://doi.org/10.1176/appi.psy.51.5.409">10.1176/appi.psy.51.5.409</a></div>
 </div>
-<div id="ref-Lau2013" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Lau2013" class="csl-entry" role="listitem">
 <div class="csl-left-margin">72. </div><div class="csl-right-inline">Lau TW, Fang C, Leung F. The effectiveness of a geriatric hip fracture clinical pathway in reducing hospital and rehabilitation length of stay and improving short-term mortality rates. <em>Geriatr Orthop Surg Rehabil</em>. 2022;4(1):3-9. doi:<a href="https://doi.org/10.1177/2151458513484759">10.1177/2151458513484759</a></div>
 </div>
-<div id="ref-Lee2018" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Lee2018" class="csl-entry" role="listitem">
 <div class="csl-left-margin">73. </div><div class="csl-right-inline">Lee C, Lee CH, Lee G, Lee M, Hwang J. The effect of the timing and dose of dexmedetomidine on postoperative delirium in elderly patients after laparoscopic major non-cardiac surgery: A double blind randomized controlled study. <em>J Clin Anesth</em>. 2018;47:27-32. doi:<a href="https://doi.org/10.1016/j.jclinane.2018.03.007">10.1016/j.jclinane.2018.03.007</a></div>
 </div>
-<div id="ref-Lee2018a" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Lee2018a" class="csl-entry" role="listitem">
 <div class="csl-left-margin">74. </div><div class="csl-right-inline">Lee C, Lee J, Lee G, Lee H, Koh E, Hwang J. Pregabalin and dexmedetomidine combined for pain after total knee arthroplasty or total hip arthroplasty performed under spinal anesthesia. <em>Orthopedics</em>. 2018;41(6):365-370. doi:<a href="https://doi.org/10.3928/01477447-20181023-04">10.3928/01477447-20181023-04</a></div>
 </div>
-<div id="ref-Lee2015" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Lee2015" class="csl-entry" role="listitem">
 <div class="csl-left-margin">75. </div><div class="csl-right-inline">Lee KH, Kim JY, Kim JW, Park JS, Lee KW, Jeon SY. Influence of ketamine on early postoperative cognitive function after orthopedic surgery in elderly patients. <em>Anesth Pain Med</em>. 2015;5(5):e28844. doi:<a href="https://doi.org/10.5812/aapm.28844">10.5812/aapm.28844</a></div>
 </div>
-<div id="ref-Lester2022" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Lester2022" class="csl-entry" role="listitem">
 <div class="csl-left-margin">76. </div><div class="csl-right-inline">Lester PE, Ripley D, Grandelli R, Drew LA, Keegan M, Islam S. Interdisciplinary protocol for surgery in older persons: Development and implementation. <em>J Am Med Dir Assoc</em>. 2022;23(4):555-562. doi:<a href="https://doi.org/10.1016/j.jamda.2022.01.070">10.1016/j.jamda.2022.01.070</a></div>
 </div>
-<div id="ref-Li2019" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Li2019" class="csl-entry" role="listitem">
 <div class="csl-left-margin">77. </div><div class="csl-right-inline">Li WX, Luo RY, Chen C, et al. Effects of propofol, dexmedetomidine, and midazolam on postoperative cognitive dysfunction in elderly patients: A randomized controlled preliminary trial. <em>Chin Med J (Engl)</em>. 2019;132(4):437-445. doi:<a href="https://doi.org/10.1097/cm9.0000000000000098">10.1097/cm9.0000000000000098</a></div>
 </div>
-<div id="ref-Li2017" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Li2017" class="csl-entry" role="listitem">
 <div class="csl-left-margin">78. </div><div class="csl-right-inline">Li X, Yang J, Nie XL, et al. Impact of dexmedetomidine on the incidence of delirium in elderly patients after cardiac surgery: A randomized controlled trial. <em>PLoS One</em>. 2017;12(2):e0170757. doi:<a href="https://doi.org/10.1371/journal.pone.0170757">10.1371/journal.pone.0170757</a></div>
 </div>
-<div id="ref-Li2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Li2021" class="csl-entry" role="listitem">
 <div class="csl-left-margin">79. </div><div class="csl-right-inline">Li Y, Chen D, Wang H, et al. Intravenous versus volatile anesthetic effects on postoperative cognition in elderly patients undergoing laparoscopic abdominal surgery. <em>Anesthesiology</em>. 2021;134(3):381-394. doi:<a href="https://doi.org/10.1097/aln.0000000000003680">10.1097/aln.0000000000003680</a></div>
 </div>
-<div id="ref-Li2015" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Li2015" class="csl-entry" role="listitem">
 <div class="csl-left-margin">80. </div><div class="csl-right-inline">Li Y, He R, Chen S, Qu Y. Effect of dexmedetomidine on early postoperative cognitive dysfunction and peri-operative inflammation in elderly patients undergoing laparoscopic cholecystectomy. <em>Exp Ther Med</em>. 2015;10(5):1635-1642. doi:<a href="https://doi.org/10.3892/etm.2015.2726">10.3892/etm.2015.2726</a></div>
 </div>
-<div id="ref-Li2020" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Li2020" class="csl-entry" role="listitem">
 <div class="csl-left-margin">81. </div><div class="csl-right-inline">Li Y, Wang C, Bi M, Gao J, Zhang X, Tian H. Effect of dexmedetomidine on brain function and hemodynamics in patients undergoing lung cancer resection. <em>Oncology Letters</em>. 2020;20(2):1077-1082. doi:<a href="https://doi.org/10.3892/ol.2020.11675">10.3892/ol.2020.11675</a></div>
 </div>
-<div id="ref-Li2021a" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Li2021a" class="csl-entry" role="listitem">
 <div class="csl-left-margin">82. </div><div class="csl-right-inline">Li Z, Yao S, Cheng M, Chen J. Evaluation of the effect of dexmedetomidine on postoperative cognitive dysfunction through aβand cytokines analysis. <em>Iran J Pharm Res</em>. 2021;20(2):515-522. doi:<a href="https://doi.org/10.22037/ijpr.2020.113576.14381">10.22037/ijpr.2020.113576.14381</a></div>
 </div>
-<div id="ref-Lindholm2013" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Lindholm2013" class="csl-entry" role="listitem">
 <div class="csl-left-margin">83. </div><div class="csl-right-inline">Lindholm EE, Aune E, Norén CB, et al. The anesthesia in abdominal aortic surgery (ABSENT) study: A prospective, randomized, controlled trial comparing troponin t release with fentanyl-sevoflurane and propofol-remifentanil anesthesia in major vascular surgery. <em>Anesthesiology</em>. 2013;119(4):802-812. doi:<a href="https://doi.org/10.1097/ALN.0b013e31829bd883">10.1097/ALN.0b013e31829bd883</a></div>
 </div>
-<div id="ref-Liu2016" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Liu2016" class="csl-entry" role="listitem">
 <div class="csl-left-margin">84. </div><div class="csl-right-inline">Liu Y, Ma L, Gao M, Guo W, Ma Y. Dexmedetomidine reduces postoperative delirium after joint replacement in elderly patients with mild cognitive impairment. <em>Aging Clin Exp Res</em>. 2016;28(4):729-736. doi:<a href="https://doi.org/10.1007/s40520-015-0492-3">10.1007/s40520-015-0492-3</a></div>
 </div>
-<div id="ref-Lu2017" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Lu2017" class="csl-entry" role="listitem">
 <div class="csl-left-margin">85. </div><div class="csl-right-inline">Lu J, Chen G, Zhou H, Zhou Q, Zhu Z, Wu C. Effect of parecoxib sodium pretreatment combined with dexmedetomidine on early postoperative cognitive dysfunction in elderly patients after shoulder arthroscopy: A randomized double blinded controlled trial. <em>J Clin Anesth</em>. 2017;41:30-34. doi:<a href="https://doi.org/10.1016/j.jclinane.2017.06.004">10.1016/j.jclinane.2017.06.004</a></div>
 </div>
-<div id="ref-Lu2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Lu2021" class="csl-entry" role="listitem">
 <div class="csl-left-margin">86. </div><div class="csl-right-inline">Lu Y, Fang PP, Yu YQ, et al. Effect of intraoperative dexmedetomidine on recovery of gastrointestinal function after abdominal surgery in older adults: A randomized clinical trial. <em>JAMA Netw Open</em>. 2022;4(10):e2128886. doi:<a href="https://doi.org/10.1001/jamanetworkopen.2021.28886">10.1001/jamanetworkopen.2021.28886</a></div>
 </div>
-<div id="ref-Mahrose2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Mahrose2021" class="csl-entry" role="listitem">
 <div class="csl-left-margin">87. </div><div class="csl-right-inline">Mahrose R, ElSerwi H, Maurice A, Elsersi M. Postoperative delirium after coronary artery bypass graft surgery: Dexmedetomidine infusion alone or with the addition of oral melatonin. <em>Egyptian Journal of Anaesthesia</em>. 2021;37(1):62-68. doi:<a href="https://doi.org/10.1080/11101849.2021.1885956">10.1080/11101849.2021.1885956</a></div>
 </div>
-<div id="ref-Mangusan2015" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Mangusan2015" class="csl-entry" role="listitem">
 <div class="csl-left-margin">88. </div><div class="csl-right-inline">Mangusan RF, Hooper V, Denslow SA, Travis L. Outcomes associated with postoperative delirium after cardiac surgery. <em>Am J Crit Care</em>. 2015;24(2):156-163. doi:<a href="https://doi.org/10.4037/ajcc2015137">10.4037/ajcc2015137</a></div>
 </div>
-<div id="ref-Mansouri2019" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Mansouri2019" class="csl-entry" role="listitem">
 <div class="csl-left-margin">89. </div><div class="csl-right-inline">Mansouri N, Nasrollahi K, Shetabi H. Prevention of cognitive dysfunction after cataract surgery with intravenous administration of midazolam and dexmedetomidine in elderly patients undergoing cataract surgery. <em>Adv Biomed Res</em>. 2019;8:6. doi:<a href="https://doi.org/10.4103/abr.abr{\_}190{\_}18">10.4103/abr.abr{\_}190{\_}18</a></div>
 </div>
-<div id="ref-Marcantonio2001" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Marcantonio2001" class="csl-entry" role="listitem">
 <div class="csl-left-margin">90. </div><div class="csl-right-inline">Marcantonio ER, Flacker JM, Wright RJ, Resnick NM. Reducing delirium after hip fracture: A randomized trial. <em>J Am Geriatr Soc</em>. 2001;49(5):516-522. doi:<a href="https://doi.org/10.1046/j.1532-5415.2001.49108.x">10.1046/j.1532-5415.2001.49108.x</a></div>
 </div>
-<div id="ref-Mardani2013" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Mardani2013" class="csl-entry" role="listitem">
 <div class="csl-left-margin">91. </div><div class="csl-right-inline">Mardani D, Bigdelian H. Prophylaxis of dexamethasone protects patients from further post-operative delirium after cardiac surgery: A randomized trial. <em>Journal of Research in Medical Sciences</em>. 2013;18(2):137-143. <a href="https://www.embase.com/search/results?subaction=viewrecord&amp;id=L368561947&amp;from=export">https://www.embase.com/search/results?subaction=viewrecord&amp;id=L368561947&amp;from=export</a></div>
 </div>
-<div id="ref-Mei2018" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Mei2018" class="csl-entry" role="listitem">
 <div class="csl-left-margin">92. </div><div class="csl-right-inline">Mei B, Meng G, Xu G, et al. Intraoperative sedation with dexmedetomidine is superior to propofol for elderly patients undergoing hip arthroplasty: A prospective randomized controlled study. <em>Clin J Pain</em>. 2018;34(9):811-817. doi:<a href="https://doi.org/10.1097/ajp.0000000000000605">10.1097/ajp.0000000000000605</a></div>
 </div>
-<div id="ref-Mei2020" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Mei2020" class="csl-entry" role="listitem">
 <div class="csl-left-margin">93. </div><div class="csl-right-inline">Mei B, Xu G, Han W, et al. The benefit of dexmedetomidine on postoperative cognitive function is unrelated to the modulation on peripheral inflammation: A single-center, prospective, randomized study. <em>Clin J Pain</em>. 2020;36(2):88-95. doi:<a href="https://doi.org/10.1097/ajp.0000000000000779">10.1097/ajp.0000000000000779</a></div>
 </div>
-<div id="ref-Miyata2017" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Miyata2017" class="csl-entry" role="listitem">
 <div class="csl-left-margin">94. </div><div class="csl-right-inline">Miyata R, Omasa M, Fujimoto R, Ishikawa H, Aoki M. Efficacy of ramelteon for delirium after lung cancer surgery. <em>Interact Cardiovasc Thorac Surg</em>. 2017;24(1):8-12. doi:<a href="https://doi.org/10.1093/icvts/ivw297">10.1093/icvts/ivw297</a></div>
 </div>
-<div id="ref-Mohamed2014" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Mohamed2014" class="csl-entry" role="listitem">
 <div class="csl-left-margin">95. </div><div class="csl-right-inline">Mohamed S, Shaaban AR. The effect of dexmedetomidine on the incidence of postoperative cognitive dysfunction in elderly patients after prolonged abdominal surgery. <em>Egyptian Journal of Anaesthesia</em>. 2014;30(4):331-338. doi:<a href="https://doi.org/10.1016/j.egja.2014.03.007">10.1016/j.egja.2014.03.007</a></div>
 </div>
-<div id="ref-Momeni2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Momeni2021" class="csl-entry" role="listitem">
 <div class="csl-left-margin">96. </div><div class="csl-right-inline">Momeni M, Khalifa C, Lemaire G, et al. Propofol plus low-dose dexmedetomidine infusion and postoperative delirium in older patients undergoing cardiac surgery. <em>Br J Anaesth</em>. 2021;126(3):665-673. doi:<a href="https://doi.org/10.1016/j.bja.2020.10.041">10.1016/j.bja.2020.10.041</a></div>
 </div>
-<div id="ref-Nandi2014" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Nandi2014" class="csl-entry" role="listitem">
 <div class="csl-left-margin">97. </div><div class="csl-right-inline">Nandi S, Harvey WF, Saillant J, Kazakin A, Talmo C, Bono J. Pharmacologic risk factors for post-operative delirium in total joint arthroplasty patients: A case-control study. <em>J Arthroplasty</em>. 2022;29(2):268-271. doi:<a href="https://doi.org/10.1016/j.arth.2013.06.004">10.1016/j.arth.2013.06.004</a></div>
 </div>
-<div id="ref-Nishikawa2004" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Nishikawa2004" class="csl-entry" role="listitem">
 <div class="csl-left-margin">98. </div><div class="csl-right-inline">Nishikawa K, Nakayama M, Omote K, Namiki A. Recovery characteristics and post-operative delirium after long-duration laparoscope-assisted surgery in elderly patients: Propofol-based vs. Sevoflurane-based anesthesia. <em>Acta Anaesthesiol Scand</em>. 2004;48(2):162-168. doi:<a href="https://doi.org/10.1111/j.0001-5172.2004.00264.x">10.1111/j.0001-5172.2004.00264.x</a></div>
 </div>
-<div id="ref-Oh2019" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Oh2019" class="csl-entry" role="listitem">
 <div class="csl-left-margin">99. </div><div class="csl-right-inline">Oh TK, Kim J, Han S, Kim K, Jheon S, Ji E. Effect of sevoflurane-based or propofol-based anaesthesia on the incidence of postoperative acute kidney injury: A retrospective propensity score-matched analysis. <em>Eur J Anaesthesiol</em>. 2019;36(9):649-655. doi:<a href="https://doi.org/10.1097/eja.0000000000001020">10.1097/eja.0000000000001020</a></div>
 </div>
-<div id="ref-Ommundsen2018" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Ommundsen2018" class="csl-entry" role="listitem">
 <div class="csl-left-margin">100. </div><div class="csl-right-inline">Ommundsen N, Wyller TB, Nesbakken A, et al. Preoperative geriatric assessment and tailored interventions in frail older patients with colorectal cancer: A randomized controlled trial. <em>Colorectal Dis</em>. 2018;20(1):16-25. doi:<a href="https://doi.org/10.1111/codi.13785">10.1111/codi.13785</a></div>
 </div>
-<div id="ref-Ottens2014" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Ottens2014" class="csl-entry" role="listitem">
 <div class="csl-left-margin">101. </div><div class="csl-right-inline">Ottens TH, Dieleman JM, Sauer AM, et al. Effects of dexamethasone on cognitive decline after cardiac surgery: A randomized clinical trial. <em>Anesthesiology</em>. 2022;121(3):492-500. doi:<a href="https://doi.org/10.1097/ALN.0000000000000336">10.1097/ALN.0000000000000336</a></div>
 </div>
-<div id="ref-Ozer2017" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Ozer2017" class="csl-entry" role="listitem">
 <div class="csl-left-margin">102. </div><div class="csl-right-inline">Özer E, Yilmaz R. Effect of different anesthetic techniques on mental outcome in elderly patients undergoing off-pump coronary artery bypass graft surgery. <em>Turkiye Klinikleri Cardiovascular Sciences</em>. 2017;29(1):17-22. doi:<a href="https://doi.org/10.5336/cardiosci.2017-55853">10.5336/cardiosci.2017-55853</a></div>
 </div>
-<div id="ref-Palmbergen2012" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Palmbergen2012" class="csl-entry" role="listitem">
 <div class="csl-left-margin">103. </div><div class="csl-right-inline">Palmbergen WA, Sonderen A van, Keyhan-Falsafi AM, Keunen RW, Wolterbeek R. Improved perioperative neurological monitoring of coronary artery bypass graft patients reduces the incidence of postoperative delirium: The haga brain care strategy. <em>Interact Cardiovasc Thorac Surg</em>. 2012;15(4):671-677. doi:<a href="https://doi.org/10.1093/icvts/ivs317">10.1093/icvts/ivs317</a></div>
 </div>
-<div id="ref-Park2020" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Park2020" class="csl-entry" role="listitem">
 <div class="csl-left-margin">104. </div><div class="csl-right-inline">Park J, Lee SH, Lee JH, et al. Volatile versus total intravenous anesthesia for 30-day mortality following non-cardiac surgery in patients with preoperative myocardial injury. <em>PLoS One</em>. 2020;15(9):e0238661. doi:<a href="https://doi.org/10.1371/journal.pone.0238661">10.1371/journal.pone.0238661</a></div>
 </div>
-<div id="ref-Partridge2017" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Partridge2017" class="csl-entry" role="listitem">
 <div class="csl-left-margin">105. </div><div class="csl-right-inline">Partridge JS, Harari D, Martin FC, et al. Randomized clinical trial of comprehensive geriatric assessment and optimization in vascular surgery. <em>Br J Surg</em>. 2017;104(6):679-687. doi:<a href="https://doi.org/10.1002/bjs.10459 10.1002/bjs.10459. Epub 2017 Feb 15.">10.1002/bjs.10459 10.1002/bjs.10459. Epub 2017 Feb 15.</a></div>
 </div>
-<div id="ref-Prestmo2015" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Prestmo2015" class="csl-entry" role="listitem">
 <div class="csl-left-margin">106. </div><div class="csl-right-inline">Prestmo A, Hagen G, Sletvold O, et al. Comprehensive geriatric care for patients with hip fractures: A prospective, randomised, controlled trial. <em>Lancet</em>. 2015;385(9978):1623-1633. doi:<a href="https://doi.org/10.1016/s0140-6736(14)62409-0 10.1016/S0140-6736(14)62409-0. Epub 2015 Feb 5.">10.1016/s0140-6736(14)62409-0 10.1016/S0140-6736(14)62409-0. Epub 2015 Feb 5.</a></div>
 </div>
-<div id="ref-Qiao2022" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Qiao2022" class="csl-entry" role="listitem">
 <div class="csl-left-margin">107. </div><div class="csl-right-inline">Qiao H, Chen J, Huang Y, et al. Early neurocognitive function with propofol or desflurane anesthesia after laser laryngeal surgery with low inspired oxygen. <em>Laryngoscope</em>. Published online 2022. doi:<a href="https://doi.org/10.1002/lary.30273">10.1002/lary.30273</a></div>
 </div>
-<div id="ref-Qiao2015" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Qiao2015" class="csl-entry" role="listitem">
 <div class="csl-left-margin">108. </div><div class="csl-right-inline">Qiao Y, Feng H, Zhao T, Yan H, Zhang H, Zhao X. Postoperative cognitive dysfunction after inhalational anesthesia in elderly patients undergoing major surgery: The influence of anesthetic technique, cerebral injury and systemic inflammation. <em>BMC Anesthesiol</em>. 2015;15:154. doi:<a href="https://doi.org/10.1186/s12871-015-0130-9">10.1186/s12871-015-0130-9</a></div>
 </div>
-<div id="ref-Qin2019" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Qin2019" class="csl-entry" role="listitem">
 <div class="csl-left-margin">109. </div><div class="csl-right-inline">Qin Y, Ni J, Kang L, Zhong Z, Wang L, Yin S. Sevoflurane effect on cognitive function and the expression of oxidative stress response proteins in elderly patients undergoing radical surgery for lung cancer. <em>J Coll Physicians Surg Pak</em>. 2019;29(1):12-15. doi:<a href="https://doi.org/10.29271/jcpsp.2019.01.12">10.29271/jcpsp.2019.01.12</a></div>
 </div>
-<div id="ref-Rascon-Martinez2016" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Rascon-Martinez2016" class="csl-entry" role="listitem">
 <div class="csl-left-margin">110. </div><div class="csl-right-inline">Rascón-Martı́nez DM, Fresán-Orellana A, Ocharán-Hernández ME, Genis-Zarate JH, Castellanos-Olivares A. The effects of ketamine on cognitive function in elderly patients undergoing ophthalmic surgery: A pilot study. <em>Anesth Analg</em>. 2016;122(4):969-975. doi:<a href="https://doi.org/10.1213/ane.0000000000001153">10.1213/ane.0000000000001153</a></div>
 </div>
-<div id="ref-Richter2005" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Richter2005" class="csl-entry" role="listitem">
 <div class="csl-left-margin">111. </div><div class="csl-right-inline">Richter HE, Redden DT, Duxbury AS, Granieri EC, Halli AD, Goode PS. Pelvic floor surgery in the older woman: Enhanced compared with usual preoperative assessment. <em>Obstet Gynecol</em>. 2005;105(4):800-807. doi:<a href="https://doi.org/10.1097/01.Aog.0000154920.12402.02">10.1097/01.Aog.0000154920.12402.02</a></div>
 </div>
-<div id="ref-Rohan2005" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Rohan2005" class="csl-entry" role="listitem">
 <div class="csl-left-margin">112. </div><div class="csl-right-inline">Rohan D, Buggy DJ, Crowley S, et al. Increased incidence of postoperative cognitive dysfunction 24 hr after minor surgery in the elderly. <em>Can J Anaesth</em>. 2005;52(2):137-142. doi:<a href="https://doi.org/10.1007/bf03027718">10.1007/bf03027718</a></div>
 </div>
-<div id="ref-Romano2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Romano2021" class="csl-entry" role="listitem">
 <div class="csl-left-margin">113. </div><div class="csl-right-inline">Romano LU, Rigoni M, Torri E, et al. A propensity score-matched analysis to assess the outcomes in pre-and post-fast-track hip and knee elective prosthesis patients. <em>Journal of Clinical Medicine</em>. 2021;10(4):1-13. doi:<a href="https://doi.org/10.3390/jcm10040741">10.3390/jcm10040741</a></div>
 </div>
-<div id="ref-Royse2017" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Royse2017" class="csl-entry" role="listitem">
 <div class="csl-left-margin">114. </div><div class="csl-right-inline">Royse CF, Saager L, Whitlock R, et al. Impact of methylprednisolone on postoperative quality of recovery and delirium in the steroids in cardiac surgery trial: A randomized, double-blind, placebo-controlled substudy. <em>Anesthesiology</em>. 2017;126(2):223-233. doi:<a href="https://doi.org/10.1097/aln.0000000000001433">10.1097/aln.0000000000001433</a></div>
 </div>
-<div id="ref-Sakic2015" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Sakic2015" class="csl-entry" role="listitem">
 <div class="csl-left-margin">115. </div><div class="csl-right-inline">Šakić L, Tonković D, Godan BJ, Šakić K. The influence of dexamethasone administration in spinal anesthesia for femur fracture on postoperative cognitive dysfunction. <em>Periodicum Biologorum</em>. 2015;117(2):281-285. <a href="https://www.embase.com/search/results?subaction=viewrecord&amp;id=L605675897&amp;from=export">https://www.embase.com/search/results?subaction=viewrecord&amp;id=L605675897&amp;from=export</a></div>
 </div>
-<div id="ref-Sauer2014" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Sauer2014" class="csl-entry" role="listitem">
 <div class="csl-left-margin">116. </div><div class="csl-right-inline">Sauer AM, Slooter AJ, Veldhuijzen DS, Eijk MM van, Devlin JW, Dijk D van. Intraoperative dexamethasone and delirium after cardiac surgery: A randomized clinical trial. <em>Anesth Analg</em>. 2022;119(5):1046-1052. doi:<a href="https://doi.org/10.1213/ANE.0000000000000248">10.1213/ANE.0000000000000248</a></div>
 </div>
-<div id="ref-Shehabi2009" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Shehabi2009" class="csl-entry" role="listitem">
 <div class="csl-left-margin">117. </div><div class="csl-right-inline">Shehabi Y, Grant P, Wolfenden H, et al. Prevalence of delirium with dexmedetomidine compared with morphine based therapy after cardiac surgery: A randomized controlled trial (DEXmedetomidine COmpared to morphine-DEXCOM study). <em>Anesthesiology</em>. 2009;111(5):1075-1084. doi:<a href="https://doi.org/10.1097/ALN.0b013e3181b6a783">10.1097/ALN.0b013e3181b6a783</a></div>
 </div>
-<div id="ref-Shem-Tov2017" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Shem-Tov2017" class="csl-entry" role="listitem">
 <div class="csl-left-margin">118. </div><div class="csl-right-inline">Shem Tov L, Matot I. Frailty and anesthesia. <em>Curr Opin Anaesthesiol</em>. 2017;30(3):409-417. doi:<a href="https://doi.org/10.1097/aco.0000000000000456">10.1097/aco.0000000000000456</a></div>
 </div>
-<div id="ref-Shi2019" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Shi2019" class="csl-entry" role="listitem">
 <div class="csl-left-margin">119. </div><div class="csl-right-inline">Shi C, Jin J, Qiao L, Li T, Ma J, Ma Z. Effect of perioperative administration of dexmedetomidine on delirium after cardiac surgery in elderly patients: A double-blinded, multi-center, randomized study. <em>Clin Interv Aging</em>. 2019;14:571-575. doi:<a href="https://doi.org/10.2147/cia.S194476">10.2147/cia.S194476</a></div>
 </div>
-<div id="ref-Shi2020" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Shi2020" class="csl-entry" role="listitem">
 <div class="csl-left-margin">120. </div><div class="csl-right-inline">Shi H, Du X, Wu F, Hu Y, Xv Z, Mi W. Dexmedetomidine improves early postoperative neurocognitive disorder in elderly male patients undergoing thoracoscopic lobectomy. <em>Exp Ther Med</em>. 2020;20(4):3868-3877. doi:<a href="https://doi.org/10.3892/etm.2020.9113">10.3892/etm.2020.9113</a></div>
 </div>
-<div id="ref-Shi2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Shi2021" class="csl-entry" role="listitem">
 <div class="csl-left-margin">121. </div><div class="csl-right-inline">Shi Y. Effects of melatonin on postoperative delirium after PCI in elderly patients: A randomized, single-center, double-blind, placebo-controlled trial. <em>Heart Surg Forum</em>. 2022;24(5):E893-E897. doi:<a href="https://doi.org/10.1532/hsf.4049">10.1532/hsf.4049</a></div>
 </div>
-<div id="ref-Shimizu2010" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Shimizu2010" class="csl-entry" role="listitem">
 <div class="csl-left-margin">122. </div><div class="csl-right-inline">Shimizu K, Hirose M, Mikami S, et al. Effect of anaesthesia maintained with sevoflurane and propofol on surgical site infection after elective open gastrointestinal surgery. <em>J Hosp Infect</em>. 2010;74(2):129-136. doi:<a href="https://doi.org/10.1016/j.jhin.2009.10.011">10.1016/j.jhin.2009.10.011</a></div>
 </div>
-<div id="ref-Shin2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Shin2021" class="csl-entry" role="listitem">
 <div class="csl-left-margin">123. </div><div class="csl-right-inline">Shin HJ, Choi SL, Na HS. Prevalence of postoperative delirium with different combinations of intraoperative general anesthetic agents in patients undergoing cardiac surgery: A retrospective propensity-score-matched study. <em>Medicine (Baltimore)</em>. 2021;100(33):e26992. doi:<a href="https://doi.org/10.1097/md.0000000000026992">10.1097/md.0000000000026992</a></div>
 </div>
-<div id="ref-Siripoonyothai2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Siripoonyothai2021" class="csl-entry" role="listitem">
 <div class="csl-left-margin">124. </div><div class="csl-right-inline">Siripoonyothai S, Sindhvananda W. Comparison of postoperative delirium within 24 hours between ketamine and propofol infusion during cardiopulmonary bypass machine: A randomized controlled trial. <em>Ann Card Anaesth</em>. 2021;24(3):294-301. doi:<a href="https://doi.org/10.4103/aca.ACA{\_}85{\_}20">10.4103/aca.ACA{\_}85{\_}20</a></div>
 </div>
-<div id="ref-Slor2011" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Slor2011" class="csl-entry" role="listitem">
 <div class="csl-left-margin">125. </div><div class="csl-right-inline">Slor CJ, Jonghe JF e, Vreeswijk R, et al. Anesthesia and postoperative delirium in older adults undergoing hip surgery. <em>J Am Geriatr Soc</em>. 2011;59(7):1313-1319. doi:<a href="https://doi.org/10.1111/j.1532-5415.2011.03452.x">10.1111/j.1532-5415.2011.03452.x</a></div>
 </div>
-<div id="ref-Souwer2018" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Souwer2018" class="csl-entry" role="listitem">
 <div class="csl-left-margin">126. </div><div class="csl-right-inline">Souwer ETD, Bastiaannet E, Bruijn S e, et al. Comprehensive multidisciplinary care program for elderly colorectal cancer patients: "From prehabilitation to independence". <em>Eur J Surg Oncol</em>. 2018;44(12):1894-1900. doi:<a href="https://doi.org/10.1016/j.ejso.2018.08.028">10.1016/j.ejso.2018.08.028</a></div>
 </div>
-<div id="ref-Su2016" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Su2016" class="csl-entry" role="listitem">
 <div class="csl-left-margin">127. </div><div class="csl-right-inline">Su X, Meng ZT, Wu XH, et al. Dexmedetomidine for prevention of delirium in elderly patients after non-cardiac surgery: A randomised, double-blind, placebo-controlled trial. <em>Lancet</em>. 2016;388(10054):1893-1902. doi:<a href="https://doi.org/10.1016/s0140-6736(16)30580-3">10.1016/s0140-6736(16)30580-3</a></div>
 </div>
-<div id="ref-Subramaniam2019" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Subramaniam2019" class="csl-entry" role="listitem">
 <div class="csl-left-margin">128. </div><div class="csl-right-inline">Subramaniam B, Shankar P, Shaefi S, et al. Effect of intravenous acetaminophen vs placebo combined with propofol or dexmedetomidine on postoperative delirium among older patients following cardiac surgery: The DEXACET randomized clinical trial. <em>Jama</em>. 2019;321(7):686-696. doi:<a href="https://doi.org/10.1001/jama.2019.0234">10.1001/jama.2019.0234</a></div>
 </div>
-<div id="ref-Sultan2010" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Sultan2010" class="csl-entry" role="listitem">
 <div class="csl-left-margin">129. </div><div class="csl-right-inline">Sultan SS. Assessment of role of perioperative melatonin in prevention and treatment of postoperative delirium after hip arthroplasty under spinal anesthesia in the elderly. <em>Saudi J Anaesth</em>. 2010;4(3):169-173. doi:<a href="https://doi.org/10.4103/1658-354x.71132">10.4103/1658-354x.71132</a></div>
 </div>
-<div id="ref-Sun2022" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Sun2022" class="csl-entry" role="listitem">
 <div class="csl-left-margin">130. </div><div class="csl-right-inline">Sun M, Peng T, Sun Y, et al. Intraoperative use of low-dose dexmedetomidine for the prevention of emergence agitation following general anaesthesia in elderly patients: A randomized controlled trial. <em>Aging Clin Exp Res</em>. 2022;34(3):611-618. doi:<a href="https://doi.org/10.1007/s40520-021-01984-y">10.1007/s40520-021-01984-y</a></div>
 </div>
-<div id="ref-Sun2019" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Sun2019" class="csl-entry" role="listitem">
 <div class="csl-left-margin">131. </div><div class="csl-right-inline">Sun Y, Jiang M, Ji Y, Sun Y, Liu Y, Shen W. Impact of postoperative dexmedetomidine infusion on incidence of delirium in elderly patients undergoing major elective noncardiac surgery: A randomized clinical trial. <em>Drug Des Devel Ther</em>. 2019;13:2911-2922. doi:<a href="https://doi.org/10.2147/dddt.S208703">10.2147/dddt.S208703</a></div>
 </div>
-<div id="ref-Tan2022" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Tan2022" class="csl-entry" role="listitem">
 <div class="csl-left-margin">132. </div><div class="csl-right-inline">Tan Y, Ouyang W, Tang Y, Fang N, Fang C, Quan C. Effect of remimazolam tosilate on early cognitive function in elderly patients undergoing upper gastrointestinal endoscopy. <em>J Gastroenterol Hepatol</em>. 2022;37(3):576-583. doi:<a href="https://doi.org/10.1111/jgh.15761">10.1111/jgh.15761</a></div>
 </div>
-<div id="ref-Tanaka2017" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Tanaka2017" class="csl-entry" role="listitem">
 <div class="csl-left-margin">133. </div><div class="csl-right-inline">Tanaka P, Goodman S, Sommer BR, Maloney W, Huddleston J, Lemmens HJ. The effect of desflurane versus propofol anesthesia on postoperative delirium in elderly obese patients undergoing total knee replacement: A randomized, controlled, double-blinded clinical trial. <em>J Clin Anesth</em>. 2017;39:17-22. doi:<a href="https://doi.org/10.1016/j.jclinane.2017.03.015">10.1016/j.jclinane.2017.03.015</a></div>
 </div>
-<div id="ref-Tang2014" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Tang2014" class="csl-entry" role="listitem">
 <div class="csl-left-margin">134. </div><div class="csl-right-inline">Tang N, Ou C, Liu Y, Zuo Y, Bai Y. Effect of inhalational anaesthetic on postoperative cognitive dysfunction following radical rectal resection in elderly patients with mild cognitive impairment. <em>J Int Med Res</em>. 2014;42(6):1252-1261. doi:<a href="https://doi.org/10.1177/0300060514549781 10.1177/0300060514549781. Epub 2014 Oct 22.">10.1177/0300060514549781 10.1177/0300060514549781. Epub 2014 Oct 22.</a></div>
 </div>
-<div id="ref-Tang2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Tang2021" class="csl-entry" role="listitem">
 <div class="csl-left-margin">135. </div><div class="csl-right-inline">Tang Y, Liu J, Huang X, Ding H, Tan S, Zhu Y. Effect of dexmedetomidine-assisted intravenous inhalation combined anesthesia on cerebral oxygen metabolism and serum Th1/Th2 level in elderly colorectal cancer patients. <em>Front Surg</em>. 2022;8:832646. doi:<a href="https://doi.org/10.3389/fsurg.2021.832646">10.3389/fsurg.2021.832646</a></div>
 </div>
-<div id="ref-Tu2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Tu2021" class="csl-entry" role="listitem">
 <div class="csl-left-margin">136. </div><div class="csl-right-inline">Tu W, Yuan H, Zhang S, et al. Influence of anesthetic induction of propofol combined with esketamine on perioperative stress and inflammatory responses and postoperative cognition of elderly surgical patients. <em>American Journal of Translational Research</em>. 2021;13(3):1701-1709. <a href="https://www.embase.com/search/results?subaction=viewrecord&amp;id=L2011456630&amp;from=export">https://www.embase.com/search/results?subaction=viewrecord&amp;id=L2011456630&amp;from=export</a></div>
 </div>
-<div id="ref-Turan2020" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Turan2020" class="csl-entry" role="listitem">
 <div class="csl-left-margin">137. </div><div class="csl-right-inline">Turan A, Duncan A, Leung S, et al. Dexmedetomidine for reduction of atrial fibrillation and delirium after cardiac surgery (DECADE): A randomised placebo-controlled trial. <em>Lancet</em>. 2020;396(10245):177-185. doi:<a href="https://doi.org/10.1016/S0140-6736(20)30631-0">10.1016/S0140-6736(20)30631-0</a></div>
 </div>
-<div id="ref-Ushida2009" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Ushida2009" class="csl-entry" role="listitem">
 <div class="csl-left-margin">138. </div><div class="csl-right-inline">Ushida T, Yokoyama T, Kishida Y, et al. Incidence and risk factors of postoperative delirium in cervical spine surgery. <em>Spine (Phila Pa 1976)</em>. 2022;34(23):2500-2504. doi:<a href="https://doi.org/10.1097/BRS.0b013e3181b321e6">10.1097/BRS.0b013e3181b321e6</a></div>
 </div>
-<div id="ref-Vlies2020" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Vlies2020" class="csl-entry" role="listitem">
 <div class="csl-left-margin">139. </div><div class="csl-right-inline">Vlies E van der, Smits AB, Los M, et al. Implementation of a preoperative multidisciplinary team approach for frail colorectal cancer patients: Influence on patient selection, prehabilitation and outcome. <em>J Geriatr Oncol</em>. 2020;11(8):1237-1243. doi:<a href="https://doi.org/10.1016/j.jgo.2020.04.011">10.1016/j.jgo.2020.04.011</a></div>
 </div>
-<div id="ref-Norden2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Norden2021" class="csl-entry" role="listitem">
 <div class="csl-left-margin">140. </div><div class="csl-right-inline">Norden J van, Spies CD, Borchers F, et al. The effect of peri-operative dexmedetomidine on the incidence of postoperative delirium in cardiac and non-cardiac surgical patients: A randomised, double-blind placebo-controlled trial. <em>Anaesthesia</em>. 2021;76(10):1342-1351. doi:<a href="https://doi.org/10.1111/anae.15469">10.1111/anae.15469</a></div>
 </div>
-<div id="ref-Vidan2005" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Vidan2005" class="csl-entry" role="listitem">
 <div class="csl-left-margin">141. </div><div class="csl-right-inline">Vidán M, Serra JA, Moreno C, Riquelme G, Ortiz J. Efficacy of a comprehensive geriatric intervention in older patients hospitalized for hip fracture: A randomized, controlled trial. <em>J Am Geriatr Soc</em>. 2005;53(9):1476-1482. doi:<a href="https://doi.org/10.1111/j.1532-5415.2005.53466.x 10.1111/j.1532-5415.2005.53466.x.">10.1111/j.1532-5415.2005.53466.x 10.1111/j.1532-5415.2005.53466.x.</a></div>
 </div>
-<div id="ref-Vochteloo2011" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Vochteloo2011" class="csl-entry" role="listitem">
 <div class="csl-left-margin">142. </div><div class="csl-right-inline">Vochteloo AJ, Moerman S, Burg BL van der, et al. Delirium risk screening and haloperidol prophylaxis program in hip fracture patients is a helpful tool in identifying high-risk patients, but does not reduce the incidence of delirium. <em>BMC Geriatr</em>. 2011;11:39. doi:<a href="https://doi.org/10.1186/1471-2318-11-39 10.1186/1471-2318-11-39.">10.1186/1471-2318-11-39 10.1186/1471-2318-11-39.</a></div>
 </div>
-<div id="ref-Wang2022" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Wang2022" class="csl-entry" role="listitem">
 <div class="csl-left-margin">143. </div><div class="csl-right-inline">Wang F, Xie D, Xu H, Ye Q, Wu L, Gao XP. The effects of remifentanil-propofol combined with dexmedetomidine on cognitive dysfunction in elderly patients after ureteroscopic holmium laser lithotripsy: A double-blind randomized controlled trial. <em>Trials</em>. 2022;23(1):192. doi:<a href="https://doi.org/10.1186/s13063-022-06121-2">10.1186/s13063-022-06121-2</a></div>
 </div>
-<div id="ref-Wang2020" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Wang2020" class="csl-entry" role="listitem">
 <div class="csl-left-margin">144. </div><div class="csl-right-inline">Wang L, Zhang T, Huang L, Peng W. Comparison between dexmedetomidine and midazolam for sedation in patients with intubation after oral and maxillofacial surgery. <em>Biomed Res Int</em>. 2020;2020:7082597. doi:<a href="https://doi.org/10.1155/2020/7082597">10.1155/2020/7082597</a></div>
 </div>
-<div id="ref-Wang2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Wang2021" class="csl-entry" role="listitem">
 <div class="csl-left-margin">145. </div><div class="csl-right-inline">Wang ML, Min J, Sands LP, Leung JM. Midazolam premedication immediately before surgery is not associated with early postoperative delirium. <em>Anesth Analg</em>. 2021;133(3):765-771. doi:<a href="https://doi.org/10.1213/ane.0000000000005482">10.1213/ane.0000000000005482</a></div>
 </div>
-<div id="ref-Wang2019" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Wang2019" class="csl-entry" role="listitem">
 <div class="csl-left-margin">146. </div><div class="csl-right-inline">Wang W, Feng N, Zhao W, et al. Dexmedetomidine reduces brain neuronal injuries but not clinical neurocognitive function in the elderly, compared to midazolam. <em>International Journal of Clinical and Experimental Medicine</em>. 2019;12(4):4210-4217. <a href="https://www.embase.com/search/results?subaction=viewrecord&amp;id=L2001919677&amp;from=export">https://www.embase.com/search/results?subaction=viewrecord&amp;id=L2001919677&amp;from=export</a></div>
 </div>
-<div id="ref-Wang2012" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Wang2012" class="csl-entry" role="listitem">
 <div class="csl-left-margin">147. </div><div class="csl-right-inline">Wang W, Li HL, Wang DX, et al. Haloperidol prophylaxis decreases delirium incidence in elderly patients after noncardiac surgery: A randomized controlled trial*. <em>Crit Care Med</em>. 2022;40(3):731-739. doi:<a href="https://doi.org/10.1097/CCM.0b013e3182376e4f">10.1097/CCM.0b013e3182376e4f</a></div>
 </div>
-<div id="ref-Wang2020a" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Wang2020a" class="csl-entry" role="listitem">
 <div class="csl-left-margin">148. </div><div class="csl-right-inline">Wang Z, Shen Z, Wang H, Zhang L, Dong R. Effect of dexmedetomidine on the cognitive function of patients undergoing gastric cancer surgery by regulating the PI3K/AKT signaling pathway. <em>Oncology Letters</em>. 2020;19(2):1151-1156. doi:<a href="https://doi.org/10.3892/ol.2019.11224">10.3892/ol.2019.11224</a></div>
 </div>
-<div id="ref-Watne2014" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Watne2014" class="csl-entry" role="listitem">
 <div class="csl-left-margin">149. </div><div class="csl-right-inline">Watne LO, Torbergsen AC, Conroy S, et al. The effect of a pre- and postoperative orthogeriatric service on cognitive function in patients with hip fracture: Randomized controlled trial (oslo orthogeriatric trial). <em>BMC Med</em>. 2014;12:63. doi:<a href="https://doi.org/10.1186/1741-7015-12-63">10.1186/1741-7015-12-63</a></div>
 </div>
-<div id="ref-Weaver2003" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Weaver2003" class="csl-entry" role="listitem">
 <div class="csl-left-margin">150. </div><div class="csl-right-inline">Weaver FM, Hughes SL, Almagor O, et al. Comparison of two home care protocols for total joint replacement. <em>J Am Geriatr Soc</em>. 2003;51(4):523-528. doi:<a href="https://doi.org/10.1046/j.1532-5415.2003.51162.x">10.1046/j.1532-5415.2003.51162.x</a></div>
 </div>
-<div id="ref-Whitlock2015" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Whitlock2015" class="csl-entry" role="listitem">
 <div class="csl-left-margin">151. </div><div class="csl-right-inline">Whitlock RP, Devereaux PJ, Teoh KH, et al. Methylprednisolone in patients undergoing cardiopulmonary bypass (SIRS): A randomised, double-blind, placebo-controlled trial. <em>Lancet</em>. 2022;386(10000):1243-1253. doi:<a href="https://doi.org/10.1016/S0140-6736(15)00273-1">10.1016/S0140-6736(15)00273-1</a></div>
 </div>
-<div id="ref-Wu2020" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Wu2020" class="csl-entry" role="listitem">
 <div class="csl-left-margin">152. </div><div class="csl-right-inline">Wu LP, Kang WQ. Effect of dexmedetomidine for sedation and cognitive function in patients with preoperative anxiety undergoing carotid artery stenting. <em>J Int Med Res</em>. 2020;48(9):300060520938959. doi:<a href="https://doi.org/10.1177/0300060520938959">10.1177/0300060520938959</a></div>
 </div>
-<div id="ref-Wu2018" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Wu2018" class="csl-entry" role="listitem">
 <div class="csl-left-margin">153. </div><div class="csl-right-inline">Wu ZF, Lee MS, Wong CS, et al. Propofol-based total intravenous anesthesia is associated with better survival than desflurane anesthesia in colon cancer surgery. <em>Anesthesiology</em>. 2018;129(5):932-941. doi:<a href="https://doi.org/10.1097/aln.0000000000002357">10.1097/aln.0000000000002357</a></div>
 </div>
-<div id="ref-Xiang2022" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Xiang2022" class="csl-entry" role="listitem">
 <div class="csl-left-margin">154. </div><div class="csl-right-inline">Xiang XB, Chen H, Wu YL, Wang K, Yue X, Cheng XQ. The effect of preoperative methylprednisolone on postoperative delirium in older patients undergoing gastrointestinal surgery: A randomized, double-blind, placebo-controlled trial. <em>J Gerontol A Biol Sci Med Sci</em>. 2022;77(3):517-523. doi:<a href="https://doi.org/10.1093/gerona/glab248">10.1093/gerona/glab248</a></div>
 </div>
-<div id="ref-Xin2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Xin2021" class="csl-entry" role="listitem">
 <div class="csl-left-margin">155. </div><div class="csl-right-inline">Xin X, Chen J, Hua W, Wang H. Intraoperative dexmedetomidine for prevention of postoperative delirium in elderly patients with mild cognitive impairment. <em>Int J Geriatr Psychiatry</em>. 2021;36(1):143-151. doi:<a href="https://doi.org/10.1002/gps.5406">10.1002/gps.5406</a></div>
 </div>
-<div id="ref-Xing2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Xing2021" class="csl-entry" role="listitem">
 <div class="csl-left-margin">156. </div><div class="csl-right-inline">Xing C, Yan C. Effects of dexmedetomidine on the incidence of postoperative delirium and plasma s-100βprotein levels following hip surgery in the elderly population. <em>International Journal of Gerontology</em>. 2021;15(3):207-211. doi:<a href="https://doi.org/10.6890/IJGE.202107{\_}15(3).0004">10.6890/IJGE.202107{\_}15(3).0004</a></div>
 </div>
-<div id="ref-Xuan2018" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Xuan2018" class="csl-entry" role="listitem">
 <div class="csl-left-margin">157. </div><div class="csl-right-inline">Xuan Y, Fan R, Chen J, et al. Effects of dexmedetomidine for postoperative delirium after joint replacement in elderly patients: A randomized, double-blind, and placebo-controlled trial. <em>International Journal of Clinical and Experimental Medicine</em>. 2018;11(12):13147-13157. <a href="https://www.embase.com/search/results?subaction=viewrecord&amp;id=L625709588&amp;from=export">https://www.embase.com/search/results?subaction=viewrecord&amp;id=L625709588&amp;from=export</a></div>
 </div>
-<div id="ref-Yamasaki2019" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Yamasaki2019" class="csl-entry" role="listitem">
 <div class="csl-left-margin">158. </div><div class="csl-right-inline">Yamasaki M, Fukuda Y, Tanimoto A, et al. Reduction in the rate of postoperative delirium by switching from famotidine to omeprazole in japanese hepatectomized recipients. <em>J Pharm Health Care Sci</em>. 2022;5:10. doi:<a href="https://doi.org/10.1186/s40780-019-0139-1">10.1186/s40780-019-0139-1</a></div>
 </div>
-<div id="ref-Yan2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Yan2021" class="csl-entry" role="listitem">
 <div class="csl-left-margin">159. </div><div class="csl-right-inline">Yan C, Ti-jun D. Effects of intraoperative dexmedetomidine infusion on postoperative delirium in elderly patients undergoing total hip arthroplasty. <em>International Surgery</em>. 2021;105(1-3):328-335. doi:<a href="https://doi.org/10.9738/intsurg-d-17-00029.1">10.9738/intsurg-d-17-00029.1</a></div>
 </div>
-<div id="ref-Yu2017" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Yu2017" class="csl-entry" role="listitem">
 <div class="csl-left-margin">160. </div><div class="csl-right-inline">Yu DN, Zhu Y, Ma J, Sun Q. Comparison of post-anesthesia delirium in elderly patients treated with dexmedetomidine and midazolam maleate after thoracic surgery. <em>Biomedical Research (India)</em>. 2017;28(15):6852-6855. <a href="https://www.embase.com/search/results?subaction=viewrecord&amp;id=L618295307&amp;from=export">https://www.embase.com/search/results?subaction=viewrecord&amp;id=L618295307&amp;from=export</a></div>
 </div>
-<div id="ref-Zangrillo2011" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Zangrillo2011" class="csl-entry" role="listitem">
 <div class="csl-left-margin">161. </div><div class="csl-right-inline">Zangrillo A, Testa V, Aldrovandi V, et al. Volatile agents for cardiac protection in noncardiac surgery: A randomized controlled study. <em>J Cardiothorac Vasc Anesth</em>. 2011;25(6):902-907. doi:<a href="https://doi.org/10.1053/j.jvca.2011.06.016">10.1053/j.jvca.2011.06.016</a></div>
 </div>
-<div id="ref-Zhang2019" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Zhang2019" class="csl-entry" role="listitem">
 <div class="csl-left-margin">162. </div><div class="csl-right-inline">Zhang DF, Su X, Meng ZT, et al. Impact of dexmedetomidine on long-term outcomes after noncardiac surgery in elderly: 3-year follow-up of a randomized controlled trial. <em>Ann Surg</em>. 2019;270(2):356-363. doi:<a href="https://doi.org/10.1097/sla.0000000000002801">10.1097/sla.0000000000002801</a></div>
 </div>
-<div id="ref-Zhang2018" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Zhang2018" class="csl-entry" role="listitem">
 <div class="csl-left-margin">163. </div><div class="csl-right-inline">Zhang H, Wu Z, Zhao X, Qiao Y. Role of dexmedetomidine in reducing the incidence of postoperative cognitive dysfunction caused by sevoflurane inhalation anesthesia in elderly patients with esophageal carcinoma. <em>J Cancer Res Ther</em>. 2018;14(7):1497-1502. doi:<a href="https://doi.org/10.4103/jcrt.JCRT{\_}164{\_}18">10.4103/jcrt.JCRT{\_}164{\_}18</a></div>
 </div>
-<div id="ref-Zhang2017" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Zhang2017" class="csl-entry" role="listitem">
 <div class="csl-left-margin">164. </div><div class="csl-right-inline">Zhang W, Sun Y, Liu Y, et al. A nursing protocol targeting risk factors for reducing postoperative delirium in patients following coronary artery bypass grafting: Results of a prospective before-after study. <em>Int J Nurs Sci</em>. 2017;4(2):81-87. doi:<a href="https://doi.org/10.1016/j.ijnss.2017.02.002">10.1016/j.ijnss.2017.02.002</a></div>
 </div>
-<div id="ref-Zhang2020" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Zhang2020" class="csl-entry" role="listitem">
 <div class="csl-left-margin">165. </div><div class="csl-right-inline">Zhang W, Wang T, Wang G, Yang M, Zhou Y, Yuan Y. Effects of dexmedetomidine on postoperative delirium and expression of IL-1β, IL-6, and TNF-αin elderly patients after hip fracture operation. <em>Front Pharmacol</em>. 2020;11:678. doi:<a href="https://doi.org/10.3389/fphar.2020.00678">10.3389/fphar.2020.00678</a></div>
 </div>
-<div id="ref-Zhang2018a" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Zhang2018a" class="csl-entry" role="listitem">
 <div class="csl-left-margin">166. </div><div class="csl-right-inline">Zhang Y, Shan GJ, Zhang YX, et al. Propofol compared with sevoflurane general anaesthesia is associated with decreased delayed neurocognitive recovery in older adults. <em>Br J Anaesth</em>. 2018;121(3):595-604. doi:<a href="https://doi.org/10.1016/j.bja.2018.05.059">10.1016/j.bja.2018.05.059</a></div>
 </div>
-<div id="ref-Zhang2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Zhang2021" class="csl-entry" role="listitem">
 <div class="csl-left-margin">167. </div><div class="csl-right-inline">Zhang Z, Li W, Jia H. Postoperative effects of dexmedetomidine on serum inflammatory factors and cognitive malfunctioning in patients with general anesthesia. <em>J Healthc Eng</em>. 2021;2021:7161901. doi:<a href="https://doi.org/10.1155/2021/7161901">10.1155/2021/7161901</a></div>
 </div>
-<div id="ref-Zhao2020" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Zhao2020" class="csl-entry" role="listitem">
 <div class="csl-left-margin">168. </div><div class="csl-right-inline">Zhao W, Hu Y, Chen H, et al. The effect and optimal dosage of dexmedetomidine plus sufentanil for postoperative analgesia in elderly patients with postoperative delirium and early postoperative cognitive dysfunction: A single-center, prospective, randomized, double-blind, controlled trial. <em>Front Neurosci</em>. 2020;14:549516. doi:<a href="https://doi.org/10.3389/fnins.2020.549516">10.3389/fnins.2020.549516</a></div>
 </div>
-<div id="ref-Zhou2019" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Zhou2019" class="csl-entry" role="listitem">
 <div class="csl-left-margin">169. </div><div class="csl-right-inline">Zhou M, Lyu Y, Zhu Y, et al. Effect of ulinastatin combined with dexmedetomidine on postoperative cognitive dysfunction in patients who underwent cardiac surgery. <em>Frontiers in Neurology</em>. 2019;10. doi:<a href="https://doi.org/10.3389/fneur.2019.01293">10.3389/fneur.2019.01293</a></div>
 </div>
-<div id="ref-Zhou2019a" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Zhou2019a" class="csl-entry" role="listitem">
 <div class="csl-left-margin">170. </div><div class="csl-right-inline">Zhou ZJ, Tang J, Li WH, Tao WD. Preoperative intravenous flurbiprofen reduces postoperative pain and inflammatory cytokines in elderly patients after hip arthroplasty. <em>Exp Ther Med</em>. 2019;17(1):354-358. doi:<a href="https://doi.org/10.3892/etm.2018.6911">10.3892/etm.2018.6911</a></div>
 </div>
-<div id="ref-Zhu2021" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Zhu2021" class="csl-entry" role="listitem">
 <div class="csl-left-margin">171. </div><div class="csl-right-inline">Zhu Y, Le G. The effect of dexmedetomidine combined with epidural anesthesia on post-operative cognitive dysfunction in elderly patients after orthopedic surgery. <em>Am J Transl Res</em>. 2022;13(10):12058-12064. <a href="https://www.ncbi.nlm.nih.gov/pubmed/34786142">https://www.ncbi.nlm.nih.gov/pubmed/34786142</a></div>
 </div>
-<div id="ref-Zhu2018" class="csl-entry" role="doc-biblioentry">
+<div id="ref-Zhu2018" class="csl-entry" role="listitem">
 <div class="csl-left-margin">172. </div><div class="csl-right-inline">Zhu Y, Yao R, Li Y, et al. Protective effect of celecoxib on early postoperative cognitive dysfunction in geriatric patients. <em>Front Neurol</em>. 2018;9:633. doi:<a href="https://doi.org/10.3389/fneur.2018.00633">10.3389/fneur.2018.00633</a></div>
 </div>
 </div></section></div></main> <!-- /main -->
@@ -4782,9 +4779,23 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     icon: icon
   };
   anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
   const clipboard = new window.ClipboardJS('.code-copy-button', {
-    target: function(trigger) {
-      return trigger.previousElementSibling;
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
     }
   });
   clipboard.on('success', function(e) {
@@ -4849,6 +4860,92 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       return note.innerHTML;
     });
   }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
   const findCites = (el) => {
     const parentEl = el.parentElement;
     if (parentEl) {

@@ -15,7 +15,7 @@ tables:
         sep: " -- "
 bibliography: "bib/kq5.bib"
 csl: jama.csl
-link-citations: yes
+link-citations: false
 nocite: '@*'
 ---
 

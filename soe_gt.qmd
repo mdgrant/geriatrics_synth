@@ -16,7 +16,7 @@ tables:
         sep: " -- "
 # bibliography: "bib/kq6.bib"
 # csl: jama.csl
-# link-citations: no
+# link-citations: false
 # nocite: '@*'
 ---
 

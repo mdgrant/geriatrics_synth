@@ -1,7 +1,7 @@
 ---
-title: "KQ 3 Regional vs. GeneralAnesthesia"
+title: "KQ 3 Regional vs. General Anesthesia"
 editor: source
-toc-title: "Regional vs. GeneralAnesthesia"
+toc-title: "Regional vs. General Anesthesia"
 toc-location: "left"
 tbl-cap-location: "top"
 page-layout: full
@@ -13,7 +13,7 @@ tables:
         sep: " -- "
 bibliography: "bib/kq3.bib"
 csl: jama.csl
-link-citations: no
+link-citations: false
 nocite: '@*'
 ---
 
@@ -498,7 +498,7 @@ reg_gen_delirium_tab |>
     tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, delitotal_time, n_percent, rr_ci))) |>
     tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(arm, scale_delirium, bar))) |>
     tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(delitotal_time, n_percent, rr_ci))) |>
-    tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:rr_ci), rows = str_detect(arm, "Neur|Block"))) |>
+    tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:n_percent), rows = str_detect(arm, "Neur|Block"))) |>
     sub_missing(columns = delitotal_time, missing_text = "Note") |>
     gt_theme_mg() |>
     cols_width(
@@ -1197,13 +1197,13 @@ rob_temp_dat <- rob2_dat |>
   filter(!is.na(Study) & refid %in% kq3_refid) |> 
   select(-refid)
 
-rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind")
+rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind", weighted = FALSE)
 ```
 
 <font size = 4> `r figure_ref()` Risk of bias assessment for randomized clinical trials. </font>
 
 ```{r rob_overall_study, out.width = "55%", fig.height = 10}
-rob_traffic_light(rob_temp_dat, psize = 4, tool = "ROB2", colour = "colourblind")
+temp <- rob_traffic_light(rob_temp_dat, psize = 4, tool = "ROB2", colour = "colourblind")
 ```
 
 

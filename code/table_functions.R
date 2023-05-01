@@ -414,14 +414,14 @@ rob_summary_fun <- function(rob_refids) {
     filter(refid %in% {{ rob_refids }}) |>
     select(Study, D1:Overall)
     # select(-refid)
-  rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind")
+  rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind", weighted = FALSE)
 }
 
 robinsi_summary_fun <- function(robinsi_refids) {
   rob_temp_dat <- robinsi_dat |>
     filter(refid %in% {{ robinsi_refids }}) |>
     select(-refid)
-  rob_summary(rob_temp_dat, tool = "ROBINS-I", colour = "colourblind")
+  rob_summary(rob_temp_dat, tool = "ROBINS-I", weighted = FALSE)
 }
 
 # rob_summary(

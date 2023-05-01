@@ -18,7 +18,7 @@ tables:
         sep: " -- "
 bibliography: "bib/allrefs.bib"
 csl: jama.csl
-link-citations: no
+link-citations: false
 nocite: '@*'
 ---
 

@@ -13,13 +13,13 @@ tables:
         sep: " -- "
 # bibliography: "bib/kq3.bib"
 # csl: jama.csl
-# link-citations: yes
+# link-citations: false
 # nocite: '@*'
 ---
 
 ## Key Question
 
-Does screening  patients 65 years or older \[geriatric\] for postoperative delirium in the post anesthesia care unit improve postoperative outcomes?
+Does screening patients 65 years or older \[geriatric\] for postoperative delirium in the post anesthesia care unit improve postoperative outcomes?
 
 <!-- setup -------------------------------------------- (2022-12-24 16:56) @ --->
 
@@ -51,4 +51,3 @@ study_arm_dat <- study_arm_dat |>
 outcome_dat <- rankings("KQ8")
 outcome_tab(outcome_dat, 11)
 ```
-
