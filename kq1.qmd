@@ -38,6 +38,20 @@ study_char_dat <- study_char_dat |>
 study_arm_dat <- study_arm_dat |> 
   filter(refid %in% c(kq1_refid, kq8_refid)) |> 
   arrange(design_f)
+
+dichot_dat <- dichot_dat |> 
+  filter(refid %in% c(kq1_refid, kq8_refid)) |> 
+  arrange(design_f)
+
+contin_dat <- contin_dat |> 
+  filter(refid %in% c(kq1_refid, kq8_refid)) |> 
+  arrange(design_f)
+
+likert_dat <- likert_dat |> 
+  filter(refid %in% c(kq1_refid, kq8_refid)) |> 
+  arrange(design_f)
+
+
 ```
 
 ## **Outcome Importance Rankings**
