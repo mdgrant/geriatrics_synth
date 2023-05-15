@@ -1,5 +1,5 @@
 ---
-title: "KQ 5: Potentially Inappropriate Medications"
+title: "Potentially Inappropriate Medications"
 editor: source
 toc-title: "Potentially Inappropriate Medications"
 toc-location: "left"
@@ -13,10 +13,10 @@ tables:
       caption:
         pre: "Table "
         sep: " -- "
-bibliography: "bib/kq5.bib"
-csl: jama.csl
-link-citations: false
-nocite: '@*'
+# bibliography: "bib/kq5.bib"
+# csl: jama.csl
+# link-citations: false
+# nocite: '@*'
 ---
 
 ## Key Question

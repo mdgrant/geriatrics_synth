@@ -145,7 +145,7 @@ study_char_dat <- read_csv(path_csv(study_char_file)) |>
     linked_study = ifelse(!is.na(linked_references), "Yes", "No"),
     neuro_threshold = factor(neuro_threshold,
       levels = c("mmselt24", "mmselt26", "mmselt27", "spmsqgt2", "diffge1sd", "diffge2sd", "diffgt20per", "diffgt2pts", "zleneg196", "zlt196", "zge196", "zgt2", "lowscore", "custom", "notspec", "diff075sd", "mincogle2", "mocale25"),
-      labels = c("MMSE <24", "MMSE <26", "MMSE <27", "SPMSQ >2", "Difference from baseline ≥1 SD", "Difference from baseline ≥2 SD", "Difference from baseline >20%", "Difference from baseline >2 pts", "Z ≤-1.96", "Z <1.96", "Z ≥1.96", "Z >2", "Low score not specified", "Custom scoring", "Not specified", "Difference from baseline 0.75 SD", "MiniCog ≤2", "MoCA ≤25")
+      labels = c("MMSE <24", "MMSE <26", "MMSE <27", "SPMSQ >2", "Difference from baseline ≥1 SD", "Difference from baseline ≥2 SD", "Difference from baseline >20%", "Difference from baseline >2 pts", "Z ≤-1.96", "Z <1.96", "Z ≥1.96", "Z >2", "Threshold not specified", "Custom scoring", "Threshold not specified", "Difference from baseline 0.75 SD", "MiniCog ≤2", "MoCA ≤25")
     )
   ) |>
   relocate(c(design_f, design_f_lab), .after = design) |>
@@ -173,15 +173,40 @@ surgs <- study_char_dat |>
     surgs_single = ifelse(surgs == "Various", "Various", surgs_single),
     # surgs_single = ifelse(surgs == "Other", "Various", surgs_single),
     surgs_single_f = factor(surgs_single, levels = rev(c("Various", "Spine", "Vasc", "Ent", "Gyn", "Oralmax", "Other", "Headneck", "Neuro", "Ophtho", "Urol", "Thoracic", "GI/Abd", "Cardiac", "Ortho"))),
+    surgs_noabbr_f = factor(surgs_single, levels = rev(c("Various", "Spine", "Vasc", "Ent", "Gyn", "Oralmax", "Other", "Headneck", "Neuro", "Ophtho", "Urol", "Thoracic", "GI/Abd", "Cardiac", "Ortho")), labels = rev(c("Various", "Spine", "Vascular", "Otolaryngological", "Gynecologic", "Oral/Maxillofacial", "Other", "Head & Neck", "Neurosurgical", "Ophthalmologic", "Urologic", "Thoracic", "Gastrointestinal/Abdominal", "Cardiac", "Orthopedic"))),
     # NOTE: surgs_f_lump minimum 4 studies
     surgs_single_f_lump = fct_lump_min(surgs_single_f, min = 4, other_level = "Other")
   ) |>
-  select(refid, surgs, surgs_single, surgs_single_f, surgs_single_f_lump)
+  select(refid, surgs, surgs_single, surgs_single_f, surgs_noabbr_f, surgs_single_f_lump)
 
-surgs |> tabyl(surgs_single_f_lump)
+# surgs |> tabyl(surgs_single_f_lump)
+# surgs |> tabyl(surgs_noabbr)
 
 study_char_dat <- study_char_dat |>
   left_join(surgs, by = "refid")
+
+## ortho_proc ----------------------------------------- (2023-05-02 11:29) @----
+ortho_proc <- study_char_dat |>
+  select(refid, study, surg_ortho_tka, surg_ortho_tha, surg_ortho_hipfx, surg_ortho_other, surg_list) |>
+  mutate(across(contains("ortho"), ~ str_replace_all(.x, "surg_ortho_", ""))) |>
+  unite(ortho, surg_ortho_tka:surg_ortho_other, sep = "|", remove = FALSE, na.rm = TRUE) |>
+  mutate(
+    ortho = str_replace(ortho, "tka", "TKA"),
+    ortho = str_replace(ortho, "tha", "THA"),
+    ortho = str_replace(ortho, "hipfx", "HipFx"),
+    ortho = str_replace(ortho, "other", "Other"),
+    ortho = ifelse(ortho == "", NA, ortho),
+    surg_list = firstup(surg_list),
+    surg_list = str_replace(surg_list, "\\.$", ""),
+    ortho_hip_knee = case_when(
+      str_detect(ortho, "THA|TKA|Hip") ~ "Ortho (hip, knee)",
+      !is.na(ortho) ~ "Ortho (other)",
+      .default = ortho
+    )
+  ) |>
+  relocate(ortho_hip_knee, .before = surg_list)
+
+ortho_hipfx_refid <- ortho_proc |> filter(!is.na(surg_ortho_hipfx)) |> pull(refid)
 
 ## add linked references ------------------------------ (2023-02-18 12:27) @----
 # study_l_w_linked includes study with links to both studies
@@ -683,6 +708,7 @@ gray_mg <- "#969696"
 # retracted_pubmed <- read.csv("data/retracted_trials_2023-04-07.csv")
 
 ## verify all distinct arms --------------------------- (2023-04-25 12:51) @----
+# should be empty tibble
 study_arm_dat |>
   group_by(refid) |>
   mutate(count = n(),
@@ -692,6 +718,7 @@ study_arm_dat |>
 
 
 #### save for use ------------------------------------- (2023-03-13 22:53) @----
+limit_colors <- c("#AAB7B8", "#D5DBDB", "#F4F6F6")
 save.image(paste0("data/geri_data_", str_replace_all(format(Sys.time()), "\\s|:", "-"), ".Rdata"))
 
 

@@ -193,14 +193,14 @@ outcome_dat <- rankings("KQ6")
 outcome_tab(outcome_dat, 11)
 ```
 
-### KQ 7 Lower Limb Regional Anesthesia
-<font size = 4> `r table_ref()` Among older patients undergoing surgery, do postoperative lower limb regional anesthetic techniques, such as continuous epidural anesthesia improve postoperative outcomes? </font>
+<!-- ### KQ 7 Lower Limb Regional Anesthesia -->
+<!-- <font size = 4> `r table_ref()` Among older patients undergoing surgery, do postoperative lower limb regional anesthetic techniques, such as continuous epidural anesthesia improve postoperative outcomes? </font> -->
 
-```{r}
-#| include: true
-outcome_dat <- rankings("KQ7")
-outcome_tab(outcome_dat, 11)
-```
+<!-- ```{r} -->
+<!-- #| include: true -->
+<!-- outcome_dat <- rankings("KQ7") -->
+<!-- outcome_tab(outcome_dat, 11) -->
+<!-- ``` -->
 
 ### KQ 8 Delirium Screening
 

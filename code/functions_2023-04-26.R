@@ -82,7 +82,7 @@ notna_to_x <- function(variable, symbol = "\U00D7") {
 # format to n (percent)
 # n_per_fun(9, 28, 1)
 n_per_fun <- function(events_n, total, n_sig_dig){
-  str_c(events_n," (", formatC(events_n/total * 100, digits = n_sig_dig, format = "f"), ")")
+  str_c(format(events_n, big.mark = ",")," (", formatC(events_n/total * 100, digits = n_sig_dig, format = "f"), ")")
 }
 
 # capitalize 1st letter
@@ -335,6 +335,42 @@ rr_ci_fun <- function(event1, n1, event2, n2, digits = 2) {
     sprintf(paste0("%.", digits, "f"), round(exp(upper), digits)), ")"))
 }
 
+## or_ci_fun ------------------------------------------ (2023-03-06 22:53) @----
+# calculate relative risk, ci, and format no refid
+or_ci_fun <- function(event1, n1, event2, n2, digits = 2) {
+  a <- meta::metabin(event1, n1, event2, n2, sm = "OR")
+  with(a, paste0(
+    sprintf(paste0("%.", digits, "f"), round(exp(TE), digits)), " (",
+    sprintf(paste0("%.", digits, "f"), round(exp(lower), digits)), "-",
+    sprintf(paste0("%.", digits, "f"), round(exp(upper), digits)), ")"))
+}
+
+or_ln_te_fun <- function(event1, n1, event2, n2) {
+  meta::metabin(event1, n1, event2, n2, sm = "OR")$TE
+}
+
+or_ln_se_fun <- function(event1, n1, event2, n2, digits = 2) {
+  meta::metabin(event1, n1, event2, n2, sm = "OR")$seTE
+}
+
+## se from confint of est
+se_ln_ci_fun <- function(low, high) {
+  se <- (abs(log(high) - log(low)) / 3.92)
+  se
+}
+
+## format_est_ci_fun ---------------------------------- (2023-05-13 10:20) @----
+# format an est with 95% CI
+format_est_ci_fun <- function(est, low, high, digits = 2) {
+  est_ci <- paste0(
+    sprintf(paste0("%.", digits, "f"), round(est, digits)), " (",
+    sprintf(paste0("%.", digits, "f"), round(low, digits)), "-",
+    sprintf(paste0("%.", digits, "f"), round(high, digits)), ")"
+  )
+  # est_ci <- ifelse(print_95_per == TRUE, str_replace(est_ci, "\\(", "\\(95% CI, "), est_ci)
+  est_ci
+}
+
 ## rd_ci_fun ------------------------------------------ (2023-03-06 22:53) @----
 # calculate risk difference, ci, and format no refid
 rd_per_ci_fun <- function(event1, n1, event2, n2, digits = 2) {
@@ -370,7 +406,6 @@ prim_sec_out_fun <- function(outcome, refids) {
     pull()
   paste0(temp, "%")
 }
-
 
 ## total for soe table from pariwise ------------------ (2023-04-10 10:03) @----
 total_meta <- function(data_meta) {

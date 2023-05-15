@@ -388,10 +388,12 @@ delirium_total_gt_fun <- function(drug_f_abbr){
     ) |>
     fmt_markdown(columns = c(study_l, bar)) |>
     tab_spanner(label = "Incidence Proportion", columns = c(n_percent, bar)) |>
-    tab_style(style = cell_text(align = "left"), locations = cells_column_labels(columns = c(study, drug_recode, scale_delirium))) |>
-    tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, delitotal_time, n_percent, rr_ci))) |>
-    tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(drug_recode, scale_delirium, bar))) |>
-    tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(delitotal_time, n_percent, rr_ci))) |>
+    tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(study, drug_recode, scale_delirium))) |>
+    tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, delitotal_time, rr_ci))) |>
+    tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(drug_recode, scale_delirium, bar))) |>
+    tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(delitotal_time, rr_ci))) |>
+    tab_style(style = cell_text(align = "right"),  locations = cells_column_labels(columns = c(n_percent))) |>
+    tab_style(style = cell_text(align = "right"),  locations = cells_body(columns = c(n_percent))) |>
     tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:n_percent), rows = str_detect(drug_recode, drug_f_abbr))) |>
     gt_theme_mg() |>
     cols_width(

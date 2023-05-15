@@ -5,21 +5,35 @@ editor: source
 
 <br/>
 
+<font size = 5> Key Questions </font>
+
 [Expanded Preoperative Evaluation & Postoperative Delirium Screening](kq1.html)
 
 [Prehabilitation](kq2.html)
 
-[Regional vs. General](kq3.html)
+[Regional vs. General Anesthesia](kq3.html)
 
-[Intravenous vs. Inhaled Anesthesia](kq4.html)
+[TIVA vs. Inhaled Anesthesia](kq4.html)
 
 [Potentially Inappropriate Medications](kq5.html)
 
 [Delirium Prophylaxis](kq6.html)
 
+<br/>
+
+<font size = 5> Strength of Evidence and Summary of Findings </font>
+
 [GRADE](soe_gt.html)
 
+<br/>
+
+<font size = 5> Other </font>
+
 [Draft Protocol](protocol.html)
+
+[Individual study summaries](evidence_tables.html)
+
+[Outcome Importance Rankings](outcome_rankings.html)
 
 <br/>
 

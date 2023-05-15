@@ -1,6 +1,7 @@
 project:
   type: website
   output-dir: docs
+
 website:
   title: "Geriatrics Evidence Synthesis"
   search:
@@ -25,7 +26,7 @@ website:
           - href: kq3.html
             text: "Regional vs. General Anesthesia"
           - href: kq4.html
-            text: "Intravenous vs. Inhaled Anesthesia"
+            text: "TIVA vs. Inhaled Anesthesia"
           - href: kq5.html
             text: "Potentially Inappropriate Medications"
           - href: kq6.html
