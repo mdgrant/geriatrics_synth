@@ -1,5 +1,5 @@
 ---
-title: "KQ 2 Prehabilitation"
+title: "Prehabilitation"
 editor: visual
 toc-title: "Prehabilitation"
 toc-location: "left"
@@ -19,7 +19,7 @@ tables:
 
 ## Key Question
 
-Among patients 65 years or older \[geriatric\] anticipating surgery and anesthesia, do interventions targeted at improving physical function, cognition, and nutritional status before surgery ("prehabilitation") improve postoperative outcomes?
+Among patients older patients anticipating surgery and anesthesia, do interventions targeted at improving physical function, cognition, and nutritional status before surgery ("prehabilitation") improve postoperative outcomes?
 
 <!-- setup -------------------------------------------- (2022-12-24 16:56) @ --->
 
