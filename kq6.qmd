@@ -14,10 +14,10 @@ tables:
       caption:
         pre: "Table "
         sep: " -- "
-# bibliography: "bib/kq6.bib"
-# csl: jama.csl
-# link-citations: false
-# nocite: '@*'
+bibliography: "bib/kq6.bib"
+csl: jama.csl
+link-citations: false
+nocite: '@*'
 ---
 
 ## **Key Question**
@@ -2726,7 +2726,7 @@ dex_cardiac_dat <- pairwise_dat |>
   filter(treat1 == "Plac" & treat2 == "Dex") 
 ```
 
-```{r cardiac_comp_forest, warning = FALSE, fig.width = 14, fig.height = 4, fig.align = "left"}
+```{r cardiac_comp_forest, warning = FALSE, fig.width = 14, fig.height = 7, fig.align = "left"}
 #| echo: false
 dex_cardiac_meta <- metabin(event2, n2, event1, n1,
   data = dex_cardiac_dat,

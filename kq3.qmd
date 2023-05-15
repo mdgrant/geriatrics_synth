@@ -14,10 +14,10 @@ tables:
       caption:
         pre: "Table "
         sep: " -- "
-# bibliography: "bib/kq3.bib"
-# csl: "bib/jama.csl"
-# link-citations: false
-# nocite: '@*'
+bibliography: "bib/kq3.bib"
+csl: "bib/jama.csl"
+link-citations: false
+nocite: '@*'
 ---
 
 ## Key Question
@@ -1085,7 +1085,7 @@ saveWorkbook(wb, "/Users/mgrant/Desktop/kq3.xlsx", overwrite = TRUE)
 
 ```
 
-<font size = 4> `r table_ref()` Report complications for regional versus general anesthesia — cardiac, MI, stroke, pulmonary, pneumonia, acute kidney injury. </font>
+<font size = 4> `r table_ref()` Reported complications for regional versus general anesthesia — cardiac, MI, stroke, pulmonary, pneumonia, acute kidney injury. </font>
 
 ```{r complications}
 complications_all <- c("medical", "surg", "cardiac", "gastro", "neuro", "pulm", "thromb", "infect", "fall", "stroke", "othcomp", "asppneum", "atelec", "bronch", "cardarr", "myoinfarct", "ssi", "sepsis", "uti", "pneum", "pthorax", "airleak", "pulcongest", "pe", "pinfiltrate", "respfail", "intub", "upperair", "vent48", "kidneyinj", "nerveinj", "clavien1", "clavien2", "clavien3", "clavien4", "clavien5")
@@ -1144,7 +1144,7 @@ adverse_events_dat <- adverse_events_dat |>
 ```
 
 ```{r complications_gt}
-#| eval: false
+#| eval: true
 adverse_events_dat |>
   filter(complication %in% c("cardiac", "pulm", "stroke", "infect", "myoinfarct", "pneum", "kidneyinj")) |>
   mutate(complication = factor(complication, levels = c("cardiac", "pulm", "stroke", "infect", "myoinfarct", "pneum", "kidneyinj"), labels = c("Cardiac", "Pulmonary", "Stroke", "Infectious (not SSI)", "MI", "Pneumonia", "AKI"))) |>
