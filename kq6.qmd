@@ -14,10 +14,10 @@ tables:
       caption:
         pre: "Table "
         sep: " -- "
-bibliography: "bib/kq6.bib"
-csl: jama.csl
-link-citations: false
-nocite: '@*'
+# bibliography: "bib/kq6.bib"
+# csl: jama.csl
+# link-citations: false
+# nocite: '@*'
 ---
 
 ## **Key Question**
@@ -52,7 +52,7 @@ Among older patients undergoing surgery and anesthesia, do dexmedetomidine, keta
 source("code/load_data.R")
 settings.meta(CIbracket = "(")
 # load("data/geri_data_2023-03-13.Rdata")
-kq6_refid <- kq6_refid[!kq6_refid %in% c(13734, 5269)] # Fan 2017b rhythim, Gao 2021 duplicate 
+kq6_refid <- kq6_refid[!kq6_refid %in% c(13734, 5269, 13630)] # Fan 2017b rhythim, Gao 2021 duplicate, Xuan 2016 "Eligible patients were more than 60 years old with joint replacement surgery in ICU."
 study_char_dat <- data_kq(study_char_dat, kq6_refid)
 study_arm_dat <- data_kq(study_arm_dat, kq6_refid) 
 contin_dat <- data_kq(contin_dat, kq6_refid) 
@@ -157,7 +157,7 @@ study_char_dat |>
         columns = design_f_lab
       )
     ) |> 
-  tab_footnote("Studies with multiple publications counted only once (applied to 2 trials with 2 publications).")
+  tab_footnote("Studies with multiple publications counted only once (applied to 1 trial with 2 publications).")
 ```
 
 ### Design, centers, country, and surgery
@@ -439,7 +439,7 @@ dex_group_levels <- dex_by_arm |>
 dex_by_arm <- dex_by_arm |> 
   mutate(  
   dex_groups = factor(dex_groups, levels = dex_group_levels)) |> 
-  select(refid, study, year, study_l, arm_n, drug_recode_abbr, asa_ps_incl, volatile_tab, tiva_tab, regional_tab, sedation_only_tab, age_table, pre_mmse, loading, maintain_range, postdose, pre, ind, intr, post ,design_f_lab, dex_groups, surgs_single_f)
+  select(refid, study, year, study_l, arm_n, drug_recode_abbr, asa_ps_incl, volatile_tab, tiva_tab, regional_tab, sedation_only_tab, age_table, pre_mmse, loading, maintain_range, postdose, pre, ind, intr, post, design_f_lab, dex_groups, surgs_single_f)
 
 rm(dex_group_levels)
 ```
@@ -913,14 +913,15 @@ refid_max_of_days <- delirium_total_tab |>
 
 ```{r delirium_total_dex_gt}
 delirium_total_gt_fun("Dex") |>
-  tab_footnote("RR: risk ratio; MMSE: Mini-Mental State Examination; Dex: Dexmedetomidine; Mid: Midazolam; Prop: Propofol; MS: Morphine; Preg: Pregabalin; Plac: placebo; DSM: Diagnostic and Statistical Manual of Mental Disorders; ICDSC: Intensive Care Delirium Screening Checklist; Psych: psychiatrist interview; NR: not reported.") |>
+  tab_footnote("RR: risk ratio;Dex: Dexmedetomidine; Mid: Midazolam; Prop: Propofol; MS: Morphine; Preg: Pregabalin; Plac: placebo; DSM: Diagnostic and Statistical Manual of Mental Disorders; ICDSC: Intensive Care Delirium Screening Checklist; Psych: psychiatrist interview; NS: not specified.") |>
   # tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
-  tab_footnote("Days over which incidence proportion assessed. Stay indicates over patient hospital stay.", locations = cells_column_labels(columns = delitotal_time)) |>
+  tab_footnote("Days over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |>
   tab_footnote("Tool reported in the `Chinese Expert Consensus on the Prevention and Treatment of Postoperative Delirium in Elderly Patients.'", locations = cells_body(columns = scale_delirium, rows = scale_delirium == "Note")) |> 
   tab_footnote("Postoperative dexmedetomidine only.", locations = cells_body(columns = rr_ci, rows = refid %in% postop_only_dat$refid & rr_ci != "—")) |> 
   tab_footnote("Reported only daily incidence.", locations = cells_body(columns = delitotal_time, rows = delitotal_time == "Note")) |> 
   tab_footnote("Maximum of reported daily incidence.", locations = cells_body(columns = n_percent, rows = refid %in% refid_max_of_days)) |> 
-  tab_footnote("Primary outcome was delirium on postoperative day 1 — OR 0.32 (95% CI, 0.10–0.83)", locations = cells_body(columns = study_l, rows = str_detect(study_l, "Qu 2023")))
+  tab_footnote("Primary outcome was delirium on postoperative day 1 — OR 0.32 (95% CI, 0.10–0.83)", locations = cells_body(columns = study_l, rows = str_detect(study_l, "Qu 2023"))) 
+  
 
 rm(refid_max_of_days)
 ```
@@ -974,7 +975,7 @@ delirium_total_gt_mel_ram |>
   row_group_order(groups = c("Cardiac - Randomized Clinical Trial", "Ortho - Randomized Clinical Trial", "Various - Randomized Clinical Trial", "Thoracic - Randomized Clinical Trial", "GI/Abd - Before-After/Time Series", "Thoracic - Before-After/Time Series")) |> 
   tab_footnote("RR: risk ratio; MMSE: Mini-Mental State Examination; Mel: melatonin; Ram: ramelteon; AMT: Abbreviated Mental Test; DRS: Delirium Rating Scale; DSM: Diagnostic and Statistical Manual of Mental Disorders; CAM: Confusion Assessment Method; ICDSC: Intensive Care Delirium Screening Checklist.") |>
   # tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
-  tab_footnote("Days over which incidence proportion assessed. Stay indicates over patient hospital stay.", locations = cells_column_labels(columns = delitotal_time)) |> 
+  tab_footnote("Days over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |> 
   tab_footnote("Reported only daily incidence.", locations = cells_body(columns = delitotal_time, rows = delitotal_time == "Note")) |> 
   tab_footnote("Maximum of reported daily incidence.", locations = cells_body(columns = n_percent, rows = refid %in% refid_max_of_days))
 
@@ -1264,14 +1265,6 @@ text(1.2, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .
 
 ```{r rob2_summary_dex_plac, fig.height = 3, out.width = "60%"}
 rob_summary_fun(cogfunc_refid)
-
-rob_temp_dat <- rob2_dat |>
-  filter(refid %in% cogfunc_refid) |>
-  select(Study, D1:Overall)
-
-rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind", weighted = FALSE)
-
-
 ```
 :::
 
@@ -1608,7 +1601,7 @@ dncr_dat <- dichot_dat |>
     neurocog_prop = neurocog_total_n/arm_n,
     neurocog_nper = n_per_fun(neurocog_total_n, arm_n, 1)
   ) |>
-  left_join(study_char_dat |> select(refid, country), by = "refid") |>
+  left_join(study_char_dat |> select(refid, country, neuro_threshold), by = "refid") |>
   left_join(surgs |> select(refid, surgs_single_f), by = c("refid")) |>
   left_join(drugs_dat |> select(refid, arm_id, drug_recode_abbr), by = c("refid", "arm_id")) |>
   left_join(table_mn_med |> select(refid, arm_id, pre_mmse), by = c("refid", "arm_id")) |>
@@ -1621,7 +1614,7 @@ dncr_dat <- dichot_dat |>
       str_detect(arm, "Plac") ~ bar_prop(neurocog_prop * 100, "#969696"),
       .default = bar_prop(neurocog_prop * 100, "#104E8B")),
     year = as.numeric(str_extract(study, "\\d{4}")),
-    arm = fct_collapse(arm, "Plac/None" = c("Plac", "None")),
+    # arm = fct_collapse(arm, "Plac/None" = c("Plac", "None")),
     across(c(arm, design_f_lab, surg_f), ~ fct_drop(.x)),
     scale_mmse = ifelse(!is.na(neurocog_mmse), "\U2713", NA),
     scale_dst = ifelse(!is.na(neurocog_dst) | str_detect(neurocog_scale_otherspec, "[Dd]igit"), "\U2713", NA),
@@ -1632,7 +1625,7 @@ dncr_dat <- dichot_dat |>
     scale_other = str_replace_all(scale_other, "Pocd", "POCD"),
     scale_other_tf = ifelse(!is.na(scale_other), "\U2713", NA)
   ) |> 
-  select(refid, refid_c, year, arm_id, study, study_l, design_f_lab, pre_mmse, country, surg_f, postop_only, arm, pre_mmse, dncr_time, neurocog_total_n, arm_n, arm, neurocog_nper, neurocog_prop, bar, scale_mmse:scale_other_tf)
+  select(refid, refid_c, year, arm_id, study, study_l, design_f_lab, pre_mmse, country, surg_f, postop_only, arm, pre_mmse, dncr_time, neurocog_total_n, arm_n, arm, neurocog_nper, neurocog_prop, bar, scale_mmse:scale_other_tf, neuro_threshold)
 
 # add referents for rr calculation
 dncr_rr_ref <- dncr_dat |>
@@ -1653,13 +1646,13 @@ dncr_rr_ref <- dncr_dat |>
 
 #| DATA: neurocog_allarms_meta_dat for subsequent pooling, arms not collapsed
 neurocog_allarms_meta_dat <- dncr_dat |> 
-  select(refid, study, design_f_lab, year, arm_id, arm, neurocog_total_n, arm_n, dncr_time) |> 
+  select(refid, study, design_f_lab, year, arm_id, arm, neurocog_total_n, arm_n, dncr_time, surg_f) |> 
   filter(study != "Lu 2017") # both dex arms; different dose
 
 dncr_dat <- dncr_dat |> 
   left_join(dncr_rr_ref, by = c("refid_c", "arm_id")) |> 
   mutate(rr_ci = ifelse(!is.na(ref_arm_n), rr_ci_fun(neurocog_total_n, arm_n, ref_neurocog_n, ref_arm_n), "—")) |> 
-  select(refid, year, design_f_lab, study, study_l, arm_id, arm_n, arm, pre_mmse, scale_mmse:scale_other_tf, dncr_time, neurocog_nper, bar, rr_ci)
+  select(refid, year, design_f_lab, surg_f, study, study_l, arm_id, arm_n, arm, pre_mmse, scale_mmse:scale_other_tf, neuro_threshold, dncr_time, neurocog_nper, bar, rr_ci)
 
 rm(dncr_rr_ref)
 ```
@@ -1687,17 +1680,40 @@ dncr_ket_refid <- dncr_dat |>
 #   filter(refid %in% dncr_dex_refid, !is.na(scale_other)) |>
 #   select(refid, study, scale_other)
 
-dncr_dat |> 
+# create footnotes for thresholds
+# dncr_dat |>
+#   select(refid, study, scale_mmse, scale_dst, scale_moca, neuro_threshold) |>
+#   slice(1, .by = refid) |>
+#   mutate(
+#     neuro_threshold = str_replace(neuro_threshold, "≤-", "≥"), 
+#     footnotes = case_when(
+#     !is.na(scale_mmse) ~ paste0("tab_footnote('", neuro_threshold, ".', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == '", study, "')) |>"),
+#     !is.na(scale_dst) ~ paste0("tab_footnote('", neuro_threshold, ".', locations = cells_body(columns = c(scale_dst), rows = arm_id == 1 & study == '", study, "')) |>"),
+#     !is.na(scale_moca) ~ paste0("tab_footnote('", neuro_threshold, ".', locations = cells_body(columns = c(scale_moca), rows = arm_id == 1 & study == '", study, "')) |>")
+#   ),
+#   footnotes = ifelse(row_number() == n(), str_remove(footnotes, ".{2}$"), footnotes)) |> 
+#   filter(!is.na(footnotes)) |> 
+#   pull(footnotes) |> 
+#   noquote()
+
+
+dncr_dat |>
   arrange(year, study) |> 
+  # select(study, refid, starts_with("scale"), neuro_threshold)
   filter(refid %in% dncr_dex_refid) |> 
+  mutate(design_surg = paste0(as.character(design_f_lab), "—", as.character(surg_f)),
+         # design_surg = str_replace(design_surg, "Randomized Clinical Trial—GI/Abd", "Randomized Clinical Trial<br/>GI/Abd"),
+         design_surg = str_remove(design_surg, "Randomized Clinical Trial—")) |> 
   mutate(study_l = ifelse(row_number() > 1, NA, study_l), 
          across(scale_mmse:scale_other_tf, ~ ifelse(row_number() > 1, NA, .x)),
          dncr_time = ifelse(row_number() > 1, NA, dncr_time), 
                 .by = study) |> 
-  group_by(design_f_lab) |>
+  # tabyl(design_surg) |> arrange(desc(percent))
+  group_by(design_surg) |>
   gt(id = "one") |>
-  row_group_order(groups = c("Randomized Clinical Trial", "Nonrandomized Trial")) |>
-  cols_hide(c(refid, year, arm_id, study, scale_other)) |>
+  row_group_order(groups = c("GI/Abd", "Various", "Ortho", "Cardiac", "Ophtho", "Thoracic", "Urol", "Nonrandomized Trial—GI/Abd")) |>
+  # row_group_order(groups = c("Randomized Clinical Trial — GI/Abd", "Randomized Clinical Trial — Various", "Randomized Clinical Trial — Ortho", "Randomized Clinical Trial — Cardiac", "Randomized Clinical Trial — Ophtho", "Randomized Clinical Trial — Thoracic", "Randomized Clinical Trial — Urol", "Nonrandomized Trial — GI/Abd")) |>
+  cols_hide(c(refid, year, arm_id, study, scale_other, design_f_lab, surg_f, neuro_threshold)) |>
   cols_label(
     study_l          = "Study",
     arm_n            = " N",
@@ -1713,7 +1729,7 @@ dncr_dat |>
     rr_ci            = "RR (95% CI)"
   ) |> 
   gt_theme_mg() |> 
-  fmt_markdown(columns = c(study_l, bar, pre_mmse, scale_mmse:scale_other_tf)) |> 
+  fmt_markdown(columns = c(study_l, bar, pre_mmse, scale_mmse:scale_other_tf)) |>
   fmt_number(dncr_time, decimals = 0) |> 
   sub_missing(columns = everything(), missing_text = "") |> 
   tab_spanner(label = "Instrument", columns = c(scale_mmse:scale_other_tf), level = 1) |>
@@ -1748,7 +1764,29 @@ dncr_dat |>
   tab_footnote("Trail Making Test; Words Recall Test; Verbal Fluency Test.", locations = cells_body(columns = c(scale_other_tf), rows = !is.na(scale_other_tf) & study == "Ding 2015")) |> 
   tab_footnote("American Psychiatric Association postoperative cognitive dysfunction diagnostic criteria.", locations = cells_body(columns = c(scale_other_tf), rows = !is.na(scale_other_tf) & study == "Gao 2020")) |> 
   tab_footnote("Visual Verbal Learning Tests; Trail Making Test; Stroop Color Word Test.", locations = cells_body(columns = c(scale_other_tf), rows = !is.na(scale_other_tf) & study == "Chawdhary 2020")) |> 
-  tab_footnote("Stroop Color-Word Test; Associative Learning And Memory Test.", locations = cells_body(columns = c(scale_other_tf), rows = !is.na(scale_other_tf) & study == "Li 2019")) 
+  tab_footnote("Stroop Color-Word Test; Associative Learning And Memory Test.", locations = cells_body(columns = c(scale_other_tf), rows = !is.na(scale_other_tf) & study == "Li 2019")) |> 
+  tab_footnote('MMSE <26.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Mansouri 2019')) |>                       
+  tab_footnote('Difference from baseline >2 pts.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Wang 2020d')) |>   
+  tab_footnote('Low score not specified.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Bao 2020')) |>             
+  tab_footnote('Z ≥1.96.', locations = cells_body(columns = c(scale_moca), rows = arm_id == 1 & study == 'Zhou 2019b')) |>                           
+  tab_footnote('Threshold not specified.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Wang 2019')) |>                      
+  tab_footnote('Z ≥1.96.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Zhang 2018c')) |>                          
+  tab_footnote('Difference from baseline ≥1 SD.', locations = cells_body(columns = c(scale_dst), rows = arm_id == 1 & study == 'Ding 2022')) |>      
+  tab_footnote('Difference from baseline ≥2 SD.', locations = cells_body(columns = c(scale_dst), rows = arm_id == 1 & study == 'Hudetz 2009a')) |>   
+  tab_footnote('MMSE <24.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Hollinger 2021')) |>                      
+  tab_footnote('Z ≥1.96.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Lee 2015')) |>                             
+  tab_footnote('Z ≥1.96.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Wang 2017')) |>                            
+  tab_footnote('Difference from baseline >2 pts.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Lu 2017')) |>      
+  tab_footnote('Z >2.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Shi 2020')) |>                                
+  tab_footnote('Difference from baseline >2 pts.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Zhao 2020')) |>    
+  tab_footnote('Difference from baseline ≥1 SD.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Ding 2015')) |>     
+  tab_footnote('Difference from baseline ≥1 SD.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Li 2021b')) |>      
+  tab_footnote('Difference from baseline ≥1 SD.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Li 2015')) |>       
+  tab_footnote('Difference from baseline ≥2 SD.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Chawdhary 2020')) |>
+  tab_footnote('MMSE <27.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Chen 2013')) |>                           
+  tab_footnote('Threshold not specified.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Zhang 2021')) |>                     
+  tab_footnote('Z ≥1.96.', locations = cells_body(columns = c(scale_dst), rows = arm_id == 1 & study == 'Li 2019')) |>                               
+  tab_footnote('MMSE <24.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Chen 2020')) 
 ```
 
 ### Ketamine
@@ -1760,15 +1798,18 @@ dncr_dat |>
 dncr_dat |> 
   arrange(year, study) |> 
   filter(refid %in% dncr_ket_refid) |> 
-  mutate(arm = fct_recode(arm, "Plac" = "Plac/None")) |> 
+  mutate(design_surg =  as.character(surg_f)) |> 
+  # mutate(design_surg = paste0(as.character(design_f_lab), " — ", as.character(surg_f))) |> 
   mutate(study_l = ifelse(row_number() > 1, NA, study_l), 
          across(scale_mmse:scale_other_tf, ~ ifelse(row_number() > 1, NA, .x)),
          dncr_time = ifelse(row_number() > 1, NA, dncr_time), 
                 .by = study) |> 
-  group_by(design_f_lab) |>
+  # tabyl(design_surg) |> arrange(desc(percent))
+  group_by(design_surg) |>
   gt(id = "one") |>
-  row_group_order(groups = c("Randomized Clinical Trial")) |>
-  cols_hide(c(refid, year, arm_id, study, scale_other)) |>
+  # row_group_order(groups = c("Randomized Clinical Trial — Various", "Randomized Clinical Trial — Ortho", "Randomized Clinical Trial — Cardiac", "Randomized Clinical Trial — Ophtho")) |>
+  row_group_order(groups = c("Various", "Ortho", "Cardiac", "Ophtho")) |>
+  cols_hide(c(refid, year, arm_id, study, scale_other, surg_f, design_f_lab, neuro_threshold)) |>
   cols_label(
     study_l          = "Study",
     arm_n            = " N",
@@ -1816,7 +1857,37 @@ dncr_dat |>
   tab_footnote("Day of assessment.",                   locations = cells_column_labels(columns = c(dncr_time))) |> 
   tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |>
   tab_footnote("Short Portable Mental Status Questionnaire.", locations = cells_body(columns = c(scale_other_tf), rows = !is.na(scale_other_tf) & study == "Hudetz 2009a")) |> 
-  tab_footnote("Repeatable Battery for the Assessment Of Neuropsychological Status Subtests; Brief Visual Memory Test Revised; Backward Digit Span; Semantic Fluency; Phonemic Fluency.", locations = cells_body(columns = c(scale_other_tf), rows = !is.na(scale_other_tf) & study == "Rascon-Martinez 2016")) 
+  tab_footnote("Repeatable Battery for the Assessment Of Neuropsychological Status Subtests; Brief Visual Memory Test Revised; Backward Digit Span; Semantic Fluency; Phonemic Fluency.", locations = cells_body(columns = c(scale_other_tf), rows = !is.na(scale_other_tf) & study == "Rascon-Martinez 2016")) |> 
+  tab_footnote("Mini-Mental State Exam; DST: Digit Span Test; MoCA: Montreal Cognitive Assessment; RR: risk ratio; Dex: Dexmedetomidine; Mid: Midazolam; Prop: Propofol; Ulin: ulinastatin; Plac/None: placebo or no intervention.") |> 
+  tab_footnote("Day of assessment.",                   locations = cells_column_labels(columns = c(dncr_time))) |> 
+  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |>
+  tab_footnote("Hasegawa's Dementia Scale; Trail-Making Test; Word Recall; Verbal Fluency Test.", locations = cells_body(columns = c(scale_other_tf), rows = !is.na(scale_other_tf) & study == "Ding 2022")) |> 
+  tab_footnote("Trail Making Test; Words Recall Test; Verbal Fluency Test.", locations = cells_body(columns = c(scale_other_tf), rows = !is.na(scale_other_tf) & study == "Ding 2015")) |> 
+  tab_footnote("American Psychiatric Association postoperative cognitive dysfunction diagnostic criteria.", locations = cells_body(columns = c(scale_other_tf), rows = !is.na(scale_other_tf) & study == "Gao 2020")) |> 
+  tab_footnote("Visual Verbal Learning Tests; Trail Making Test; Stroop Color Word Test.", locations = cells_body(columns = c(scale_other_tf), rows = !is.na(scale_other_tf) & study == "Chawdhary 2020")) |> 
+  tab_footnote("Stroop Color-Word Test; Associative Learning And Memory Test.", locations = cells_body(columns = c(scale_other_tf), rows = !is.na(scale_other_tf) & study == "Li 2019")) |> 
+  tab_footnote('MMSE <26.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Mansouri 2019')) |>                       
+  tab_footnote('Difference from baseline >2 pts.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Wang 2020d')) |>   
+  tab_footnote('Low score not specified.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Bao 2020')) |>             
+  tab_footnote('Z ≥1.96.', locations = cells_body(columns = c(scale_moca), rows = arm_id == 1 & study == 'Zhou 2019b')) |>                           
+  tab_footnote('Threshold not specified.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Wang 2019')) |>                      
+  tab_footnote('Z ≥1.96.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Zhang 2018c')) |>                          
+  tab_footnote('Difference from baseline ≥1 SD.', locations = cells_body(columns = c(scale_dst), rows = arm_id == 1 & study == 'Ding 2022')) |>      
+  tab_footnote('Difference from baseline ≥2 SD.', locations = cells_body(columns = c(scale_dst), rows = arm_id == 1 & study == 'Hudetz 2009a')) |>   
+  tab_footnote('MMSE <24.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Hollinger 2021')) |>                      
+  tab_footnote('Z ≥1.96.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Lee 2015')) |>                             
+  tab_footnote('Z ≥1.96.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Wang 2017')) |>                            
+  tab_footnote('Difference from baseline >2 pts.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Lu 2017')) |>      
+  tab_footnote('Z >2.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Shi 2020')) |>                                
+  tab_footnote('Difference from baseline >2 pts.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Zhao 2020')) |>    
+  tab_footnote('Difference from baseline ≥1 SD.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Ding 2015')) |>     
+  tab_footnote('Difference from baseline ≥1 SD.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Li 2021b')) |>      
+  tab_footnote('Difference from baseline ≥1 SD.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Li 2015')) |>       
+  tab_footnote('Difference from baseline ≥2 SD.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Chawdhary 2020')) |>
+  tab_footnote('MMSE <27.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Chen 2013')) |>                           
+  tab_footnote('Threshold not specified.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Zhang 2021')) |>                     
+  tab_footnote('Z ≥1.96.', locations = cells_body(columns = c(scale_dst), rows = arm_id == 1 & study == 'Li 2019')) |>                               
+  tab_footnote('MMSE <24.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Chen 2020'))   
 ```
 
 ### Melatonin/Ramelteon
@@ -1831,6 +1902,7 @@ No studies
 #| eval: true
 # NOTE: 2023-04-20 adding ketamine studies to dexmedetomidine dncr would not connect any network; so left distinct
 neurocog_meta_dat <- neurocog_allarms_meta_dat |>
+  filter(dncr_time >= 3) |> 
   # collapse arms
   mutate(
     neurocog_total_n = case_when(
@@ -1844,7 +1916,8 @@ neurocog_meta_dat <- neurocog_allarms_meta_dat |>
       study == "Zhao 2020" & arm_id == 2 ~ collapse_dichot(neurocog_allarms_meta_dat, "Zhao 2020", c(2, 3, 4), arm_n),
       study == "Li 2021b" & arm_id == 2 ~ collapse_dichot(neurocog_allarms_meta_dat, "Li 2021b", c(2, 3, 4), arm_n),
       .default = arm_n
-    )
+    ),
+    arm = fct_collapse(arm, Plac = c("Plac", "None"))
   ) |>
   filter(!(study %in% c("Zhou 2019b") & arm_id %in% c(4))) |>
   filter(!(study %in% c("Zhao 2020") & arm_id %in% c(3, 4))) |>
@@ -1862,7 +1935,8 @@ neurocog_meta_dat <- neurocog_allarms_meta_dat |>
 # CODE: dncr meta data, pairwise and network (netmeta)
 nma_dncr_dat <- neurocog_meta_dat |>
   # mutate(arm = fct_collapse(arm, "Benzo" = c("Oxaz", "Mid"))) |>
-  mutate(time = ifelse(dncr_time < 3, "at <3 days", "at ≥3 days" )) |> 
+  # mutate(time = ifelse(dncr_time < 3, "at <3 days", "at ≥3 days" )) |> 
+  # filter(time == "at ≥3 days") |> 
   select(-dncr_time) |> 
   filter(design_f_lab == "Randomized Clinical Trial") |>
   # filter(surg_f == "Cardiac") |>
@@ -1888,7 +1962,7 @@ netmeta_dncr_nma <- netmeta(
   prediction = TRUE,
   seq = trts,
   sm = "RR",
-  reference.group = "Plac/None"
+  reference.group = "Plac"
 )
 
 ```
@@ -1928,20 +2002,21 @@ netgraph(
 # forest(netmeta_dncr_nma)
 
 ```
-<foot_mg> Dex: Dexmedetomidine; Ket: ketamine; Hal: haloperidol; Mid: midazolam; Prop: propofol; Ulin: ulinastatin; Plac/None: Placebo or no intervention; Prop: Propofol. </foot_mg>
+<foot_mg> Dex: Dexmedetomidine; Ket: ketamine; Hal: haloperidol; Mid: midazolam; Prop: propofol; Ulin: ulinastatin; Plac/None: Placebo or no intervention; Prop: Propofol. <br/>
+Zhao 2020 no intervention (usual care) arm included as placebo.</foot_mg>
 
 #### Dexmedetomidine
 
-<font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention (randomized clinical trials, delayed neurocognitive recovery). </font>
+<font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention (randomized clinical trials, delayed neurocognitive recovery assessed postop day 3 or later). </font>
 
-```{r dncr_dex_plac_meta, fig.width = 14, fig.height = 7.2, fig.align = "left", warning = FALSE}
+```{r dncr_dex_plac_meta, fig.width = 14, fig.height = 6, fig.align = "left", warning = FALSE}
 #| eval: true
 dex_meta_dat <- pairs_dat |>
-  arrange(time, year, study) |> 
+  arrange(year, study) |> 
   unite(to_select, treat1, treat2, sep = "/") |> 
   filter(str_detect(to_select, c("Plac")) & str_detect(to_select, "Dex") & !str_detect(to_select, "Ulin")) |> 
   left_join(rob2_meta_dat, by = "refid") |>
-  select(refid, study, year, event2, n2, event1, n1, D1:Overall, country, surgs_single_f, time) |>
+  select(refid, study, year, event2, n2, event1, n1, D1:Overall, country, surgs_single_f) |>
   mutate(
     rob = case_when(
       Overall == "+" ~ "Low",
@@ -1957,16 +2032,18 @@ dex_plac_meta <- metabin(event2, n2, event1, n1,
   sm = "RR",
   method = "MH",
   method.tau = "PM",
-  hakn = FALSE,
+  hakn = TRUE,
   prediction = TRUE,
   allstudies = TRUE,
-  subgroup = time
+  # subgroup = time
   )
+
+# refid_meta_fun(dex_meta_dat)
 
 # small study effects; here to have result of Harbord test
 temp_meta <- dex_plac_meta
 temp_meta <- update(temp_meta, subgroup = NULL, sm = "OR")
-temp_metabias <- metabias(temp_meta, method.bias = "Harbord", k.min = 10)
+# temp_metabias <- metabias(temp_meta, method.bias = "Harbord", k.min = 10)
 # trimfill(temp_meta)
 
 # summary(dex_plac_meta)
@@ -1976,32 +2053,34 @@ forest(dex_plac_meta,
   common = TRUE,
   label.e = "Dex     ",
   label.c = "Plac/None  ",
-  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
-  rightlabs = c("RR ", "(95% CI)   ", "D1", "D2", "D3", "D4", "D5", "All"),
-  just.addcols.right = "right",
+  rightcols = c("effect", "ci", "surgs_single_f", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  rightlabs = c("RR ", "(95% CI)   ", "Procedure", "D1", "D2", "D3", "D4", "D5", "All"),
+  just.addcols.right = "left",
   digits = 2,
   digits.tau2 = 1,
   overall.hetstat = TRUE,
   print.I2.ci = TRUE,
   prediction = TRUE,
-  subgroup = TRUE,
-  prediction.subgroup = FALSE,
-  print.subgroup.name = FALSE,
+  # subgroup = TRUE,
+  # prediction.subgroup = FALSE,
+  colgap.right = "5mm",
+  # print.subgroup.name = FALSE,
   fs.xlab = 11,
   pooled.events = TRUE,
   print.pval.Q = FALSE,
   xlim = c(0.1, 3),
   xlab = "Favors: Dexmedetomidine               Placebo/None",
-  addrows.below.overall = 4,
-  text.addline1 = "Hartung-Knapp adjustment not applied owing to subgroups — overall RR 0.55 (95% CI, 0.37–0.79) when used.",
-  text.addline2 = "Excluding studies with assessments at less than 3 days (95% prediction interval, 0.24–0.92)."
+  addrows.below.overall = 4
+  # text.addline1 = "Hartung-Knapp adjustment not applied owing to subgroups — overall RR 0.55 (95% CI, 0.37–0.79) when used.",
+  # text.addline2 = "Excluding studies with assessments at less than 3 days (95% prediction interval, 0.24–0.92)."
 )  
 
 ```
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <a id="figure-4"></a><br/> 
 `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> 
 `r paste0("Neurocognitive recovery a designated primary outcome in ", prim_sec_out_fun(prim_pocd, dex_meta_dat$refid), "; a secondary outcome in ", prim_sec_out_fun(sec_pocd, dex_meta_dat$refid), ".")`<br/>
-Note: Gao 2021 identified in the search was presumably an overlapping sample of Gao 2020 and excluded.
+Six trials conducted in China and 1 each in Egypt and Iran.<br/>
+Using odds ratios, pooled OR 0.36 (95% CI, 0.19–0.70; *I*<sup> 2</sup> 44%), prediction interval (0.09–1.45).
 </foot_mg><br/>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
@@ -2049,18 +2128,18 @@ par(mar = c(4, 4, 2, 1))
 
 limit_colors <- c("#AAB7B8", "#D5DBDB", "#F4F6F6")
 
-temp_limit_meta <- limitmeta(temp_meta)
+# temp_limit_meta <- limitmeta(temp_meta)
 
 par(bty = "n", xaxt = "s", yaxt = "s")
 
-funnel(temp_limit_meta, pch = 20, contour = c(0.9, 0.95, 0.99), col.contour = limit_colors, studlab = TRUE, pos.studlab = 4, fs.smlab = 6, ff.smlab = "italic")
+funnel(temp_meta, pch = 20, contour = c(0.9, 0.95, 0.99), col.contour = limit_colors, studlab = TRUE, pos.studlab = 4, fs.smlab = 6, ff.smlab = "italic")
 
 legend(0.05, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#AAB7B8", "#D5DBDB", "#F4F6F6"), bty = "n")
 
-text(0.95, 0.03, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .9)
+# text(0.95, 0.03, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .9)
 ```
 
-<foot_mg> Estimates (odds ratio and 95% CI) from random effects models --- unadjusted `r paste0(digit2(exp(temp_limit_meta$TE.random)), " (", digit2(exp(temp_limit_meta$lower.random)), "–", digit2(exp(temp_limit_meta$upper.random)), ")")`; adjusted for small study effects: `r paste0(digit2(exp(temp_limit_meta$TE.adjust)), " (", digit2(exp(temp_limit_meta$lower.adjust)), "–", digit2(exp(temp_limit_meta$upper.adjust)), ")")`.</font>
+<!-- <foot_mg> Estimates (odds ratio and 95% CI) from random effects models --- unadjusted `r paste0(digit2(exp(temp_limit_meta$TE.random)), " (", digit2(exp(temp_limit_meta$lower.random)), "–", digit2(exp(temp_limit_meta$upper.random)), ")")`; adjusted for small study effects: `r paste0(digit2(exp(temp_limit_meta$TE.adjust)), " (", digit2(exp(temp_limit_meta$lower.adjust)), "–", digit2(exp(temp_limit_meta$upper.adjust)), ")")`.</font> -->
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
@@ -2075,14 +2154,14 @@ rob_summary_fun(dex_meta_dat$refid)
 
 <font size = 4> `r figure_ref()` Ketamine compared with placebo or no intervention (randomized clinical trials, delayed neurocognitive recovery). </font>
 
-```{r dncr_ket_plac_meta, fig.width = 14, fig.height = 5.0, fig.align = "left", warning = FALSE}
+```{r dncr_ket_plac_meta, fig.width = 14, fig.height = 4.5, fig.align = "left", warning = FALSE}
 #| eval: true
 ket_meta_dat <- pairs_dat |>
-  arrange(time, year, study) |>
+  arrange(year, study) |>
   unite(to_select, treat1, treat2, sep = "/") |>
   filter(str_detect(to_select, c("Plac")) & str_detect(to_select, "Ket") & !str_detect(to_select, "Hal")) |>
   left_join(rob2_meta_dat, by = "refid") |>
-  select(refid, study, year, event2, n2, event1, n1, D1:Overall, country, surgs_single_f, time) |>
+  select(refid, study, year, event2, n2, event1, n1, D1:Overall, country, surgs_single_f) |>
   mutate(
     rob = case_when(
       Overall == "+" ~ "Low",
@@ -2100,8 +2179,7 @@ ket_plac_meta <- metabin(event2, n2, event1, n1,
   method.tau = "PM",
   hakn = FALSE,
   prediction = TRUE,
-  allstudies = TRUE,
-  subgroup = time
+  allstudies = TRUE
 )
 
 # small study effects; here to have result of Harbord test
@@ -2116,7 +2194,7 @@ forest(ket_plac_meta,
   allstudies = TRUE,
   common = TRUE,
   label.e = "Ketamine",
-  label.c = "Plac  ",
+  label.c = "Placebo",
   rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
   rightlabs = c("RR ", "(95% CI)   ", "D1", "D2", "D3", "D4", "D5", "All"),
   just.addcols.right = "right",
@@ -2124,14 +2202,14 @@ forest(ket_plac_meta,
   digits.tau2 = 1,
   overall.hetstat = TRUE,
   print.I2.ci = TRUE,
-  prediction = TRUE,
-  subgroup = TRUE,
-  prediction.subgroup = FALSE,
-  print.subgroup.name = FALSE,
+  prediction = FALSE,
+  # subgroup = TRUE,
+  # prediction.subgroup = FALSE,
+  # print.subgroup.name = FALSE,
   fs.xlab = 11,
   pooled.events = TRUE,
   print.pval.Q = FALSE,
-  xlim = c(0.1, 3),
+  xlim = c(0.1, 5),
   xlab = "Favors: Ketamine               Placebo/None",
   addrows.below.overall = 4
 )
@@ -2226,7 +2304,7 @@ netsplit(netmeta_dncr_nma, order = trts) %>%
 
 ### Dexmedetomidine and Melatonin
 
-<font size = 4> `r table_ref()` Neurocognitive disorders and ascertainment. Reported in dexmedetomidine and melatonin trials. </font>
+<font size = 4> `r table_ref()` Neurocognitive disorders and ascertainment reported in dexmedetomidine and melatonin trials. </font>
 
 ```{r ncd_dat}
 #| eval: true
@@ -2370,90 +2448,34 @@ ncd_dat |>
   tab_footnote("Day of assessment.",                   locations = cells_column_labels(columns = c(ncd_time))) |> 
   tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |> 
   tab_footnote("Stroop Color-Word Test; Associative Learning And Memory Test.", locations = cells_body(columns = c(scale_other_tf), rows = !is.na(scale_other_tf) & study == "Li 2019")) |> 
-  tab_footnote("Charlson Comorbidity Index Dementia & Informant Questionnaire on Cognitive Decline", locations = cells_body(columns = c(scale_other_tf), rows = !is.na(scale_other_tf) & study == "de Johnghe 2014")) 
+  tab_footnote("Charlson Comorbidity Index Dementia & Informant Questionnaire on Cognitive Decline", locations = cells_body(columns = c(scale_other_tf), rows = !is.na(scale_other_tf) & study == "de Johnghe 2014")) |> 
+    tab_footnote('MMSE <26.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Mansouri 2019')) |>                       
+  tab_footnote('Difference from baseline >2 pts.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Wang 2020d')) |>   
+  tab_footnote('Low score not specified.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Bao 2020')) |>             
+  tab_footnote('Z ≥1.96.', locations = cells_body(columns = c(scale_moca), rows = arm_id == 1 & study == 'Zhou 2019b')) |>                           
+  tab_footnote('Threshold not specified.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Wang 2019')) |>                      
+  tab_footnote('Z ≥1.96.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Zhang 2018c')) |>                          
+  tab_footnote('Difference from baseline ≥1 SD.', locations = cells_body(columns = c(scale_dst), rows = arm_id == 1 & study == 'Ding 2022')) |>      
+  tab_footnote('Difference from baseline ≥2 SD.', locations = cells_body(columns = c(scale_dst), rows = arm_id == 1 & study == 'Hudetz 2009a')) |>   
+  tab_footnote('MMSE <24.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Hollinger 2021')) |>                      
+  tab_footnote('Z ≥1.96.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Lee 2015')) |>                             
+  tab_footnote('Z ≥1.96.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Wang 2017')) |>                            
+  tab_footnote('Difference from baseline >2 pts.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Lu 2017')) |>      
+  tab_footnote('Z >2.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Shi 2020')) |>                                
+  tab_footnote('Difference from baseline >2 pts.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Zhao 2020')) |>    
+  tab_footnote('Difference from baseline ≥1 SD.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Ding 2015')) |>     
+  tab_footnote('Difference from baseline ≥1 SD.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Li 2021b')) |>      
+  tab_footnote('Difference from baseline ≥1 SD.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Li 2015')) |>       
+  tab_footnote('Difference from baseline ≥2 SD.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Chawdhary 2020')) |>
+  tab_footnote('MMSE <27.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Chen 2013')) |>                           
+  tab_footnote('Threshold not specified.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Zhang 2021')) |>                     
+  tab_footnote('Z ≥1.96.', locations = cells_body(columns = c(scale_dst), rows = arm_id == 1 & study == 'Li 2019')) |>                               
+  tab_footnote('MMSE <24.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Chen 2020')) 
 ```
 
 ### Melatonin/Ramelteon
+
 No studies
-
-## **Length of Stay**
-
-<font size = 4> `r table_ref()` Length of stay according to procedure classification and comparator. </font>
-
-```{r length_of_stay}
-#| eval: true
-# RESUME:
-los_tab <- contin_dat |>
-  mutate(los_for_tables(contin_dat)) |>
-  filter(if_any(los_m:los_diff_pval, ~ !is.na(.))) |>
-  left_join(drugs_dat |> select(refid, arm_id, drug_recode_abbr), by = c("refid", "arm_id")) |>
-  left_join(table_age_mn_med, by = c("refid", "arm_id")) |> # age_table
-  left_join(study_arm_dat |> select(refid, arm_id, asa_ps_incl), by = c("refid", "arm_id")) |>
-  left_join(surgs |> select(refid, surgs_single_f), by = c("refid")) |>
-  left_join(study_char_dat |> select(refid, country), by = "refid" ) |> 
-  mutate(
-    refid_arm_id = paste0(refid, "-", arm_id),
-    surg_groups = paste0(surgs_single_f, " - ", design_f_lab),
-    mean_med = case_when(
-      !is.na(los_m) ~ los_m,
-      !is.na(los_med) ~ los_med
-    ),
-    drug_recode_abbr = fct_drop(drug_recode_abbr),
-    calc_prop_25d = 100 * mean_med / 25,
-    bar = case_when(
-      str_detect(drug_recode_abbr, "Dex") ~ bar_prop(calc_prop_25d, "#A93226"),
-      str_detect(drug_recode_abbr, "Ket") ~ bar_prop(calc_prop_25d, "#F39C12"),
-      str_detect(drug_recode_abbr, "Mel|Ram") ~ bar_prop(calc_prop_25d, "#104E8B"),
-      .default = bar_prop(calc_prop_25d, "#969696")
-    )
-  ) |>
-  # select(refid, arm_id, arm_n, drug_recode_abbr, age_table, asa_ps_incl, surg_groups, study, los_table, bar, starts_with(("los"))) |>
-  arrange(surg_groups, year, study, arm_id) |> 
-  select(refid, refid_arm_id, study, study_l, arm_n, drug_recode_abbr, asa_ps_incl, age_table, los_table, bar, surg_groups, country)
-
-# temp |> tabyl(drug_recode_abbr)
-
-los_tab |>
-  mutate(study_l = ifelse(row_number() > 1, "", study_l),
-         country = ifelse(row_number() > 1, "", country),
-         .by = refid) |> 
-  group_by(surg_groups) |>
-  gt(id = "one") |>
-  row_group_order(groups = c("Cardiac - Randomized Clinical Trial", "Ortho - Randomized Clinical Trial", "GI/Abd - Randomized Clinical Trial", "Thoracic - Randomized Clinical Trial", "Various - Randomized Clinical Trial", "Oralmax - Randomized Clinical Trial", "GI/Abd - Before-After/Time Series", "Thoracic - Before-After/Time Series", "Spine - Prospective Cohort" )) |> 
-  cols_hide(c(refid, refid_arm_id, study)) |>
-  cols_label(
-    study_l = "Study",
-    arm_n = " N",
-    drug_recode_abbr = "Comparator",
-    asa_ps_incl = "PS",
-    age_table = "    Age",
-    los_table = "    LOS",
-    bar = "0 – 25 days",
-    country = "Country"
-  ) |>
-  gt_theme_mg() |> 
-  cols_width(
-    study_l ~ px(165),
-    arm_n ~ px(45),
-    drug_recode_abbr ~ px(80),
-    asa_ps_incl ~ px(60),
-    age_table ~ px(100),
-    los_table ~ px(100),
-    bar ~ px(120),
-    country ~ px(80)
-    )  |> 
-  fmt_markdown(columns = c(study_l, bar, age_table, los_table)) |> 
-  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, drug_recode_abbr,  bar))) |>
-  tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(study_l, age_table, los_table))) |>
-  tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study_l, age_table, los_table, bar, drug_recode_abbr, asa_ps_incl))) |> 
-  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(drug_recode_abbr, "Dex"))) |> 
-  tab_style(style = list(cell_text(color = "#F39C12")), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(drug_recode_abbr, "Ket"))) |> 
-  tab_style(style = list(cell_text(color = "#104E8B")), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(drug_recode_abbr, "Mel|Ram"))) |> 
-  tab_footnote(md("NR: not reported")) |> 
-  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, los_table))) |> 
-  tab_footnote(md("ASA Physical Status."), locations = cells_column_labels(columns = c(asa_ps_incl)))
-  
-```
 
 ## **Complications**
 
@@ -2486,6 +2508,9 @@ adverse_events_dat <- map_df(complications_all, complications_kq6_fun) |>
     n_per = n_per_fun(n, arm_n, 1),
     diff = per - calc_per
   )
+
+adverse_meta_dat <- adverse_events_dat |> 
+  select(refid, year, study, arm_id, arm, arm_n, n, complication)
 
 adverse_events_dat <- adverse_events_dat |> 
   left_join(study_char_dat |> select(refid, study_l, surgs_single, design_f_lab), by = "refid") |> 
@@ -2634,6 +2659,228 @@ adverse_events_dat |>
   
 ```
 
+### *Pooled*
+
+#### Cardiac
+
+<font size = 4> `r figure_ref()` Composite measure for cardiac complications. </font>
+
+```{r cardiac_comp_meta_dat}
+#| echo: false
+#| warning: false
+cardiac_meta_dat <- adverse_meta_dat |>
+  filter(complication == "cardiac") |>
+  filter(!(study == "Lee 2018b" & arm_id %in% c(2, 4))) |>
+  filter(study != "Lu 2017") |> # both dex arms; different dose
+  mutate(
+    n = case_when(
+      study == "Zhao 2020" & arm_id == 2 ~ collapse_dichot(adverse_meta_dat, "Zhao 2020", c(2, 3, 4), n),
+      study == "Li 2021b" & arm_id == 2 ~ collapse_dichot(adverse_meta_dat, "Li 2021b", c(2, 3, 4), n),
+      .default = n
+    ),
+    arm_n = case_when(
+      study == "Zhao 2020" & arm_id == 2 ~ collapse_dichot(adverse_meta_dat, "Zhao 2020", c(2, 3, 4), arm_n),
+      study == "Li 2021b" & arm_id == 2 ~ collapse_dichot(adverse_meta_dat, "Li 2021b", c(2, 3, 4), arm_n),
+      .default = arm_n
+    ),
+    arm = fct_collapse(arm, Plac = c("Plac", "None"))
+  ) |>
+  filter(!(study %in% c("Zhao 2020") & arm_id %in% c(3, 4))) |>
+  filter(!(study %in% c("Li 2021b") & arm_id %in% c(3, 4))) |>
+  # add potential subgroups
+  left_join(study_char_dat |> select(refid, country), by = "refid") |>
+  left_join(surgs |> select(refid, surgs_single_f), by = c("refid"))
+
+trts <- levels(fct_drop(cardiac_meta_dat$arm))
+
+pairs_dat <- pairwise(
+  treat = arm,
+  event = n,
+  n = arm_n,
+  studlab = study,
+  data = cardiac_meta_dat,
+  sm = "RR",
+  keep.all.comparisons = TRUE
+)
+
+netmeta_nma <- netmeta(
+  pairs_dat,
+  random = TRUE,
+  prediction = TRUE,
+  seq = trts,
+  sm = "RR",
+  reference.group = "Plac",
+  warn = FALSE # 2 dbl zero studies excluded
+)
+
+# pairwise for metabin
+pairwise_dat <- pairs_dat |> 
+  select(refid, studlab, treat1, treat2, event1, n1, event2, n2, country, surgs_single_f, year) |> 
+  rename(study = studlab) |> 
+  mutate(china_vs_other = ifelse(country == "China", "China", "Other countries")) |>
+  arrange(year, study)
+
+# function to select subset pairwise data
+dex_cardiac_dat <- pairwise_dat |> 
+    left_join(rob2_meta_dat, by = "refid") |> 
+  filter(treat1 == "Plac" & treat2 == "Dex") 
+```
+
+```{r cardiac_comp_forest, warning = FALSE, fig.width = 14, fig.height = 4, fig.align = "left"}
+#| echo: false
+dex_cardiac_meta <- metabin(event2, n2, event1, n1,
+  data = dex_cardiac_dat,
+  studlab = study,
+  # cluster = refid,
+  sm = "RR",
+  method = "MH",
+  method.tau = "PM",
+  hakn = TRUE,
+  prediction = TRUE,
+  allstudies = TRUE
+  # subgroup = surgs_single_f
+)
+
+# small study effects; here to have result of Harbord test
+temp_meta <- dex_cardiac_meta 
+temp_meta <- update(temp_meta, subgroup = NULL, sm = "OR")
+temp_metabias <- metabias(temp_meta, method.bias = "Harbord", k.min = 10)
+
+# summary(dex_plac_meta)
+forest(dex_cardiac_meta,
+  allstudies = TRUE,
+  # random = FALSE,
+  label.e = "Dex     ",
+  label.c = "Plac     ",
+  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
+  just.addcols.right = "right",
+  digits.TE = 3,
+  digits.tau2 = 1,
+  overall.hetstat = TRUE,
+  print.I2.ci = TRUE,
+  prediction = TRUE,
+  fs.xlab = 11,
+  pooled.events = TRUE,
+  pscale = 1000,
+  digits = 2, 
+  # subgroup = TRUE,
+  # print.subgroup.name = FALSE,
+  print.pval.Q = FALSE,
+  xlab = "Favors: Dexmedetomidine               Placebo/None",
+  addrows.below.overall = 4
+)
+```
+<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/> `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`</foot_mg><br/>
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention with respect to composite cardiac compications  — small study effects. </font>
+
+```{r dex_plac_cardiac_meta_funnel, fig.dim = c(7, 5.5), out.width = "70%", fig.align = "center"}
+dex_cardiac_meta <- update(dex_cardiac_meta, sm = "OR", subgroup = NULL)
+harbord <- metabias(dex_cardiac_meta, method.bias = "Harbord")$pval
+par(mar = c(4, 4, 2, 1))
+par(bty = "n", xaxt = "s", yaxt = "s")
+
+funnel(dex_cardiac_meta,
+  ylim = c(2.0, 0.0), xlim = c(0.1, 10),
+  pch = 20, 
+  contour = c(0.9, 0.95, 0.99), 
+  col.contour = limit_colors, 
+  studlab = TRUE, 
+  pos.studlab = 4,
+  fs.smlab = 6, 
+  ff.smlab = "italic"
+)
+
+legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#AAB7B8", "#D5DBDB", "#F4F6F6"), bty = "n")
+
+```
+:::
+
+
+
+
+## **Length of Stay**
+
+<font size = 4> `r table_ref()` Length of stay according to procedure classification and comparator. </font>
+
+```{r length_of_stay}
+#| eval: true
+# RESUME:
+los_tab <- contin_dat |>
+  mutate(los_for_tables(contin_dat)) |>
+  filter(if_any(los_m:los_diff_pval, ~ !is.na(.))) |>
+  left_join(drugs_dat |> select(refid, arm_id, drug_recode_abbr), by = c("refid", "arm_id")) |>
+  left_join(table_age_mn_med, by = c("refid", "arm_id")) |> # age_table
+  left_join(study_arm_dat |> select(refid, arm_id, asa_ps_incl), by = c("refid", "arm_id")) |>
+  left_join(surgs |> select(refid, surgs_single_f), by = c("refid")) |>
+  left_join(study_char_dat |> select(refid, country), by = "refid" ) |> 
+  mutate(
+    refid_arm_id = paste0(refid, "-", arm_id),
+    surg_groups = paste0(surgs_single_f, " - ", design_f_lab),
+    mean_med = case_when(
+      !is.na(los_m) ~ los_m,
+      !is.na(los_med) ~ los_med
+    ),
+    drug_recode_abbr = fct_drop(drug_recode_abbr),
+    calc_prop_25d = 100 * mean_med / 25,
+    bar = case_when(
+      str_detect(drug_recode_abbr, "Dex") ~ bar_prop(calc_prop_25d, "#A93226"),
+      str_detect(drug_recode_abbr, "Ket") ~ bar_prop(calc_prop_25d, "#F39C12"),
+      str_detect(drug_recode_abbr, "Mel|Ram") ~ bar_prop(calc_prop_25d, "#104E8B"),
+      .default = bar_prop(calc_prop_25d, "#969696")
+    )
+  ) |>
+  # select(refid, arm_id, arm_n, drug_recode_abbr, age_table, asa_ps_incl, surg_groups, study, los_table, bar, starts_with(("los"))) |>
+  arrange(surg_groups, year, study, arm_id) |> 
+  select(refid, refid_arm_id, study, study_l, arm_n, drug_recode_abbr, asa_ps_incl, age_table, los_table, bar, surg_groups, country)
+
+# temp |> tabyl(drug_recode_abbr)
+
+los_tab |>
+  mutate(study_l = ifelse(row_number() > 1, "", study_l),
+         country = ifelse(row_number() > 1, "", country),
+         .by = refid) |> 
+  group_by(surg_groups) |>
+  gt(id = "one") |>
+  row_group_order(groups = c("Cardiac - Randomized Clinical Trial", "Ortho - Randomized Clinical Trial", "GI/Abd - Randomized Clinical Trial", "Thoracic - Randomized Clinical Trial", "Various - Randomized Clinical Trial", "Oralmax - Randomized Clinical Trial", "GI/Abd - Before-After/Time Series", "Thoracic - Before-After/Time Series", "Spine - Prospective Cohort" )) |> 
+  cols_hide(c(refid, refid_arm_id, study)) |>
+  cols_label(
+    study_l = "Study",
+    arm_n = " N",
+    drug_recode_abbr = "Comparator",
+    asa_ps_incl = "PS",
+    age_table = "    Age",
+    los_table = "    LOS",
+    bar = "0 – 25 days",
+    country = "Country"
+  ) |>
+  gt_theme_mg() |> 
+  cols_width(
+    study_l ~ px(165),
+    arm_n ~ px(45),
+    drug_recode_abbr ~ px(80),
+    asa_ps_incl ~ px(60),
+    age_table ~ px(100),
+    los_table ~ px(100),
+    bar ~ px(120),
+    country ~ px(80)
+    )  |> 
+  fmt_markdown(columns = c(study_l, bar, age_table, los_table)) |> 
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, drug_recode_abbr,  bar))) |>
+  tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(study_l, age_table, los_table))) |>
+  tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study_l, age_table, los_table, bar, drug_recode_abbr, asa_ps_incl))) |> 
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(drug_recode_abbr, "Dex"))) |> 
+  tab_style(style = list(cell_text(color = "#F39C12")), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(drug_recode_abbr, "Ket"))) |> 
+  tab_style(style = list(cell_text(color = "#104E8B")), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(drug_recode_abbr, "Mel|Ram"))) |> 
+  tab_footnote(md("NR: not reported")) |> 
+  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, los_table))) |> 
+  tab_footnote(md("ASA Physical Status."), locations = cells_column_labels(columns = c(asa_ps_incl)))
+  
+```
+
+
 ## **Mortality**
 
 ```{r mortality_data}
@@ -2741,7 +2988,7 @@ mortality_dat |>
   group_by(mort_period) |> 
   gt(id = "one") |> 
   cols_hide(c(refid, refid_c, arm_id, year, study, design_f_lab, mort_percent, ref_mort_n, ref_arm_n, mort_per_rep)) |>
-  row_group_order(groups = c("Hospital", "30-day", "90-day", "1-year")) |> 
+  row_group_order(groups = c("Hospital", "30-day", "90-day")) |> 
   cols_label(
     study_l = "Study",
     arm_n = "N",
@@ -2758,10 +3005,12 @@ mortality_dat |>
   tab_spanner(label = "ASA", columns = c(asa_ps_incl)) |> 
   gt_theme_mg() |> 
   tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(study, drug_recode, surgs_single_f))) |>
-  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, age_table, asa_ps_incl, mort_n_percent, rd_ci))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, age_table, asa_ps_incl, rd_ci))) |>
   tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study, drug_recode, surgs_single_f, bar))) |>
-  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(mort_n_percent, rd_ci))) |>
-  tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |> 
+  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rd_ci))) |>
+  tab_style(style = cell_text(align = "right"),  locations = cells_column_labels(columns = c(mort_n_percent))) |>
+  tab_style(style = cell_text(align = "right"),  locations = cells_body(columns = c(mort_n_percent))) |>
+  tab_style(style = cell_text(align = "center",  font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |> 
   # tab_style(style = list(cell_text(color = "#104E8B")), locations = cells_body(columns = c(arm_n, drug_recode, age_table, mort_n_percent), rows = str_detect(drug_recode, "Mel|Ram"))) |> 
   tab_style(style = list(cell_text(color = "#104E8B")), locations = cells_body(columns = c(arm_n, drug_recode, age_table, mort_n_percent), rows = str_detect(drug_recode, "Ulin|MS|Prop"))) |>
   tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n, drug_recode, age_table, mort_n_percent), rows = str_detect(drug_recode, "Dex"))) |> 
@@ -2941,10 +3190,12 @@ mortality_dat |>
   tab_spanner(label = "ASA", columns = c(asa_ps_incl)) |> 
   gt_theme_mg() |> 
   tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(study, drug_recode, surgs_single_f))) |>
-  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, age_table, asa_ps_incl, mort_n_percent, rd_ci))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, age_table, asa_ps_incl, rd_ci))) |>
   tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study, drug_recode, surgs_single_f, bar))) |>
-  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(mort_n_percent, rd_ci))) |>
-  tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |> 
+  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rd_ci))) |>
+  tab_style(style = cell_text(align = "right"),  locations = cells_column_labels(columns = c(mort_n_percent))) |>
+  tab_style(style = cell_text(align = "right"),  locations = cells_body(columns = c(mort_n_percent))) |>
+  tab_style(style = cell_text(align = "center",  font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |> 
   tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n, drug_recode, age_table, mort_n_percent), rows = str_detect(drug_recode, "Mel|Ram"))) |> 
   tab_style(style = list(cell_text(color = "#104E8B")), locations = cells_body(columns = c(arm_n, drug_recode, age_table, mort_n_percent), rows = str_detect(drug_recode, "Ulin|MS|Prop"))) |>
   # tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n, drug_recode, age_table, mort_n_percent), rows = str_detect(drug_recode, "Dex"))) |> 
