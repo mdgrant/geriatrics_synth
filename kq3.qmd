@@ -93,7 +93,7 @@ kq3_refid[kq3_refid %in% cogfunc_refid]
 kq3_refid[!kq3_refid %in% c(delirium_refid, cogfunc_refid)]
 ```
 
-## Outcome Importance Rankings
+## Outcome Importance
 
 <font size = 4> `r table_ref()` Rankings of the 5 most important outcomes (11 respondents). </font>
 
@@ -104,7 +104,7 @@ outcome_dat <- rankings("KQ3")
 outcome_tab(outcome_dat, 11)
 ```
 
-### Reporting Frequency
+## Outcome Reporting
 
 <font size = 4> `r table_ref()` Dichotomous or count outcomes. </font>
 
@@ -224,7 +224,7 @@ included_dat |>
 
 ```
 
-#### Country Summary
+### Country Summary
 
 <font size = 4> `r table_ref()` Summary of studies by country where conducted. </font>
 
@@ -916,8 +916,15 @@ forest(gen_reg_dncr_meta,
 ```
 <foot_mg> Too few studies to examine small study effects. </foot_mg> 
 
+<br/>
 
-```{r}
+## **Neurocognitive Disorders**
+
+### Regional vs. General
+
+<font size = 4> `r table_ref()` Neurocognitive disorders and ascertainment. </font>
+
+```{r ncd_dat}
 ncd_dat <- dichot_dat |>
   filter(if_any(c(neurocog_n1, neurocog_n2, neurocog_n3, neurocog_last_n, neurocog_total_n), ~ !is.na(.x))) |>
   # > 30 day exam
@@ -929,7 +936,7 @@ ncd_dat <- dichot_dat |>
       neurocog_time2 > 30 ~ neurocog_time2,
       neurocog_time3 > 30 ~ neurocog_time3,
       neurocog_last_time > 30 ~ neurocog_last_time,
-      neurocog_total_n > 30 ~ neurocog_total_time,
+      neurocog_total_time > 30 ~ neurocog_total_time,
       .default = NA
     ),
     neurocog_total_n = case_when(
@@ -985,14 +992,6 @@ ncd_dat <- ncd_dat |>
   mutate(rr_ci = ifelse(!is.na(ref_arm_n), rr_ci_fun(neurocog_total_n, arm_n, ref_neurocog_n, ref_arm_n), "—")) |>
   select(refid, year, design_f_lab, study, study_l, arm_id, arm_n, arm_reg, pre_mmse, scale_mmse:scale_other_tf, ncd_time, neurocog_nper, bar, rr_ci)
 ```
-
-<br/>
-
-## **Neurocognitive Disorders**
-
-### Regional vs. General
-
-<font size = 4> `r table_ref()` Neurocognitive disorders and ascertainment. </font>
 
 ```{r ncd_gt}
 #| eval: true
@@ -1326,6 +1325,84 @@ legend(0.02, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#
 
 ```
 :::
+
+## **Length of Stay**
+
+<font size = 4> `r table_ref()` Length of stay according to procedure classification and comparator. </font>
+
+```{r length_of_stay}
+#| eval: false
+# RESUME:
+los_tab <- contin_dat |>
+  mutate(los_for_tables(contin_dat)) |>
+  filter(if_any(los_m:los_diff_pval, ~ !is.na(.))) |>
+  left_join(table_age_mn_med, by = c("refid", "arm_id")) |> # age_table
+  left_join(study_arm_dat |> select(refid, arm_id, asa_ps_incl), by = c("refid", "arm_id")) |>
+  left_join(surgs |> select(refid, surgs_single_f), by = c("refid")) |>
+  left_join(study_char_dat |> select(refid, country), by = "refid" ) |> 
+  mutate(
+    refid_arm_id = paste0(refid, "-", arm_id),
+    surg_groups = paste0(surgs_single_f, " - ", design_f_lab),
+    mean_med = case_when(
+      !is.na(los_m) ~ los_m,
+      !is.na(los_med) ~ los_med
+    ),
+    drug_recode_abbr = fct_drop(drug_recode_abbr),
+    calc_prop_25d = 100 * mean_med / 25,
+    bar = case_when(
+      str_detect(drug_recode_abbr, "Dex") ~ bar_prop(calc_prop_25d, "#A93226"),
+      str_detect(drug_recode_abbr, "Ket") ~ bar_prop(calc_prop_25d, "#F39C12"),
+      str_detect(drug_recode_abbr, "Mel|Ram") ~ bar_prop(calc_prop_25d, "#104E8B"),
+      .default = bar_prop(calc_prop_25d, "#969696")
+    )
+  ) |>
+  # select(refid, arm_id, arm_n, drug_recode_abbr, age_table, asa_ps_incl, surg_groups, study, los_table, bar, starts_with(("los"))) |>
+  arrange(surg_groups, year, study, arm_id) |> 
+  select(refid, refid_arm_id, study, study_l, arm_n, drug_recode_abbr, asa_ps_incl, age_table, los_table, bar, surg_groups, country)
+
+# temp |> tabyl(drug_recode_abbr)
+
+los_tab |>
+  mutate(study_l = ifelse(row_number() > 1, "", study_l),
+         country = ifelse(row_number() > 1, "", country),
+         .by = refid) |> 
+  group_by(surg_groups) |>
+  gt(id = "one") |>
+  row_group_order(groups = c("Cardiac - Randomized Clinical Trial", "Ortho - Randomized Clinical Trial", "GI/Abd - Randomized Clinical Trial", "Thoracic - Randomized Clinical Trial", "Various - Randomized Clinical Trial", "Oralmax - Randomized Clinical Trial", "GI/Abd - Before-After/Time Series", "Thoracic - Before-After/Time Series", "Spine - Prospective Cohort" )) |> 
+  cols_hide(c(refid, refid_arm_id, study)) |>
+  cols_label(
+    study_l = "Study",
+    arm_n = " N",
+    drug_recode_abbr = "Comparator",
+    asa_ps_incl = "PS",
+    age_table = "    Age",
+    los_table = "    LOS",
+    bar = "0 – 25 days",
+    country = "Country"
+  ) |>
+  gt_theme_mg() |> 
+  cols_width(
+    study_l ~ px(165),
+    arm_n ~ px(45),
+    drug_recode_abbr ~ px(80),
+    asa_ps_incl ~ px(60),
+    age_table ~ px(100),
+    los_table ~ px(100),
+    bar ~ px(120),
+    country ~ px(80)
+    )  |> 
+  fmt_markdown(columns = c(study_l, bar, age_table, los_table)) |> 
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, drug_recode_abbr,  bar))) |>
+  tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(study_l, age_table, los_table))) |>
+  tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study_l, age_table, los_table, bar, drug_recode_abbr, asa_ps_incl))) |> 
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(drug_recode_abbr, "Dex"))) |> 
+  tab_style(style = list(cell_text(color = "#F39C12")), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(drug_recode_abbr, "Ket"))) |> 
+  tab_style(style = list(cell_text(color = "#104E8B")), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(drug_recode_abbr, "Mel|Ram"))) |> 
+  tab_footnote(md("NR: not reported")) |> 
+  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, los_table))) |> 
+  tab_footnote(md("ASA Physical Status."), locations = cells_column_labels(columns = c(asa_ps_incl)))
+  
+```
 
 ## **Mortality**
 
