@@ -813,8 +813,6 @@ dncr_dat |>
 
 ### *Pooled*
 
-<br/>
-
 <font size = 4> `r figure_ref()` TIVA compared with inhaled anesthetic (randomized clinical trials, delayed neurocognitive recovery assessed postoperative day 3 or later). </font>
 
 ```{r dncr_meta_dat}
