@@ -1,11 +1,11 @@
 ---
 title: "TIVA vs. Inhaled"
 editor: source
-toc-title: "TIVA vs. Inhaled"
+toc-title: "**TIVA vs. Inhaled**"
 toc-location: "left"
 toc-depth: 4
 toc_float: 
-  collapsed: true
+  collapsed: false
 tbl-cap-location: "top"
 page-layout: full
 css: styles.css
@@ -65,7 +65,7 @@ dichot_dat <- data_kq(dichot_dat, kq4_refid) |>
 # rob_dat <- data_kq(rob_dat, kq4_refid) 
 ```
 
-## Outcome Importance Rankings
+## Outcome Importance
 
 <font size = 4> `r table_ref()` Rankings of the 5 most important outcomes (11 respondents). </font>
 
@@ -76,7 +76,7 @@ outcome_dat <- rankings("KQ4")
 outcome_tab(outcome_dat, 11)
 ```
 
-### Reporting Frequency
+## Outcome Reporting
 
 <font size = 4> `r table_ref()` Dichotomous or count outcomes. </font>
 
@@ -197,7 +197,7 @@ included_dat |>
 
 ```
 
-#### Country Summary
+### Country Summary
 
 <font size = 4> `r table_ref()` Summary of studies by country where conducted. </font>
 
@@ -217,8 +217,6 @@ study_char_dat |>
 ```
 
 ## **Interventions & Comparators**
-
-### TIVA vs. Inhaled
 
 ```{r tiva_inh_tab}
 tiva_inh_tab <- study_arm_dat |>
@@ -519,8 +517,6 @@ delirium_meta_dat |>
 
 ### *Pooled*
 
-#### Randomized
-
 <br/>
 
 <font size = 4> `r figure_ref()` TIVA compared with inhaled anesthetic (randomized clinical trials). </font>
@@ -602,11 +598,9 @@ forest(delirium_meta_rct,
 ```
 <foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/> Hartung-Knapp adjustment not applied. Continuity correction of 0.5 added to studies arms with no events. Too few studies to examine small study effects. </foot_mg><br/>
 
-#### Nonrandomized
-
 <br/>
 
-<font size = 4> `r figure_ref()` TIVA compared with inhaled anesthetic (nonrandomized studies) the . </font>
+<font size = 4> `r figure_ref()` TIVA compared with inhaled anesthetic (nonrandomized designs). </font>
 
 ```{r delirium_meta_nrsi, fig.width = 14, fig.height = 3.5, fig.align = "left"}
 delirium_meta_nrsi <- metagen(ln_or, ln_se_or,
@@ -617,7 +611,6 @@ delirium_meta_nrsi <- metagen(ln_or, ln_se_or,
 
 forest(delirium_meta_nrsi,
   allstudies = TRUE,
-
   rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "Overall"),
   rightlabs = c("OR", "(95% CI)  ", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "All"),
   leftcols = c("study", "event2", "n2", "event1", "n1"), 
@@ -638,7 +631,6 @@ forest(delirium_meta_nrsi,
   addrows.below.overall = 4
 )
 ```
-
 <foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. <br/> 
 Note: pooling of adjusted odds ratios from Yoshimura 2022 (propensity matching) and Goins 2018 (multivariable adjustment). </foot_mg>
 
@@ -730,7 +722,7 @@ dncr_dat <- dncr_dat |>
 rm(dncr_rr_ref)
 ```
 
-<font size = 4> `r table_ref()` Delayed neurocognitive recovery incidence and ascertainment in studies comparing TIVA with inhaled anesthetic. </font>
+<font size = 4> `r table_ref()` Delayed neurocognitive recovery incidence and ascertainment (TIVA versus inhaled; randomized and nonrandomized designs). </font>
 
 ```{r dncr_gt}
 #| eval: true
@@ -754,8 +746,8 @@ rm(dncr_rr_ref)
 dncr_dat |>
   arrange(year, study) |>
   mutate(
-    design_surg = paste0(as.character(design_f_lab), "—", as.character(surgs_noabbr_f)),
-    design_surg = str_remove(design_surg, "Randomized Clinical Trial—")
+    design_surg = paste0(as.character(design_f_lab), " — ", as.character(surgs_noabbr_f)),
+    # design_surg = str_remove(design_surg, "Randomized Clinical Trial — ")
   ) |>
   # tabyl(design_surg) |> arrange(desc(percent)) |> pull(design_surg) |> toString()
   mutate(
@@ -767,7 +759,7 @@ dncr_dat |>
   # tabyl(design_surg) |> arrange(desc(percent))
   group_by(design_surg) |>
   gt(id = "one") |>
-  row_group_order(groups = c("Gastrointestinal/Abdominal", "Thoracic", "Otolaryngological", "Spine", "Various", "Vascular", "Prospective Cohort—Orthopedic")) |>
+  row_group_order(groups = c("Randomized Clinical Trial — Gastrointestinal/Abdominal", "Randomized Clinical Trial — Thoracic", "Randomized Clinical Trial — Otolaryngological", "Randomized Clinical Trial — Spine", "Randomized Clinical Trial — Various", "Randomized Clinical Trial — Vascular", "Prospective Cohort — Orthopedic")) |>
   cols_hide(c(refid, year, arm_id, study, scale_other, design_f_lab, surg_f, neuro_threshold, surgs_noabbr_f)) |>
   cols_label(
     study_l          = "Study",
@@ -794,7 +786,7 @@ dncr_dat |>
     study_l ~ px(165),
     arm_n ~ px(45),
     arm ~ px(70),
-    pre_mmse ~ px(80),
+    pre_mmse ~ px(100),
     scale_mmse ~ px(50),
     scale_dst ~ px(50),
     scale_moca ~ px(50),
@@ -826,8 +818,6 @@ dncr_dat |>
 ```
 
 ### *Pooled*
-
-#### Randomized
 
 <br/>
 
@@ -901,7 +891,7 @@ tiva_inhaled_meta <- metabin(event2, n2, event1, n1,
   allstudies = TRUE,
   # subgroup = country
   )
-# summary(dex_plac_meta)
+# summary(plac_meta)
 forest(tiva_inhaled_meta,
   # sortvar = year,
   allstudies = TRUE,
@@ -933,6 +923,145 @@ forest(tiva_inhaled_meta,
 <foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> 
 Five trials conducted in China and 1 each in Norway and Japan.</foot_mg><br/>
 
+## **Neurocognitive Disorders**
+
+<font size = 4> `r table_ref()` Neurocognitive disorders and ascertainment (TIVA vs. inhaled; prospective cohort studies). </font>
+
+```{r ncd_dat}
+ncd_dat <- dichot_dat |>
+  filter(if_any(c(neurocog_n1, neurocog_n2, neurocog_n3, neurocog_last_n, neurocog_total_n), ~ !is.na(.x))) |>
+  # > 30 day exam
+  filter(if_any(matches("neurocog.*time.*"), ~ .x > 30)) |>
+  mutate(
+    arm_n = ifelse(!is.na(neurocog_update_arm_n), neurocog_update_arm_n, arm_n),
+    ncd_time = case_when(
+      neurocog_time1 > 30 ~ neurocog_time1,
+      neurocog_time2 > 30 ~ neurocog_time2,
+      neurocog_time3 > 30 ~ neurocog_time3,
+      neurocog_last_time > 30 ~ neurocog_last_time,
+      neurocog_total_time > 30 ~ neurocog_total_time,
+      .default = NA
+    ),
+    neurocog_total_n = case_when(
+      neurocog_time1 > 30 ~ neurocog_n1,
+      neurocog_time2 > 30 ~ neurocog_n2,
+      neurocog_time3 > 30 ~ neurocog_n3,
+      neurocog_last_time > 30 ~ neurocog_last_n,
+      neurocog_total_time > 30 ~ neurocog_total_n
+    ),
+    neurocog_prop = neurocog_total_n / arm_n,
+    neurocog_nper = n_per_fun(neurocog_total_n, arm_n, 1)
+  ) |>
+  left_join(study_char_dat |> select(refid, country), by = "refid") |>
+  left_join(surgs |> select(refid, surgs_single_f), by = c("refid")) |>
+  left_join(table_mn_med |> select(refid, arm_id, pre_mmse), by = c("refid", "arm_id")) |>
+  rename(surg_f = surgs_single_f) |>
+  arrange(refid, arm_id) |>
+  mutate(
+    bar = case_when(
+      str_detect(arm, "Inhaled") ~ bar_prop(neurocog_prop * 100, "#969696"),
+      str_detect(arm, "TIVA") ~ bar_prop(neurocog_prop * 100, color_2),
+      .default = bar_prop(neurocog_prop * 100, color_1)),
+    year = as.numeric(str_extract(study, "\\d{4}")),
+    scale_mmse = ifelse(!is.na(neurocog_mmse), "\U2713", NA),
+    scale_dst = ifelse(!is.na(neurocog_dst) | str_detect(neurocog_scale_otherspec, "[Dd]igit"), "\U2713", NA),
+    scale_moca = ifelse(str_detect(neurocog_scale_otherspec, "MoCA|Montreal"), "\U2713", NA),
+    scale_other = neurocog_scale_otherspec,
+    scale_other = str_to_title(str_replace(scale_other, "Digit [Ss]ymbol [Tt]est; |Digit symbol substitution test; |Montreal Cognitive Assessment \\(MoCA\\)|MoCA", "")),
+    scale_other = ifelse(scale_other == "", NA, scale_other),
+    scale_other = str_replace_all(scale_other, "Pocd", "POCD"),
+    scale_other_tf = ifelse(!is.na(scale_other), "\U2713", NA)
+  ) |>
+  select(refid, year, arm_id, study, study_l, design_f_lab, pre_mmse, country, surg_f, pre_mmse, ncd_time, neurocog_total_n, arm_n, arm, neurocog_nper, neurocog_prop, bar, scale_mmse:scale_other_tf)
+
+ncd_rr_ref <- ncd_dat |>
+  select(refid, arm_id, neurocog_total_n, arm_n) |>
+  arrange(refid, arm_id) |>
+  rename(ref_neurocog_n = neurocog_total_n, ref_arm_n = arm_n) |>
+  group_by(refid) |>
+  mutate(
+    ref_arm_n = ifelse(row_number() > 1, NA, ref_arm_n),
+    ref_neurocog_n = ifelse(row_number() > 1, NA, ref_neurocog_n)
+  ) |>
+  fill(ref_arm_n, ref_neurocog_n) |>
+  mutate(
+    ref_arm_n = ifelse(row_number() == 1, NA, ref_arm_n),
+    ref_neurocog_n = ifelse(row_number() == 1, NA, ref_neurocog_n)
+  )
+
+ncd_dat <- ncd_dat |>
+  left_join(ncd_rr_ref, by = c("refid", "arm_id")) |>
+  mutate(rr_ci = ifelse(!is.na(ref_arm_n), rr_ci_fun(neurocog_total_n, arm_n, ref_neurocog_n, ref_arm_n), "—")) |>
+  select(refid, year, design_f_lab, study, study_l, arm_id, arm_n, arm, pre_mmse, scale_mmse:scale_other_tf, ncd_time, neurocog_nper, bar, rr_ci)
+```
+
+```{r ncd_gt}
+#| eval: true
+ncd_dat |>
+  arrange(year, study) |>
+  mutate(study_l = ifelse(row_number() > 1, NA, study_l),
+         across(scale_mmse:scale_other_tf, ~ ifelse(row_number() > 1, NA, .x)),
+         ncd_time = ifelse(row_number() > 1, NA, ncd_time),
+         .by = study) |>
+  group_by(design_f_lab) |>
+  gt(id = "one") |>
+  row_group_order(groups = c("Prospective Cohort")) |>
+  cols_hide(c(refid, year, arm_id, study, scale_other)) |>
+  cols_label(
+    study_l          = "Study",
+    arm_n            = " N",
+    arm              = "Comparator",
+    pre_mmse         = "MMSE",
+    scale_mmse       = "MMSE",
+    scale_dst        = "DST",
+    scale_moca       = "MoCA",
+    scale_other_tf   = "Other",
+    ncd_time         = "Day",
+    neurocog_nper    = "N (%)",
+    bar              = "0 — 100%",
+    rr_ci            = "RR (95% CI)"
+  ) |>
+  gt_theme_mg() |>
+  fmt_markdown(columns = c(study_l, bar, pre_mmse, scale_mmse:scale_other_tf)) |>
+  fmt_number(ncd_time, decimals = 0) |>
+  sub_missing(columns = everything(), missing_text = "") |>
+  tab_spanner(label = "Instrument", columns = c(scale_mmse:scale_other_tf), level = 1) |>
+  tab_spanner(label = "Neurocognitive Disorders", columns = c(neurocog_nper:rr_ci), level = 1) |>
+  tab_spanner(label = "Preop", columns = c(pre_mmse), level = 1) |>
+  cols_width(
+    study_l          ~ px(165),
+    arm_n            ~ px(45),
+    arm              ~ px(70),
+    pre_mmse         ~ px(80),
+    scale_mmse       ~ px(50),
+    scale_dst        ~ px(50),
+    scale_moca       ~ px(50),
+    scale_other_tf   ~ px(50),
+    ncd_time         ~ px(60),
+    neurocog_nper    ~ px(90),
+    bar              ~ px(100),
+    rr_ci            ~ px(140),
+  ) |>
+  tab_style(style = cell_text(align = "left"),        locations = cells_column_labels(columns = c(study, arm))) |>
+  tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(starts_with("scale"), pre_mmse, ncd_time, neurocog_nper, rr_ci))) |>
+  # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c(neurocog_nper))) |>
+  tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(study, arm, pre_mmse))) |>
+  tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(starts_with("scale"), ncd_time, rr_ci))) |>
+  tab_style(style = cell_text(align = "right"),       locations = cells_body(columns = c(neurocog_nper))) |>
+  tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:pre_mmse, neurocog_nper), rows = str_detect(arm, "TIVA"))) |>
+  tab_footnote("Mini-Mental State Exam; DST: Digit Span Test; MoCA: Montreal Cognitive Assessment; RR: risk ratio; Gen: general anesthesia; Reg: regional anesthesia.") |>
+  tab_footnote("Day of assessment.",                   locations = cells_column_labels(columns = c(ncd_time))) |>
+  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |> 
+  tab_footnote('Z ≥1.96.', locations = cells_body(columns = c(scale_dst), rows = arm_id == 1 & study == 'Rasmussen 2003'))
+```
+
+<br/>
+
+
+
+
+
+
 ## **Complications**
 
 ```{r complications_check}
@@ -963,7 +1092,7 @@ path <- glue::glue("/Users/mgrant/Desktop/temp.xlsx")
 saveWorkbook(wb, "/Users/mgrant/Desktop/kq4.xlsx", overwrite = TRUE)
 ```
 
-<font size = 4> `r table_ref()` Report complications in regional versus general anesthesia — cardiac, MI, stroke, pulmonary, pneumonia, acute kidney injury. </font>
+<font size = 4> `r table_ref()` Reported complications in regional versus general anesthesia — cardiac, MI, stroke, pulmonary, pneumonia, acute kidney injury (TIVA vs. inhaled; randomized and nonrandomized designs). </font>
 
 ```{r complications}
 #| warning: false
@@ -1119,8 +1248,6 @@ adverse_events_dat |>
 
 ### *Pooled*
 
-#### Cardiac 
-
 <br/>
 
 <font size = 4> `r figure_ref()` Composite measure for cardiac complications (randomized clinical trials). </font>
@@ -1183,7 +1310,7 @@ pairwise_dat <- pairs_dat |>
 
 ```
 
-```{r cardiac_meta, warning = FALSE, fig.width = 14, fig.height = 4.5, fig.align = "left"}
+```{r cardiac_meta, warning = FALSE, fig.width = 14, fig.height = 4, fig.align = "left"}
 #| eval: true
 cardiac_meta <- metabin(event2, n2, event1, n1,
   data = pairwise_dat,
@@ -1203,7 +1330,7 @@ temp_meta <- cardiac_meta
 temp_meta <- update(temp_meta, subgroup = NULL, sm = "OR")
 temp_metabias <- metabias(temp_meta, method.bias = "Harbord", k.min = 10)
 
-# summary(dex_plac_meta)
+# summary(plac_meta)
 forest(cardiac_meta,
   allstudies = TRUE,
   # random = FALSE,
@@ -1215,6 +1342,7 @@ forest(cardiac_meta,
   digits.TE = 3,
   digits.tau2 = 1,
   overall.hetstat = TRUE,
+  print.pval.Q = FALSE,
   print.I2.ci = TRUE,
   prediction = TRUE,
   fs.xlab = 11,
@@ -1223,15 +1351,14 @@ forest(cardiac_meta,
   digits = 2, 
   # subgroup = TRUE,
   # print.subgroup.name = FALSE,
-  print.pval.Q = FALSE,
   xlab = "Favors: General               Regional",
   addrows.below.overall = 4
 )
 ```
 <foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/> Too few studies to examine small study effects. </foot_mg><br/>
 
-::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <font size = 4> `r figure_ref()` Regional compared with general anesthesia small study effects --- funnel plot. </font>
+<!-- ::: {.callout-note collapse="true" appearance="minimal" icon="false"} -->
+<!-- #### <font size = 4> `r figure_ref()` Regional compared with general anesthesia small study effects --- funnel plot. </font> -->
 
 ```{r tiva_inh_meta_funnel_limit_mort, fig.dim = c(7, 5.5), out.width = "70%", fig.align = "center"}
 #| eval: false
@@ -1254,9 +1381,585 @@ funnel(cardiac_meta,
 legend(0.02, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#AAB7B8", "#D5DBDB", "#F4F6F6"), bty = "n")
 
 ```
-:::
+<!-- ::: -->
+
+## **Length of Stay**
+
+<font size = 4> `r table_ref()` Length of stay according to procedure classification and comparator. </font>
+
+```{r length_of_stay}
+#| eval: true
+los_tab <- contin_dat |>
+  mutate(los_for_tables(contin_dat)) |>
+  filter(if_any(los_m:los_diff_pval, ~ !is.na(.))) |>
+  left_join(table_age_mn_med, by = c("refid", "arm_id")) |> # age_table
+  left_join(study_arm_dat |> select(refid, arm_id, asa_ps_incl), by = c("refid", "arm_id")) |>
+  left_join(surgs |> select(refid, surgs_noabbr_f), by = c("refid")) |>
+  left_join(study_char_dat |> select(refid, country), by = "refid" ) |> 
+  mutate(
+    refid_arm_id = paste0(refid, "-", arm_id),
+    surg_groups = paste0(design_f_lab, " - ", surgs_noabbr_f),
+    mean_med = case_when(
+      !is.na(los_m) ~ los_m,
+      !is.na(los_med) ~ los_med
+    ),
+    calc_prop_35d = 100 * mean_med / 35,
+    bar = case_when(
+      str_detect(arm, "TIVA") ~ bar_prop(calc_prop_35d, "#A93226"),
+      .default = bar_prop(calc_prop_35d, "#969696")
+    )
+  ) |>
+  arrange(surg_groups, year, study, arm_id) |> 
+  select(refid, refid_arm_id, study, study_l, arm_n, arm, asa_ps_incl, age_table, los_table, bar, surg_groups, country)
+
+los_tab |>
+  mutate(study_l = ifelse(row_number() > 1, "", study_l),
+         country = ifelse(row_number() > 1, "", country),
+         .by = refid) |> 
+  # tabyl(surg_groups) |> pull(surg_groups) |> toString()
+  group_by(surg_groups) |>
+  gt(id = "one") |>
+  row_group_order(groups = c("Randomized Clinical Trial - Gastrointestinal/Abdominal", "Randomized Clinical Trial - Thoracic", "Randomized Clinical Trial - Various", "Retrospective Cohort - Cardiac", "Retrospective Cohort - Orthopedic", "Retrospective Cohort - Various")) |> 
+  cols_hide(c(refid, refid_arm_id, study)) |>
+  cols_label(
+    study_l = "Study",
+    arm_n = " N",
+    arm = "Anesth",
+    asa_ps_incl = "PS",
+    age_table = "    Age",
+    los_table = "    LOS",
+    bar = "0 – 35 days",
+    country = "Country"
+  ) |>
+  fmt_integer(use_seps = TRUE, sep_mark = ",") |>
+  gt_theme_mg() |> 
+  cols_width(
+    study_l ~ px(165),
+    arm_n ~ px(60),
+    arm ~ px(80),
+    asa_ps_incl ~ px(60),
+    age_table ~ px(100),
+    los_table ~ px(100),
+    bar ~ px(120),
+    country ~ px(80)
+    )  |> 
+  fmt_markdown(columns = c(study_l, bar, age_table, los_table)) |> 
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, arm,  bar))) |>
+  tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(study_l, age_table, los_table))) |>
+  tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study_l, age_table, los_table, bar, arm, asa_ps_incl))) |> 
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(arm, "TIVA"))) |> 
+  tab_footnote(md("NR: not reported")) |> 
+  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, los_table))) |> 
+  tab_footnote(md("ASA Physical Status."), locations = cells_column_labels(columns = c(asa_ps_incl)))
+  
+```
+
+### **Pooled**
+
+<font size = 4> `r figure_ref()` Mean difference in lengths of stay from randomized clinical trials. </font>
+
+```{r los_meta, fig.width = 14, fig.height = 3, fig.align = "left"}
+los_meta_dat <- contin_dat |>
+  filter(refid %in% los_tab$refid) |> 
+  select(refid, study, design_f_lab, arm, arm_n, los_m, los_sd, los_med, los_rl, los_ru, los_iqrl, los_iqru, los_95l, los_95u) |> 
+  rename_with(~ str_remove(.x, "los_")) |> 
+  select(!matches("95")) |> 
+  pivot_wider(names_from = "arm", values_from = arm_n:iqru) |> 
+  mutate(year = str_extract(study, "\\d{4}")) |> 
+  arrange(year) 
+
+los_rct_meta_dat <- los_meta_dat |> 
+  filter(str_detect(design_f_lab, "Rand")) |> 
+  left_join(rob2_meta_dat, by = "refid") |> 
+  left_join(surgs |> select(refid, surgs_single), by = "refid")
+
+los_nrsi_meta_dat <- los_meta_dat |> 
+  filter(!str_detect(design_f_lab, "Rand")) |> 
+  left_join(robinsi_meta_dat, by = "refid") |> 
+  left_join(surgs |> select(refid, surgs_single), by = "refid")
+
+los_meta <- metacont(
+  n.e = arm_n_TIVA, 
+  n.c = arm_n_Inhaled,
+  common =  TRUE,
+  mean.e = m_TIVA,
+  sd.e = sd_TIVA,
+  median.e = med_TIVA,
+  q1.e = iqrl_TIVA,
+  q3.e = iqru_TIVA,
+  min.e = rl_TIVA,
+  max.e = ru_TIVA,
+  mean.c = m_Inhaled,
+  sd.c = sd_Inhaled,
+  median.c = med_Inhaled,
+  q1.c = iqrl_Inhaled,
+  q3.c = iqru_Inhaled,
+  min.c = rl_Inhaled,
+  max.c = ru_Inhaled,
+  data = los_rct_meta_dat,
+  sm = "MD",
+  method.tau = "REML",
+  hakn = FALSE,
+  prediction = TRUE,
+  studlab = study
+)
+
+forest(los_meta,
+  weight.study = "random",
+  common =  FALSE,
+  label.e = "TIVA     ",
+  label.c = "Inhaled   ",
+  print.tau2 = FALSE,
+  print.tau = TRUE,
+  print.tau.ci = TRUE,
+  digits = 1,
+  digits.sd = 1,
+  digits.mean = 1,
+  digits.tau = 1,
+  # digits.pval.Q = 2,
+  print.I2.ci = TRUE,
+  fs.xlab = 10,
+  just.addcols.right = "right",
+  print.pval.Q = FALSE,
+  # sortvar = -TE,
+  xlim = c(-10, 10),
+  # at = c(-80, -60, -40, -20, 0, 20, 40),
+  rightcols = c("effect", "ci", "surgs_single", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  rightlabs = c("MD ", "(95% CI)   ", "Procedure", "D1", "D2", "D3", "D4", "D5", "All"),
+  xlab = "Favors: TIVA                                      Inhaled           ",
+  smlab = "Mean Difference (days)",
+  addrows.below.overall = 4
+)
+
+```
+<foot_mg> When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range.  </foot_mg> 
+
+<br/>
+
+<font size = 4> `r figure_ref()` Mean difference in lengths of stay from nonrandomized designs. </font>
+
+```{r los_nrsi_meta, fig.width = 14, fig.height = 3, fig.align = "left"}
+los_meta <- metacont(
+  n.e = arm_n_TIVA, 
+  n.c = arm_n_Inhaled,
+  common =  TRUE,
+  mean.e = m_TIVA,
+  sd.e = sd_TIVA,
+  median.e = med_TIVA,
+  q1.e = iqrl_TIVA,
+  q3.e = iqru_TIVA,
+  min.e = rl_TIVA,
+  max.e = ru_TIVA,
+  mean.c = m_Inhaled,
+  sd.c = sd_Inhaled,
+  median.c = med_Inhaled,
+  q1.c = iqrl_Inhaled,
+  q3.c = iqru_Inhaled,
+  min.c = rl_Inhaled,
+  max.c = ru_Inhaled,
+  data = los_nrsi_meta_dat,
+  sm = "MD",
+  method.tau = "REML",
+  hakn = FALSE,
+  prediction = TRUE,
+  studlab = study
+)
+
+forest(los_meta,
+  weight.study = "random",
+  common =  FALSE,
+  label.e = "TIVA     ",
+  label.c = "Inhaled   ",
+  print.tau2 = FALSE,
+  print.tau = TRUE,
+  print.tau.ci = TRUE,
+  digits = 1,
+  digits.sd = 1,
+  digits.mean = 1,
+  digits.tau = 1,
+  print.I2.ci = TRUE,
+  fs.xlab = 10,
+  just.addcols.right = "right",
+  print.pval.Q = FALSE,
+  # sortvar = -TE,
+  xlim = c(-10, 10),
+  # at = c(-80, -60, -40, -20, 0, 20, 40),
+  rightcols = c("effect", "ci", "surgs_single", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "Overall"),
+  rightlabs = c("MD", "(95% CI)  ", "Procedure", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "All"),
+  xlab = "Favors: TIVA                                      Inhaled           ",
+  smlab = "Mean Difference (days)",
+  addrows.below.overall = 4
+)
+
+```
+<foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. <br/> 
+When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range.  </foot_mg> 
 
 ## **Mortality**
+
+```{r mortality_data}
+#| eval: true
+mortality_dat <- dichot_dat |>
+  filter(if_any(starts_with("mort"), ~ !is.na(.x))) |> 
+  # filter(arm_n != mort_update_arm_n) |> 
+  # select(refid, arm_n, mort_update_arm_n)
+  mutate(
+    # arm_n use mort_update_arm_n if different
+    arm_n = ifelse(!is.na(mort_update_arm_n), mort_update_arm_n, arm_n)
+  ) |> 
+  select(refid, refid_c, arm_id, arm, year, study, study_l, design_f_lab, arm_n, matches("_n|per") & starts_with("mort"), -mort_update_arm_n) |> 
+  pivot_longer(
+    cols = starts_with("mort"),
+    names_to = "estimand",
+    values_to = "estimate",
+    values_drop_na = TRUE
+  ) |>
+  mutate(
+    mort_period = str_remove(estimand, "_.*"),
+    estimand = str_replace(estimand, ".*_(.*)$", "\\1")
+  ) |>
+  pivot_wider(
+    names_from = estimand,
+    values_from = estimate
+  ) |>
+  mutate(
+    mort_period = case_when(
+      str_detect(mort_period, "hosp") ~ "Hospital",
+      str_detect(mort_period, "mort30") ~ "30-day",
+      str_detect(mort_period, "mort90") ~ "90-day",
+      str_detect(mort_period, "mort1") ~ "1-year"
+    ), 
+    per = per/100
+  ) |>
+  rename(mort_n = n, mort_per_rep = per) |>
+  # for Park 2020 and Dai 2021 reported both in-hospital and 30-day
+  mutate(
+    refid_c = ifelse(study %in% c("Park 2020", "Dai 2021") & mort_period == "30-day", paste0(refid_c, "-30"), refid_c)
+  ) |> 
+  arrange(refid_c, arm_id) |>
+  mutate(
+    ref_arm_n = arm_n,
+    ref_mort_n = mort_n
+  ) |>
+  group_by(refid_c) |>
+  mutate(
+    ref_arm_n = ifelse(row_number() > 1, NA, ref_arm_n),
+    ref_mort_n = ifelse(row_number() > 1, NA, ref_mort_n)
+  ) |>
+  fill(ref_arm_n, ref_mort_n) |>
+  mutate(
+    ref_arm_n = ifelse(row_number() == 1, NA, ref_arm_n),
+    ref_mort_n = ifelse(row_number() == 1, NA, ref_mort_n)
+  ) |>
+  ungroup() |> 
+  left_join(study_char_dat |> select(refid, surgs_single_f), by = "refid") |>
+  left_join(table_age_mn_med, by = c("refid", "arm_id")) |>
+  left_join(asa_combine |> select(refid, arm_id, asa_ps_incl), by = c("refid", "arm_id")) |> 
+  mutate(mort_percent = mort_n/arm_n,
+         mort_period = factor(mort_period, levels = c("Hospital", "30-day", "90-day", "1-year"))) |>
+  select(refid, refid_c, arm_id, year, study, study_l, arm_n, arm, asa_ps_incl, age_table, design_f_lab, mort_n, mort_percent, ref_mort_n, ref_arm_n, mort_period, mort_per_rep, surgs_single_f)
+
+
+```
+
+<font size = 4> `r table_ref()` Reported in-hospital, 30-day, 90-day, and 1-year mortality from randomized clinical trials.</font>
+
+```{r mortality_rct_gt}
+#| eval: true
+mortality_dat |>
+  arrange(mort_period, surgs_single_f, year, study, arm_id) |>
+  filter(str_detect(design_f_lab, "Rand")) |> 
+  group_by(mort_period, study_l) |>
+  mutate(
+    surgs_single_f = as.character(surgs_single_f),
+    study_l = ifelse(row_number() == 1, study_l, NA),
+    study = ifelse(row_number() == 1, study, NA),
+    across(c(surgs_single_f, asa_ps_incl,), ~ ifelse(row_number() > 1, NA, .x)),
+    # bar = bar_prop(50, color_1),
+    bar = case_when(
+      str_detect(arm, "TIVA") ~ bar_prop(mort_percent * 100, "#A93226"),
+      .default = bar_prop(mort_percent * 100, "#969696")
+    ),
+  ) |>
+  ungroup() |>
+  mutate(
+    # de Jonghe 2014 reported in hospital and 90-day
+    # study_l = ifelse(refid == 16552 & arm_id == 1, "[de Jonghe 2014](evidence_tables.html#16552)", study_l),
+    # surgs_single_f = ifelse(refid == 16552 & arm_id == 1, "Ortho", surgs_single_f),
+    rd_ci = ifelse(!is.na(ref_mort_n), rd_per_ci_fun(mort_n, arm_n, ref_mort_n, ref_arm_n, digits = 1), "—"),
+    mort_n_percent = n_per_fun(mort_n, arm_n, 1)
+  ) |> 
+  relocate(surgs_single_f, .before = asa_ps_incl) |> 
+  relocate(mort_n_percent, .before = bar) |> 
+  select(-mort_n) |> 
+  arrange(year, refid_c, arm_id) |> 
+  group_by(mort_period) |> 
+  gt(id = "one") |> 
+  cols_hide(c(refid, refid_c, arm_id, year, study, design_f_lab, mort_percent, ref_mort_n, ref_arm_n, mort_per_rep)) |>
+  # row_group_order(groups = c("Hospital", "30-day", "90-day")) |> 
+  cols_label(
+    study_l = "Study",
+    arm_n = "N  ",
+    arm = "Arm",
+    surgs_single_f = "Surgery",
+    age_table = "Age",
+    asa_ps_incl = "PS",
+    mort_n_percent = "N (%)",
+    bar = md("0 - 100%"),
+    rd_ci = "RD (95% CI)"
+  ) |> 
+  fmt_markdown(columns = c(study_l, bar, age_table)) |>
+  tab_spanner(label = "Mortality", columns = c(mort_n_percent, bar)) |> 
+  tab_spanner(label = "ASA", columns = c(asa_ps_incl)) |> 
+  row_group_order(groups = c("Hospital", "30-day", "1-year")) |> 
+  gt_theme_mg() |> 
+  tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(study, arm, surgs_single_f))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(age_table, asa_ps_incl, rd_ci))) |>
+  tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study, arm, surgs_single_f, bar))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rd_ci))) |>
+  tab_style(style = cell_text(align = "right"),  locations = cells_column_labels(columns = c(arm_n, mort_n_percent))) |>
+  tab_style(style = cell_text(align = "right"),  locations = cells_body(columns = c(mort_n_percent))) |>
+  tab_style(style = cell_text(align = "center",  font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |> 
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n, arm, age_table, mort_n_percent), rows = str_detect(arm, "TIVA"))) |> 
+  sub_missing(columns = everything(), rows = everything(), missing_text = "") |> 
+  cols_width(
+    study_l ~ px(140),
+    arm_n ~ px(65),
+    arm ~ px(70),
+    surgs_single_f ~ px(95),
+    age_table ~ px(100),
+    asa_ps_incl ~ px(60),
+    mort_n_percent ~ px(80),
+    bar ~ px(100),
+    rd_ci ~ px(145)
+  ) |> 
+  # opt_css(css = "#one .gt_column_spanner {border-bottom-style: hidden;}") |>
+  tab_footnote("ASA PS: American Society of Anesthesiologists Physical Status; RD: risk difference; GI: gastrointestinal; Abd: abdominal (includes hepatic); Various: more that one procedure category.") |> 
+  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table)))  
+  # tab_footnote("Different lengths of follow-up from the same trial.", locations = cells_body(columns = study_l, rows = study %in% c("Su 2016", "Zhang 2019b"))) 
+
+```
+
+<font size = 4> `r table_ref()` Reported in-hospital, 30-day, 90-day, and 1-year mortality from nonrandomized designs (all retrospective cohort studies).</font>
+
+```{r mortality_nrsi_gt}
+#| eval: true
+mortality_dat |>
+  arrange(mort_period, surgs_single_f, year, study, arm_id) |>
+  filter(!str_detect(design_f_lab, "Rand")) |> 
+  group_by(mort_period, study_l) |>
+  mutate(
+    surgs_single_f = as.character(surgs_single_f),
+    study_l = ifelse(row_number() == 1, study_l, NA),
+    study = ifelse(row_number() == 1, study, NA),
+    across(c(surgs_single_f, asa_ps_incl,), ~ ifelse(row_number() > 1, NA, .x)),
+    # bar = bar_prop(50, color_1),
+    bar = case_when(
+      str_detect(arm, "TIVA") ~ bar_prop(mort_percent * 100, "#A93226"),
+      .default = bar_prop(mort_percent * 100, "#969696")
+    ),
+  ) |>
+  ungroup() |>
+  mutate(
+    # de Jonghe 2014 reported in hospital and 90-day
+    # study_l = ifelse(refid == 16552 & arm_id == 1, "[de Jonghe 2014](evidence_tables.html#16552)", study_l),
+    # surgs_single_f = ifelse(refid == 16552 & arm_id == 1, "Ortho", surgs_single_f),
+    rd_ci = ifelse(!is.na(ref_mort_n), rd_per_ci_fun(mort_n, arm_n, ref_mort_n, ref_arm_n, digits = 1), "—"),
+    mort_n_percent = n_per_fun(mort_n, arm_n, 1)
+  ) |> 
+  relocate(surgs_single_f, .before = asa_ps_incl) |> 
+  relocate(mort_n_percent, .before = bar) |> 
+  select(-mort_n) |> 
+  arrange(year, refid_c, arm_id) |> 
+  group_by(mort_period) |> 
+  gt(id = "one") |> 
+  cols_hide(c(refid, refid_c, arm_id, year, study, design_f_lab, mort_percent, ref_mort_n, ref_arm_n, mort_per_rep)) |>
+  # row_group_order(groups = c("Hospital", "30-day", "90-day")) |> 
+  cols_label(
+    study_l = "Study",
+    arm_n = "N    ",
+    arm = "Arm",
+    surgs_single_f = "Surgery",
+    age_table = "Age",
+    asa_ps_incl = "PS",
+    mort_n_percent = "N (%)",
+    bar = md("0 - 100%"),
+    rd_ci = "RD (95% CI)"
+  ) |> 
+  fmt_markdown(columns = c(study_l, bar, age_table)) |>
+  tab_spanner(label = "Mortality", columns = c(mort_n_percent, bar)) |> 
+  tab_spanner(label = "ASA", columns = c(asa_ps_incl)) |> 
+  fmt_integer(use_seps = TRUE, sep_mark = ",") |>
+  gt_theme_mg() |> 
+  tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(study, arm, surgs_single_f))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(age_table, asa_ps_incl, rd_ci))) |>
+  tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study, arm, surgs_single_f, bar))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rd_ci))) |>
+  tab_style(style = cell_text(align = "right"),  locations = cells_column_labels(columns = c(arm_n, mort_n_percent))) |>
+  tab_style(style = cell_text(align = "right"),  locations = cells_body(columns = c(mort_n_percent))) |>
+  tab_style(style = cell_text(align = "center",  font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |> 
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n, arm, age_table, mort_n_percent), rows = str_detect(arm, "TIVA"))) |> 
+  sub_missing(columns = everything(), rows = everything(), missing_text = "") |> 
+  cols_width(
+    study_l ~ px(140),
+    arm_n ~ px(65),
+    arm ~ px(70),
+    surgs_single_f ~ px(95),
+    age_table ~ px(100),
+    asa_ps_incl ~ px(60),
+    mort_n_percent ~ px(80),
+    bar ~ px(100),
+    rd_ci ~ px(145)
+  ) |> 
+  # opt_css(css = "#one .gt_column_spanner {border-bottom-style: hidden;}") |>
+  tab_footnote("ASA PS: American Society of Anesthesiologists Physical Status; RD: risk difference; GI: gastrointestinal; Abd: abdominal (includes hepatic); Various: more that one procedure category.") |> 
+  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table)))  
+  # tab_footnote("Different lengths of follow-up from the same trial.", locations = cells_body(columns = study_l, rows = study %in% c("Su 2016", "Zhang 2019b"))) 
+
+```
+
+```{r mortality_hosp_30d_meta}
+#| eval: true
+mortality_rct_meta_dat <- mortality_dat |>
+  filter(str_detect(design_f_lab, "Rand")) |> 
+  filter(mort_period %in% c("Hospital", "30-day")) |>
+  # exclude Dai 2021 hospital 30-day; retain 30-day
+  filter(!(study == "Dai 2021" & mort_period == "Hospital")) |> 
+  select(refid, study, arm, mort_n, arm_n, mort_period)
+
+mortality_nrsi_meta_dat <- mortality_dat |>
+  filter(!str_detect(design_f_lab, "Rand")) |> 
+  filter(mort_period %in% c("Hospital", "30-day")) |>
+  # exclude hospital retain 30-day
+  filter(!(study %in% c("Jakobsen 2007", "Park 2020") & mort_period == "Hospital")) |> 
+  select(refid, study, arm, mort_n, arm_n, mort_period)
+
+pairwise_rct_mort_dat <- pairwise(
+  treat = arm,
+  event = mort_n,
+  n = arm_n,
+  studlab = study,
+  allstudies = TRUE,
+  data = mortality_rct_meta_dat,
+  sm = "RR",
+  keep.all.comparisons = TRUE
+)
+
+pairwise_nrsi_mort_dat <- pairwise(
+  treat = arm,
+  event = mort_n,
+  n = arm_n,
+  studlab = study,
+  allstudies = TRUE,
+  data = mortality_nrsi_meta_dat,
+  sm = "RR",
+  keep.all.comparisons = TRUE
+)
+
+```
+
+### Pooled
+
+<font size = 4> `r figure_ref()` Risk ratio for hospital mortality (TIVA vs. inhaled; randomized clinical trials). </font>
+
+```{r mort_rct_meta, fig.dim = c(14, 4), fig.align = "center"}
+# ```{r nma_dat, out.width = 50%, out.height = 100%}
+mort_meta_dat <- pairwise_rct_mort_dat |> 
+  mutate(year = str_extract(study, "\\d{4}")) |> 
+  left_join(rob2_meta_dat, by = "refid") |> 
+  left_join(surgs |> select(refid, surgs_single), by = "refid") |> 
+  select(study, year, event2, n2, event1, n1, surgs_single, D1:Overall, mort_period, refid)
+
+# total_meta(mort_meta_dat)
+# refid_meta_fun(mort_meta_dat)
+
+mort_rct_meta <- metabin(event2, n2, event1, n1,
+  data = mort_meta_dat,
+  studlab = study,
+  # cluster = refid,
+  sm = "RR",
+  method = "MH",
+  method.tau = "PM",
+  hakn = TRUE,
+  prediction = FALSE,
+  allstudies = TRUE,
+)
+
+# summary(plac_meta)
+forest(mort_rct_meta,
+  allstudies = TRUE,
+  # random = FALSE,
+  label.e = "TIVA     ",
+  label.c = "Inhaled     ",
+  rightcols = c("effect", "ci", "surgs_single", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  rightlabs = c("RR", "(95% CI)", "Procedure", "D1", "D2", "D3", "D4", "D5", "All"),
+  just.addcols.right = "right",
+  digits.TE = 3,
+  digits.tau2 = 1,
+  overall.hetstat = TRUE,
+  print.I2.ci = TRUE,
+  prediction = TRUE,
+  fs.xlab = 11,
+  pooled.events = TRUE,
+  pscale = 1000,
+  digits = 2, 
+  print.pval.Q = FALSE,
+  xlim = c(0.1, 20),
+  xlab = "Favors: TIVA                       Inhaled       ",
+  addrows.below.overall = 4
+)
+
+```
+
+<font size = 4> `r figure_ref()` Risk ratio for hospital mortality (TIVA vs. inhaled; nonrandomized designs). </font>
+
+```{r mort_nrsi_meta, fig.dim = c(14, 4), fig.align = "center"}
+mort_meta_dat <- pairwise_nrsi_mort_dat |> 
+  mutate(year = str_extract(study, "\\d{4}")) |> 
+  left_join(robinsi_meta_dat, by = "refid") |> 
+  left_join(surgs |> select(refid, surgs_single), by = "refid") |> 
+  select(study, year, event2, n2, event1, n1, surgs_single, D1:Overall, mort_period, refid)
+
+# total_meta(mort_meta_dat)
+# refid_meta_fun(mort_meta_dat)
+
+mort_rct_meta <- metabin(event2, n2, event1, n1,
+  data = mort_meta_dat,
+  studlab = study,
+  # cluster = refid,
+  sm = "RR",
+  method = "MH",
+  method.tau = "PM",
+  hakn = TRUE,
+  prediction = FALSE,
+  allstudies = TRUE,
+)
+
+# summary(plac_meta)
+forest(mort_rct_meta,
+  allstudies = TRUE,
+  # random = FALSE,
+  label.e = "TIVA     ",
+  label.c = "Inhaled     ",
+  rightcols = c("effect", "ci", "surgs_single", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "Overall"),
+  rightlabs = c("RR", "(95% CI)  ", "Procedure", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "All"),
+  just.addcols.right = "right",
+  digits.TE = 3,
+  digits.tau2 = 1,
+  overall.hetstat = TRUE,
+  print.I2.ci = TRUE,
+  prediction = TRUE,
+  fs.xlab = 11,
+  pooled.events = TRUE,
+  pscale = 1000,
+  digits = 2, 
+  print.pval.Q = FALSE,
+  xlim = c(0.1, 10),
+  xlab = "Favors: TIVA                                     Inhaled       ",
+  addrows.below.overall = 4
+)
+```
+<foot_mg> Note for Yoshimura 2022 naïve risk ratio, but identical to odds ratio reported respecting propensity matching.</foot_mg> 
 
 ## Risk of Bias
 
@@ -1284,7 +1987,7 @@ rob_traffic_light(rob_temp_dat, psize = 4, tool = "ROB2", colour = "colourblind"
 
 ```{r nrsi_summary_overall, fig.height = 3, out.width = "60%"}
 robinsi_temp_dat <- robinsi_dat |>
-  filter(!is.na(Study) & refid %in% kq6_refid) |> 
+  filter(!is.na(Study) & refid %in% kq4_refid) |> 
   select(-refid)
 
 rob_summary(robinsi_temp_dat, tool = "ROBINS-I", colour = "colourblind", weighted = FALSE)
@@ -1292,7 +1995,7 @@ rob_summary(robinsi_temp_dat, tool = "ROBINS-I", colour = "colourblind", weighte
 
 <font size = 4> `r figure_ref()` Risk of bias assessment for nonrandomized studies. </font>
 
-```{r nrsi_overall_study, out.width = "55%", fig.height = 3.3}
+```{r nrsi_overall_study, out.width = "55%", fig.height = 4.5}
 rob_traffic_light(robinsi_temp_dat, psize = 4, tool = "ROBINS-I", colour = "colourblind")
 ```
 
