@@ -30,7 +30,7 @@ Among patients older patients undergoing surgery with general anesthesia, does t
 #| include: false
 source("code/load_data.R")
 settings.meta(CIbracket = "(")
-kq4_refid <- kq4_refid[!kq4_refid %in% 290]
+kq4_refid <- kq4_refid[!kq4_refid %in% c(290)]
 
 study_char_dat <- data_kq(study_char_dat, kq4_refid) |> 
   mutate(
@@ -76,7 +76,7 @@ outcome_dat <- rankings("KQ4")
 outcome_tab(outcome_dat, 11)
 ```
 
-## Outcome Reporting
+## Outcomes Reported
 
 <font size = 4> `r table_ref()` Dichotomous or count outcomes. </font>
 
@@ -1454,7 +1454,7 @@ los_tab |>
   
 ```
 
-### **Pooled**
+### *Pooled*
 
 <font size = 4> `r figure_ref()` Mean difference in lengths of stay from randomized clinical trials. </font>
 
@@ -1662,7 +1662,7 @@ mortality_dat <- dichot_dat |>
 
 ```
 
-<font size = 4> `r table_ref()` Reported in-hospital, 30-day, 90-day, and 1-year mortality from randomized clinical trials.</font>
+<font size = 4> `r table_ref()` Reported in-hospital, 30-day, and 1-year mortality from randomized clinical trials.</font>
 
 ```{r mortality_rct_gt}
 #| eval: true
@@ -1740,7 +1740,7 @@ mortality_dat |>
 
 ```
 
-<font size = 4> `r table_ref()` Reported in-hospital, 30-day, 90-day, and 1-year mortality from nonrandomized designs (all retrospective cohort studies).</font>
+<font size = 4> `r table_ref()` Reported in-hospital and 30-day mortality from nonrandomized designs (all retrospective cohort studies).</font>
 
 ```{r mortality_nrsi_gt}
 #| eval: true
@@ -1858,9 +1858,9 @@ pairwise_nrsi_mort_dat <- pairwise(
 
 ```
 
-### Pooled
+### *Pooled*
 
-<font size = 4> `r figure_ref()` Risk ratio for hospital mortality (TIVA vs. inhaled; randomized clinical trials). </font>
+<font size = 4> `r figure_ref()` Risk ratio for hospital or 30-day mortality (TIVA vs. inhaled; randomized clinical trials). </font>
 
 ```{r mort_rct_meta, fig.dim = c(14, 4), fig.align = "center"}
 # ```{r nma_dat, out.width = 50%, out.height = 100%}
@@ -1911,7 +1911,7 @@ forest(mort_rct_meta,
 
 ```
 
-<font size = 4> `r figure_ref()` Risk ratio for hospital mortality (TIVA vs. inhaled; nonrandomized designs). </font>
+<font size = 4> `r figure_ref()` Risk ratio for hospital or 30-day mortality (TIVA vs. inhaled; nonrandomized designs). </font>
 
 ```{r mort_nrsi_meta, fig.dim = c(14, 4), fig.align = "center"}
 mort_meta_dat <- pairwise_nrsi_mort_dat |> 
