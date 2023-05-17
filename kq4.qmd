@@ -1,5 +1,5 @@
 ---
-title: "TIVA versus Inhaled"
+title: "TIVA versus Inhaled Anesthesia"
 editor: source
 toc-title: "**TIVA versus Inhaled**"
 toc-location: "left"
