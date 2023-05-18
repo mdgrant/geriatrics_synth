@@ -11,43 +11,19 @@ tables:
       caption:
         pre: "Table "
         sep: " -- "
-# bibliography: "bib/kq1.bib"
-# csl: jama.csl
-# link-citations: false
-# nocite: '@*'
+bibliography: "bib/kq2.bib"
+csl: jama.csl
+link-citations: false
+nocite: '@*'
 ---
 
 ## Key Question
 
 Among patients older patients anticipating surgery and anesthesia, do interventions targeted at improving physical function, cognition, and nutritional status before surgery ("prehabilitation") improve postoperative outcomes?
 
-<!-- setup -------------------------------------------- (2022-12-24 16:56) @ --->
+## **References** {#references}
 
-```{r, read_data}
-#| include: false
-source("code/load_data.R")
-```
 
-<!-- kq5..._dat files --------------------------------- (2022-12-28 08:41) @ --->
 
-```{r, data}
-# note working file not renamed
-study_char_dat <- study_char_dat |> 
-  filter(refid %in% kq1_refid) |> 
-  arrange(design_f)
 
-study_arm_dat <- study_arm_dat |> 
-  filter(refid %in% kq1_refid) |> 
-  arrange(design_f)
-```
 
-<!-- ## Outcome Importance Rankings -->
-
-<!-- <font size = 4> `r table_ref()` Rankings of the 5 most important outcomes (11 respondents). </font> -->
-
-```{r, outcome_priority}
-#| include: true
-#| eval: false
-outcome_dat <- rankings("KQ2")
-outcome_tab(outcome_dat, 11)
-```
