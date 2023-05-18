@@ -11,9 +11,9 @@ editor: source
 
 [Prehabilitation](kq2.html)
 
-[Regional vs. General Anesthesia](kq3.html)
+[Regional versus General Anesthesia](kq3.html)
 
-[TIVA vs. Inhaled Anesthesia](kq4.html)
+[TIVA versus Inhaled Anesthesia](kq4.html)
 
 [Potentially Inappropriate Medications](kq5.html)
 
