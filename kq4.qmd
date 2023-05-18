@@ -1169,7 +1169,6 @@ adverse_events_dat <- adverse_events_dat |>
 
 ```{r complications_gt}
 #| eval: true
-# RESUME: complications
 # propensity matched
 # Park 2020 (refid: 1134), Oh 2019 (refid: 132), Yoshimura 2022 (refid: 16890)
 propensity_refid <- c(1134, 132, 16890)
@@ -1267,7 +1266,7 @@ adverse_events_gt_dat |>
 
 ### *Pooled*
 
-<font size = 4> `r figure_ref()` Relative odds complications in TIVA versus general anesthesia — cardiac, pulmonary, and acute kidney injury (TIVA versus inhaled; combined randomized and nonrandomized designs). </font>
+<font size = 4> `r figure_ref()` Relative odds complications — cardiac, pulmonary, and acute kidney injury (TIVA versus inhaled; combined randomized and nonrandomized designs). </font>
 
 ```{r complication_meta,  fig.width = 14, fig.height = 12, fig.align = "left"}
 adverse_meta <- metagen(or_ln_te, or_ln_se_te,
@@ -1453,7 +1452,7 @@ forest(satis_meta,
 )
 
 ```
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg> 
+<foot_mg> RD: risk difference; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg> 
 
 <br/>
 
@@ -1518,9 +1517,10 @@ los_tab |>
     country ~ px(80)
     )  |> 
   fmt_markdown(columns = c(study_l, bar, age_table, los_table)) |> 
+  tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, arm,  bar))) |>
   tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(study_l, age_table, los_table))) |>
-  tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study_l, age_table, los_table, bar, arm, asa_ps_incl))) |> 
+  tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study_l, age_table, los_table, bar, arm))) |> 
   tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(arm, "TIVA"))) |> 
   tab_footnote(md("NR: not reported")) |> 
   tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, los_table))) |> 
@@ -2052,7 +2052,7 @@ rob_temp_dat <- rob2_dat |>
 rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind", weighted = FALSE)
 ```
 
-<font size = 4> `r figure_ref()` Risk of bias assessment for randomized clinical trials. </font>
+<font size = 4> `r figure_ref()` Risk of bias assessments for randomized clinical trials. </font>
 
 ```{r rob_overall_study, out.width = "55%", fig.height = 7}
 rob_traffic_light(rob_temp_dat, psize = 4, tool = "ROB2", colour = "colourblind")
@@ -2070,7 +2070,7 @@ robinsi_temp_dat <- robinsi_dat |>
 rob_summary(robinsi_temp_dat, tool = "ROBINS-I", colour = "colourblind", weighted = FALSE)
 ```
 
-<font size = 4> `r figure_ref()` Risk of bias assessment for nonrandomized studies. </font>
+<font size = 4> `r figure_ref()` Risk of bias assessments for nonrandomized studies. </font>
 
 ```{r nrsi_overall_study, out.width = "55%", fig.height = 4.5}
 rob_traffic_light(robinsi_temp_dat, psize = 4, tool = "ROBINS-I", colour = "colourblind")
