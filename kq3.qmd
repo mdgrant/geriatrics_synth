@@ -37,7 +37,7 @@ Among older patients undergoing surgery and anesthesia, does regional anesthesia
 source("code/load_data.R")
 settings.meta(CIbracket = "(")
 
-kq3_refid <- kq3_refid[kq3_refid != 813] # retrospective cohort 
+kq3_refid <- kq3_refid[!kq3_refid %in% c(813, 3434)] # retrospective cohort 
 
 study_char_dat <- data_kq(study_char_dat, kq3_refid)
 
@@ -282,8 +282,8 @@ reg_gen_tab |>
   mutate(arm_n = ifelse(refid == 221, "NR", arm_n)) |> 
   group_by(surgs) |>
   gt(id = "one") |>
-  row_group_order(groups = c("Ortho — HipFx", "Ortho — HipFx|Other", "Ortho — TKA|THA|HipFx|Other", "Ortho — TKA", "Ortho — THA", "Ortho", "Urol", "GI/Abdominal", "Neuro", "Neuro|Vasc", "Cardiac", "Gyn", "Gyn|Ortho|Urol|Vasc", "Headneck", "Ophtho", "Other", "Various TKA|THA|Other", "Vasc")) |>
-  # "Cardiac", "GI/Abdominal", "Gyn", "Gyn|Ortho|Urol|Vasc", "Headneck", "Neuro", "Neuro|Vasc", "Ophtho", "Ortho", "Ortho — HipFx", "Ortho — HipFx|Other", "Ortho —  THA", "Ortho — TKA", "Ortho — TKA|THA|HipFx|Other", "Other", "Urol", "Various TKA|THA|Other", and "Vasc".
+  row_group_order(groups = c("Ortho — HipFx", "Ortho — HipFx|Other", "Ortho — TKA|THA|HipFx|Other", "Ortho — TKA", "Ortho — THA", "Ortho", "Urol", "GI/Abdominal", "Neuro", "Neuro|Vasc", "Cardiac", "Gyn", "Gyn|Ortho|Urol|Vasc", "Headneck", "Other", "Various TKA|THA|Other", "Vasc")) |>
+  # "Cardiac", "GI/Abdominal", "Gyn", "Gyn|Ortho|Urol|Vasc", "Headneck", "Neuro", "Neuro|Vasc", "Ortho", "Ortho — HipFx", "Ortho — HipFx|Other", "Ortho —  THA", "Ortho — TKA", "Ortho — TKA|THA|HipFx|Other", "Other", "Urol", "Various TKA|THA|Other", and "Vasc".
   cols_hide(c(refid, arm_id, study, year, ortho)) |>
   cols_label(
     study_l          = "Study",
