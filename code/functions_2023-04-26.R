@@ -165,6 +165,21 @@ refid_detect_select_fun <- function(data_select, var_select, string_select) {
     pull(refid)
 }
 
+# cochrane function to combine arms
+combine_contin <- function(n_1, n_2, x_1, x_2, sd_1, sd_2){
+  n_comb <- n_1 + n_2
+  x_comb <-  (n_1 * x_1 + n_2 * x_2)/(n_comb)
+  sd_comb <- sqrt(((n_1 - 1) * sd_1^2 + (n_2 - 1) * sd_2^2 + (n_1 * n_2)/(n_comb) * (x_1 - x_2)^2) / (n_comb - 1))
+  c(n_comb, x_comb, sd_comb)
+}
+
+# calculate SD for groups from p value, assuming equal
+sd_bwgrp_fun <- function(m1, m2, n1, n2, pVal) {
+  sd2 <- abs((m2 - m1) / qt(pVal / 2, n1 + n2 - 2)) * sqrt(n2 * n1 / (n2 + n1))
+  sd1 <- sd2
+  print(c(n1, m1, sd1, n2, m2, sd2))
+}
+
 ## by_study_xlsx usage -------------------------------- (2023-03-06 22:52) @----
 # add design to tibble if not study characteristics file
 # temp_dat <- left_join(study_arm_dat, study_char_dat |> select(refid, design_f), by = "refid") |>
