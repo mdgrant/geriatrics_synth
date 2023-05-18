@@ -392,6 +392,13 @@ collapse_dichot <- function(data_dat, study, arms, variable) {
     pull(variable_n)
 }
 
+collapse_dichot_study_compl <- function(data_dat, study_compl, arms, variable) {
+  data_dat |>
+    filter(study_compl == {{ study_compl }} & arm_id %in% {{ arms }}) |>
+    summarize(variable_n = sum({{ variable }})) |>
+    pull(variable_n)
+}
+
 # make base graphs pretty
 par(bty = "n", xaxt = "l", yaxt = "l")
 
