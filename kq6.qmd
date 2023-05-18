@@ -919,7 +919,7 @@ delirium_total_gt_fun("Dex") |>
   tab_footnote("Tool reported in the `Chinese Expert Consensus on the Prevention and Treatment of Postoperative Delirium in Elderly Patients.'", locations = cells_body(columns = scale_delirium, rows = scale_delirium == "Note")) |> 
   tab_footnote("Postoperative dexmedetomidine only.", locations = cells_body(columns = rr_ci, rows = refid %in% postop_only_dat$refid & rr_ci != "—")) |> 
   tab_footnote("Reported only daily incidence.", locations = cells_body(columns = delitotal_time, rows = delitotal_time == "Note")) |> 
-  tab_footnote("Maximum of reported daily incidence.", locations = cells_body(columns = n_percent, rows = refid %in% refid_max_of_days)) |> 
+  tab_footnote("Maximum of reported daily incidence.", locations = cells_body(columns = n_percent, rows = refid %in% refid_max_of_days), placement = "right") |> 
   tab_footnote("Primary outcome was delirium on postoperative day 1 — OR 0.32 (95% CI, 0.10–0.83)", locations = cells_body(columns = study_l, rows = str_detect(study_l, "Qu 2023"))) 
   
 
@@ -977,7 +977,7 @@ delirium_total_gt_mel_ram |>
   # tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
   tab_footnote("Days over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |> 
   tab_footnote("Reported only daily incidence.", locations = cells_body(columns = delitotal_time, rows = delitotal_time == "Note")) |> 
-  tab_footnote("Maximum of reported daily incidence.", locations = cells_body(columns = n_percent, rows = refid %in% refid_max_of_days))
+  tab_footnote("Maximum of reported daily incidence.", locations = cells_body(columns = n_percent, rows = refid %in% refid_max_of_days), placement = "right")
 
 rm(refid_max_of_days)
 ```
@@ -2302,7 +2302,7 @@ netsplit(netmeta_dncr_nma, order = trts) %>%
 
 ## **Neurocognitive Disorders**
 
-### Dexmedetomidine and Melatonin
+### Dexmedetomidine or Melatonin
 
 <font size = 4> `r table_ref()` Neurocognitive disorders and ascertainment reported in dexmedetomidine and melatonin trials. </font>
 
@@ -2322,7 +2322,7 @@ ncd_dat <- dichot_dat |>
       neurocog_time2 > 30 ~ neurocog_time2,
       neurocog_time3 > 30 ~ neurocog_time3,
       neurocog_last_time > 30 ~ neurocog_last_time,
-      neurocog_total_n > 30 ~ neurocog_total_time,
+      neurocog_total_time > 30 ~ neurocog_total_time,
       .default = NA
     ),
     neurocog_total_n = case_when(
@@ -2473,7 +2473,7 @@ ncd_dat |>
   tab_footnote('MMSE <24.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Chen 2020')) 
 ```
 
-### Melatonin/Ramelteon
+### Ketamine
 
 No studies
 
@@ -2798,9 +2798,6 @@ legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#A
 ```
 :::
 
-
-
-
 ## **Length of Stay**
 
 <font size = 4> `r table_ref()` Length of stay according to procedure classification and comparator. </font>
@@ -3039,8 +3036,8 @@ mortality_dex_dat <- mortality_dat |>
   filter(refid %in% dex_mort_refid, mort_period %in% c("Hospital", "30-day")) |>
   rename(arm = drug_recode_abbr) |>
   filter(!str_detect(arm, "Ulin")) |>
-  # exclude Qu 2023 30-day; retain hospital
-  filter(!(study == "Qu 2023" & mort_period == "30-day")) |> 
+  # exclude Qu 2023 hospital; retain 30-day
+  filter(!(study == "Qu 2023" & mort_period == "Hospital")) |> 
   # to include hospital and 30-day if reporte
   # group_by(study) |>
   # mutate(
@@ -3280,7 +3277,7 @@ forest(dex_plac_mort_meta,
 
 ```
 
-<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/> `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, dex_plac_refid), "; a secondary outcome in ", prim_sec_out_fun(sec_delirium, dex_plac_refid), ".")`</foot_mg><br/>
+<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/> `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")` </foot_mg><br/>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention small study effects --- funnel plot. </font>
@@ -3383,7 +3380,7 @@ rob_temp_dat <- rob2_dat |>
 rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind", weighted = FALSE)
 ```
 
-<font size = 4> `r figure_ref()` Risk of bias assessment for randomized clinical trials. </font>
+<font size = 4> `r figure_ref()` Risk of bias assessments for randomized clinical trials. </font>
 
 ```{r rob_overall_study, out.width = "55%", fig.height = 16}
 rob_traffic_light(rob_temp_dat, psize = 4, tool = "ROB2", colour = "colourblind")
@@ -3401,7 +3398,7 @@ robinsi_temp_dat <- robinsi_dat |>
 rob_summary(robinsi_temp_dat, tool = "ROBINS-I", colour = "colourblind", weighted = FALSE)
 ```
 
-<font size = 4> `r figure_ref()` Risk of bias assessment for nonrandomized studies. </font>
+<font size = 4> `r figure_ref()` Risk of bias assessments for nonrandomized studies. </font>
 
 ```{r nrsi_overall_study, out.width = "55%", fig.height = 3.3}
 rob_traffic_light(robinsi_temp_dat, psize = 4, tool = "ROBINS-I", colour = "colourblind")
