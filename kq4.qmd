@@ -1305,8 +1305,6 @@ forest(adverse_meta,
 
 ## **Patient Satisfaction**
 
-Reported patient satisfaction rate in general vs neuraxial or regional anesthesia RCTs by comparator.
-
 <font size = 4> `r table_ref()` Patient satisfaction according to TIVA or inhalation anesthesia. </font>
 
 ```{r pt_satisfaction}
