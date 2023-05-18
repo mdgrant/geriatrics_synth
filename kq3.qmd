@@ -1207,6 +1207,7 @@ adverse_events_gt_dat |>
 
 ```{r adverse_events_meta}
 adverse_meta_dat <- adverse_events_gt_dat |>
+  filter(refid != 16596) |> # Neuman 2016
   select(refid, year, study, arm_id, arm, arm_n, n, complication, study_compl) |>
   mutate(
     arm = ifelse(arm == "Gen", "Gen", "Reg"),
