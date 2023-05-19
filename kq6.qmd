@@ -20,29 +20,29 @@ link-citations: false
 nocite: '@*'
 ---
 
-## **Key Question**
+## Key Question
 
 Among older patients undergoing surgery and anesthesia, do dexmedetomidine, ketamine, ramelteon, or melatonin administered during the perioperative period decrease the risk of postoperative delirium or other adverse cognitive outcomes?
 
-::: {.callout-note collapse="true" appearance="default" icon="true"}
-## DRAFT results last updated `r lubridate::now()`
+<!-- ::: {.callout-note collapse="true" appearance="default" icon="true"} -->
+<!-- ## DRAFT results last updated `r lubridate::now()` -->
 
-2023-04-29 added assessment < or ≥3 days subgrouping to delayed neurocognitive recovery; country to LOS; edited colors throughout
+<!-- 2023-04-29 added assessment < or ≥3 days subgrouping to delayed neurocognitive recovery; country to LOS; edited colors throughout -->
 
-2023-04-20 delayed neurocognitive recovery and neurocognitive disorders pairwise and network meta-analyses added
+<!-- 2023-04-20 delayed neurocognitive recovery and neurocognitive disorders pairwise and network meta-analyses added -->
 
-2023-04-19 delayed neurocognitive recovery and neurocognitive disorders added (Evered et al. 2018 Anesthesiology nomenclature)
+<!-- 2023-04-19 delayed neurocognitive recovery and neurocognitive disorders added (Evered et al. 2018 Anesthesiology nomenclature) -->
 
-2023-04-13 mortality and length of stay added
+<!-- 2023-04-13 mortality and length of stay added -->
 
-2023-04-11 delirium incidence completed with updated GRADE and risk of bias assessment conflicts adjudicated
+<!-- 2023-04-11 delirium incidence completed with updated GRADE and risk of bias assessment conflicts adjudicated -->
 
-2023-04-09 added studies from search update 2023-03-17; sensitivity analysis by risk of bias appraisals for delirium
+<!-- 2023-04-09 added studies from search update 2023-03-17; sensitivity analysis by risk of bias appraisals for delirium -->
 
-2023-03-21 added sensitivity analysis according to delirium incidence proportion approximated by maximum daily incidence where incidence proportion was not reported
+<!-- 2023-03-21 added sensitivity analysis according to delirium incidence proportion approximated by maximum daily incidence where incidence proportion was not reported -->
 
-2023-03-19 updated dexmedetomidine and melatonin/ramelteon results with 3 additional studies reporting daily, but not overall, incidence proportion
-:::
+<!-- 2023-03-19 updated dexmedetomidine and melatonin/ramelteon results with 3 additional studies reporting daily, but not overall, incidence proportion -->
+<!-- ::: -->
 
 ```{r read_data}
 #| include: false
@@ -81,7 +81,7 @@ kq6_refid %in% cogfunc_refid
 kq6_refid[!kq6_refid %in% c(delirium_refid, cogfunc_refid)]
 ```
 
-## **Outcome Importance Rankings**
+## Outcome Importance
 
 <font size = 4> `r table_ref()`</font> Rankings for the 5 most important outcomes (11 respondents).
 
@@ -94,7 +94,7 @@ outcome_dat <- rankings("KQ6")
 outcome_tab(outcome_dat, 11)
 ```
 
-### Reporting Frequency
+## Outcomes Reported
 
 <font size = 4> `r table_ref()` Dichotomous or count outcomes. </font>
 
@@ -2769,14 +2769,67 @@ rob_summary_fun(adverse_dex_meta_wide_dat$refid)
 ```
 :::
 
+```{r complications_ram_meta}
+adverse_ram_meta_dat <- adverse_meta_dat |>
+  filter(refid %in% mel_ram_refid) |> 
+  filter(complication == "Pneumonia")
 
+adverse_ram_meta_wide_dat <- adverse_ram_meta_dat |>
+  arrange(refid, complication) |>
+  pivot_wider(names_from = "arm", values_from = arm_n:n) |>
+  group_by(study_compl) |>
+  fill(arm_n_None:n_Ram) |>
+  slice(2) |>
+  ungroup() |>
+  arrange(complication, year, study) |>
+  left_join(robinsi_meta_dat, by = "refid")
 
+```
 
+<font size = 4> `r figure_ref()` Risk ratio in pneumonia (ramelteon versus no interventions; before-after studies). </font>
 
+```{r complication_ram_meta,  fig.width = 14, fig.height = 3, fig.align = "left"}
+adverse_ram_meta <- metabin(
+  n_Ram, arm_n_Ram, n_None, arm_n_None,
+  data = adverse_ram_meta_wide_dat,
+  studlab = study,
+  sm = "RR",
+  subgroup = complication,
+  allstudies = FALSE
+)  
 
-
-
-
+forest(adverse_ram_meta,
+  allstudies = TRUE,
+  random = FALSE,
+  label.e = "Ramelteon",
+  label.c = "None",
+  # rightcols = c("effect", "ci"),
+  # rightlabs = c("RD ", "(95% CI)   "),
+  just.addcols.right = "center",
+  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "Overall"),
+  rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "All"),
+  # leftlabs = c("Complication &\nStudy", "Events", "TIVA\n Total", "Events", "Inhaled\n Total"),
+  # just.addcols.right = "right",
+  colgap.right = "4mm",
+  digits.TE = 3,
+  digits.tau2 = 1,
+  test.subgroup = FALSE,
+  overall.hetstat = FALSE,
+  print.subgroup.name = FALSE,
+  overall = FALSE,
+  print.I2.ci = TRUE,
+  prediction = FALSE,
+  fs.xlab = 11,
+  # pscale = 100,
+  # pooled.events = TRUE,
+  digits = 2, 
+  print.pval.Q = FALSE,
+  # xlim = c(-20, 20),
+  xlab = "Favors: Ramelteon                  None",
+  addrows.below.overall = 4
+)
+```
+<foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. </foot_mg>
 
 ## **Length of Stay**
 
@@ -2784,7 +2837,6 @@ rob_summary_fun(adverse_dex_meta_wide_dat$refid)
 
 ```{r length_of_stay}
 #| eval: true
-# RESUME:
 los_tab <- contin_dat |>
   mutate(los_for_tables(contin_dat)) |>
   filter(if_any(los_m:los_diff_pval, ~ !is.na(.))) |>
@@ -2857,6 +2909,185 @@ los_tab |>
   
 ```
 
+### *Pooled*
+
+```{r los_meta, fig.width = 14, fig.height = 3, fig.align = "left"}
+los_meta_dat <- contin_dat |>
+  left_join(drugs_dat |> select(refid, arm_id, drug_recode_abbr), by = c("refid", "arm_id")) |>
+  relocate(drug_recode_abbr, .after = arm_id) |>
+  rename(arm = drug_recode_abbr) |>
+  filter(refid %in% los_tab$refid) |> 
+  select(refid, study, design_f_lab, arm, arm_n, los_m, los_sd, los_med, los_rl, los_ru, los_iqrl, los_iqru, los_95l, los_95u) |> 
+  rename_with(~ str_remove(.x, "los_")) |> 
+  select(!matches("95"))
+
+los_dex_meta_dat <- los_meta_dat |> 
+  filter(arm %in% c("Dex", "Plac", "None")) |> 
+  filter(str_detect(design_f_lab, "Rand")) |> 
+  mutate(arm = fct_drop(fct_collapse(arm, Plac = c("Plac", "None")))) |> 
+  group_by(study) |> 
+  filter(max(n()) > 1) |> 
+  filter(!n_distinct(arm) == 1) |> 
+  ungroup() |> 
+  pivot_wider(names_from = "arm", values_from = arm_n:iqru) |> 
+  mutate(year = str_extract(study, "\\d{4}")) |> 
+  left_join(rob2_meta_dat, by = "refid") |> 
+  left_join(surgs |> select(refid, surgs_single), by = "refid") |> 
+  arrange(year) 
+
+# One RCT
+# los_ket_meta_dat <- los_meta_dat |> 
+#   filter(arm %in% c("Ket", "Plac", "None")) |> 
+#   filter(str_detect(design_f_lab, "Rand")) |> 
+#   mutate(arm = fct_drop(fct_collapse(arm, Plac = c("Plac", "None")))) |> 
+#   group_by(study) |> 
+#   filter(max(n()) > 1) |> 
+#   filter(!n_distinct(arm) == 1) |> 
+#   ungroup() |> 
+#   pivot_wider(names_from = "arm", values_from = arm_n:iqru) |> 
+#   mutate(year = str_extract(study, "\\d{4}")) |> 
+#   arrange(year) 
+
+los_mel_ram_meta_dat <- los_meta_dat |> 
+  filter(arm %in% c("Mel", "Ram", "Plac", "None")) |> 
+  mutate(arm = fct_drop(fct_collapse(arm, Plac = c("Plac", "None"))),
+         arm = fct_collapse(arm, MelRam = c("Mel", "Ram"))) |> 
+  filter(str_detect(design_f_lab, "Rand")) |> 
+  group_by(study) |> 
+  filter(max(n()) > 1) |> 
+  filter(!n_distinct(arm) == 1) |> 
+  ungroup() |> 
+  pivot_wider(names_from = "arm", values_from = arm_n:iqru) |> 
+  mutate(year = str_extract(study, "\\d{4}")) |> 
+  left_join(rob2_meta_dat, by = "refid") |> 
+  left_join(surgs |> select(refid, surgs_single), by = "refid") |> 
+  arrange(year)
+
+```
+
+#### Dexmedetomidine
+
+<font size = 4> `r figure_ref()` Mean difference in lengths of stay (dexmedetomidine versus placebo; randomized clinical trials). </font>
+
+```{r los_dex_meta, fig.width = 14, fig.height = 6, fig.align = "left"}
+los_dex_meta <- metacont(
+  n.e = arm_n_Dex, 
+  n.c = arm_n_Plac,
+  common =  TRUE,
+  mean.e = m_Dex,
+  sd.e = sd_Dex,
+  median.e = med_Dex,
+  q1.e = iqrl_Dex,
+  q3.e = iqru_Dex,
+  min.e = rl_Dex,
+  max.e = ru_Dex,
+  mean.c = m_Plac,
+  sd.c = sd_Plac,
+  median.c = med_Plac,
+  q1.c = iqrl_Plac,
+  q3.c = iqru_Plac,
+  min.c = rl_Plac,
+  max.c = ru_Plac,
+  data = los_dex_meta_dat,
+  sm = "MD",
+  method.tau = "REML",
+  hakn = FALSE,
+  prediction = TRUE,
+  studlab = study
+)
+
+forest(los_dex_meta,
+  weight.study = "random",
+  common =  FALSE,
+  label.e = "Dex     ",
+  label.c = "Plac   ",
+  print.tau2 = FALSE,
+  print.tau = TRUE,
+  print.tau.ci = TRUE,
+  digits = 1,
+  digits.sd = 1,
+  digits.mean = 1,
+  digits.tau = 1,
+  # digits.pval.Q = 2,
+  print.I2.ci = TRUE,
+  fs.xlab = 10,
+  just.addcols.right = "right",
+  print.pval.Q = FALSE,
+  # sortvar = -TE,
+  xlim = c(-5, 5),
+  # at = c(-80, -60, -40, -20, 0, 20, 40),
+  rightcols = c("effect", "ci", "surgs_single", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  rightlabs = c("MD ", "(95% CI)   ", "Procedure", "D1", "D2", "D3", "D4", "D5", "All"),
+  xlab = "Favors: Dex                                      Plac           ",
+  smlab = "Mean Difference (days)",
+  addrows.below.overall = 4
+)
+
+```
+<foot_mg> MD: mean difference; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
+When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range.  </foot_mg> 
+
+#### Melatonin/Ramelteon
+
+<font size = 4> `r figure_ref()` Mean difference in lengths of stay (melatonin or ramelteon versus placebo; randomized clinical trials). </font>
+
+```{r los_mel_ram_meta, fig.width = 14, fig.height = 3.5, fig.align = "left"}
+los_mel_ram_meta <- metacont(
+  n.e = arm_n_MelRam, 
+  n.c = arm_n_Plac,
+  common =  TRUE,
+  mean.e = m_MelRam,
+  sd.e = sd_MelRam,
+  median.e = med_MelRam,
+  q1.e = iqrl_MelRam,
+  q3.e = iqru_MelRam,
+  min.e = rl_MelRam,
+  max.e = ru_MelRam,
+  mean.c = m_Plac,
+  sd.c = sd_Plac,
+  median.c = med_Plac,
+  q1.c = iqrl_Plac,
+  q3.c = iqru_Plac,
+  min.c = rl_Plac,
+  max.c = ru_Plac,
+  data = los_mel_ram_meta_dat,
+  sm = "MD",
+  method.tau = "REML",
+  hakn = FALSE,
+  prediction = TRUE,
+  studlab = study
+)
+
+forest(los_mel_ram_meta,
+  weight.study = "random",
+  common =  FALSE,
+  label.e = "Mel\\Ram",
+  label.c = "Plac   ",
+  print.tau2 = FALSE,
+  print.tau = TRUE,
+  print.tau.ci = TRUE,
+  digits = 1,
+  digits.sd = 1,
+  digits.mean = 1,
+  digits.tau = 1,
+  # digits.pval.Q = 2,
+  print.I2.ci = TRUE,
+  fs.xlab = 10,
+  just.addcols.right = "right",
+  print.pval.Q = FALSE,
+  # sortvar = -TE,
+  xlim = c(-5, 5),
+  at = c(-5, -2.5, 0, 2.5, 5),
+  rightcols = c("effect", "ci", "surgs_single", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  rightlabs = c("MD ", "(95% CI)   ", "Procedure", "D1", "D2", "D3", "D4", "D5", "All"),
+  xlab = "Favors: Dex                                      Plac           ",
+  smlab = "Mean Difference (days)",
+  addrows.below.overall = 4
+)
+
+```
+<foot_mg> MD: mean difference; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
+When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range.  </foot_mg> 
 
 ## **Mortality**
 
@@ -3346,7 +3577,7 @@ forest(mel_ram_plac_mort_meta,
 
 <!-- ## Study Characteristics -->
 
-## Risk of Bias
+## **Risk of Bias**
 
 ### Randomized
 
