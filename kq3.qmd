@@ -1060,7 +1060,7 @@ complication_fun <- function(var_prefix) {
     select(refid, study, arm_id, arm, arm_n, comp_update_arm_n, !!paste0(var_prefix, "_n"):!!paste0(var_prefix, "_95high"))
 }
 
-complication_incl <- c("cardiac", "myoinfarct", "stroke", "kidneyinj", "asppneum", "atelec", "pulm", "pneum", "pthorax", "airleak", "pulcongest", "pe", "pinfiltrate", "respfail", "intub", "upperair", "vent48")
+complication_incl <- c("cardiac", "myoinfarct", "cardarr", "stroke", "kidneyinj", "asppneum", "atelec", "pulm", "pneum", "pthorax", "airleak", "pulcongest", "pe", "pinfiltrate", "respfail", "intub", "upperair", "vent48")
 
 # complication <- c("medical", "surg", "cardiac", "gastro", "neuro", "pulm", "thromb", "infect", "fall", "stroke", "othcomp", "asppneum", "atelec", "bronch", "cardarr", "myoinfarct", "ssi", "sepsis", "uti", "pneum", "pthorax", "airleak", "pulcongest", "pe", "pinfiltrate", "respfail", "intub", "upperair", "vent48", "kidneyinj", "nerveinj", "clavien1", "clavien2", "clavien3", "clavien4", "clavien5")
 
@@ -1079,7 +1079,7 @@ path <- glue::glue("/Users/mgrant/Desktop/temp.xlsx")
 saveWorkbook(wb, "/Users/mgrant/Desktop/kq3.xlsx", overwrite = TRUE)
 
 # reported based on results
-complication_all <- c("cardiac", "myoinfarct", "stroke", "kidneyinj", "pulm", "pneum", "pulcongest", "pe")
+complication_all <- c("cardiac", "myoinfarct", "cardarr", "stroke", "kidneyinj", "pulm", "pneum", "pulcongest", "pe")
 
 ```
 
@@ -1089,7 +1089,7 @@ complication_all <- c("cardiac", "myoinfarct", "stroke", "kidneyinj", "pulm", "p
 #| warning: false
 #| eval: true
 # included complications
-complication_incl <- c("cardiac", "myoinfarct", "stroke", "kidneyinj", "asppneum", "atelec", "pulm", "pneum", "pthorax", "airleak", "pulcongest", "pe", "pinfiltrate", "respfail", "intub", "upperair", "vent48")
+complication_incl <- c("cardiac", "myoinfarct", "cardarr", "stroke", "kidneyinj", "asppneum", "atelec", "pulm", "pneum", "pthorax", "airleak", "pulcongest", "pe", "pinfiltrate", "respfail", "intub", "upperair", "vent48")
 
 # complication_all <- c("medical", "surg", "cardiac", "gastro", "neuro", "pulm", "thromb", "infect", "fall", "stroke", "othcomp", "asppneum", "atelec", "bronch", "cardarr", "myoinfarct", "ssi", "sepsis", "uti", "pneum", "pthorax", "airleak", "pulcongest", "pe", "pinfiltrate", "respfail", "intub", "upperair", "vent48", "kidneyinj", "nerveinj", "clavien1", "clavien2", "clavien3", "clavien4", "clavien5")
 
@@ -1153,7 +1153,7 @@ adverse_events_dat <- adverse_events_dat |>
 adverse_events_gt_dat <- adverse_events_dat |>
   filter(complication %in% complication_incl) |>
   # tabyl(complication) |> pull(complication) |> toString()
-  mutate(complication = factor(complication, levels = c("cardiac", "myoinfarct", "stroke", "kidneyinj", "pulm", "pneum", "pulcongest", "pe", "intub"), labels = c("Cardiac", "MI", "Stroke", "AKI", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Reintubation"))) |>
+  mutate(complication = factor(complication, levels = c("cardiac", "myoinfarct", "cardarr", "stroke", "kidneyinj", "pulm", "pneum", "pulcongest", "pe", "intub"), labels = c("Cardiac", "MI", "Cardiac Arrest", "Stroke", "AKI", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Reintubation"))) |>
   arrange(year, study, arm) 
 
 adverse_events_gt_dat |> 
@@ -1161,7 +1161,7 @@ adverse_events_gt_dat |>
          surgs_single = ifelse(row_number() > 1, "", surgs_single), .by = study_compl) |>
   group_by(complication) |>
   gt(id = "one") |>
-  row_group_order(groups = c("Cardiac", "MI", "Stroke", "AKI", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Reintubation")) |>
+  row_group_order(groups = c("Cardiac", "MI", "Cardiac Arrest", "Stroke", "AKI", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Reintubation")) |>
   cols_hide(c(refid, year, study, arm_id, n, study, study_compl, design_f_lab)) |>
   cols_label(
     study_l          = "Study",
@@ -1254,7 +1254,7 @@ adverse_meta_wide_dat <- adverse_meta_dat |>
 
 <font size = 4> `r figure_ref()` Risk differences in complications — cardiac, stroke, pulmonary, and acute kidney injury (regional versus general anesthesia; randomized clinical trials). </font>
 
-```{r complication_meta,  fig.width = 14, fig.height = 16, fig.align = "left"}
+```{r complication_meta,  fig.width = 14, fig.height = 17, fig.align = "left"}
 adverse_meta <- metabin(
   n_Reg, arm_n_Reg, n_Gen, arm_n_Gen,
   data = adverse_meta_wide_dat,

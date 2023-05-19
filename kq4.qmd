@@ -1060,7 +1060,7 @@ complication_fun <- function(var_prefix) {
     select(refid, study, arm_id, arm, arm_n, comp_update_arm_n, !!paste0(var_prefix, "_n"):!!paste0(var_prefix, "_95high"))
 }
 
-complication_incl <- c("cardiac", "myoinfarct", "stroke", "kidneyinj", "asppneum", "atelec", "pulm", "pneum", "pthorax", "airleak", "pulcongest", "pe", "pinfiltrate", "respfail", "intub", "upperair", "vent48")
+complication_incl <- c("cardiac", "myoinfarct", "cardarr", "stroke", "kidneyinj", "asppneum", "atelec", "pulm", "pneum", "pthorax", "airleak", "pulcongest", "pe", "pinfiltrate", "respfail", "intub", "upperair", "vent48")
 
 # complication <- c("medical", "surg", "cardiac", "gastro", "neuro", "pulm", "thromb", "infect", "fall", "stroke", "othcomp", "asppneum", "atelec", "bronch", "cardarr", "myoinfarct", "ssi", "sepsis", "uti", "pneum", "pthorax", "airleak", "pulcongest", "pe", "pinfiltrate", "respfail", "intub", "upperair", "vent48", "kidneyinj", "nerveinj", "clavien1", "clavien2", "clavien3", "clavien4", "clavien5")
 
@@ -1086,7 +1086,7 @@ saveWorkbook(wb, "/Users/mgrant/Desktop/kq4.xlsx", overwrite = TRUE)
 #| eval: true
 
 # included complications
-complication_incl <- c("cardiac", "myoinfarct", "stroke", "kidneyinj", "asppneum", "atelec", "pulm", "pneum", "pthorax", "airleak", "pulcongest", "pe", "pinfiltrate", "respfail", "intub", "upperair", "vent48")
+complication_incl <- c("cardiac", "myoinfarct", "cardarr", "stroke", "kidneyinj", "asppneum", "atelec", "pulm", "pneum", "pthorax", "airleak", "pulcongest", "pe", "pinfiltrate", "respfail", "intub", "upperair", "vent48")
 
 # complication_all <- c("medical", "surg", "cardiac", "gastro", "neuro", "pulm", "thromb", "infect", "fall", "stroke", "othcomp", "asppneum", "atelec", "bronch", "cardarr", "myoinfarct", "ssi", "sepsis", "uti", "pneum", "pthorax", "airleak", "pulcongest", "pe", "pinfiltrate", "respfail", "intub", "upperair", "vent48", "kidneyinj", "nerveinj", "clavien1", "clavien2", "clavien3", "clavien4", "clavien5")
 
@@ -1175,7 +1175,7 @@ propensity_refid <- c(1134, 132, 16890)
 
 adverse_events_gt_dat <- adverse_events_dat |>
   filter(complication %in% complication_incl) |>
-  mutate(complication = factor(complication, levels = c("cardiac", "myoinfarct", "kidneyinj", "pneum", "pulcongest", "pe", "respfail"), labels = c("Cardiac", "MI", "AKI", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure"))) |>
+  mutate(complication = factor(complication, levels = c("cardiac", "myoinfarct", "cardarr", "kidneyinj", "pneum", "pulcongest", "pe", "respfail"), labels = c("Cardiac", "MI", "Cardiac Arrest", "AKI", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure"))) |>
   arrange(year, study, arm) |>
   mutate(
     rd_or = ifelse(refid %in% propensity_refid & row_number() != 1, paste0("<u>", or_ci, "</u>"), rd_ci),
@@ -1212,14 +1212,14 @@ adverse_meta_wide_dat <- adverse_meta_dat |>
   mutate(
     complication_nodesign = str_remove(complication, " – .*$"),
     study_design = ifelse(str_detect(complication, "Rand"), paste0(study, "*"), study),
-    complication_nodesign = factor(complication_nodesign, levels = c("Cardiac", "MI", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "AKI"), labels = c("Cardiac", "MI", "Pneumonia", "Pulmonary Congestion", "Pulmonary Embolism", "Respiratory Failure", "Acute Kidney Injury"))
+    complication_nodesign = factor(complication_nodesign, levels = c("Cardiac", "MI", "Cardiac Arrest", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "AKI"), labels = c("Cardiac", "MI", "Cardiac Arrest", "Pneumonia", "Pulmonary Congestion", "Pulmonary Embolism", "Respiratory Failure", "Acute Kidney Injury"))
   )
 
 adverse_events_gt_dat |> 
   # tabyl(complication) |> arrange(desc(percent)) |> pull(complication) |> toString()
   group_by(complication) |>
   gt(id = "one") |>
-  row_group_order(groups = c("Cardiac – Randomized Clinical Trial", "MI – Randomized Clinical Trial", "MI – Retrospective Cohort", "Pneumonia – Randomized Clinical Trial", "Respiratory Failure – Randomized Clinical Trial", "Respiratory Failure – Retrospective Cohort", "PE – Randomized Clinical Trial", "PE – Retrospective Cohort", "Pulmonary Congestion – Retrospective Cohort", "AKI – Retrospective Cohort")) |>
+  row_group_order(groups = c("Cardiac – Randomized Clinical Trial", "MI – Randomized Clinical Trial", "MI – Retrospective Cohort", "Cardiac Arrest – Retrospective Cohort", "Pneumonia – Randomized Clinical Trial", "Respiratory Failure – Randomized Clinical Trial", "Respiratory Failure – Retrospective Cohort", "PE – Randomized Clinical Trial", "PE – Retrospective Cohort", "Pulmonary Congestion – Retrospective Cohort", "AKI – Retrospective Cohort")) |>
   cols_hide(c(refid, year, study, arm_id, n, study, study_compl, rd_ci, rr_ci, or_ci, or_ln_te, or_ln_se_te, effect, adjcrude, est, low, high )) |>
   cols_label(
     study_l          = "Study",
@@ -1268,7 +1268,7 @@ adverse_events_gt_dat |>
 
 <font size = 4> `r figure_ref()` Relative odds complications — cardiac, pulmonary, and acute kidney injury (TIVA versus inhaled; combined randomized and nonrandomized designs). </font>
 
-```{r complication_meta,  fig.width = 14, fig.height = 12, fig.align = "left"}
+```{r complication_meta,  fig.width = 14, fig.height = 12.5, fig.align = "left"}
 adverse_meta <- metagen(or_ln_te, or_ln_se_te,
   data = adverse_meta_wide_dat,
   sm = "OR",
