@@ -2969,7 +2969,7 @@ los_mel_ram_meta_dat <- los_meta_dat |>
 
 <font size = 4> `r figure_ref()` Mean difference in lengths of stay (dexmedetomidine versus placebo; randomized clinical trials). </font>
 
-```{r los_dex_meta, fig.width = 14, fig.height = 6, fig.align = "left"}
+```{r los_dex_meta, fig.width = 14, fig.height = 5.5, fig.align = "left"}
 los_dex_meta <- metacont(
   n.e = arm_n_Dex, 
   n.c = arm_n_Plac,
@@ -3024,7 +3024,7 @@ forest(los_dex_meta,
 )
 
 ```
-<foot_mg> MD: mean difference; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
+<foot_mg> MD: mean difference; Dex: Dexmedetomidine; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
 When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range.  </foot_mg> 
 
 #### Melatonin/Ramelteon
@@ -3061,7 +3061,7 @@ los_mel_ram_meta <- metacont(
 forest(los_mel_ram_meta,
   weight.study = "random",
   common =  FALSE,
-  label.e = "Mel\\Ram",
+  label.e = "Mel/Ram",
   label.c = "Plac   ",
   print.tau2 = FALSE,
   print.tau = TRUE,
@@ -3086,7 +3086,7 @@ forest(los_mel_ram_meta,
 )
 
 ```
-<foot_mg> MD: mean difference; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
+<foot_mg> MD: mean difference; Mel: melatonin; Ram: ramelteon; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
 When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range.  </foot_mg> 
 
 ## **Mortality**
