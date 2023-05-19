@@ -217,7 +217,47 @@ study_char_dat |>
 
 ```
 
-## **Interventions & Comparators**
+## **Comparators**
+
+```{r}
+temp_comp_dat <- study_arm_dat |>
+  select(refid, year, study, study_l, arm_id, gen_blood, gen_comp, gen_multi, gen_comorbid, gen_nutrition, gen_other, gen_unspec, kq1_frail, kq1_cog, kq1_phys_func, kq1_psych, kq1_eras, pt_nutr, pt_mobility, pt_surgery, pt_social, pt_other, staff_comorbid, staff_inappmed, staff_geriatrician, staff_multidisc, staff_supplement, staff_treatplan, staff_other) |>
+  mutate(
+    across(gen_blood:gen_unspec, ~ notna_to_x(.x, symbol = "\U2713")),
+    across(kq1_frail:kq1_psych, ~ notna_to_x(.x, symbol = "\U25CF")),
+    across(pt_nutr:pt_other, ~ notna_to_x(.x, symbol = "\U25CF")),
+    across(kq1_frail:kq1_psych, ~ notna_to_x(.x, symbol = "\U25CF")),
+    across(staff_comorbid:staff_other, ~ notna_to_x(.x, symbol = "\U25CF")),
+    across(kq1_eras, ~ notna_to_x(.x, symbol = "\U25CF"))
+  )
+
+study_arm_dat |> select(starts_with("gen_"))
+
+```
+
+::: {.panel-tabset}
+
+## General
+
+```{r general}
+x <- 1
+x
+
+```
+
+## Targeted
+
+```{r specific}
+x <- 2
+x
+
+```
+
+:::
+
+
+
+
 
 
 

@@ -47,13 +47,114 @@ grade_foot <- paste0("Very low: ", vlow, "; Low: ", low, "; Moderate: ", mod, ";
 # TODO: add functions to read data
 ```
 
-# Delirium Prophylaxis
+## Regional vs. General Anesthesia
+
+```{r soeKq3Data}
+#| include: false
+## soeKq3Data (updated 2022/01/20 09:18) ----------------------------------
+col_types_soe <- c("numeric", rep("text", 5), "numeric", rep("text", 19))
+soe_Kq3.dat <- readxl::read_xlsx("data/soe_2023-04-27_local.xlsx", range = "A1:Z4", sheet = "soe_kq3", col_types = col_types_soe) |>
+  clean_names() |>
+  mutate(
+    n_s = paste0(n_studies, " <br/>(", n_pts, ")"),
+    n = paste0(n, outcome),
+    # outcome = tools::toTitleCase(outcome) |>
+    # outcome = str_to_sentence(outcome),
+    out_import = case_when(
+      out_import == "Limited" ~ "+",
+      out_import == "Important" ~ "++",
+      out_import == "Critical" ~ "+++"
+    ),
+    compare_group = case_when(
+      comparison == "reg_gen" ~ "Regional vs. General Anesthesia",
+    )
+  )
+
+## (updated 2021/11/17 11:44) soe_summary ---------------------------------
+soe_summary <- soe_Kq3.dat |>
+  select(n, comparison, outcome, n_s, design, grade, acc, out_import, summary, result_links, compare_group) |>
+  mutate(
+    grade = case_when(
+      grade == "very low" ~ vlow,
+      grade == "low" ~ low,
+      grade == "moderate" ~ mod, 
+      grade == "high" ~ high,
+      .default = grade
+    )
+  ) 
+
+## (updated 2021/11/17 11:44) domain_summary ------------------------------
+domain_summary <- soe_Kq3.dat |> 
+  select(n, comparison, outcome, design, n_studies, n_pts, rob, consist, direct, prec, other, summary, ends_with("foot")) |> 
+  # sentence case and add period if missing
+  mutate(design = str_to_sentence(design),
+         consist_foot = ifelse(!grepl("\\.$", consist_foot) & !is.na(consist_foot), paste0(consist_foot, "."), consist_foot),
+         direct_foot  = ifelse(!grepl("\\.$", direct_foot ) & !is.na(direct_foot ), paste0(direct_foot , "."), direct_foot ),
+         prec_foot    = ifelse(!grepl("\\.$", prec_foot   ) & !is.na(prec_foot   ), paste0(prec_foot   , "."), prec_foot   ),
+         rob_foot     = ifelse(!grepl("\\.$", rob_foot    ) & !is.na(rob_foot    ), paste0(rob_foot    , "."), rob_foot    ),
+         other_foot   = ifelse(!grepl("\\.$", other_foot  ) & !is.na(other_foot  ), paste0(other_foot  , "."), other_foot  ),
+         across(ends_with("foot"), ~ firstup(.x))
+         ) 
+
+```
+
+<font size = 4> `r table_ref()` Strength of evidence for outcomes relevant to regional versus general anesthesia. </font>
+
+```{r kq3SOE_gt}
+#| include: true
+#| echo: false
+
+## kq3SOE --------------------------------------------- (2023-05-03 11:17) @----
+soe_summary |>
+  mutate(across(grade:result_links, ~ replace_na(., ""))) |> 
+  group_by(compare_group) |> 
+  gt(id = "one") |>
+  cols_hide(c(n, comparison)) |>
+  cols_label(
+    outcome = "Outcome",
+    design = "Study Design",
+    n_s = "Studies (Pts)",
+    grade = "GRADE",
+    acc = "ACCF AHA",
+    out_import = "Importance",
+    summary = "Summary",
+    result_links = "Result Detail"
+  ) |>
+  fmt_markdown(columns = c(outcome, n_s, grade, summary, result_links)) |>
+  # tab_row_group(
+  #   label = "powerful",
+  #   rows = outcome == "Delirium incidence"
+  # ) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(n_s, grade, acc, out_import, summary))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(n_s, grade, acc, out_import, summary))) |>
+  tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(outcome, summary, result_links))) |>
+  gt_theme_mg() |>
+  cols_width(
+    outcome ~ px(120),
+    design ~ px(90),
+    n_s ~ px(85),
+    grade ~ px(60),
+    acc ~ px(60),
+    out_import ~ px(90),
+    summary ~ px(325),
+    result_links ~ px(175)
+  ) |>
+  opt_footnote_marks(marks = "numbers") |>
+  sub_values(values = c("NA <br/>(NA)"), replacement = "—") |>
+  # tab_style(style = "vertical-align:top", locations = cells_body(columns = everything())) |> 
+  tab_footnote("Pts: patients; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; ACCF/AHA: American College of Cardiology Foundation/American Heart Association; RR: risk ratio.") |>
+  tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
+  tab_footnote("A: high-quality evidence from more than 1 RCT; B-R: moderate-quality evidence from more than 1 RCT; B-NR: moderate-quality evidence from more than one observational study; C-LD: randomized or non-randomized observational or registry studies with limited data; C-EO: consensus of expert opinion.", locations = cells_column_labels(columns = acc)) 
+
+```
+
+## Delirium Prophylaxis
 
 ```{r soeKq6Data}
 #| include: false
 ## soeKq6Data (updated 2022/01/20 09:18) ----------------------------------
 col_types_soe <- c("numeric", rep("text", 5), "numeric", rep("text", 19))
-soe_kq6.dat <- readxl::read_xlsx("data/soe_2023-04-27_local.xlsx", range = "A1:Z11", sheet = "soe_kq6", col_types = col_types_soe) |>
+soe_kq6.dat <- readxl::read_xlsx("data/soe_2023-04-27_local.xlsx", range = "A1:Z14", sheet = "soe_kq6", col_types = col_types_soe) |>
   clean_names() |>
   mutate(
     n_s = paste0(n_studies, " <br/>(", n_pts, ")"),
@@ -99,12 +200,6 @@ domain_summary <- soe_kq6.dat |>
          ) 
 
 ```
-
-<br/>
-
-### Strength of Evidence Ratings
-
-<br/>
 
 <font size = 4> `r table_ref()` Strength of evidence for outcomes relevant to delirium prophylaxis. </font>
 
@@ -154,10 +249,10 @@ soe_summary |>
   tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
   tab_footnote("A: high-quality evidence from more than 1 RCT; B-R: moderate-quality evidence from more than 1 RCT; B-NR: moderate-quality evidence from more than one observational study; C-LD: randomized or non-randomized observational or registry studies with limited data; C-EO: consensus of expert opinion.", locations = cells_column_labels(columns = acc)) |>
   tab_footnote("Limited +; Important ++; Critical +++.", locations = cells_column_labels(columns = out_import)) |> 
-  tab_footnote("Common effects model.", locations = cells_body(columns = summary, rows = str_detect(n, "5.14"))) |>
+  tab_footnote("Common effects model.", locations = cells_body(columns = summary, rows = str_detect(n, "5.34"))) |>
   tab_footnote("Network meta-analysis results were consistent.", locations = cells_body(columns = summary, rows = str_detect(n, "5.11"))) |> 
-  tab_footnote("Results from the largest trial (N = 650 analyzed) were not consistent with an effect.", locations = cells_body(columns = summary, rows = str_detect(n, "5.12"))) |> 
-  tab_footnote("Network meta-anlaysis yielded narrower 95% confidence interval attributable to pairwise result incorportating Hartung-Knapp adjustment.", locations = cells_body(columns = summary, rows = str_detect(n, "5.13")))
+  tab_footnote("Results from the largest trial (N = 650 analyzed) were not consistent with an effect.", locations = cells_body(columns = summary, rows = str_detect(n, "5.21"))) |> 
+  tab_footnote("Network meta-anlaysis yielded narrower 95% confidence interval attributable to pairwise result incorportating Hartung-Knapp adjustment.", locations = cells_body(columns = summary, rows = str_detect(n, "5.33")))
 
 ```
 ### GRADE Domains

@@ -24,13 +24,13 @@ nocite: '@*'
 
 Among older patients undergoing surgery and anesthesia, does regional anesthesia as the primary anesthetic technique improve postoperative outcomes compared with general anesthesia?
 
-::: {.callout-note collapse="true" appearance="default" icon="true"}
-## DRAFT results last updated `r lubridate::now()`
+<!-- ::: {.callout-note collapse="true" appearance="default" icon="true"} -->
+<!-- ## DRAFT results last updated `r lubridate::now()` -->
 
-2023-05-18 added remainder of outcomes
+<!-- 2023-05-18 added remainder of outcomes -->
 
-2023-04-27 added delirium results
-:::
+<!-- 2023-04-27 added delirium results -->
+<!-- ::: -->
 
 ```{r read_data}
 #| include: false
