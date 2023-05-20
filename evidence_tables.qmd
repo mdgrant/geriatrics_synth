@@ -139,11 +139,16 @@ evidence_tables |>
 }
 ```
 
+<br/><br/>
+
 ## Randomized Clinical Trials
+
 
 ```{r}
 evidence_tables_function(rand_trial_refid)
 ```
+
+<br/><br/>
 
 ## Nonrandomized Trials
 
@@ -151,16 +156,22 @@ evidence_tables_function(rand_trial_refid)
 evidence_tables_function(nr_trial_refid)
 ```
 
+<br/><br/>
+
 ## Before-after & Time Series
 
 ```{r}
 evidence_tables_function(quasi_refid)
 ```
 
+<br/><br/>
+
 ## Observational
 
 ```{r}
 evidence_tables_function(obs_refid)
 ```
+
+<br/>
 
 # References {#references}
