@@ -1,7 +1,7 @@
 ---
 title: "Delirium Prophylaxis"
 editor: source
-toc-title: "Delirium Prophylaxis"
+toc-title: "**Delirium Prophylaxis**"
 toc-location: "left"
 toc-depth: 4
 toc_float: 
