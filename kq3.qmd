@@ -3,7 +3,7 @@ title: "Regional versus General Anesthesia"
 editor: source
 toc-title: "**Regional versus General Anesthesia**"
 toc-location: "left"
-toc-depth: 4
+toc-depth: 3
 toc_float: 
   collapsed: true
 tbl-cap-location: "top"
@@ -1252,59 +1252,145 @@ adverse_meta_wide_dat <- adverse_meta_dat |>
 
 ```
 
-<font size = 4> `r figure_ref()` Risk differences in complications — cardiac, stroke, pulmonary, and acute kidney injury (regional versus general anesthesia; randomized clinical trials). </font>
+```{r complication_functions}
+complication_meta <- c("Cardiac", "MI", "Cardiac Arrest", "Stroke", "AKI", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Reintubation")
 
-```{r complication_meta,  fig.width = 14, fig.height = 17, fig.align = "left"}
-adverse_meta <- metabin(
+complication_meta_fun <- function(compl_label, use_hakn = TRUE, predictive = TRUE){
+meta_dat <- adverse_meta_wide_dat |> 
+    filter(complication %in% compl_label)
+
+complication_bin <- metabin(
   n_Reg, arm_n_Reg, n_Gen, arm_n_Gen,
-  data = adverse_meta_wide_dat,
+  data = meta_dat,
   studlab = study,
-  sm = "RD",
-  subgroup = complication
+  method = "MH",
+  method.tau = "PM",
+  sm = "RR",
+  prediction = predictive,  
+  hakn = use_hakn,
+  allstudies = FALSE,
 )  
+}
 
+complication_forest_fun <- function(adverse_meta){
 forest(adverse_meta,
   allstudies = TRUE,
-  random = FALSE,
-  label.e = "Regional     ",
-  label.c = "General     ",
-  # rightcols = c("effect", "ci"),
-  # rightlabs = c("RD ", "(95% CI)   "),
+  random = TRUE,
+  label.e = "Regional ",
+  label.c = "General ",
   just.addcols.right = "center",
   rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
-  rightlabs = c("RD", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
+  rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
   # just.addcols.right = "right",
   colgap.right = "4mm",
+  pool.events = TRUE, 
   digits.TE = 3,
   digits.tau2 = 1,
-  test.subgroup = FALSE,
-  overall.hetstat = FALSE,
-  print.subgroup.name = FALSE,
-  overall = FALSE,
+  overall = TRUE,
   print.I2.ci = TRUE,
-  prediction = FALSE,
+  prediction = TRUE,
   fs.xlab = 11,
   pscale = 100,
-  # pooled.events = TRUE,
+  pooled.events = TRUE,
   digits = 2, 
   print.pval.Q = FALSE,
-  xlim = c(-20, 20),
+  xlim = c(0.1, 10),
   xlab = "Favors: Regional                             General",
   addrows.below.overall = 4
-  # text.addline1 = "*Randomized clinical trial."
 )
+}
+
 ```
-<foot_mg> RD: risk difference; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
-Similar arms combined in Shin 2020, Bielka 2021, Liang 2017.
+
+#### Cardiac Composite
+
+<font size = 4> `r figure_ref()` Risk ratio for composite measures of cardiac complications (regional versus general anesthesia; randomized clinical trials). </font>
+
+```{r complication_cardiac,  fig.width = 14, fig.height = 4.5, fig.align = "left"}
+temp_meta <- complication_meta_fun("Cardiac")
+complication_forest_fun(temp_meta)
+```
+<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
+Similar arms combined for Shin 2020 and Bielka 2021.
 </foot_mg> 
 
-::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <font size = 4> `r figure_ref()` Summary risk of bias for studies reporting complications. </font>
+#### Myocardial Infarction
 
-```{r rob2_summary_complications, fig.height = 3, out.width = "60%"}
-rob_summary_fun(adverse_meta_wide_dat$refid)
+<font size = 4> `r figure_ref()` Risk ratio for myocardial infarction (regional versus general anesthesia; randomized clinical trials). </font>
+
+```{r complication_mi,  fig.width = 14, fig.height = 3.5, fig.align = "left"}
+temp_meta <- complication_meta_fun("MI")
+complication_forest_fun(temp_meta)
 ```
-:::
+<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
+Similar arms combined for Liang 2017.
+</foot_mg> 
+
+#### Stroke
+
+<font size = 4> `r figure_ref()` Risk ratio for stroke (regional versus general anesthesia; randomized clinical trials). </font>
+
+```{r complication_stroke,  fig.width = 14, fig.height = 3.5, fig.align = "left"}
+temp_meta <- complication_meta_fun("Stroke", use_hakn = FALSE, predictive = FALSE)
+complication_forest_fun(temp_meta)
+```
+<foot_mg> RR: risk ratio; ; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
+</foot_mg> 
+
+#### Acute Kidney Injury
+
+<font size = 4> `r figure_ref()` Risk ratio for acute kidney injury (regional versus general anesthesia; randomized clinical trials). </font>
+
+```{r complication_aki,  fig.width = 14, fig.height = 2.75, fig.align = "left"}
+temp_meta <- complication_meta_fun("AKI", use_hakn = FALSE, predictive = FALSE)
+complication_forest_fun(temp_meta)
+```
+<foot_mg> RR: risk ratio; ; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
+</foot_mg> 
+
+#### Pulmonary
+
+<font size = 4> `r figure_ref()` Risk ratio for pulmonary complications (regional versus general anesthesia; randomized clinical trials). </font>
+
+```{r complication_pulmonary,  fig.width = 14, fig.height = 2.75, fig.align = "left"}
+temp_meta <- complication_meta_fun("Pulmonary", use_hakn = FALSE, predictive = FALSE)
+complication_forest_fun(temp_meta)
+```
+<foot_mg> RR: risk ratio; ; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
+</foot_mg> 
+
+#### Pneumonia
+
+<font size = 4> `r figure_ref()` Risk ratio for pneumonia (regional versus general anesthesia; randomized clinical trials). </font>
+
+```{r complication_pneumonia,  fig.width = 14, fig.height = 4, fig.align = "left"}
+temp_meta <- complication_meta_fun("Pneumonia", use_hakn = TRUE, predictive = FALSE)
+complication_forest_fun(temp_meta)
+```
+<foot_mg> RR: risk ratio; ; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
+Similar arms combined for Bielka 2021 and Liang 2017.
+</foot_mg> 
+
+#### Pulmonary Embolism
+
+<font size = 4> `r figure_ref()` Risk ratio for pulmonary embolism (regional versus general anesthesia; randomized clinical trials). </font>
+
+```{r complication_pe,  fig.width = 14, fig.height = 4, fig.align = "left"}
+temp_meta <- complication_meta_fun("PE", use_hakn = TRUE, predictive = FALSE)
+complication_forest_fun(temp_meta)
+```
+<foot_mg> RR: risk ratio; ; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
+Similar arms combined for Liang 2017.
+</foot_mg> 
+
+```{r complication_pulmonary-congestion,  fig.width = 14, fig.height = 2, fig.align = "left"}
+#| eval: false
+temp_meta <- complication_meta_fun("Pulmonary Congestion", use_hakn = FALSE, predictive = FALSE)
+complication_forest_fun(temp_meta)
+
+temp_meta <- complication_meta_fun("Reintubation", use_hakn = FALSE, predictive = FALSE)
+complication_forest_fun(temp_meta)
+```
 
 ## **Patient Satisfaction**
 

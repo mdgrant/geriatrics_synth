@@ -96,7 +96,7 @@ domain_summary <- soe_kq3.dat |>
 
 ```
 
-<font size = 4> `r table_ref()` Strength of evidence summaries — regional versus general anesthesia. </font>
+<font size = 4> `r table_ref()` Strength of evidence summaries --- regional versus general anesthesia. </font>
 
 ```{r kq3SOE_gt}
 #| include: true
@@ -136,6 +136,13 @@ soe_summary |>
     summary ~ px(325),
     result_links ~ px(125)
   ) |>
+    opt_css(
+    css = "
+    #one p {
+    line-height: 1.4;
+    }
+  "
+  ) |> 
   opt_footnote_marks(marks = "numbers") |>
   sub_values(values = c("NA <br/>(NA)"), replacement = "—") |>
   # tab_style(style = "vertical-align:top", locations = cells_body(columns = everything())) |> 
@@ -147,7 +154,7 @@ soe_summary |>
 
 ### GRADE Domains
 
-<font size = 4> Table `r table_n`. GRADE domains for strength of evidence ratings — regional versus general anesthesia. </font>
+<font size = 4> Table `r table_n`. GRADE domains for strength of evidence ratings --- regional versus general anesthesia. </font>
 
 ```{r kq3Domain, eval = TRUE}
 #| warning: true
@@ -239,6 +246,10 @@ kq3_domain |>
   tab_footnote(md(domain_footnotes))
 ```
 
+### Balance Table
+
+![](assets/regional_general_balance_2023-05-21.png){fig-align="left" width="6in"}
+
 ## **TIVA versus Inhaled**
 
 ```{r soekq4Data}
@@ -290,7 +301,7 @@ domain_summary <- soe_kq4.dat |>
 
 ```
 
-<font size = 4> `r table_ref()` Strength of evidence summaries — TIVA versus inhaled anesthesia. </font>
+<font size = 4> `r table_ref()` Strength of evidence summaries --- TIVA versus inhaled anesthesia. </font>
 
 ```{r kq4SOE_gt}
 #| include: true
@@ -330,6 +341,13 @@ soe_summary |>
     summary ~ px(325),
     result_links ~ px(125)
   ) |>
+  opt_css(
+    css = "
+    #one p {
+    line-height: 1.4;
+    }
+  "
+  ) |> 
   opt_footnote_marks(marks = "numbers") |>
   sub_values(values = c("NA <br/>(NA)"), replacement = "—") |>
   # tab_style(style = "vertical-align:top", locations = cells_body(columns = everything())) |> 
@@ -341,7 +359,7 @@ soe_summary |>
 
 ### GRADE Domains
 
-<font size = 4> Table `r table_n`. GRADE domains for strength of evidence ratings — TIVA versus inhaled anesthesia. </font>
+<font size = 4> Table `r table_n`. GRADE domains for strength of evidence ratings --- TIVA versus inhaled anesthesia. </font>
 
 ```{r kq4Domain, eval = TRUE}
 #| warning: true
@@ -437,13 +455,6 @@ kq4_domain |>
   tab_footnote(md(domain_footnotes))
 ```
 
-
-
-
-
-
-
-
 ## **Delirium Prophylaxis**
 
 ```{r soekq6Data}
@@ -498,7 +509,7 @@ domain_summary <- soe_kq6.dat |>
 
 ```
 
-<font size = 4> `r table_ref()` GRADE domains for strength of evidence ratinsg — delirium prophylaxis. </font>
+<font size = 4> `r table_ref()` GRADE domains for strength of evidence ratinsg --- delirium prophylaxis. </font>
 
 ```{r kq6SOE_gt}
 #| include: true
@@ -539,6 +550,13 @@ soe_summary |>
     summary ~ px(325),
     result_links ~ px(175)
   ) |>
+  opt_css(
+    css = "
+    #one p {
+    line-height: 1.4;
+    }
+  "
+  ) |> 
   opt_footnote_marks(marks = "numbers") |>
   sub_values(values = c("NA <br/>(NA)"), replacement = "—") |>
   # tab_style(style = "vertical-align:top", locations = cells_body(columns = everything())) |> 
@@ -649,7 +667,6 @@ kq6_domain |>
   tab_footnote(md(domain_footnotes))
 ```
 
-
 <hr style="height:2px;border-width:0;color:gray;background-color:gray">
 
 <br/>
@@ -660,9 +677,7 @@ kq6_domain |>
 
 ## GRADE
 
-<br> <font size = 4> 
-<a id="High"></a>
-**High** --- We are very confident that the true effect lies close to that of the estimate of the effect.
+<br> <font size = 4> <a id="High"></a> **High** --- We are very confident that the true effect lies close to that of the estimate of the effect.
 
 **Moderate** --- We are moderately confident in the effect estimate: The true effect is likely to be close to the estimate of the effect, but there is a possibility that it is substantially different.
 
@@ -688,9 +703,9 @@ kq6_domain |>
 
 ### Domains (upgrade)
 
-*Effect Size* --- Large effect size (eg, risk ratio >2 or <0.5).
+*Effect Size* --- Large effect size (eg, risk ratio \>2 or \<0.5).
 
-*Dose-response* --- When relevant exposure categories. 
+*Dose-response* --- When relevant exposure categories.
 
 *Plausible Residual Confounding* --- When unaccounted residual confounding would increase the effect magnitude.
 
