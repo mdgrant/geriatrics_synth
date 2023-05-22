@@ -2481,7 +2481,7 @@ No studies
 
 ### Dexmedetomidine
 
-<font size = 4> `r table_ref()` Report complications in dexmedetomidine studies — cardiac, MI, stroke, pulmonary, pneumonia, and acute kidney injury (randomized clinical trials unless noted). </font>
+<font size = 4> `r table_ref()` Reported complications in dexmedetomidine studies — cardiac, MI, stroke, pulmonary, pneumonia, and acute kidney injury (randomized clinical trials unless noted). </font>
 
 ```{r complications_dat}
 #| eval: true
@@ -2713,7 +2713,7 @@ adverse_dex_meta_wide_dat <- adverse_dex_meta_dat |>
 
 ```
 
-<font size = 4> `r figure_ref()` Risk differences in complications — cardiac, stroke, pulmonary, and acute kidney injury (dexmedetomidine versus placebo or no interventions; randomized clinical trials except and Li 2020). </font>
+<font size = 4> `r figure_ref()` Risk ratio for complications — cardiac, stroke, pulmonary, and acute kidney injury (dexmedetomidine versus placebo or no interventions; randomized clinical trials except and Li 2020). </font>
 
 ```{r complication_meta,  fig.width = 14, fig.height = 17, fig.align = "left"}
 adverse_meta <- metabin(
@@ -2727,7 +2727,7 @@ adverse_meta <- metabin(
 
 forest(adverse_meta,
   allstudies = TRUE,
-  random = FALSE,
+  random = TRUE,
   label.e = "Dex",
   label.c = "Placebo",
   # rightcols = c("effect", "ci"),
