@@ -3,7 +3,7 @@ title: "TIVA versus Inhaled Anesthesia"
 editor: source
 toc-title: "**TIVA versus Inhaled**"
 toc-location: "left"
-toc-depth: 4
+toc-depth: 3
 toc_float: 
   collapsed: false
 tbl-cap-location: "top"
@@ -1269,29 +1269,42 @@ adverse_events_gt_dat |>
 <font size = 4> `r figure_ref()` Relative odds complications — cardiac, pulmonary, and acute kidney injury (TIVA versus inhaled; combined randomized and nonrandomized designs). </font>
 
 ```{r complication_meta,  fig.width = 14, fig.height = 12.5, fig.align = "left"}
-adverse_meta <- metagen(or_ln_te, or_ln_se_te,
-  data = adverse_meta_wide_dat,
-  sm = "OR",
-  backtransf = TRUE,
-  subgroup = complication_nodesign
-)  
+complication_meta_fun <- function(compl_label, use_hakn = TRUE, predictive = TRUE){
+meta_dat <- adverse_meta_wide_dat |>
+  select(-complication) |>
+  rename(complication = complication_nodesign) |>
+  filter(complication %in% compl_label) |> 
+  left_join(rob2_meta_dat, by = "refid")
 
+complication_bin <- metagen(
+  or_ln_te, or_ln_se_te,
+  data = meta_dat,
+  studlab = study,
+  sm = "OR",
+  prediction = predictive,  
+  hakn = use_hakn,
+  allstudies = FALSE,
+)  
+}
+
+complication_forest_fun <- function(adverse_meta, use_predictive = TRUE){
 forest(adverse_meta,
   allstudies = TRUE,
-  random = FALSE,
+  random = TRUE,
   rightcols = c("effect", "ci"),
   rightlabs = c("OR ", "(95% CI)   "),
   leftcols = c("study_design", "n_TIVA", "arm_n_TIVA", "n_Inhaled", "arm_n_Inhaled"), 
   leftlabs = c("Complication &\nStudy", "Events", "TIVA\n Total", "Events", "Inhaled\n Total"),
+  colgap.right = "4mm",
   just.addcols.right = "center",
   just.addcols.left = "right",
   digits.TE = 3,
   digits.tau2 = 1,
-  overall.hetstat = FALSE,
-  print.subgroup.name = FALSE,
-  overall = FALSE,
+  overall.hetstat = TRUE,
+  # print.subgroup.name = FALSE,
+  overall = TRUE,
   print.I2.ci = TRUE,
-  prediction = FALSE,
+  prediction = use_predictive,
   fs.xlab = 11,
   # pooled.events = TRUE,
   digits = 2, 
@@ -1301,6 +1314,148 @@ forest(adverse_meta,
   addrows.below.overall = 4,
   text.addline1 = "*Randomized clinical trial."
 )
+}
+
+complication_forest_rct_fun <- function(adverse_meta, use_predictive = TRUE){
+forest(adverse_meta,
+  allstudies = TRUE,
+  random = TRUE,
+  # rightcols = c("effect", "ci"),
+  # rightlabs = c("OR ", "(95% CI)   "),
+  leftcols = c("study_design", "n_TIVA", "arm_n_TIVA", "n_Inhaled", "arm_n_Inhaled"), 
+  leftlabs = c("Complication &\nStudy", "Events", "TIVA\n Total", "Events", "Inhaled\n Total"),
+  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  rightlabs = c("OR ", "(95% CI)   ", "D1", "D2", "D3", "D4", "D5", "All"),
+  colgap.right = "4mm",
+  just.addcols.right = "center",
+  just.addcols.left = "right",
+  digits.TE = 3,
+  digits.tau2 = 1,
+  overall.hetstat = TRUE,
+  # print.subgroup.name = FALSE,
+  overall = TRUE,
+  print.I2.ci = TRUE,
+  prediction = use_predictive,
+  fs.xlab = 11,
+  # pooled.events = TRUE,
+  digits = 2, 
+  print.pval.Q = FALSE,
+  xlim = c(0.1, 10),
+  xlab = "Favors: TIVA                             Inhaled",
+  addrows.below.overall = 4,
+  text.addline1 = "*Randomized clinical trial."
+)
+}
+
+## old code ------------------------------------------- (2023-05-22 10:23) @----
+# adverse_meta <- metagen(or_ln_te, or_ln_se_te,
+#   data = adverse_meta_wide_dat,
+#   sm = "OR",
+#   backtransf = TRUE,
+#   subgroup = complication_nodesign
+# )  
+
+
+# forest(adverse_meta,
+#   allstudies = TRUE,
+#   random = TRUE,
+#   rightcols = c("effect", "ci"),
+#   rightlabs = c("OR ", "(95% CI)   "),
+#   leftcols = c("study_design", "n_TIVA", "arm_n_TIVA", "n_Inhaled", "arm_n_Inhaled"), 
+#   leftlabs = c("Complication &\nStudy", "Events", "TIVA\n Total", "Events", "Inhaled\n Total"),
+#   colgap.right = "4mm",
+#   just.addcols.right = "center",
+#   just.addcols.left = "right",
+#   digits.TE = 3,
+#   digits.tau2 = 1,
+#   overall.hetstat = FALSE,
+#   print.subgroup.name = FALSE,
+#   overall = FALSE,
+#   print.I2.ci = TRUE,
+#   prediction = FALSE,
+#   fs.xlab = 11,
+#   # pooled.events = TRUE,
+#   digits = 2, 
+#   print.pval.Q = FALSE,
+#   xlim = c(0.1, 10),
+#   xlab = "Favors: TIVA                             Inhaled",
+#   addrows.below.overall = 4,
+#   text.addline1 = "*Randomized clinical trial."
+# )
+```
+
+#### Cardiac Composite
+
+<font size = 4> `r figure_ref()` Risk ratio for composite measures of cardiac complications (TIVA versus inhaled anesthesia; randomized clinical trials). </font>
+
+```{r complication_cardiac,  fig.width = 14, fig.height = 3.75, fig.align = "left"}
+temp_meta <- complication_meta_fun("Cardiac", use_hakn = FALSE)
+complication_forest_rct_fun(temp_meta)
+```
+<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
+Hartung-Knapp adjustment not used — applying yielded a 95% confidence interval of (0.33–4.19).
+</foot_mg> 
+
+#### Myocardial Infarction
+
+<font size = 4> `r figure_ref()` Risk ratio for myocardial infarction (regional versus general anesthesia; randomized and nonrandomized studies). </font>
+
+```{r complication_mi,  fig.width = 14, fig.height = 3.75, fig.align = "left"}
+temp_meta <- complication_meta_fun("MI", use_hakn = FALSE)
+complication_forest_fun(temp_meta)
+```
+<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
+Similar arms combined for Liang 2017.
+</foot_mg> 
+
+#### Stroke
+
+Not reported in included studies.
+
+#### Acute Kidney Injury
+
+<font size = 4> `r figure_ref()` Risk ratio for acute kidney injury (regional versus general anesthesia; nonrandomized studies). </font>
+
+```{r complication_aki,  fig.width = 14, fig.height = 3.35, fig.align = "left"}
+temp_meta <- complication_meta_fun("Acute Kidney Injury", use_hakn = FALSE, predictive = FALSE)
+complication_forest_fun(temp_meta)
+```
+<foot_mg> RR: risk ratio; ; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
+</foot_mg> 
+
+#### Pulmonary
+
+Complications categorized as "pulmonary" not reported in included studies.
+
+#### Pneumonia
+
+<font size = 4> `r figure_ref()` Risk ratio for pneumonia (regional versus general anesthesia; randomized clinical trials). </font>
+
+```{r complication_pneumonia,  fig.width = 14, fig.height = 3.35, fig.align = "left"}
+temp_meta <- complication_meta_fun("Pneumonia", use_hakn = FALSE, predictive = FALSE)
+complication_forest_rct_fun(temp_meta, use_predictive = FALSE)
+```
+<foot_mg> RR: risk ratio; ; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
+Similar arms combined for Bielka 2021 and Liang 2017.
+</foot_mg> 
+
+#### Pulmonary Embolism
+
+<font size = 4> `r figure_ref()` Risk ratio for pulmonary embolism (regional versus general anesthesia; randomized clinical trials). </font>
+
+```{r complication_pe,  fig.width = 14, fig.height = 3.35, fig.align = "left"}
+temp_meta <- complication_meta_fun("Pulmonary Embolism", use_hakn = FALSE, predictive = FALSE)
+complication_forest_fun(temp_meta, use_predictive = FALSE)
+```
+<foot_mg> RR: risk ratio; ; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
+Similar arms combined for Liang 2017.
+</foot_mg> 
+
+```{r complication_pulmonary-congestion,  fig.width = 14, fig.height = 2, fig.align = "left"}
+#| eval: false
+temp_meta <- complication_meta_fun("Pulmonary Congestion", use_hakn = FALSE, predictive = FALSE)
+complication_forest_fun(temp_meta)
+
 ```
 
 ## **Patient Satisfaction**
