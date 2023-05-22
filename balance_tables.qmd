@@ -22,9 +22,25 @@ tables:
 
 ## Regional verusus General Anesthesia
 
-![](assets/regional_general_balance_2023-05-22.png){fig-align="left" width="9in"}
+![](assets/regional_general_balance_2023-05-22.png){fig-align="left" width="8in"}
 
 
 ## TIVA versus Inhaled Anesthesia
 
-![](assets/tiva-inhaled_balance_2023-05-22.png){fig-align="left" width="9in"}
+![](assets/tiva-inhaled_balance_2023-05-22.png){fig-align="left" width="8in"}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
