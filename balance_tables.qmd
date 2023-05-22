@@ -20,7 +20,7 @@ tables:
 # nocite: '@*'
 ---
 
-## Regional verusus General Anesthesia
+## Regional versus General Anesthesia
 
 ![](assets/regional_general_balance_2023-05-22.png){fig-align="left" width="8in"}
 
