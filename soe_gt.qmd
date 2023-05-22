@@ -246,9 +246,9 @@ kq3_domain |>
   tab_footnote(md(domain_footnotes))
 ```
 
-### Balance Table
+<!-- ### Balance Table -->
 
-![](assets/regional_general_balance_2023-05-22.png){fig-align="left" width="6in"}
+<!-- ![](assets/regional_general_balance_2023-05-22.png){fig-align="left" width="6in"} -->
 
 ## **TIVA versus Inhaled**
 
@@ -455,9 +455,9 @@ kq4_domain |>
   tab_footnote(md(domain_footnotes))
 ```
 
-### Balance Table
+<!-- ### Balance Table -->
 
-![](assets/tiva-inhaled_balance_2023-05-22.png){fig-align="left" width="6in"}
+<!-- ![](assets/tiva-inhaled_balance_2023-05-22.png){fig-align="left" width="6in"} -->
 
 ## **Delirium Prophylaxis**
 

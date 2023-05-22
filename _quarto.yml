@@ -17,6 +17,8 @@ website:
         text: Home
       - href: soe_gt.html
         text: GRADE
+      - href: balance_tables.html
+        text: "Balance Tables"
       - text: Key Question
         menu:
           - href: kq1.html

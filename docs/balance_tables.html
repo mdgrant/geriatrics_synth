@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Geriatrics Evidence Synthesis - Geriatrics Workflow</title>
+<title>Geriatrics Evidence Synthesis - DRAFT Balance Tables</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -58,9 +58,6 @@ ul.task-list li input[type="checkbox"] {
     "search-submit-button-title": "Submit"
   }
 }</script>
-<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
-<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
-<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 <link rel="stylesheet" href="styles.css">
@@ -93,7 +90,7 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">GRADE</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./balance_tables.html" rel="" target="">
+    <a class="nav-link active" href="./balance_tables.html" rel="" target="" aria-current="page">
  <span class="menu-text">Balance Tables</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -162,10 +159,11 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
     <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Workflow</h2>
+    <h2 id="toc-title"><strong>Balance Tables</strong></h2>
    
   <ul>
-  <li><a href="#workflow" id="toc-workflow" class="nav-link active" data-scroll-target="#workflow">Workflow</a></li>
+  <li><a href="#regional-verusus-general-anesthesia" id="toc-regional-verusus-general-anesthesia" class="nav-link active" data-scroll-target="#regional-verusus-general-anesthesia">Regional verusus General Anesthesia</a></li>
+  <li><a href="#tiva-versus-inhaled-anesthesia" id="toc-tiva-versus-inhaled-anesthesia" class="nav-link" data-scroll-target="#tiva-versus-inhaled-anesthesia">TIVA versus Inhaled Anesthesia</a></li>
   </ul>
 </nav>
 </nav>
@@ -178,7 +176,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Geriatrics Workflow</h1>
+<h1 class="title">DRAFT Balance Tables</h1>
 </div>
 
 
@@ -193,55 +191,20 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<section id="workflow" class="level1">
-<h1>Workflow</h1>
-<div class="cell" data-fig-width="5">
-<div class="cell-output-display">
-<div>
-<div>
-
-<pre class="mermaid mermaid-js">flowchart LR
-R[Data Import&lt;br/&gt;readfiles] --&gt; study_char[study_char_dat]
-study_char --&gt; char_munge[link refs&lt;br/&gt;AuYYYYletter]
-R --&gt; DI[Data import] --&gt; Annot[Annotate data&lt;br&gt;&lt;br&gt;View data dictionary&lt;br&gt;to assist coding]
-R --&gt; Do[Data overview] --&gt; F[Observation filtration&lt;br&gt;Missing data patterns&lt;br&gt;Data about data]
-R --&gt; P[Data processing] --&gt; DP[Recode&lt;br&gt;Transform&lt;br&gt;Reshape&lt;br&gt;Merge&lt;br&gt;Aggregate&lt;br&gt;Manipulate]
-R --&gt; Des[Descriptive statistics&lt;br&gt;Univariate or simple&lt;br&gt;stratification]
-R --&gt; An[Analysis&lt;br&gt;Stay close to data] --&gt; DA[Descriptive&lt;br&gt;&lt;br&gt;Avoid tables by using&lt;br&gt;nonparametric smoothers] &amp; FA[Formal]
-R --&gt; CP[Caching&lt;br&gt;Parallel computing&lt;br&gt;Simulation]
-</pre>
+<section id="regional-verusus-general-anesthesia" class="level2">
+<h2 class="anchored" data-anchor-id="regional-verusus-general-anesthesia">Regional verusus General Anesthesia</h2>
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="assets/regional_general_balance_2023-05-22.png" class="img-fluid figure-img" style="width:9in"></p>
+</figure>
 </div>
-</div>
-</div>
-</div>
-<div class="cell" data-fig-width="5">
-<div class="cell-output-display">
-<div>
-<div>
-
-<pre class="mermaid mermaid-js">flowchart LR
-R[summaries] --&gt; mn_med[means/medians&lt;br/&gt;table_mn_med&lt;br/&gt;pre_mmse&lt;br/&gt;mmse times&lt;br/&gt;moca]
-R --&gt; age_mn_med[table_age_mn_med]
-R --&gt; surgs[surgery] --&gt; surgs_vars[surgs &lt;br/&gt;surgs_single ]
-
-</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<div>
-<pre class="mermaid mermaid-js">flowchart LR
-R[dichot_dat] --&gt; dncr_dat[dncr_dat&lt;br&gt;up to 30 days]
-dncr_dat --&gt; neurocog_meta_dat[neurocog_meta_dat&lt;br/&gt;for later pooling]
-
-R[dichot_dat] --&gt; ncd_dat[ncd_dat&lt;br/&gt; &gt; 30 days]
-</pre>
-</div>
-</div>
-</div>
+</section>
+<section id="tiva-versus-inhaled-anesthesia" class="level2">
+<h2 class="anchored" data-anchor-id="tiva-versus-inhaled-anesthesia">TIVA versus Inhaled Anesthesia</h2>
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="assets/tiva-inhaled_balance_2023-05-22.png" class="img-fluid figure-img" style="width:9in"></p>
+</figure>
 </div>
 
 

@@ -25,6 +25,8 @@ editor: source
 
 [GRADE](soe_gt.html)
 
+[Balance Tables](balance_tables.html)
+
 <br/>
 
 <font size = 5> Other </font>
