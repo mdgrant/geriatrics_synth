@@ -255,8 +255,8 @@ kq3_domain |>
 ```{r soekq4Data}
 #| include: false
 col_types_soe <- c("numeric", rep("text", 5), "numeric", rep("text", 19))
-soe_kq4.dat <- readxl::read_xlsx("data/soe_2023-04-27_local.xlsx", range = "A1:Z21", sheet = "soe_kq4_sp", col_types = col_types_soe) |>
-  filter(!n %in% c(4.52, 4.71)) |>
+soe_kq4.dat <- readxl::read_xlsx("data/soe_2023-04-27_local.xlsx", range = "A1:Z23", sheet = "soe_kq4_sp", col_types = col_types_soe) |>
+  filter(!n %in% c(4.52)) |>
   clean_names() |>
   mutate(
     n_s = paste0(n_studies, " <br/>(", format(n_pts, big.mark = ","), ")"),
@@ -454,6 +454,10 @@ kq4_domain |>
   # tab_footnote("3 to 30 days postoperative.", locations = cells_body(columns = outcome, rows = str_detect(outcome, "Delayed"))) |>
   tab_footnote(md(domain_footnotes))
 ```
+
+### Balance Table
+
+![](assets/tiva-inhaled_balance_2023-05-22.png){fig-align="left" width="6in"}
 
 ## **Delirium Prophylaxis**
 
