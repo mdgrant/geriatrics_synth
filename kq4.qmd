@@ -1044,7 +1044,8 @@ ncd_dat |>
   tab_footnote("Mini-Mental State Exam; DST: Digit Span Test; MoCA: Montreal Cognitive Assessment; RR: risk ratio; Gen: general anesthesia; Reg: regional anesthesia.") |>
   tab_footnote("Day of assessment.",                   locations = cells_column_labels(columns = c(ncd_time))) |>
   tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |> 
-  tab_footnote('Z ≥1.96.', locations = cells_body(columns = c(scale_dst), rows = arm_id == 1 & study == 'Rasmussen 2003'))
+  tab_footnote('Z ≥1.96.', locations = cells_body(columns = c(scale_dst), rows = arm_id == 1 & study == 'Rasmussen 2003')) |> 
+  tab_footnote("Uniform Data Set Battery", locations = cells_body(columns = c(scale_other_tf), rows = study == "Deiner 2015" & arm_id == 1))
 ```
 
 <br/>
