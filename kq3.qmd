@@ -1483,14 +1483,15 @@ satis_dat_gt |>
   tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(asa_ps_incl, age_table, rd_ci))) |> 
   tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c(n_percent))) |> 
   tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(arm))) |>
-  tab_style(style = cell_text(align = "center"),        locations = cells_body(columns = c(rd_ci))) |>
+  tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(rd_ci))) |>
   tab_footnote("Mean (SD).",   locations = cells_column_labels(columns = c(age_table))) |>
   tab_footnote("Gen: general; Neur: neuraxial; Anesth: anesthetic; ASA PS: ASA Physical Status; RD: risk difference.") |> 
-  tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:n_percent), rows = str_detect(arm, "Neur|Block")))
-  # tab_footnote("Completely satisfied.",               locations = cells_body(columns = c(n_percent), rows = study == "Epple 2001"), placement = "right") |>  
-  # tab_footnote("Highly satisfied.",                   locations = cells_body(columns = c(n_percent), rows = study == "Luntz 2004"), placement = "right") |>  
-  # tab_footnote("Inhaled arms combined.",              locations = cells_body(columns = c(arm_n), rows = study == "Luntz 2004" & arm == "Inhaled"), placement = "right") |>  
-  # tab_footnote("Very satisfied.",                     locations = cells_body(columns = c(n_percent), rows = study == "Nishikawa 2007a"), placement = "right") 
+  tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:n_percent), rows = str_detect(arm, "Neur|Block"))) |> 
+  tab_footnote("Satisfied.",                          locations = cells_body(columns = c(n_percent), rows = str_detect(study, c("Carron|Harsten|Salonia|Apan|Nesek"))), placement = "right") |>
+  tab_footnote("Not specified",                       locations = cells_body(columns = c(n_percent), rows = str_detect(study, c("Xu"))), placement = "right") |>
+  tab_footnote("Very satisfied",                      locations = cells_body(columns = c(n_percent), rows = str_detect(study, c("Nishikawa"))), placement = "right") |> 
+  tab_footnote("Excellent/good",                      locations = cells_body(columns = c(n_percent), rows = str_detect(study, c("Meuret"))), placement = "right") |> 
+  tab_footnote("Very good",                           locations = cells_body(columns = c(n_percent), rows = str_detect(study, c("Ornek"))), placement = "right") 
 
 ```
 
