@@ -248,7 +248,7 @@ kq3_domain |>
 
 ### Balance Table
 
-![](assets/regional_general_balance_2023-05-21.png){fig-align="left" width="6in"}
+![](assets/regional_general_balance_2023-05-22.png){fig-align="left" width="6in"}
 
 ## **TIVA versus Inhaled**
 
