@@ -1266,8 +1266,6 @@ adverse_events_gt_dat |>
 
 ### *Pooled*
 
-<font size = 4> `r figure_ref()` Relative odds complications — cardiac, pulmonary, and acute kidney injury (TIVA versus inhaled; combined randomized and nonrandomized designs). </font>
-
 ```{r complication_meta,  fig.width = 14, fig.height = 12.5, fig.align = "left"}
 complication_meta_fun <- function(compl_label, use_hakn = TRUE, predictive = TRUE){
 meta_dat <- adverse_meta_wide_dat |>
