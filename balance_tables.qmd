@@ -20,15 +20,155 @@ tables:
 # nocite: '@*'
 ---
 
+
+```{r preliminaries}
+#| include: false
+## preliminaries -------------------------------------- (2022-11-16 11:49) @----
+library(conflicted)
+library(janitor)
+library(htmltools)
+library(gt, quietly = TRUE)
+library(gtsummary)
+library(gtExtras)
+library(glue)
+library(tidyverse)
+conflicts_prefer(dplyr::filter)
+knitr::opts_chunk$set(echo = FALSE)
+source("code/functions_2023-04-26.R")
+```
+
+```{r soe_grade_referents}
+# grade footnote
+vlow <-  '<span><span class="quality-sign">⨁</span><span class="quality-sign">◯</span><span class="quality-sign">◯</span><span class="quality-sign">◯</span>'
+low <- '<span><span class="quality-sign">⨁</span><span class="quality-sign">⨁</span><span class="quality-sign">◯</span><span class="quality-sign">◯</span>'
+mod <- '<span><span class="quality-sign">⨁</span><span class="quality-sign">⨁</span><span class="quality-sign">⨁</span><span class="quality-sign">◯</span>'
+high <- '<span><span class="quality-sign">⨁</span><span class="quality-sign">⨁</span><span class="quality-sign">⨁</span><span class="quality-sign">⨁</span>'
+grade_foot <- paste0("Very low: ", vlow, "; Low: ", low, "; Moderate: ", mod, "; High: ", high, ".")
+
+```
+
 ## Regional versus General Anesthesia
 
-![](assets/regional_general_balance_2023-05-22.png){fig-align="left" width="8in"}
+```{r}
+#| warning: false
+reg_gen_dat <- readxl::read_excel("data/balance_tables_2023-05-23.xlsx", sheet = "RegionalGeneral", range = "B4:I22")[-6] |>
+  remove_empty(which = "cols") |>
+  clean_names() |>
+  rename(est = estimate_95_percent_ci) |>
+  filter(!if_all(rct:est, ~ is.na(.x))) |>
+  mutate(
+    group = ifelse(outcome == "Patient satisfaction", "Patient-reported", "Clinical"),
+    est = str_remove(est, "‡|†"),
+    outcome = str_remove(outcome, "\\*"),
+    grade = case_when(
+      grade == "Very low" ~ vlow,
+      grade == "Low" ~ low,
+      grade == "Moderate" ~ mod,
+      grade == "High" ~ high,
+      .default = grade
+    )
+  )
 
+reg_gen_dat |>
+  group_by(group) |>
+  gt(id = "one") |>
+  cols_label(
+    outcome          = "Outcome",
+    rct              = "RCT",
+    n                = "    N",
+    grade            = "GRADE",
+    measure          = "Effect",
+    est              = "Estimate (95% CI)"
+  ) |>
+  fmt_markdown(columns = c(grade)) |>
+  fmt_integer(use_seps = TRUE, sep_mark = ",") |>
+  gt_theme_mg() |>
+  cols_width(
+    outcome ~ px(210),
+    rct ~ px(40),
+    n ~ px(65),
+    grade ~ px(75),
+    measure ~ px(45),
+    est ~ px(135)
+  ) |> 
+  sub_missing(columns = everything(), missing_text = "") |>
+  opt_footnote_marks(marks = "standard") |> 
+  # tab_style(style = cell_text(align = "left"),        locations = cells_column_labels(columns = c())) |>
+  tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(n, grade))) |>
+  tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c(est))) |>
+  # tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c())) |>
+  tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(est, grade, measure))) |>
+  # tab_style(style = cell_text(align = "right"),       locations = cells_body(columns = c(measure))) |>
+  tab_footnote("RCT: randomized clinical trial;  GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; RD: risk difference.") |>
+  tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |> 
+  tab_footnote("Complications includes bradycardia, tachycardia, arrhythmia, or unspecified.", locations = cells_body(columns = c(outcome), rows = outcome == "Cardiac complications")) |> 
+  tab_footnote("Studies reported 0 and 2 events.", locations = cells_body(columns = c(est), rows = outcome == "Cardiac arrest"), placement = "right") |> 
+  tab_footnote("Per 100 patients for higher or highest category or categories compared with lower ones.", locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") 
+  
+```
 
 ## TIVA versus Inhaled Anesthesia
 
-![](assets/tiva-inhaled_balance_2023-05-22.png){fig-align="left" width="8in"}
+```{r}
+#| warning: false
+tiva_inhaled_dat <- readxl::read_excel("data/balance_tables_2023-05-23.xlsx", sheet = "TIVAInhaled", range = "B4:I24")[-6] |>
+  remove_empty(which = "cols") |>
+  clean_names() |>
+  rename(est = estimate_95_percent_ci) |>
+  filter(!if_all(rct:est, ~ is.na(.x))) |>
+  mutate(
+    group = ifelse(outcome == "Patient satisfaction", "Patient-reported", "Clinical"),
+    grade = case_when(
+      grade == "Very low" ~ vlow,
+      grade == "Low" ~ low,
+      grade == "Moderate" ~ mod,
+      grade == "High" ~ high,
+      .default = grade
+    )
+  ) |> 
+  fill(group)
 
+tiva_inhaled_dat |>
+  group_by(group) |>
+  gt(id = "one") |>
+  cols_label(
+    outcome          = "Outcome",
+    rct              = "RCT",
+    nrsi             = "NRSI",
+    n                = "    N",
+    grade            = "GRADE",
+    measure          = "Effect",
+    est              = "Estimate (95% CI)"
+  ) |>
+  fmt_markdown(columns = c(grade)) |>
+  fmt_integer(use_seps = TRUE, sep_mark = ",") |>
+  gt_theme_mg() |>
+  cols_width(
+    outcome ~ px(210),
+    rct ~ px(40),
+    nrsi ~ px(40),
+    n ~ px(65),
+    grade ~ px(75),
+    measure ~ px(45),
+    est ~ px(135)
+  ) |> 
+  sub_missing(columns = everything(), missing_text = "") |>
+  opt_footnote_marks(marks = "standard") |> 
+  # tab_style(style = cell_text(align = "left"),        locations = cells_column_labels(columns = c())) |>
+  tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(n, grade))) |>
+  tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c(est))) |>
+  # tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c())) |>
+  tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(est, grade, measure))) |>
+  # tab_style(style = cell_text(align = "right"),       locations = cells_body(columns = c(measure))) |>
+  tab_footnote("RCT: randomized clinical trial; NRSI: nonrandomized studies of interventions; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; RD: risk difference; MD: mean difference.") |>
+  tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |> 
+  tab_footnote("Neither study detected a difference.", locations = cells_body(columns = c(est), rows = outcome == "Neurocognitive disorders")) |> 
+  tab_footnote("0 events in one study; second did not detect a difference.", locations = cells_body(columns = c(est), rows = outcome == "Pulmonary congestion/edema")) |> 
+  tab_footnote("2 versus 0 events.", locations = cells_body(columns = c(est), rows = outcome == "Cardiac arrest")) |> 
+  tab_footnote("Complications includes bradycardia, tachycardia, arrhythmia, or unspecified.", locations = cells_body(columns = c(outcome), rows = outcome == "Cardiac complications")) |> 
+  tab_footnote("Per 100 patients for higher or highest category or categories compared with lower ones.", locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") 
+   
+```
 
 
 
