@@ -498,3 +498,7 @@ gt_theme_mg <- function(data) {
   "
   )
 }
+
+vert_lab_fun <- function(label){
+  paste0("<vertical-text>", label, "</vertical-text>")
+}

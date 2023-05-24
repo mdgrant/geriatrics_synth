@@ -203,8 +203,8 @@ div.csl-indent {
   <li><a href="#country-summary" id="toc-country-summary" class="nav-link" data-scroll-target="#country-summary">Country Summary</a></li>
   </ul></li>
   </ul></li>
-  <li><a href="#comparators" id="toc-comparators" class="nav-link" data-scroll-target="#comparators"><strong>Comparators</strong></a></li>
-  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><strong>References ⦁</strong></a></li>
+  <li><a href="#expanded-evaluation" id="toc-expanded-evaluation" class="nav-link" data-scroll-target="#expanded-evaluation"><strong>Expanded Evaluation</strong></a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><strong>References</strong></a></li>
   </ul>
 </nav>
 </nav>
@@ -3607,45 +3607,1391 @@ div.csl-indent {
 </section>
 </section>
 </section>
-<section id="comparators" class="level2">
-<h2 class="anchored" data-anchor-id="comparators"><strong>Comparators</strong></h2>
+<section id="expanded-evaluation" class="level2">
+<h2 class="anchored" data-anchor-id="expanded-evaluation"><strong>Expanded Evaluation</strong></h2>
+<p><font size="4"> Table 9. Components of expanded preoperative evaluation and interventions prompted. </font></p>
 <div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 76 × 7
-   gen_comp gen_blood gen_multi gen_nutrition gen_comorbid gen_unspec gen_other
-   &lt;chr&gt;    &lt;chr&gt;     &lt;chr&gt;     &lt;chr&gt;         &lt;chr&gt;        &lt;chr&gt;      &lt;chr&gt;    
- 1 &lt;NA&gt;     &lt;NA&gt;      &lt;NA&gt;      &lt;NA&gt;          &lt;NA&gt;         &lt;NA&gt;       &lt;NA&gt;     
- 2 gen_comp gen_blood &lt;NA&gt;      gen_nutrition gen_comorbid &lt;NA&gt;       &lt;NA&gt;     
- 3 &lt;NA&gt;     &lt;NA&gt;      &lt;NA&gt;      &lt;NA&gt;          &lt;NA&gt;         &lt;NA&gt;       &lt;NA&gt;     
- 4 gen_comp &lt;NA&gt;      &lt;NA&gt;      &lt;NA&gt;          &lt;NA&gt;         &lt;NA&gt;       gen_other
- 5 &lt;NA&gt;     &lt;NA&gt;      &lt;NA&gt;      &lt;NA&gt;          &lt;NA&gt;         &lt;NA&gt;       &lt;NA&gt;     
- 6 gen_comp &lt;NA&gt;      gen_multi gen_nutrition gen_comorbid &lt;NA&gt;       &lt;NA&gt;     
- 7 &lt;NA&gt;     &lt;NA&gt;      &lt;NA&gt;      &lt;NA&gt;          &lt;NA&gt;         &lt;NA&gt;       &lt;NA&gt;     
- 8 gen_comp &lt;NA&gt;      gen_multi gen_nutrition &lt;NA&gt;         &lt;NA&gt;       &lt;NA&gt;     
- 9 gen_comp &lt;NA&gt;      gen_multi gen_nutrition gen_comorbid &lt;NA&gt;       &lt;NA&gt;     
-10 &lt;NA&gt;     &lt;NA&gt;      &lt;NA&gt;      &lt;NA&gt;          &lt;NA&gt;         &lt;NA&gt;       &lt;NA&gt;     
-# ℹ 66 more rows</code></pre>
+<div class="cell-output-display">
+
+<div id="one" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#one table {
+  font-family: 'Source Sans Pro';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#one thead, #one tbody, #one tfoot, #one tr, #one td, #one th {
+  border-style: none;
+}
+
+#one p {
+  margin: 0;
+  padding: 0;
+}
+
+#one .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: 0;
+  margin-right: auto;
+  color: #000000;
+  font-size: 13px;
+  font-weight: normal;
+  font-style: none;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 1.7px;
+  border-top-color: #9A9EA1;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#one .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#one .gt_title {
+  color: #000000;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#one .gt_subtitle {
+  color: #000000;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#one .gt_heading {
+  background-color: #FFFFFF;
+  text-align: left;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#one .gt_bottom_border {
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#one .gt_col_headings {
+  border-top-style: none;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 1.3px;
+  border-bottom-color: #9A9EA1;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#one .gt_col_heading {
+  color: #000000;
+  background-color: #FFFFFF;
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 3px;
+  padding-bottom: 4px;
+  padding-left: 10px;
+  padding-right: 10px;
+  overflow-x: hidden;
+}
+
+#one .gt_column_spanner_outer {
+  color: #000000;
+  background-color: #FFFFFF;
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#one .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#one .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#one .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 1.3px;
+  border-bottom-color: #9A9EA1;
+  vertical-align: bottom;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#one .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#one .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+  color: #000000;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: none;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#one .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #000000;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: none;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#one .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#one .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#one .gt_row {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin: 10px;
+  border-top-style: none;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#one .gt_stub {
+  color: #000000;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#one .gt_stub_row_group {
+  color: #000000;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 10px;
+  padding-right: 10px;
+  vertical-align: top;
+}
+
+#one .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#one .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#one .gt_summary_row {
+  color: #000000;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#one .gt_first_summary_row {
+  border-top-style: none;
+  border-top-color: #D3D3D3;
+}
+
+#one .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#one .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#one .gt_grand_summary_row {
+  color: #000000;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#one .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-top-style: none;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#one .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-bottom-style: none;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#one .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#one .gt_table_body {
+  border-top-style: none;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 1.7px;
+  border-bottom-color: #9A9EA1;
+}
+
+#one .gt_footnotes {
+  color: #000000;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#one .gt_footnote {
+  margin: 0px;
+  font-size: 12px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#one .gt_sourcenotes {
+  color: #000000;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#one .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#one .gt_left {
+  text-align: left;
+}
+
+#one .gt_center {
+  text-align: center;
+}
+
+#one .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#one .gt_font_normal {
+  font-weight: normal;
+}
+
+#one .gt_font_bold {
+  font-weight: bold;
+}
+
+#one .gt_font_italic {
+  font-style: italic;
+}
+
+#one .gt_super {
+  font-size: 65%;
+}
+
+#one .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#one .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#one .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#one .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#one .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#one .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#one .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#one .gt_footnote_marks {
+  font-style: normal;
+  font-weight: normal;
+  font-size: 85%;
+  vertical-align: 0px;
+}
+</style>
+<table class="gt_table" style="table-layout: fixed;; width: 0px" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <colgroup>
+    <col style="width:165px;">
+    <col style="width:25px;">
+    <col style="width:25px;">
+    <col style="width:25px;">
+    <col style="width:25px;">
+    <col style="width:25px;">
+    <col style="width:25px;">
+    <col style="width:25px;">
+    <col style="width:25px;">
+    <col style="width:25px;">
+    <col style="width:25px;">
+    <col style="width:25px;">
+    <col style="width:25px;">
+    <col style="width:25px;">
+    <col style="width:25px;">
+    <col style="width:25px;">
+    <col style="width:25px;">
+    <col style="width:25px;">
+    <col style="width:25px;">
+    <col style="width:25px;">
+    <col style="width:25px;">
+    <col style="width:25px;">
+    <col style="width:25px;">
+    <col style="width:25px;">
+  </colgroup>
+  <thead>
+    
+    <tr class="gt_col_headings gt_spanner_row">
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2" scope="colgroup" id=""></th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="10" scope="colgroup" id="Assessments">
+        <span class="gt_column_spanner">Assessments</span>
+      </th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="12" scope="colgroup" id="Interventions">
+        <span class="gt_column_spanner">Interventions</span>
+      </th>
+    </tr>
+    <tr class="gt_col_headings gt_spanner_row">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1" scope="col" id="Study">Study</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1" style="text-align: right;" scope="col" id="<vertical-text>ERAS</vertical-text>"><vertical-text>ERAS</vertical-text></th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="6" style="color: #0E6655;" scope="colgroup" id="General">
+        <span class="gt_column_spanner">General</span>
+      </th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="4" style="color: #A93226;" scope="colgroup" id="Targeted">
+        <span class="gt_column_spanner">Targeted</span>
+      </th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="5" style="color: #104E8B;" scope="colgroup" id="Patient Education">
+        <span class="gt_column_spanner">Patient Education</span>
+      </th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="7" style="color: #F39C12;" scope="colgroup" id="Staff Interventions">
+        <span class="gt_column_spanner">Staff Interventions</span>
+      </th>
+    </tr>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: right; color: #0E6655;" scope="col" id="<vertical-text>Blood work</vertical-text>"><vertical-text>Blood work</vertical-text></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: right; color: #0E6655;" scope="col" id="<vertical-text>CGA</vertical-text>"><vertical-text>CGA</vertical-text></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: right; color: #0E6655;" scope="col" id="<vertical-text>Multidisciplinary</vertical-text>"><vertical-text>Multidisciplinary</vertical-text></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: right; color: #0E6655;" scope="col" id="<vertical-text>Meds/Comorbidity</vertical-text>"><vertical-text>Meds/Comorbidity</vertical-text></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: right; color: #0E6655;" scope="col" id="<vertical-text>Nutrition</vertical-text>"><vertical-text>Nutrition</vertical-text></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: right; color: #0E6655;" scope="col" id="<vertical-text>Other</vertical-text>"><vertical-text>Other</vertical-text></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: right; color: #A93226;" scope="col" id="<vertical-text>Frailty</vertical-text>"><vertical-text>Frailty</vertical-text></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: right; color: #A93226;" scope="col" id="<vertical-text>Cognitive</vertical-text>"><vertical-text>Cognitive</vertical-text></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: right; color: #A93226;" scope="col" id="<vertical-text>Physical Function</vertical-text>"><vertical-text>Physical Function</vertical-text></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: right; color: #A93226;" scope="col" id="<vertical-text>Psychosocial</vertical-text>"><vertical-text>Psychosocial</vertical-text></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: right; color: #104E8B;" scope="col" id="<vertical-text>Nutrition</vertical-text>"><vertical-text>Nutrition</vertical-text></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: right; color: #104E8B;" scope="col" id="<vertical-text>Physical activity</vertical-text>"><vertical-text>Physical activity</vertical-text></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: right; color: #104E8B;" scope="col" id="<vertical-text>Procedure</vertical-text>"><vertical-text>Procedure</vertical-text></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: right; color: #104E8B;" scope="col" id="<vertical-text>Social ties</vertical-text>"><vertical-text>Social ties</vertical-text></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: right; color: #104E8B;" scope="col" id="<vertical-text>Other</vertical-text>"><vertical-text>Other</vertical-text></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: right; color: #F39C12;" scope="col" id="<vertical-text>Rx comorbidities</vertical-text>"><vertical-text>Rx comorbidities</vertical-text></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: right; color: #F39C12;" scope="col" id="<vertical-text>Deprescribing</vertical-text>"><vertical-text>Deprescribing</vertical-text></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: right; color: #F39C12;" scope="col" id="<vertical-text>Geriatric visits</vertical-text>"><vertical-text>Geriatric visits</vertical-text></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: right; color: #F39C12;" scope="col" id="<vertical-text>Multidisciplinary</vertical-text>"><vertical-text>Multidisciplinary</vertical-text></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: right; color: #F39C12;" scope="col" id="<vertical-text>Nutritional suppl</vertical-text>"><vertical-text>Nutritional suppl</vertical-text></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: right; color: #F39C12;" scope="col" id="<vertical-text>Treatment plan</vertical-text>"><vertical-text>Treatment plan</vertical-text></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: right; color: #F39C12;" scope="col" id="<vertical-text>Other</vertical-text>"><vertical-text>Other</vertical-text></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr class="gt_group_heading_row">
+      <th colspan="24" class="gt_group_heading" style="font-weight: bold;" scope="colgroup" id="Cardiac — Randomized Clinical Trial">Cardiac — Randomized Clinical Trial</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="Cardiac — Randomized Clinical Trial  study_l" class="gt_row gt_left"><div class="gt_from_md"><p><a href="evidence_tables.html#9588">Heilmann 2016</a></p>
+</div></td>
+<td headers="Cardiac — Randomized Clinical Trial  kq1_eras" class="gt_row gt_left"></td>
+<td headers="Cardiac — Randomized Clinical Trial  gen_blood" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Cardiac — Randomized Clinical Trial  gen_comp" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Cardiac — Randomized Clinical Trial  gen_multi" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Cardiac — Randomized Clinical Trial  gen_comorbid" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Cardiac — Randomized Clinical Trial  gen_nutrition" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Cardiac — Randomized Clinical Trial  gen_other" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Cardiac — Randomized Clinical Trial  kq1_frail" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="Cardiac — Randomized Clinical Trial  kq1_cog" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="Cardiac — Randomized Clinical Trial  kq1_phys_func" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="Cardiac — Randomized Clinical Trial  kq1_psych" class="gt_row gt_left" style="text-align: right; color: #A93226;">&nbsp;●</td>
+<td headers="Cardiac — Randomized Clinical Trial  pt_nutr" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Cardiac — Randomized Clinical Trial  pt_mobility" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Cardiac — Randomized Clinical Trial  pt_surgery" class="gt_row gt_left" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Cardiac — Randomized Clinical Trial  pt_social" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Cardiac — Randomized Clinical Trial  pt_other" class="gt_row gt_left" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Cardiac — Randomized Clinical Trial  staff_comorbid" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Cardiac — Randomized Clinical Trial  staff_inappmed" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Cardiac — Randomized Clinical Trial  staff_geriatrician" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Cardiac — Randomized Clinical Trial  staff_multidisc" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Cardiac — Randomized Clinical Trial  staff_supplement" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Cardiac — Randomized Clinical Trial  staff_treatplan" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Cardiac — Randomized Clinical Trial  staff_other" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td></tr>
+    <tr class="gt_group_heading_row">
+      <th colspan="24" class="gt_group_heading" style="font-weight: bold;" scope="colgroup" id="Cardiac — Before-After/Time Series">Cardiac — Before-After/Time Series</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="Cardiac — Before-After/Time Series  study_l" class="gt_row gt_left gt_striped"><div class="gt_from_md"><p><a href="evidence_tables.html#15542">Zhang 2017</a></p>
+</div></td>
+<td headers="Cardiac — Before-After/Time Series  kq1_eras" class="gt_row gt_left gt_striped"></td>
+<td headers="Cardiac — Before-After/Time Series  gen_blood" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Cardiac — Before-After/Time Series  gen_comp" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Cardiac — Before-After/Time Series  gen_multi" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Cardiac — Before-After/Time Series  gen_comorbid" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Cardiac — Before-After/Time Series  gen_nutrition" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Cardiac — Before-After/Time Series  gen_other" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Cardiac — Before-After/Time Series  kq1_frail" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="Cardiac — Before-After/Time Series  kq1_cog" class="gt_row gt_left gt_striped" style="color: #A93226;">&nbsp;●</td>
+<td headers="Cardiac — Before-After/Time Series  kq1_phys_func" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="Cardiac — Before-After/Time Series  kq1_psych" class="gt_row gt_left gt_striped" style="text-align: right; color: #A93226;"></td>
+<td headers="Cardiac — Before-After/Time Series  pt_nutr" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Cardiac — Before-After/Time Series  pt_mobility" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Cardiac — Before-After/Time Series  pt_surgery" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Cardiac — Before-After/Time Series  pt_social" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Cardiac — Before-After/Time Series  pt_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Cardiac — Before-After/Time Series  staff_comorbid" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Cardiac — Before-After/Time Series  staff_inappmed" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Cardiac — Before-After/Time Series  staff_geriatrician" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Cardiac — Before-After/Time Series  staff_multidisc" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Cardiac — Before-After/Time Series  staff_supplement" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Cardiac — Before-After/Time Series  staff_treatplan" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Cardiac — Before-After/Time Series  staff_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td></tr>
+    <tr class="gt_group_heading_row">
+      <th colspan="24" class="gt_group_heading" style="font-weight: bold;" scope="colgroup" id="GI/Abd — Randomized Clinical Trial">GI/Abd — Randomized Clinical Trial</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="GI/Abd — Randomized Clinical Trial  study_l" class="gt_row gt_left"><div class="gt_from_md"><p><a href="evidence_tables.html#555">Ommundsen 2018</a></p>
+</div></td>
+<td headers="GI/Abd — Randomized Clinical Trial  kq1_eras" class="gt_row gt_left">&nbsp;&nbsp;x</td>
+<td headers="GI/Abd — Randomized Clinical Trial  gen_blood" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="GI/Abd — Randomized Clinical Trial  gen_comp" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="GI/Abd — Randomized Clinical Trial  gen_multi" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="GI/Abd — Randomized Clinical Trial  gen_comorbid" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="GI/Abd — Randomized Clinical Trial  gen_nutrition" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="GI/Abd — Randomized Clinical Trial  gen_other" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="GI/Abd — Randomized Clinical Trial  kq1_frail" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="GI/Abd — Randomized Clinical Trial  kq1_cog" class="gt_row gt_left" style="color: #A93226;">&nbsp;●</td>
+<td headers="GI/Abd — Randomized Clinical Trial  kq1_phys_func" class="gt_row gt_left" style="color: #A93226;">&nbsp;●</td>
+<td headers="GI/Abd — Randomized Clinical Trial  kq1_psych" class="gt_row gt_left" style="text-align: right; color: #A93226;">&nbsp;●</td>
+<td headers="GI/Abd — Randomized Clinical Trial  pt_nutr" class="gt_row gt_left" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="GI/Abd — Randomized Clinical Trial  pt_mobility" class="gt_row gt_left" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="GI/Abd — Randomized Clinical Trial  pt_surgery" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="GI/Abd — Randomized Clinical Trial  pt_social" class="gt_row gt_left" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="GI/Abd — Randomized Clinical Trial  pt_other" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="GI/Abd — Randomized Clinical Trial  staff_comorbid" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="GI/Abd — Randomized Clinical Trial  staff_inappmed" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="GI/Abd — Randomized Clinical Trial  staff_geriatrician" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="GI/Abd — Randomized Clinical Trial  staff_multidisc" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="GI/Abd — Randomized Clinical Trial  staff_supplement" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="GI/Abd — Randomized Clinical Trial  staff_treatplan" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="GI/Abd — Randomized Clinical Trial  staff_other" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td></tr>
+    <tr class="gt_group_heading_row">
+      <th colspan="24" class="gt_group_heading" style="font-weight: bold;" scope="colgroup" id="GI/Abd — Before-After/Time Series">GI/Abd — Before-After/Time Series</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="GI/Abd — Before-After/Time Series  study_l" class="gt_row gt_left gt_striped"><div class="gt_from_md"><p><a href="evidence_tables.html#16846">Giannotti 2022</a></p>
+</div></td>
+<td headers="GI/Abd — Before-After/Time Series  kq1_eras" class="gt_row gt_left gt_striped">&nbsp;&nbsp;x</td>
+<td headers="GI/Abd — Before-After/Time Series  gen_blood" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="GI/Abd — Before-After/Time Series  gen_comp" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="GI/Abd — Before-After/Time Series  gen_multi" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="GI/Abd — Before-After/Time Series  gen_comorbid" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="GI/Abd — Before-After/Time Series  gen_nutrition" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="GI/Abd — Before-After/Time Series  gen_other" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="GI/Abd — Before-After/Time Series  kq1_frail" class="gt_row gt_left gt_striped" style="color: #A93226;">&nbsp;●</td>
+<td headers="GI/Abd — Before-After/Time Series  kq1_cog" class="gt_row gt_left gt_striped" style="color: #A93226;">&nbsp;●</td>
+<td headers="GI/Abd — Before-After/Time Series  kq1_phys_func" class="gt_row gt_left gt_striped" style="color: #A93226;">&nbsp;●</td>
+<td headers="GI/Abd — Before-After/Time Series  kq1_psych" class="gt_row gt_left gt_striped" style="text-align: right; color: #A93226;"></td>
+<td headers="GI/Abd — Before-After/Time Series  pt_nutr" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="GI/Abd — Before-After/Time Series  pt_mobility" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="GI/Abd — Before-After/Time Series  pt_surgery" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="GI/Abd — Before-After/Time Series  pt_social" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="GI/Abd — Before-After/Time Series  pt_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="GI/Abd — Before-After/Time Series  staff_comorbid" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="GI/Abd — Before-After/Time Series  staff_inappmed" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="GI/Abd — Before-After/Time Series  staff_geriatrician" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="GI/Abd — Before-After/Time Series  staff_multidisc" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="GI/Abd — Before-After/Time Series  staff_supplement" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="GI/Abd — Before-After/Time Series  staff_treatplan" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="GI/Abd — Before-After/Time Series  staff_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td></tr>
+    <tr><td headers="GI/Abd — Before-After/Time Series  study_l" class="gt_row gt_left"><div class="gt_from_md"><p><a href="evidence_tables.html#149">Indrakusuma 2015</a></p>
+</div></td>
+<td headers="GI/Abd — Before-After/Time Series  kq1_eras" class="gt_row gt_left"></td>
+<td headers="GI/Abd — Before-After/Time Series  gen_blood" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="GI/Abd — Before-After/Time Series  gen_comp" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="GI/Abd — Before-After/Time Series  gen_multi" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="GI/Abd — Before-After/Time Series  gen_comorbid" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="GI/Abd — Before-After/Time Series  gen_nutrition" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="GI/Abd — Before-After/Time Series  gen_other" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="GI/Abd — Before-After/Time Series  kq1_frail" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="GI/Abd — Before-After/Time Series  kq1_cog" class="gt_row gt_left" style="color: #A93226;">&nbsp;●</td>
+<td headers="GI/Abd — Before-After/Time Series  kq1_phys_func" class="gt_row gt_left" style="color: #A93226;">&nbsp;●</td>
+<td headers="GI/Abd — Before-After/Time Series  kq1_psych" class="gt_row gt_left" style="text-align: right; color: #A93226;"></td>
+<td headers="GI/Abd — Before-After/Time Series  pt_nutr" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="GI/Abd — Before-After/Time Series  pt_mobility" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="GI/Abd — Before-After/Time Series  pt_surgery" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="GI/Abd — Before-After/Time Series  pt_social" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="GI/Abd — Before-After/Time Series  pt_other" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="GI/Abd — Before-After/Time Series  staff_comorbid" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="GI/Abd — Before-After/Time Series  staff_inappmed" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="GI/Abd — Before-After/Time Series  staff_geriatrician" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="GI/Abd — Before-After/Time Series  staff_multidisc" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="GI/Abd — Before-After/Time Series  staff_supplement" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="GI/Abd — Before-After/Time Series  staff_treatplan" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="GI/Abd — Before-After/Time Series  staff_other" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td></tr>
+    <tr><td headers="GI/Abd — Before-After/Time Series  study_l" class="gt_row gt_left gt_striped"><div class="gt_from_md"><p><a href="evidence_tables.html#6017">Souwer 2018</a></p>
+</div></td>
+<td headers="GI/Abd — Before-After/Time Series  kq1_eras" class="gt_row gt_left gt_striped">&nbsp;&nbsp;x</td>
+<td headers="GI/Abd — Before-After/Time Series  gen_blood" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="GI/Abd — Before-After/Time Series  gen_comp" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="GI/Abd — Before-After/Time Series  gen_multi" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="GI/Abd — Before-After/Time Series  gen_comorbid" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="GI/Abd — Before-After/Time Series  gen_nutrition" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="GI/Abd — Before-After/Time Series  gen_other" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="GI/Abd — Before-After/Time Series  kq1_frail" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="GI/Abd — Before-After/Time Series  kq1_cog" class="gt_row gt_left gt_striped" style="color: #A93226;">&nbsp;●</td>
+<td headers="GI/Abd — Before-After/Time Series  kq1_phys_func" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="GI/Abd — Before-After/Time Series  kq1_psych" class="gt_row gt_left gt_striped" style="text-align: right; color: #A93226;">&nbsp;●</td>
+<td headers="GI/Abd — Before-After/Time Series  pt_nutr" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="GI/Abd — Before-After/Time Series  pt_mobility" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="GI/Abd — Before-After/Time Series  pt_surgery" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="GI/Abd — Before-After/Time Series  pt_social" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="GI/Abd — Before-After/Time Series  pt_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="GI/Abd — Before-After/Time Series  staff_comorbid" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="GI/Abd — Before-After/Time Series  staff_inappmed" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="GI/Abd — Before-After/Time Series  staff_geriatrician" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="GI/Abd — Before-After/Time Series  staff_multidisc" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="GI/Abd — Before-After/Time Series  staff_supplement" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="GI/Abd — Before-After/Time Series  staff_treatplan" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="GI/Abd — Before-After/Time Series  staff_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td></tr>
+    <tr class="gt_group_heading_row">
+      <th colspan="24" class="gt_group_heading" style="font-weight: bold;" scope="colgroup" id="GI/Abd — Retrospective Cohort">GI/Abd — Retrospective Cohort</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="GI/Abd — Retrospective Cohort  study_l" class="gt_row gt_left"><div class="gt_from_md"><p><a href="evidence_tables.html#16623">T-Santabalbina 2019</a></p>
+</div></td>
+<td headers="GI/Abd — Retrospective Cohort  kq1_eras" class="gt_row gt_left"></td>
+<td headers="GI/Abd — Retrospective Cohort  gen_blood" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="GI/Abd — Retrospective Cohort  gen_comp" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="GI/Abd — Retrospective Cohort  gen_multi" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="GI/Abd — Retrospective Cohort  gen_comorbid" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="GI/Abd — Retrospective Cohort  gen_nutrition" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="GI/Abd — Retrospective Cohort  gen_other" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="GI/Abd — Retrospective Cohort  kq1_frail" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="GI/Abd — Retrospective Cohort  kq1_cog" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="GI/Abd — Retrospective Cohort  kq1_phys_func" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="GI/Abd — Retrospective Cohort  kq1_psych" class="gt_row gt_left" style="text-align: right; color: #A93226;">&nbsp;●</td>
+<td headers="GI/Abd — Retrospective Cohort  pt_nutr" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="GI/Abd — Retrospective Cohort  pt_mobility" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="GI/Abd — Retrospective Cohort  pt_surgery" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="GI/Abd — Retrospective Cohort  pt_social" class="gt_row gt_left" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="GI/Abd — Retrospective Cohort  pt_other" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="GI/Abd — Retrospective Cohort  staff_comorbid" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="GI/Abd — Retrospective Cohort  staff_inappmed" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="GI/Abd — Retrospective Cohort  staff_geriatrician" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="GI/Abd — Retrospective Cohort  staff_multidisc" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="GI/Abd — Retrospective Cohort  staff_supplement" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="GI/Abd — Retrospective Cohort  staff_treatplan" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="GI/Abd — Retrospective Cohort  staff_other" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td></tr>
+    <tr><td headers="GI/Abd — Retrospective Cohort  study_l" class="gt_row gt_left gt_striped"><div class="gt_from_md"><p><a href="evidence_tables.html#882">van der Vlies 2020</a></p>
+</div></td>
+<td headers="GI/Abd — Retrospective Cohort  kq1_eras" class="gt_row gt_left gt_striped"></td>
+<td headers="GI/Abd — Retrospective Cohort  gen_blood" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="GI/Abd — Retrospective Cohort  gen_comp" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="GI/Abd — Retrospective Cohort  gen_multi" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="GI/Abd — Retrospective Cohort  gen_comorbid" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="GI/Abd — Retrospective Cohort  gen_nutrition" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="GI/Abd — Retrospective Cohort  gen_other" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="GI/Abd — Retrospective Cohort  kq1_frail" class="gt_row gt_left gt_striped" style="color: #A93226;">&nbsp;●</td>
+<td headers="GI/Abd — Retrospective Cohort  kq1_cog" class="gt_row gt_left gt_striped" style="color: #A93226;">&nbsp;●</td>
+<td headers="GI/Abd — Retrospective Cohort  kq1_phys_func" class="gt_row gt_left gt_striped" style="color: #A93226;">&nbsp;●</td>
+<td headers="GI/Abd — Retrospective Cohort  kq1_psych" class="gt_row gt_left gt_striped" style="text-align: right; color: #A93226;">&nbsp;●</td>
+<td headers="GI/Abd — Retrospective Cohort  pt_nutr" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="GI/Abd — Retrospective Cohort  pt_mobility" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="GI/Abd — Retrospective Cohort  pt_surgery" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="GI/Abd — Retrospective Cohort  pt_social" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="GI/Abd — Retrospective Cohort  pt_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="GI/Abd — Retrospective Cohort  staff_comorbid" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="GI/Abd — Retrospective Cohort  staff_inappmed" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="GI/Abd — Retrospective Cohort  staff_geriatrician" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="GI/Abd — Retrospective Cohort  staff_multidisc" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="GI/Abd — Retrospective Cohort  staff_supplement" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="GI/Abd — Retrospective Cohort  staff_treatplan" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="GI/Abd — Retrospective Cohort  staff_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td></tr>
+    <tr class="gt_group_heading_row">
+      <th colspan="24" class="gt_group_heading" style="font-weight: bold;" scope="colgroup" id="Ortho — Before-After/Time Series">Ortho — Before-After/Time Series</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="Ortho — Before-After/Time Series  study_l" class="gt_row gt_left"><div class="gt_from_md"><p><a href="evidence_tables.html#16544">Bjorkelund 2010</a></p>
+</div></td>
+<td headers="Ortho — Before-After/Time Series  kq1_eras" class="gt_row gt_left"></td>
+<td headers="Ortho — Before-After/Time Series  gen_blood" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  gen_comp" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  gen_multi" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  gen_comorbid" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  gen_nutrition" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  gen_other" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  kq1_frail" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="Ortho — Before-After/Time Series  kq1_cog" class="gt_row gt_left" style="color: #A93226;">&nbsp;●</td>
+<td headers="Ortho — Before-After/Time Series  kq1_phys_func" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="Ortho — Before-After/Time Series  kq1_psych" class="gt_row gt_left" style="text-align: right; color: #A93226;"></td>
+<td headers="Ortho — Before-After/Time Series  pt_nutr" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Before-After/Time Series  pt_mobility" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Before-After/Time Series  pt_surgery" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Before-After/Time Series  pt_social" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Before-After/Time Series  pt_other" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_comorbid" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_inappmed" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Ortho — Before-After/Time Series  staff_geriatrician" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Ortho — Before-After/Time Series  staff_multidisc" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Ortho — Before-After/Time Series  staff_supplement" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Ortho — Before-After/Time Series  staff_treatplan" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_other" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td></tr>
+    <tr><td headers="Ortho — Before-After/Time Series  study_l" class="gt_row gt_left gt_striped"><div class="gt_from_md"><p><a href="evidence_tables.html#17082">Holroyd-Leduc 2010</a></p>
+</div></td>
+<td headers="Ortho — Before-After/Time Series  kq1_eras" class="gt_row gt_left gt_striped"></td>
+<td headers="Ortho — Before-After/Time Series  gen_blood" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  gen_comp" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  gen_multi" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  gen_comorbid" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  gen_nutrition" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  gen_other" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  kq1_frail" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="Ortho — Before-After/Time Series  kq1_cog" class="gt_row gt_left gt_striped" style="color: #A93226;">&nbsp;●</td>
+<td headers="Ortho — Before-After/Time Series  kq1_phys_func" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="Ortho — Before-After/Time Series  kq1_psych" class="gt_row gt_left gt_striped" style="text-align: right; color: #A93226;"></td>
+<td headers="Ortho — Before-After/Time Series  pt_nutr" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Before-After/Time Series  pt_mobility" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Before-After/Time Series  pt_surgery" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Before-After/Time Series  pt_social" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Before-After/Time Series  pt_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_comorbid" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_inappmed" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_geriatrician" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_multidisc" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_supplement" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_treatplan" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td></tr>
+    <tr><td headers="Ortho — Before-After/Time Series  study_l" class="gt_row gt_left"><div class="gt_from_md"><p><a href="evidence_tables.html#12826">Lau 2013</a></p>
+</div></td>
+<td headers="Ortho — Before-After/Time Series  kq1_eras" class="gt_row gt_left"></td>
+<td headers="Ortho — Before-After/Time Series  gen_blood" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Ortho — Before-After/Time Series  gen_comp" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  gen_multi" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Ortho — Before-After/Time Series  gen_comorbid" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Ortho — Before-After/Time Series  gen_nutrition" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  gen_other" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  kq1_frail" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="Ortho — Before-After/Time Series  kq1_cog" class="gt_row gt_left" style="color: #A93226;">&nbsp;●</td>
+<td headers="Ortho — Before-After/Time Series  kq1_phys_func" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="Ortho — Before-After/Time Series  kq1_psych" class="gt_row gt_left" style="text-align: right; color: #A93226;">&nbsp;●</td>
+<td headers="Ortho — Before-After/Time Series  pt_nutr" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Before-After/Time Series  pt_mobility" class="gt_row gt_left" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Ortho — Before-After/Time Series  pt_surgery" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Before-After/Time Series  pt_social" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Before-After/Time Series  pt_other" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_comorbid" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_inappmed" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_geriatrician" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Ortho — Before-After/Time Series  staff_multidisc" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Ortho — Before-After/Time Series  staff_supplement" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_treatplan" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Ortho — Before-After/Time Series  staff_other" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td></tr>
+    <tr><td headers="Ortho — Before-After/Time Series  study_l" class="gt_row gt_left gt_striped"><div class="gt_from_md"><p><a href="evidence_tables.html#16601">Olsson 2014</a></p>
+</div></td>
+<td headers="Ortho — Before-After/Time Series  kq1_eras" class="gt_row gt_left gt_striped"></td>
+<td headers="Ortho — Before-After/Time Series  gen_blood" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  gen_comp" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  gen_multi" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  gen_comorbid" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  gen_nutrition" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  gen_other" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  kq1_frail" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="Ortho — Before-After/Time Series  kq1_cog" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="Ortho — Before-After/Time Series  kq1_phys_func" class="gt_row gt_left gt_striped" style="color: #A93226;">&nbsp;●</td>
+<td headers="Ortho — Before-After/Time Series  kq1_psych" class="gt_row gt_left gt_striped" style="text-align: right; color: #A93226;">&nbsp;●</td>
+<td headers="Ortho — Before-After/Time Series  pt_nutr" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Before-After/Time Series  pt_mobility" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Ortho — Before-After/Time Series  pt_surgery" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Ortho — Before-After/Time Series  pt_social" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Ortho — Before-After/Time Series  pt_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_comorbid" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_inappmed" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_geriatrician" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_multidisc" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_supplement" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_treatplan" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Ortho — Before-After/Time Series  staff_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td></tr>
+    <tr><td headers="Ortho — Before-After/Time Series  study_l" class="gt_row gt_left"><div class="gt_from_md"><p><a href="evidence_tables.html#13133">Romano 2021</a></p>
+</div></td>
+<td headers="Ortho — Before-After/Time Series  kq1_eras" class="gt_row gt_left">&nbsp;&nbsp;x</td>
+<td headers="Ortho — Before-After/Time Series  gen_blood" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  gen_comp" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  gen_multi" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Ortho — Before-After/Time Series  gen_comorbid" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Ortho — Before-After/Time Series  gen_nutrition" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Ortho — Before-After/Time Series  gen_other" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  kq1_frail" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="Ortho — Before-After/Time Series  kq1_cog" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="Ortho — Before-After/Time Series  kq1_phys_func" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="Ortho — Before-After/Time Series  kq1_psych" class="gt_row gt_left" style="text-align: right; color: #A93226;">&nbsp;●</td>
+<td headers="Ortho — Before-After/Time Series  pt_nutr" class="gt_row gt_left" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Ortho — Before-After/Time Series  pt_mobility" class="gt_row gt_left" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Ortho — Before-After/Time Series  pt_surgery" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Before-After/Time Series  pt_social" class="gt_row gt_left" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Ortho — Before-After/Time Series  pt_other" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_comorbid" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Ortho — Before-After/Time Series  staff_inappmed" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_geriatrician" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_multidisc" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Ortho — Before-After/Time Series  staff_supplement" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_treatplan" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Ortho — Before-After/Time Series  staff_other" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td></tr>
+    <tr><td headers="Ortho — Before-After/Time Series  study_l" class="gt_row gt_left gt_striped"><div class="gt_from_md"><p><a href="evidence_tables.html#16629">Vochteloo 2011</a></p>
+</div></td>
+<td headers="Ortho — Before-After/Time Series  kq1_eras" class="gt_row gt_left gt_striped"></td>
+<td headers="Ortho — Before-After/Time Series  gen_blood" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  gen_comp" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  gen_multi" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  gen_comorbid" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  gen_nutrition" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  gen_other" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Ortho — Before-After/Time Series  kq1_frail" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="Ortho — Before-After/Time Series  kq1_cog" class="gt_row gt_left gt_striped" style="color: #A93226;">&nbsp;●</td>
+<td headers="Ortho — Before-After/Time Series  kq1_phys_func" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="Ortho — Before-After/Time Series  kq1_psych" class="gt_row gt_left gt_striped" style="text-align: right; color: #A93226;"></td>
+<td headers="Ortho — Before-After/Time Series  pt_nutr" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Before-After/Time Series  pt_mobility" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Before-After/Time Series  pt_surgery" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Before-After/Time Series  pt_social" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Before-After/Time Series  pt_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_comorbid" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_inappmed" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_geriatrician" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_multidisc" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_supplement" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_treatplan" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Before-After/Time Series  staff_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td></tr>
+    <tr class="gt_group_heading_row">
+      <th colspan="24" class="gt_group_heading" style="font-weight: bold;" scope="colgroup" id="Ortho — Randomized Clinical Trial">Ortho — Randomized Clinical Trial</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="Ortho — Randomized Clinical Trial  study_l" class="gt_row gt_left"><div class="gt_from_md"><p><a href="evidence_tables.html#741">Marcantonio 2001</a></p>
+</div></td>
+<td headers="Ortho — Randomized Clinical Trial  kq1_eras" class="gt_row gt_left"></td>
+<td headers="Ortho — Randomized Clinical Trial  gen_blood" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Ortho — Randomized Clinical Trial  gen_comp" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Ortho — Randomized Clinical Trial  gen_multi" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Ortho — Randomized Clinical Trial  gen_comorbid" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Ortho — Randomized Clinical Trial  gen_nutrition" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Ortho — Randomized Clinical Trial  gen_other" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Ortho — Randomized Clinical Trial  kq1_frail" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="Ortho — Randomized Clinical Trial  kq1_cog" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="Ortho — Randomized Clinical Trial  kq1_phys_func" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="Ortho — Randomized Clinical Trial  kq1_psych" class="gt_row gt_left" style="text-align: right; color: #A93226;"></td>
+<td headers="Ortho — Randomized Clinical Trial  pt_nutr" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Randomized Clinical Trial  pt_mobility" class="gt_row gt_left" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Ortho — Randomized Clinical Trial  pt_surgery" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Randomized Clinical Trial  pt_social" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Randomized Clinical Trial  pt_other" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Randomized Clinical Trial  staff_comorbid" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Randomized Clinical Trial  staff_inappmed" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Ortho — Randomized Clinical Trial  staff_geriatrician" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Ortho — Randomized Clinical Trial  staff_multidisc" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Ortho — Randomized Clinical Trial  staff_supplement" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Ortho — Randomized Clinical Trial  staff_treatplan" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Ortho — Randomized Clinical Trial  staff_other" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td></tr>
+    <tr><td headers="Ortho — Randomized Clinical Trial  study_l" class="gt_row gt_left gt_striped"><div class="gt_from_md"><p><a href="evidence_tables.html#16608">Prestmo 2015</a></p>
+</div></td>
+<td headers="Ortho — Randomized Clinical Trial  kq1_eras" class="gt_row gt_left gt_striped"></td>
+<td headers="Ortho — Randomized Clinical Trial  gen_blood" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Ortho — Randomized Clinical Trial  gen_comp" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Ortho — Randomized Clinical Trial  gen_multi" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Ortho — Randomized Clinical Trial  gen_comorbid" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Ortho — Randomized Clinical Trial  gen_nutrition" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Ortho — Randomized Clinical Trial  gen_other" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Ortho — Randomized Clinical Trial  kq1_frail" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="Ortho — Randomized Clinical Trial  kq1_cog" class="gt_row gt_left gt_striped" style="color: #A93226;">&nbsp;●</td>
+<td headers="Ortho — Randomized Clinical Trial  kq1_phys_func" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="Ortho — Randomized Clinical Trial  kq1_psych" class="gt_row gt_left gt_striped" style="text-align: right; color: #A93226;"></td>
+<td headers="Ortho — Randomized Clinical Trial  pt_nutr" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Ortho — Randomized Clinical Trial  pt_mobility" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Ortho — Randomized Clinical Trial  pt_surgery" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Randomized Clinical Trial  pt_social" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Ortho — Randomized Clinical Trial  pt_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Randomized Clinical Trial  staff_comorbid" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Ortho — Randomized Clinical Trial  staff_inappmed" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Randomized Clinical Trial  staff_geriatrician" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Randomized Clinical Trial  staff_multidisc" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Ortho — Randomized Clinical Trial  staff_supplement" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Randomized Clinical Trial  staff_treatplan" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Ortho — Randomized Clinical Trial  staff_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td></tr>
+    <tr><td headers="Ortho — Randomized Clinical Trial  study_l" class="gt_row gt_left"><div class="gt_from_md"><p><a href="evidence_tables.html#16628">Vidan 2005</a></p>
+</div></td>
+<td headers="Ortho — Randomized Clinical Trial  kq1_eras" class="gt_row gt_left"></td>
+<td headers="Ortho — Randomized Clinical Trial  gen_blood" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Ortho — Randomized Clinical Trial  gen_comp" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Ortho — Randomized Clinical Trial  gen_multi" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Ortho — Randomized Clinical Trial  gen_comorbid" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Ortho — Randomized Clinical Trial  gen_nutrition" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Ortho — Randomized Clinical Trial  gen_other" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Ortho — Randomized Clinical Trial  kq1_frail" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="Ortho — Randomized Clinical Trial  kq1_cog" class="gt_row gt_left" style="color: #A93226;">&nbsp;●</td>
+<td headers="Ortho — Randomized Clinical Trial  kq1_phys_func" class="gt_row gt_left" style="color: #A93226;">&nbsp;●</td>
+<td headers="Ortho — Randomized Clinical Trial  kq1_psych" class="gt_row gt_left" style="text-align: right; color: #A93226;">&nbsp;●</td>
+<td headers="Ortho — Randomized Clinical Trial  pt_nutr" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Randomized Clinical Trial  pt_mobility" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Randomized Clinical Trial  pt_surgery" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Randomized Clinical Trial  pt_social" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Randomized Clinical Trial  pt_other" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Randomized Clinical Trial  staff_comorbid" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Randomized Clinical Trial  staff_inappmed" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Randomized Clinical Trial  staff_geriatrician" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Ortho — Randomized Clinical Trial  staff_multidisc" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Ortho — Randomized Clinical Trial  staff_supplement" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Randomized Clinical Trial  staff_treatplan" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Randomized Clinical Trial  staff_other" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td></tr>
+    <tr><td headers="Ortho — Randomized Clinical Trial  study_l" class="gt_row gt_left gt_striped"><div class="gt_from_md"><p><a href="evidence_tables.html#1201">Watne 2014</a></p>
+</div></td>
+<td headers="Ortho — Randomized Clinical Trial  kq1_eras" class="gt_row gt_left gt_striped"></td>
+<td headers="Ortho — Randomized Clinical Trial  gen_blood" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Ortho — Randomized Clinical Trial  gen_comp" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Ortho — Randomized Clinical Trial  gen_multi" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Ortho — Randomized Clinical Trial  gen_comorbid" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Ortho — Randomized Clinical Trial  gen_nutrition" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Ortho — Randomized Clinical Trial  gen_other" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Ortho — Randomized Clinical Trial  kq1_frail" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="Ortho — Randomized Clinical Trial  kq1_cog" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="Ortho — Randomized Clinical Trial  kq1_phys_func" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="Ortho — Randomized Clinical Trial  kq1_psych" class="gt_row gt_left gt_striped" style="text-align: right; color: #A93226;"></td>
+<td headers="Ortho — Randomized Clinical Trial  pt_nutr" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Ortho — Randomized Clinical Trial  pt_mobility" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Ortho — Randomized Clinical Trial  pt_surgery" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Randomized Clinical Trial  pt_social" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Ortho — Randomized Clinical Trial  pt_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Randomized Clinical Trial  staff_comorbid" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Randomized Clinical Trial  staff_inappmed" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Randomized Clinical Trial  staff_geriatrician" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Randomized Clinical Trial  staff_multidisc" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Ortho — Randomized Clinical Trial  staff_supplement" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Ortho — Randomized Clinical Trial  staff_treatplan" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Ortho — Randomized Clinical Trial  staff_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td></tr>
+    <tr><td headers="Ortho — Randomized Clinical Trial  study_l" class="gt_row gt_left"><div class="gt_from_md"><p><a href="evidence_tables.html#16739">Zhu 2022</a></p>
+</div></td>
+<td headers="Ortho — Randomized Clinical Trial  kq1_eras" class="gt_row gt_left"></td>
+<td headers="Ortho — Randomized Clinical Trial  gen_blood" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Ortho — Randomized Clinical Trial  gen_comp" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Ortho — Randomized Clinical Trial  gen_multi" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Ortho — Randomized Clinical Trial  gen_comorbid" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Ortho — Randomized Clinical Trial  gen_nutrition" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Ortho — Randomized Clinical Trial  gen_other" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Ortho — Randomized Clinical Trial  kq1_frail" class="gt_row gt_left" style="color: #A93226;">&nbsp;●</td>
+<td headers="Ortho — Randomized Clinical Trial  kq1_cog" class="gt_row gt_left" style="color: #A93226;">&nbsp;●</td>
+<td headers="Ortho — Randomized Clinical Trial  kq1_phys_func" class="gt_row gt_left" style="color: #A93226;">&nbsp;●</td>
+<td headers="Ortho — Randomized Clinical Trial  kq1_psych" class="gt_row gt_left" style="text-align: right; color: #A93226;"></td>
+<td headers="Ortho — Randomized Clinical Trial  pt_nutr" class="gt_row gt_left" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Ortho — Randomized Clinical Trial  pt_mobility" class="gt_row gt_left" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Ortho — Randomized Clinical Trial  pt_surgery" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Randomized Clinical Trial  pt_social" class="gt_row gt_left" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Ortho — Randomized Clinical Trial  pt_other" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Ortho — Randomized Clinical Trial  staff_comorbid" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Ortho — Randomized Clinical Trial  staff_inappmed" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Randomized Clinical Trial  staff_geriatrician" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Randomized Clinical Trial  staff_multidisc" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Randomized Clinical Trial  staff_supplement" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Randomized Clinical Trial  staff_treatplan" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Ortho — Randomized Clinical Trial  staff_other" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td></tr>
+    <tr class="gt_group_heading_row">
+      <th colspan="24" class="gt_group_heading" style="font-weight: bold;" scope="colgroup" id="Various — Randomized Clinical Trial">Various — Randomized Clinical Trial</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="Various — Randomized Clinical Trial  study_l" class="gt_row gt_left gt_striped"><div class="gt_from_md"><p><a href="evidence_tables.html#760">Hempenius 2013</a></p>
+</div></td>
+<td headers="Various — Randomized Clinical Trial  kq1_eras" class="gt_row gt_left gt_striped"></td>
+<td headers="Various — Randomized Clinical Trial  gen_blood" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Various — Randomized Clinical Trial  gen_comp" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Various — Randomized Clinical Trial  gen_multi" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Various — Randomized Clinical Trial  gen_comorbid" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Various — Randomized Clinical Trial  gen_nutrition" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Various — Randomized Clinical Trial  gen_other" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Various — Randomized Clinical Trial  kq1_frail" class="gt_row gt_left gt_striped" style="color: #A93226;">&nbsp;●</td>
+<td headers="Various — Randomized Clinical Trial  kq1_cog" class="gt_row gt_left gt_striped" style="color: #A93226;">&nbsp;●</td>
+<td headers="Various — Randomized Clinical Trial  kq1_phys_func" class="gt_row gt_left gt_striped" style="color: #A93226;">&nbsp;●</td>
+<td headers="Various — Randomized Clinical Trial  kq1_psych" class="gt_row gt_left gt_striped" style="text-align: right; color: #A93226;">&nbsp;●</td>
+<td headers="Various — Randomized Clinical Trial  pt_nutr" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Randomized Clinical Trial  pt_mobility" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Randomized Clinical Trial  pt_surgery" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Randomized Clinical Trial  pt_social" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Randomized Clinical Trial  pt_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Randomized Clinical Trial  staff_comorbid" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Randomized Clinical Trial  staff_inappmed" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Randomized Clinical Trial  staff_geriatrician" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Randomized Clinical Trial  staff_multidisc" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Randomized Clinical Trial  staff_supplement" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Randomized Clinical Trial  staff_treatplan" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Randomized Clinical Trial  staff_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td></tr>
+    <tr><td headers="Various — Randomized Clinical Trial  study_l" class="gt_row gt_left"><div class="gt_from_md"><p><a href="evidence_tables.html#1263">Hempenius 2016</a></p>
+</div></td>
+<td headers="Various — Randomized Clinical Trial  kq1_eras" class="gt_row gt_left"></td>
+<td headers="Various — Randomized Clinical Trial  gen_blood" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Various — Randomized Clinical Trial  gen_comp" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Various — Randomized Clinical Trial  gen_multi" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Various — Randomized Clinical Trial  gen_comorbid" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Various — Randomized Clinical Trial  gen_nutrition" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Various — Randomized Clinical Trial  gen_other" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Various — Randomized Clinical Trial  kq1_frail" class="gt_row gt_left" style="color: #A93226;">&nbsp;●</td>
+<td headers="Various — Randomized Clinical Trial  kq1_cog" class="gt_row gt_left" style="color: #A93226;">&nbsp;●</td>
+<td headers="Various — Randomized Clinical Trial  kq1_phys_func" class="gt_row gt_left" style="color: #A93226;">&nbsp;●</td>
+<td headers="Various — Randomized Clinical Trial  kq1_psych" class="gt_row gt_left" style="text-align: right; color: #A93226;">&nbsp;●</td>
+<td headers="Various — Randomized Clinical Trial  pt_nutr" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Randomized Clinical Trial  pt_mobility" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Randomized Clinical Trial  pt_surgery" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Randomized Clinical Trial  pt_social" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Randomized Clinical Trial  pt_other" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Randomized Clinical Trial  staff_comorbid" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Randomized Clinical Trial  staff_inappmed" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Randomized Clinical Trial  staff_geriatrician" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Randomized Clinical Trial  staff_multidisc" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Randomized Clinical Trial  staff_supplement" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Randomized Clinical Trial  staff_treatplan" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Randomized Clinical Trial  staff_other" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td></tr>
+    <tr><td headers="Various — Randomized Clinical Trial  study_l" class="gt_row gt_left gt_striped"><div class="gt_from_md"><p><a href="evidence_tables.html#16605">Partridge 2017</a></p>
+</div></td>
+<td headers="Various — Randomized Clinical Trial  kq1_eras" class="gt_row gt_left gt_striped"></td>
+<td headers="Various — Randomized Clinical Trial  gen_blood" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Various — Randomized Clinical Trial  gen_comp" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Various — Randomized Clinical Trial  gen_multi" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Various — Randomized Clinical Trial  gen_comorbid" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Various — Randomized Clinical Trial  gen_nutrition" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Various — Randomized Clinical Trial  gen_other" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Various — Randomized Clinical Trial  kq1_frail" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="Various — Randomized Clinical Trial  kq1_cog" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="Various — Randomized Clinical Trial  kq1_phys_func" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="Various — Randomized Clinical Trial  kq1_psych" class="gt_row gt_left gt_striped" style="text-align: right; color: #A93226;"></td>
+<td headers="Various — Randomized Clinical Trial  pt_nutr" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Randomized Clinical Trial  pt_mobility" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Randomized Clinical Trial  pt_surgery" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Randomized Clinical Trial  pt_social" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Randomized Clinical Trial  pt_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Randomized Clinical Trial  staff_comorbid" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Randomized Clinical Trial  staff_inappmed" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Randomized Clinical Trial  staff_geriatrician" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Randomized Clinical Trial  staff_multidisc" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Randomized Clinical Trial  staff_supplement" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Randomized Clinical Trial  staff_treatplan" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Randomized Clinical Trial  staff_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td></tr>
+    <tr><td headers="Various — Randomized Clinical Trial  study_l" class="gt_row gt_left"><div class="gt_from_md"><p><a href="evidence_tables.html#5516">Wang 2020c</a></p>
+</div></td>
+<td headers="Various — Randomized Clinical Trial  kq1_eras" class="gt_row gt_left"></td>
+<td headers="Various — Randomized Clinical Trial  gen_blood" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Various — Randomized Clinical Trial  gen_comp" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Various — Randomized Clinical Trial  gen_multi" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Various — Randomized Clinical Trial  gen_comorbid" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Various — Randomized Clinical Trial  gen_nutrition" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Various — Randomized Clinical Trial  gen_other" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Various — Randomized Clinical Trial  kq1_frail" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="Various — Randomized Clinical Trial  kq1_cog" class="gt_row gt_left" style="color: #A93226;">&nbsp;●</td>
+<td headers="Various — Randomized Clinical Trial  kq1_phys_func" class="gt_row gt_left" style="color: #A93226;">&nbsp;●</td>
+<td headers="Various — Randomized Clinical Trial  kq1_psych" class="gt_row gt_left" style="text-align: right; color: #A93226;"></td>
+<td headers="Various — Randomized Clinical Trial  pt_nutr" class="gt_row gt_left" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Various — Randomized Clinical Trial  pt_mobility" class="gt_row gt_left" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Various — Randomized Clinical Trial  pt_surgery" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Randomized Clinical Trial  pt_social" class="gt_row gt_left" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Various — Randomized Clinical Trial  pt_other" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Randomized Clinical Trial  staff_comorbid" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Randomized Clinical Trial  staff_inappmed" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Randomized Clinical Trial  staff_geriatrician" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Randomized Clinical Trial  staff_multidisc" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Randomized Clinical Trial  staff_supplement" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Randomized Clinical Trial  staff_treatplan" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Randomized Clinical Trial  staff_other" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td></tr>
+    <tr class="gt_group_heading_row">
+      <th colspan="24" class="gt_group_heading" style="font-weight: bold;" scope="colgroup" id="Various — Before-After/Time Series">Various — Before-After/Time Series</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="Various — Before-After/Time Series  study_l" class="gt_row gt_left gt_striped"><div class="gt_from_md"><p><a href="evidence_tables.html#16539">Bakker 2014</a></p>
+</div></td>
+<td headers="Various — Before-After/Time Series  kq1_eras" class="gt_row gt_left gt_striped"></td>
+<td headers="Various — Before-After/Time Series  gen_blood" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  gen_comp" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Various — Before-After/Time Series  gen_multi" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Various — Before-After/Time Series  gen_comorbid" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  gen_nutrition" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Various — Before-After/Time Series  gen_other" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  kq1_frail" class="gt_row gt_left gt_striped" style="color: #A93226;">&nbsp;●</td>
+<td headers="Various — Before-After/Time Series  kq1_cog" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="Various — Before-After/Time Series  kq1_phys_func" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="Various — Before-After/Time Series  kq1_psych" class="gt_row gt_left gt_striped" style="text-align: right; color: #A93226;"></td>
+<td headers="Various — Before-After/Time Series  pt_nutr" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Various — Before-After/Time Series  pt_mobility" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Various — Before-After/Time Series  pt_surgery" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Before-After/Time Series  pt_social" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Various — Before-After/Time Series  pt_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Before-After/Time Series  staff_comorbid" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Before-After/Time Series  staff_inappmed" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Before-After/Time Series  staff_geriatrician" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Before-After/Time Series  staff_multidisc" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Before-After/Time Series  staff_supplement" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Before-After/Time Series  staff_treatplan" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Before-After/Time Series  staff_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td></tr>
+    <tr><td headers="Various — Before-After/Time Series  study_l" class="gt_row gt_left"><div class="gt_from_md"><p><a href="evidence_tables.html#2736">Ernst 2014</a></p>
+</div></td>
+<td headers="Various — Before-After/Time Series  kq1_eras" class="gt_row gt_left"></td>
+<td headers="Various — Before-After/Time Series  gen_blood" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  gen_comp" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  gen_multi" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  gen_comorbid" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  gen_nutrition" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  gen_other" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Various — Before-After/Time Series  kq1_frail" class="gt_row gt_left" style="color: #A93226;">&nbsp;●</td>
+<td headers="Various — Before-After/Time Series  kq1_cog" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="Various — Before-After/Time Series  kq1_phys_func" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="Various — Before-After/Time Series  kq1_psych" class="gt_row gt_left" style="text-align: right; color: #A93226;"></td>
+<td headers="Various — Before-After/Time Series  pt_nutr" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Before-After/Time Series  pt_mobility" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Before-After/Time Series  pt_surgery" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Before-After/Time Series  pt_social" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Before-After/Time Series  pt_other" class="gt_row gt_left" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Various — Before-After/Time Series  staff_comorbid" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Before-After/Time Series  staff_inappmed" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Before-After/Time Series  staff_geriatrician" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Before-After/Time Series  staff_multidisc" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Before-After/Time Series  staff_supplement" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Before-After/Time Series  staff_treatplan" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Before-After/Time Series  staff_other" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td></tr>
+    <tr><td headers="Various — Before-After/Time Series  study_l" class="gt_row gt_left gt_striped"><div class="gt_from_md"><p><a href="evidence_tables.html#1313">Hall 2017</a></p>
+</div></td>
+<td headers="Various — Before-After/Time Series  kq1_eras" class="gt_row gt_left gt_striped"></td>
+<td headers="Various — Before-After/Time Series  gen_blood" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  gen_comp" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  gen_multi" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  gen_comorbid" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  gen_nutrition" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  gen_other" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  kq1_frail" class="gt_row gt_left gt_striped" style="color: #A93226;">&nbsp;●</td>
+<td headers="Various — Before-After/Time Series  kq1_cog" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="Various — Before-After/Time Series  kq1_phys_func" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="Various — Before-After/Time Series  kq1_psych" class="gt_row gt_left gt_striped" style="text-align: right; color: #A93226;"></td>
+<td headers="Various — Before-After/Time Series  pt_nutr" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Before-After/Time Series  pt_mobility" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Before-After/Time Series  pt_surgery" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Various — Before-After/Time Series  pt_social" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Before-After/Time Series  pt_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Various — Before-After/Time Series  staff_comorbid" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Before-After/Time Series  staff_inappmed" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Before-After/Time Series  staff_geriatrician" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Before-After/Time Series  staff_multidisc" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Before-After/Time Series  staff_supplement" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Before-After/Time Series  staff_treatplan" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Before-After/Time Series  staff_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td></tr>
+    <tr><td headers="Various — Before-After/Time Series  study_l" class="gt_row gt_left"><div class="gt_from_md"><p><a href="evidence_tables.html#2873">Kratz 2015</a></p>
+</div></td>
+<td headers="Various — Before-After/Time Series  kq1_eras" class="gt_row gt_left"></td>
+<td headers="Various — Before-After/Time Series  gen_blood" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  gen_comp" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  gen_multi" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  gen_comorbid" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  gen_nutrition" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  gen_other" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  kq1_frail" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="Various — Before-After/Time Series  kq1_cog" class="gt_row gt_left" style="color: #A93226;">&nbsp;●</td>
+<td headers="Various — Before-After/Time Series  kq1_phys_func" class="gt_row gt_left" style="color: #A93226;">&nbsp;●</td>
+<td headers="Various — Before-After/Time Series  kq1_psych" class="gt_row gt_left" style="text-align: right; color: #A93226;"></td>
+<td headers="Various — Before-After/Time Series  pt_nutr" class="gt_row gt_left" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Various — Before-After/Time Series  pt_mobility" class="gt_row gt_left" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Various — Before-After/Time Series  pt_surgery" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Before-After/Time Series  pt_social" class="gt_row gt_left" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Various — Before-After/Time Series  pt_other" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Before-After/Time Series  staff_comorbid" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Before-After/Time Series  staff_inappmed" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Before-After/Time Series  staff_geriatrician" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Before-After/Time Series  staff_multidisc" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Before-After/Time Series  staff_supplement" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Before-After/Time Series  staff_treatplan" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Before-After/Time Series  staff_other" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td></tr>
+    <tr><td headers="Various — Before-After/Time Series  study_l" class="gt_row gt_left gt_striped"><div class="gt_from_md"><p><a href="evidence_tables.html#11264">Lester 2022</a></p>
+</div></td>
+<td headers="Various — Before-After/Time Series  kq1_eras" class="gt_row gt_left gt_striped"></td>
+<td headers="Various — Before-After/Time Series  gen_blood" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  gen_comp" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  gen_multi" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Various — Before-After/Time Series  gen_comorbid" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Various — Before-After/Time Series  gen_nutrition" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Various — Before-After/Time Series  gen_other" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Various — Before-After/Time Series  kq1_frail" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="Various — Before-After/Time Series  kq1_cog" class="gt_row gt_left gt_striped" style="color: #A93226;">&nbsp;●</td>
+<td headers="Various — Before-After/Time Series  kq1_phys_func" class="gt_row gt_left gt_striped" style="color: #A93226;">&nbsp;●</td>
+<td headers="Various — Before-After/Time Series  kq1_psych" class="gt_row gt_left gt_striped" style="text-align: right; color: #A93226;"></td>
+<td headers="Various — Before-After/Time Series  pt_nutr" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Various — Before-After/Time Series  pt_mobility" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Before-After/Time Series  pt_surgery" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Before-After/Time Series  pt_social" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Before-After/Time Series  pt_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Before-After/Time Series  staff_comorbid" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Before-After/Time Series  staff_inappmed" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Before-After/Time Series  staff_geriatrician" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Before-After/Time Series  staff_multidisc" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Before-After/Time Series  staff_supplement" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Before-After/Time Series  staff_treatplan" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Before-After/Time Series  staff_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td></tr>
+    <tr><td headers="Various — Before-After/Time Series  study_l" class="gt_row gt_left"><div class="gt_from_md"><p><a href="evidence_tables.html#16591">McDonald 2018</a></p>
+</div></td>
+<td headers="Various — Before-After/Time Series  kq1_eras" class="gt_row gt_left">&nbsp;&nbsp;x</td>
+<td headers="Various — Before-After/Time Series  gen_blood" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  gen_comp" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  gen_multi" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  gen_comorbid" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Various — Before-After/Time Series  gen_nutrition" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Various — Before-After/Time Series  gen_other" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Various — Before-After/Time Series  kq1_frail" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="Various — Before-After/Time Series  kq1_cog" class="gt_row gt_left" style="color: #A93226;">&nbsp;●</td>
+<td headers="Various — Before-After/Time Series  kq1_phys_func" class="gt_row gt_left" style="color: #A93226;">&nbsp;●</td>
+<td headers="Various — Before-After/Time Series  kq1_psych" class="gt_row gt_left" style="text-align: right; color: #A93226;">&nbsp;●</td>
+<td headers="Various — Before-After/Time Series  pt_nutr" class="gt_row gt_left" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Various — Before-After/Time Series  pt_mobility" class="gt_row gt_left" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Various — Before-After/Time Series  pt_surgery" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Before-After/Time Series  pt_social" class="gt_row gt_left" style="text-align: right; color: #104E8B;">&nbsp;○</td>
+<td headers="Various — Before-After/Time Series  pt_other" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Before-After/Time Series  staff_comorbid" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Before-After/Time Series  staff_inappmed" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Before-After/Time Series  staff_geriatrician" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Before-After/Time Series  staff_multidisc" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Before-After/Time Series  staff_supplement" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Before-After/Time Series  staff_treatplan" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Before-After/Time Series  staff_other" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td></tr>
+    <tr><td headers="Various — Before-After/Time Series  study_l" class="gt_row gt_left gt_striped"><div class="gt_from_md"><p><a href="evidence_tables.html#1294">Richter 2005</a></p>
+</div></td>
+<td headers="Various — Before-After/Time Series  kq1_eras" class="gt_row gt_left gt_striped"></td>
+<td headers="Various — Before-After/Time Series  gen_blood" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  gen_comp" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  gen_multi" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  gen_comorbid" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  gen_nutrition" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Various — Before-After/Time Series  gen_other" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Various — Before-After/Time Series  kq1_frail" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="Various — Before-After/Time Series  kq1_cog" class="gt_row gt_left gt_striped" style="color: #A93226;">&nbsp;●</td>
+<td headers="Various — Before-After/Time Series  kq1_phys_func" class="gt_row gt_left gt_striped" style="color: #A93226;">&nbsp;●</td>
+<td headers="Various — Before-After/Time Series  kq1_psych" class="gt_row gt_left gt_striped" style="text-align: right; color: #A93226;">&nbsp;●</td>
+<td headers="Various — Before-After/Time Series  pt_nutr" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Before-After/Time Series  pt_mobility" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Before-After/Time Series  pt_surgery" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Before-After/Time Series  pt_social" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Before-After/Time Series  pt_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Various — Before-After/Time Series  staff_comorbid" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Before-After/Time Series  staff_inappmed" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Before-After/Time Series  staff_geriatrician" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Before-After/Time Series  staff_multidisc" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Before-After/Time Series  staff_supplement" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Various — Before-After/Time Series  staff_treatplan" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Various — Before-After/Time Series  staff_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td></tr>
+    <tr class="gt_group_heading_row">
+      <th colspan="24" class="gt_group_heading" style="font-weight: bold;" scope="colgroup" id="Neuro — Before-After/Time Series">Neuro — Before-After/Time Series</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="Neuro — Before-After/Time Series  study_l" class="gt_row gt_left"><div class="gt_from_md"><p><a href="evidence_tables.html#1189">Adogwa 2017</a></p>
+</div></td>
+<td headers="Neuro — Before-After/Time Series  kq1_eras" class="gt_row gt_left"></td>
+<td headers="Neuro — Before-After/Time Series  gen_blood" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Neuro — Before-After/Time Series  gen_comp" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Neuro — Before-After/Time Series  gen_multi" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Neuro — Before-After/Time Series  gen_comorbid" class="gt_row gt_left" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Neuro — Before-After/Time Series  gen_nutrition" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Neuro — Before-After/Time Series  gen_other" class="gt_row gt_left" style="color: #0E6655;"></td>
+<td headers="Neuro — Before-After/Time Series  kq1_frail" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="Neuro — Before-After/Time Series  kq1_cog" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="Neuro — Before-After/Time Series  kq1_phys_func" class="gt_row gt_left" style="color: #A93226;"></td>
+<td headers="Neuro — Before-After/Time Series  kq1_psych" class="gt_row gt_left" style="text-align: right; color: #A93226;"></td>
+<td headers="Neuro — Before-After/Time Series  pt_nutr" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Neuro — Before-After/Time Series  pt_mobility" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Neuro — Before-After/Time Series  pt_surgery" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Neuro — Before-After/Time Series  pt_social" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Neuro — Before-After/Time Series  pt_other" class="gt_row gt_left" style="text-align: right; color: #104E8B;"></td>
+<td headers="Neuro — Before-After/Time Series  staff_comorbid" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Neuro — Before-After/Time Series  staff_inappmed" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Neuro — Before-After/Time Series  staff_geriatrician" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Neuro — Before-After/Time Series  staff_multidisc" class="gt_row gt_left" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Neuro — Before-After/Time Series  staff_supplement" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Neuro — Before-After/Time Series  staff_treatplan" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td>
+<td headers="Neuro — Before-After/Time Series  staff_other" class="gt_row gt_left" style="text-align: right; color: #F39C12;"></td></tr>
+    <tr class="gt_group_heading_row">
+      <th colspan="24" class="gt_group_heading" style="font-weight: bold;" scope="colgroup" id="Urol — Before-After/Time Series">Urol — Before-After/Time Series</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="Urol — Before-After/Time Series  study_l" class="gt_row gt_left gt_striped"><div class="gt_from_md"><p><a href="evidence_tables.html#2108">Braude 2017</a></p>
+</div></td>
+<td headers="Urol — Before-After/Time Series  kq1_eras" class="gt_row gt_left gt_striped"></td>
+<td headers="Urol — Before-After/Time Series  gen_blood" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Urol — Before-After/Time Series  gen_comp" class="gt_row gt_left gt_striped" style="color: #0E6655;">&nbsp;✓</td>
+<td headers="Urol — Before-After/Time Series  gen_multi" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Urol — Before-After/Time Series  gen_comorbid" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Urol — Before-After/Time Series  gen_nutrition" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Urol — Before-After/Time Series  gen_other" class="gt_row gt_left gt_striped" style="color: #0E6655;"></td>
+<td headers="Urol — Before-After/Time Series  kq1_frail" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="Urol — Before-After/Time Series  kq1_cog" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="Urol — Before-After/Time Series  kq1_phys_func" class="gt_row gt_left gt_striped" style="color: #A93226;"></td>
+<td headers="Urol — Before-After/Time Series  kq1_psych" class="gt_row gt_left gt_striped" style="text-align: right; color: #A93226;"></td>
+<td headers="Urol — Before-After/Time Series  pt_nutr" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Urol — Before-After/Time Series  pt_mobility" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Urol — Before-After/Time Series  pt_surgery" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Urol — Before-After/Time Series  pt_social" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Urol — Before-After/Time Series  pt_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #104E8B;"></td>
+<td headers="Urol — Before-After/Time Series  staff_comorbid" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Urol — Before-After/Time Series  staff_inappmed" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Urol — Before-After/Time Series  staff_geriatrician" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Urol — Before-After/Time Series  staff_multidisc" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Urol — Before-After/Time Series  staff_supplement" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td>
+<td headers="Urol — Before-After/Time Series  staff_treatplan" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;">&nbsp;￭</td>
+<td headers="Urol — Before-After/Time Series  staff_other" class="gt_row gt_left gt_striped" style="text-align: right; color: #F39C12;"></td></tr>
+  </tbody>
+  
+  
+</table>
 </div>
 </div>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">General</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Targeted</a></li></ul>
-<div class="tab-content">
-<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 1</code></pre>
 </div>
-</div>
-</div>
-<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
+<!-- ::: panel-tabset -->
+<!-- ## General -->
+<!-- ```{r general} -->
+<!-- x <- 1 -->
+<!-- x -->
+<!-- ``` -->
+<!-- ## Targeted -->
+<!-- ```{r specific} -->
+<!-- x <- 2 -->
+<!-- x -->
+<!-- ``` -->
+<!-- ::: -->
 </section>
 <section id="references" class="level2">
 
@@ -3654,7 +5000,7 @@ div.csl-indent {
 
 </section>
 
-<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References ⦁</h2><div id="refs" class="references csl-bib-body" role="list">
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body" role="list">
 <div id="ref-1189" class="csl-entry" role="listitem">
 <div class="csl-left-margin">1. </div><div class="csl-right-inline">Adogwa O, Elsamadicy AA, Vuong VD, et al. Geriatric comanagement reduces perioperative complications and shortens duration of hospital stay after lumbar spine surgery: A prospective single-institution experience. <em>J Neurosurg Spine</em>. 2017;27(6):670-675. doi:<a href="https://doi.org/10.3171/2017.5.Spine17199">10.3171/2017.5.Spine17199</a></div>
 </div>

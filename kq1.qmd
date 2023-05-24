@@ -217,185 +217,120 @@ study_char_dat |>
 
 ```
 
-## **Comparators**
+## **Expanded Evaluation**
 
-```{r}
-#| eval: false
+<font size = 4> `r table_ref()` Components of expanded preoperative evaluation and interventions prompted. </font>
+
+```{r comparators}
+#| eval: true
 expanded_dat <- study_arm_dat |>
   filter(refid %in% kq1_refid) |>
-  select(refid, year, study, study_l, arm_id, kq1_eras, gen_blood, gen_comp, gen_multi, gen_comorbid, gen_nutrition, gen_other, gen_unspec, kq1_frail, kq1_cog, kq1_phys_func, kq1_psych, pt_nutr, pt_mobility, pt_surgery, pt_social, pt_other, staff_comorbid, staff_inappmed, staff_geriatrician, staff_multidisc, staff_supplement, staff_treatplan, staff_other) |>
+  select(refid, year, study, study_l, arm_id, arm_kq1_eval, kq1_eras, gen_blood, gen_comp, gen_multi, gen_comorbid, gen_nutrition, gen_other, gen_unspec, kq1_frail, kq1_cog, kq1_phys_func, kq1_psych, pt_nutr, pt_mobility, pt_surgery, pt_social, pt_other, staff_comorbid, staff_inappmed, staff_geriatrician, staff_multidisc, staff_supplement, staff_treatplan, staff_other) |>
+  left_join(surgs |> select(refid, surgs_single), by = "refid") |> 
+  left_join(study_char_dat |> select(refid, design_f_lab, design_f_abbrev), by = "refid") |> 
   mutate(
-    across(gen_blood:gen_unspec, ~ notna_to_x(.x, symbol = "\U2713")),
-    across(kq1_frail:kq1_psych, ~ notna_to_x(.x, symbol = "\U25CF")),
-    across(pt_nutr:pt_other, ~ notna_to_x(.x, symbol = "\U25CB")),
-    across(staff_comorbid:staff_other, ~ notna_to_x(.x, symbol = "\UFFED")),
-    kq1_eras = notna_to_x(kq1_eras, symbol = "x")
-  )
-
-complicate_data <- readxl::read_xlsx("data/CHOComplicationList_012521.xlsx", range = "A5:P35") %>% 
-  clean_names() %>% 
-  mutate(across(c(ssi:pulm, rena:anastomotic_leak, bleed:oth_infect), ~ recode(., X = "\U00D7")))
-
-compl_names <- c("SSI", "GU", "CV", "GI", "Pulm", "Anes", "Renal", "Meds", "Leak", "Op", "Bleed", "TE", "CVD", "Infect")
-cats <-  c("Surgical Site Infection", "Genitourinary", "Cardiovascular", "Gastrointestinal", "Respiratory", "Anesthesia", "Fluid/electrolyte/renal", "Medication", "Anastomotic leak", "Intraoperative", "Bleeding", "Thromboembolic", "Cerebrovascular", "Other infection")
-compl_foot <- paste0(compl_names, ": ", tolower(cats), collapse = "; ")
-compl_foot <- paste0(compl_foot, ".")
-
-
-library(kableExtra)
-opt_font <-  c("Source Sans Pro")
-opt_boot <- c("striped", "hover", "condensed")
-
-
-dt <- mtcars[1:5, 1:6]
-
-kbl(dt, booktabs = T, align = "c") %>%
-kable_styling(latex_options = "striped", full_width = F) %>%
-row_spec(0, angle = -45)
-
-dt <- mtcars[1:5, 1:6]
-
-kbl(expanded_dat, booktabs = T, align = "c") %>%
-kable_styling(latex_options = "striped", full_width = F) |> 
-row_spec(0, angle = -45) |> 
-# kable_styling(bootstrap_options = opt_boot) |> 
-kable_classic(full_width = FALSE, html_font = opt_font) 
-
-
-expanded_dat |>
-  select(study, kq1_eras:gen_unspec) |>
-  kbl(booktabs = T, align =  c("l", rep("c", 8)), escape = FALSE, col.names = c(rep(" ", 9))) |> 
-  column_spec(1, width = "12em") |> 
-  column_spec(2:9, width = "5em") |> 
-  # row_spec(0, angle = -90) |> 
-  add_header_above(c("Study", "kq1_eras", "gen_blood", "gen_comp", "gen_multi", "gen_como", "gen_nutri", "gen_other", "gen_unspe"),  line = FALSE, angle = -90, line_sep = 1,
-                   extra_css =  "padding-top: 60px; line-height: 5; text-align: center;") |> 
-  kable_styling(bootstrap_options = opt_boot) |> 
-  kable_classic(full_width = FALSE, html_font = opt_font) 
-
-
-, position = "right", "hover")
-
-
-kable_styling(latex_options = "striped", full_width = F) %>%
-  
-
-  #add_header_above(c(" " = 1, "Surgical Site Infection" = 1, "Genitourinary" = 1, "Cardiovascular" = 1, "Gastrointestinal" = 1, "Respiratory" = 1, "Anesthesia" = 1, "Fluid/electrolyte/renal" = 1, "Medication" = 1, "Anastomotic leak" = 1, "Intraoperative" = 1, "Bleeding" =1, "Thromboembolic" = 1, "Cerebrovascular" = 1, 	"Other infection" = 1), line = FALSE, angle = -90, align = "initial", line_sep = 20) %>% 
-  # add_header_above(c(" " = 1, compl_names), line = FALSE, angle = -45, align = "c", line_sep = 1) %>% 
-  # kable_classic(full_width = TRUE, html_font = opt_font, position = "right", "hover") %>% 
-
-column_spec(1, width = "9em") %>%  
-  column_spec(2:15, width = "2em") %>% 
-  pack_top(., "Adult, Surgical", 1, 30) %>% 
-  pack_sub(., "RCT", 1, 26) %>%
-  pack_sub(., "Nonrandomized Trial", 27, 28) %>%
-  pack_sub(., "Prospective Cohort", 29, 29) %>%
-  pack_sub(., "Case-Control", 30, 30) %>%
-  footnote(general = compl_foot,
-           # alphabet = c(""),
-           general_title = "",  
-           footnote_as_chunk = FALSE)
-table_n <- tab_inc()
-
-expanded_dat |>
-  select(study, kq1_eras:gen_unspec) |>
-  gt(id = "one") |>
-  gt_theme_mg() |>
-  rm_stubhead() |> 
-  tab_options(
-    column_labels.padding = px(20),
-    column_labels.padding.horizontal = px(0)
-  ) |>
-  cols_align("center", everything()) |>
-  cols_width(
-    study ~ px(165),
-    everything() ~ px(45)
+    arm = ifelse(arm_kq1_eval == "eval_expand", "Exp", "Std"),
+    across(gen_blood:gen_unspec, ~ notna_to_x(.x, symbol = " \U2713")),
+    across(kq1_frail:kq1_psych, ~ notna_to_x(.x, symbol = " \U25CF")),
+    across(pt_nutr:pt_other, ~ notna_to_x(.x, symbol = " \U25CB")),
+    across(staff_comorbid:staff_other, ~ notna_to_x(.x, symbol = " \UFFED")),
+    kq1_eras = ifelse(kq1_eras == "eras_yes", "  x", NA),
+    surg_design = paste0(surgs_single, " — ", design_f_lab)
   ) 
 
+groups_kq1 <- c("Cardiac — Randomized Clinical Trial", "Cardiac — Before-After/Time Series", "GI/Abd — Randomized Clinical Trial", "GI/Abd — Before-After/Time Series", "GI/Abd — Retrospective Cohort", "Ortho — Before-After/Time Series", "Ortho — Randomized Clinical Trial", "Various — Randomized Clinical Trial", "Various — Before-After/Time Series", "Neuro — Before-After/Time Series", "Urol — Before-After/Time Series") 
 
+expanded_dat |> 
+  # filter(refid == 12826) |>
+  arrange(study, arm_id) |> 
+  select(refid, study, study_l, arm_id, arm, surg_design, kq1_eras:staff_other) |> 
+  mutate(study = ifelse(study == "Tarazona-Santabalbina 2019", "T-Santabalbina 2019", study),
+         study_l = str_replace(study_l, "Tarazona-", "T-")) |> 
+  # mutate(study_l = ifelse(row_number() > 1, "", study_l),
+  #        .by = study) |>
+  filter(if_any(kq1_eras:kq1_psych, ~ !is.na(.x))) |>
+  select(-arm_id) |> 
+  distinct() |>
+  group_by(surg_design) |> 
+  gt(id = "one") |>
+  row_group_order(groups = groups_kq1) |>
+  gt_theme_mg() |>
+  sub_missing(columns = everything(), missing_text = "") |>
+  cols_hide(c(refid, study, gen_unspec, arm)) |>
+  fmt_markdown(columns = c(study_l)) |>
+  cols_label(
+    study_l              = md("Study"),
+    # arm                  = "Arm",
+    # kq1_eras             = md(vert_lab_fun("ERAS")),
+    kq1_eras             = md("<vertical-text>ERAS</vertical-text>"),
+    gen_blood            = md(vert_lab_fun("Blood work")),
+    gen_comp             = md(vert_lab_fun("CGA")),
+    gen_multi            = md(vert_lab_fun("Multidisciplinary")),
+    gen_comorbid         = md(vert_lab_fun("Meds/Comorbidity")),
+    gen_nutrition        = md(vert_lab_fun("Nutrition")),
+    gen_other            = md(vert_lab_fun("Other")),
+    # gen_unspec           = md(vert_lab_fun("No detail")),
+    kq1_frail            = md(vert_lab_fun("Frailty")), 
+    kq1_cog              = md(vert_lab_fun("Cognitive")), 
+    kq1_phys_func        = md(vert_lab_fun("Physical Function")), 
+    kq1_psych            = md(vert_lab_fun("Psychosocial")),
+    pt_nutr              = md(vert_lab_fun("Nutrition")),
+    pt_mobility          = md(vert_lab_fun("Physical activity")),
+    pt_surgery           = md(vert_lab_fun("Procedure")),
+    pt_social            = md(vert_lab_fun("Social ties")),
+    pt_other             = md(vert_lab_fun("Other")),
+    staff_comorbid       = md(vert_lab_fun("Rx comorbidities")),
+    staff_inappmed       = md(vert_lab_fun("Deprescribing")),
+    staff_geriatrician   = md(vert_lab_fun("Geriatric visits")),
+    staff_multidisc      = md(vert_lab_fun("Multidisciplinary")),
+    staff_supplement     = md(vert_lab_fun("Nutritional suppl")),
+    staff_treatplan      = md(vert_lab_fun("Treatment plan")),  
+    staff_other          = md(vert_lab_fun("Other")),
+  ) |> 
+  cols_width(
+    study_l        ~ px(165),
+    kq1_eras:staff_other ~ px(25),
+  ) |> 
+  tab_spanner(label = "General", columns = c(gen_blood:gen_unspec), level = 1) |>
+  tab_spanner(label = "Targeted", columns = c(kq1_frail:kq1_psych), level = 1) |>
+  tab_spanner(label = "Assessments", columns = c(gen_blood:kq1_psych), level = 2) |>
+  tab_spanner(label = "Patient Education", columns = c(pt_nutr:pt_other), level = 1) |>
+  tab_spanner(label = "Staff Interventions", columns = c(staff_comorbid:staff_other), level = 1) |>
+  tab_spanner(label = "Interventions", columns = c(pt_nutr:staff_other), level = 2) |>
+  tab_style(style = cell_text(align = "right"), locations = cells_column_labels(columns = c(kq1_eras:staff_other))) |> 
+  tab_style(style = cell_text(align = "right"), locations = cells_body(columns = c(kq1_psych:staff_other))) |> 
+  tab_style(style = list(cell_text(color = color_1)), locations = cells_column_labels(columns = c(gen_blood:gen_other))) |> 
+  tab_style(style = list(cell_text(color = color_2)), locations = cells_column_labels(columns = c(kq1_frail:kq1_psych))) |> 
+  tab_style(style = list(cell_text(color = color_3)), locations = cells_column_labels(columns = c(pt_nutr:pt_other))) |> 
+  tab_style(style = list(cell_text(color = color_4)), locations = cells_column_labels(columns = c(staff_comorbid:staff_other))) |> 
+  tab_style(style = list(cell_text(color = color_1)), locations = cells_body(columns = c(gen_blood:gen_other), rows = everything())) |> 
+  tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(kq1_frail:kq1_psych), rows = everything())) |> 
+  tab_style(style = list(cell_text(color = color_3)), locations = cells_body(columns = c(pt_nutr:pt_other), rows = everything())) |> 
+  tab_style(style = list(cell_text(color = color_4)), locations = cells_body(columns = c(staff_comorbid:staff_other), rows = everything())) |> 
+  tab_style(style = list(cell_text(color = color_1)), locations = cells_column_spanners(spanners = "General")) |> 
+  tab_style(style = list(cell_text(color = color_2)), locations = cells_column_spanners(spanners = "Targeted")) |> 
+  tab_style(style = list(cell_text(color = color_3)), locations = cells_column_spanners(spanners = "Patient Education")) |> 
+  tab_style(style = list(cell_text(color = color_4)), locations = cells_column_spanners(spanners = "Staff Interventions"))
 
-
-  opt_css(
-    css = "
-    #one .gt_col_heading {
-      text-align: center;
-      transform: rotate(-90deg);
-      font-weight: bold;
-      vertical-align: bottom;
-      line-height: 40px;
-    }
-    "
-  )
-
-th.rotate {
-  /* Something you can count on */
-  height: 140px;
-  white-space: nowrap;
-}
-
-
-
-
-<th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="study">study</th>
-
-study_arm_dat |> select(starts_with("gen_"))
-
-writexl::write_xlsx(expanded_dat, "/Users/mgrant/Desktop/expanded_dat.xlsx")
 ```
 
-::: panel-tabset
-## General
+<!-- ::: panel-tabset -->
+<!-- ## General -->
 
-```{r general}
-x <- 1
-x
+<!-- ```{r general} -->
+<!-- x <- 1 -->
+<!-- x -->
 
-```
+<!-- ``` -->
 
-## Targeted
+<!-- ## Targeted -->
 
-```{r specific}
-x <- 2
-x
+<!-- ```{r specific} -->
+<!-- x <- 2 -->
+<!-- x -->
 
-```
-:::
+<!-- ``` -->
+<!-- ::: -->
 
 ## **References** {#references}
 
-<body>
-
-::: vertical-text
-```         
-doggys
-```
-:::
-
-</body>
-
-
-<vertical-text>mark  </vertical-text> 
-
-change
-
-
-```{r}
-#| eval: false
-library(flextable)
-
-iris |> 
-  slice(1:5) |> 
-  rename()
-  gt() |> 
-  gt_theme_mg()
-
-ft <- flextable(iris)
-ft <- rotate(ft, rotation = "tbrl", part = "header", align = "center")
-ft <- align(ft, align = "right")
-max_width <- max(dim_pretty(ft, part = "header")$widths)
-ft <- height(ft, height = max_width, part = "header")
-
-print(ft, preview = "html")
-
-
-```
