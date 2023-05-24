@@ -376,6 +376,8 @@ doggys
 
 <vertical-text>mark  </vertical-text> 
 
+change
+
 
 ```{r}
 #| eval: false
@@ -394,8 +396,6 @@ max_width <- max(dim_pretty(ft, part = "header")$widths)
 ft <- height(ft, height = max_width, part = "header")
 
 print(ft, preview = "html")
-
-
 
 
 ```
