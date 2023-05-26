@@ -1405,6 +1405,7 @@ satis_dat_gt <- dichot_dat |>
   filter(if_any(satis_n:satis_95high, ~ !is.na(.x))) |>
   select(!c(d_satisfaction, satis_pval:satis_95high)) |>
   mutate(
+    arm_n = ifelse(!is.na(satis_update_arm_n), satis_update_arm_n, arm_n),
     n_percent = n_per_fun(satis_n, arm_n, n_sig_dig = 1),
     bar = case_when(
       str_detect(arm, "Gen") ~ bar_prop(satis_n / arm_n * 100, "#969696"),
@@ -1444,21 +1445,25 @@ satis_dat_gt <- satis_dat_gt |>
     rd_ci = ifelse(!is.na(ref_n), rd_per_ci_fun(satis_n, arm_n, ref_n, ref_arm_n, digits = 1), "—")
   )
   
-satis_dat_gt |> 
- mutate(study_l = ifelse(row_number() > 1, "", study_l), 
-        surgs_noabbr_f = ifelse(row_number() > 1, "", as.character(surgs_noabbr_f)), 
-        surgs_noabbr_f = ifelse(str_detect(surgs_noabbr_f, "Gast"), "GI/Abdominal", surgs_noabbr_f), 
-        asa_ps_incl = ifelse(row_number() > 1, "", asa_ps_incl), 
-        .by = study) |>
+satis_dat_gt |>
+  mutate(
+    study_l = ifelse(row_number() > 1, "", study_l),
+    # surgs_noabbr_f = ifelse(row_number() > 1, "", as.character(surgs_noabbr_f)),
+    # surgs_noabbr_f = ifelse(str_detect(surgs_noabbr_f, "Gast"), "GI/Abdominal", surgs_noabbr_f),
+    asa_ps_incl = ifelse(row_number() > 1, "", asa_ps_incl),
+    .by = study
+  ) |>
+  group_by(surgs_noabbr_f) |>
   gt(id = "one") |>
-  cols_hide(c(refid, year, arm_id, study, design_f_lab, satis_n, satis_per, notes_d, ref_arm_n, ref_n)) |>
+  cols_hide(c(refid, year, arm_id, study, design_f_lab, satis_update_arm_n, satis_n, satis_per, notes_d, ref_arm_n, ref_n)) |>
+  row_group_order(groups = c("Orthopedic", "Urologic",  "Neurosurgical", "Vascular", "Other")) |> 
   cols_label(
     study_l          = "Study",
     arm_n            = "N",
     arm              = "Anesth",
     asa_ps_incl      = "PS",
     age_table        = "Age",
-    surgs_noabbr_f   = "Surgery",
+    # surgs_noabbr_f   = "Surgery",
     n_percent        = "N (%)  ",
     bar              = "0 – 100%",
     rd_ci            = "RD (95% CI)"
@@ -1468,30 +1473,32 @@ satis_dat_gt |>
   sub_missing(columns = everything(), missing_text = "") |>
   gt_theme_mg() |>
   cols_width(
-    study_l          ~ px(165),
-    arm_n            ~ px(45),
-    arm              ~ px(80),
-    asa_ps_incl      ~ px(60),
-    age_table        ~ px(80),
-    surgs_noabbr_f   ~ px(100),
-    n_percent        ~ px(100),
-    bar              ~ px(100),
-    rd_ci            ~ px(140),
-  ) |> 
+    study_l ~ px(165),
+    arm_n ~ px(45),
+    arm ~ px(80),
+    asa_ps_incl ~ px(60),
+    age_table ~ px(80),
+    # surgs_noabbr_f   ~ px(100),
+    n_percent ~ px(100),
+    bar ~ px(100),
+    rd_ci ~ px(140),
+  ) |>
   tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
-  tab_style(style = cell_text(align = "left"),        locations = cells_column_labels(columns = c(study, arm))) |> 
-  tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(asa_ps_incl, age_table, rd_ci))) |> 
-  tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c(n_percent))) |> 
-  tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(arm))) |>
-  tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(rd_ci))) |>
-  tab_footnote("Mean (SD).",   locations = cells_column_labels(columns = c(age_table))) |>
-  tab_footnote("Gen: general; Neur: neuraxial; Anesth: anesthetic; ASA PS: ASA Physical Status; RD: risk difference.") |> 
-  tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:n_percent), rows = str_detect(arm, "Neur|Block"))) |> 
-  tab_footnote("Satisfied.",                          locations = cells_body(columns = c(n_percent), rows = str_detect(study, c("Carron|Harsten|Salonia|Apan|Nesek"))), placement = "right") |>
-  tab_footnote("Not specified",                       locations = cells_body(columns = c(n_percent), rows = str_detect(study, c("Xu"))), placement = "right") |>
-  tab_footnote("Very satisfied",                      locations = cells_body(columns = c(n_percent), rows = str_detect(study, c("Nishikawa"))), placement = "right") |> 
-  tab_footnote("Excellent/good",                      locations = cells_body(columns = c(n_percent), rows = str_detect(study, c("Meuret"))), placement = "right") |> 
-  tab_footnote("Very good",                           locations = cells_body(columns = c(n_percent), rows = str_detect(study, c("Ornek"))), placement = "right") 
+  tab_style(style = cell_text(align = "left"), locations = cells_column_labels(columns = c(study, arm))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(asa_ps_incl, age_table, rd_ci))) |>
+  tab_style(style = cell_text(align = "right"), locations = cells_column_labels(columns = c(n_percent))) |>
+  tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(arm))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rd_ci))) |>
+  tab_footnote("Mean (SD).", locations = cells_column_labels(columns = c(age_table))) |>
+  tab_footnote("Gen: general; Neur: neuraxial; Anesth: anesthetic; ASA PS: ASA Physical Status; RD: risk difference.") |>
+  tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:n_percent), rows = str_detect(arm, "Neur|Block"))) |>
+  tab_footnote("Satisfied.", locations = cells_body(columns = c(n_percent), rows = str_detect(study, c("Carron|Harsten|Salonia|Apan|Nesek"))), placement = "right") |>
+  tab_footnote("Not specified", locations = cells_body(columns = c(n_percent), rows = str_detect(study, c("Xu"))), placement = "right") |>
+  tab_footnote("Very satisfied", locations = cells_body(columns = c(n_percent), rows = str_detect(study, c("Nishikawa"))), placement = "right") |>
+  tab_footnote("Excellent/good", locations = cells_body(columns = c(n_percent), rows = str_detect(study, c("Meuret"))), placement = "right") |>
+  tab_footnote("Very good", locations = cells_body(columns = c(n_percent), rows = str_detect(study, c("Ornek"))), placement = "right") |> 
+  tab_footnote("Satisfaction with all aspects of anesthesia care", locations = cells_body(columns = c(n_percent), rows = str_detect(study, c("Neuman"))), placement = "right") 
+  
 
 ```
 
@@ -1509,7 +1516,7 @@ satis_meta <- metabin(satis_n_Neur, arm_n_Neur, satis_n_Gen, arm_n_Gen,
   data = satis_meta_dat,
   studlab = study,
   # cluster = refid,
-  sm = "RD",
+  sm = "RR",
   method = "MH",
   method.tau = "REML",
   hakn = FALSE,
@@ -1524,7 +1531,7 @@ forest(satis_meta,
   label.e = "Regional     ",
   label.c = "General     ",
   rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
-  rightlabs = c("RD", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
+  rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
   just.addcols.right = "right",
   colgap.right = "4mm",
   digits.TE = 3,
@@ -1535,7 +1542,7 @@ forest(satis_meta,
   fs.xlab = 11,
   pooled.events = TRUE,
   pscale = 100,
-  digits = 1, 
+  digits = 2, 
   print.pval.Q = FALSE,
   # xlim = c(0.1, 20),
   xlab = "Favors: Regional                       General       ",
@@ -1543,13 +1550,9 @@ forest(satis_meta,
 )
 
 ```
-<foot_mg> RD: risk difference; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg> 
+<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg> 
 
 <br/>
-
-
-
-
 
 ## **Length of Stay**
 
