@@ -24,26 +24,6 @@ nocite: '@*'
 
 Among older patients undergoing surgery and anesthesia, do dexmedetomidine, ketamine, ramelteon, or melatonin administered during the perioperative period decrease the risk of postoperative delirium or other adverse cognitive outcomes?
 
-<!-- ::: {.callout-note collapse="true" appearance="default" icon="true"} -->
-<!-- ## DRAFT results last updated `r lubridate::now()` -->
-
-<!-- 2023-04-29 added assessment < or ≥3 days subgrouping to delayed neurocognitive recovery; country to LOS; edited colors throughout -->
-
-<!-- 2023-04-20 delayed neurocognitive recovery and neurocognitive disorders pairwise and network meta-analyses added -->
-
-<!-- 2023-04-19 delayed neurocognitive recovery and neurocognitive disorders added (Evered et al. 2018 Anesthesiology nomenclature) -->
-
-<!-- 2023-04-13 mortality and length of stay added -->
-
-<!-- 2023-04-11 delirium incidence completed with updated GRADE and risk of bias assessment conflicts adjudicated -->
-
-<!-- 2023-04-09 added studies from search update 2023-03-17; sensitivity analysis by risk of bias appraisals for delirium -->
-
-<!-- 2023-03-21 added sensitivity analysis according to delirium incidence proportion approximated by maximum daily incidence where incidence proportion was not reported -->
-
-<!-- 2023-03-19 updated dexmedetomidine and melatonin/ramelteon results with 3 additional studies reporting daily, but not overall, incidence proportion -->
-<!-- ::: -->
-
 ```{r read_data}
 #| include: false
 # CODE: * read data
@@ -1177,7 +1157,7 @@ forest(data_meta,
 dex_meta_forest_fun(dex_plac_meta)
 ```
 
-<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <a id="figure-4"></a><br/> `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, dex_plac_refid), "; a secondary outcome in ", prim_sec_out_fun(sec_delirium, dex_plac_refid), ".")`</foot_mg><br/>
+<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <a id="figure-4"></a><br/> `r paste0("Harbord test for small study effects P = ", formatC(temp_metabias$pval, digits = 4, format = "f"), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, dex_plac_refid), "; a secondary outcome in ", prim_sec_out_fun(sec_delirium, dex_plac_refid), ".")`</foot_mg><br/>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()` <a id="figure-china"></a> Dexmedetomidine compared with placebo or no intervention according to reporting incidence proportion (randomized clinical trials). </font>
@@ -2077,7 +2057,7 @@ forest(dex_plac_meta,
 
 ```
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <a id="figure-4"></a><br/> 
-`r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> 
+<!-- `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/>  -->
 `r paste0("Neurocognitive recovery a designated primary outcome in ", prim_sec_out_fun(prim_pocd, dex_meta_dat$refid), "; a secondary outcome in ", prim_sec_out_fun(sec_pocd, dex_meta_dat$refid), ".")`<br/>
 Six trials conducted in China and 1 each in Egypt and Iran.<br/>
 Using odds ratios, pooled OR 0.36 (95% CI, 0.19–0.70; *I*<sup> 2</sup> 44%), prediction interval (0.09–1.45).
