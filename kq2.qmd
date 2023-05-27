@@ -22,8 +22,3 @@ nocite: '@*'
 Among patients older patients anticipating surgery and anesthesia, do interventions targeted at improving physical function, cognition, and nutritional status before surgery ("prehabilitation") improve postoperative outcomes?
 
 ## **References** {#references}
-
-
-
-
-
