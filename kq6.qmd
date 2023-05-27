@@ -499,7 +499,7 @@ dex_by_arm |>
   # opt_css(css = "#one .gt_column_spanner {border-bottom-style: hidden;}") |>
   tab_footnote("GI: gastrointestinal; Abd: abdominal (includes hepatic); Ortho: orthopedic; Various: more that one procedure category; Oralmax: oral and maxillofacial; Ophtho; ophthalmologic; Dex: Dexmedetomidine; Ulin: Ulinastatin; Hal: Haloperidol; Mid: Midazolam; Mid/Prop: Midazolam/propofol; Mid/Seve: Midazolam/sevoflurane; Preg: Pregabalin; Prop: Propofol; Plac; placebo; PS: physical status; Vol: volatile; TIVA: total intravenous anesthesia; Reg: regional; MMSE: Mini-Mental State Exam; Pre: preoperative; Ind: induction; Intr: intraoperative; Post(op): postoperative; —: unspecified.") |>
   tab_footnote("Maintenance range if reported in parentheses.", locations = cells_column_labels(columns = maintain_range)) |> 
-  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |> 
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |> 
   tab_footnote(md("ASA Physical Status of patients included (proportions can be found here[link to table add])."), locations = cells_column_labels(columns = c(asa_ps_incl))) |> 
   tab_footnote(md("Given as a single dose."), locations = cells_body(columns = maintain_range, rows = maintain_range %in% c("100", "200", "400")))
            
@@ -633,7 +633,7 @@ ket_by_arm |>
   tab_footnote(footnote = md("S-Ketamine."), locations = cells_body(columns = drug, rows = refid %in% c(13184, 15285) & drug == "Ketamine")) |>
   tab_footnote(footnote = "Time administered not reported.", locations = cells_body(columns = pre, rows = arm_n == 38 & drug == "Ketamine")) |>
   tab_footnote("GI: gastrointestinal; Abd: abdominal (includes hepatic); Ortho: orthopedic; Various: more that one procedure category; Plac; placebo; PS: physical status; Vol: volatile; TIVA: total intravenous anesthesia; Reg: regional; MMSE: Mini-Mental State Exam; Pre: preoperative; Ind: induction; Intr: intraoperative; Post: postoperative; —: unspecified.") |> 
-  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |> 
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |> 
   tab_footnote(md("ASA Physical Status of patients included (proportions can be found here[link to table add])."), locations = cells_column_labels(columns = c(asa_ps_incl))) 
 
 ```
@@ -749,7 +749,7 @@ mel_ram_by_arm |>
     post ~ px(32),
   ) |>
   tab_footnote("GI: gastrointestinal; Abd: abdominal (includes hepatic); Ortho: orthopedic; Various: more that one procedure category; PS: physical status; Vol: volatile; TIVA: total intravenous anesthesia; Reg: regional; MMSE: Mini-Mental State Exam; Pre: preoperative; Post: postoperative.") |> 
-  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |> 
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |> 
   tab_footnote(md("ASA Physical Status of patients included (proportions can be found here[link to table add])."), locations = cells_column_labels(columns = c(asa_ps_incl))) 
 
 ```
@@ -894,7 +894,7 @@ refid_max_of_days <- delirium_total_tab |>
 ```{r delirium_total_dex_gt}
 delirium_total_gt_fun("Dex") |>
   tab_footnote("RR: risk ratio;Dex: Dexmedetomidine; Mid: Midazolam; Prop: Propofol; MS: Morphine; Preg: Pregabalin; Plac: placebo; DSM: Diagnostic and Statistical Manual of Mental Disorders; ICDSC: Intensive Care Delirium Screening Checklist; Psych: psychiatrist interview; NS: not specified.") |>
-  # tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
+  # tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
   tab_footnote("Days over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |>
   tab_footnote("Tool reported in the `Chinese Expert Consensus on the Prevention and Treatment of Postoperative Delirium in Elderly Patients.'", locations = cells_body(columns = scale_delirium, rows = scale_delirium == "Note")) |> 
   tab_footnote("Postoperative dexmedetomidine only.", locations = cells_body(columns = rr_ci, rows = refid %in% postop_only_dat$refid & rr_ci != "—")) |> 
@@ -954,7 +954,7 @@ delirium_total_gt_mel_ram <- delirium_total_gt_fun("Mel|Ram")
 delirium_total_gt_mel_ram |>
   row_group_order(groups = c("Cardiac - Randomized Clinical Trial", "Ortho - Randomized Clinical Trial", "Various - Randomized Clinical Trial", "Thoracic - Randomized Clinical Trial", "GI/Abd - Before-After/Time Series", "Thoracic - Before-After/Time Series")) |> 
   tab_footnote("RR: risk ratio; MMSE: Mini-Mental State Examination; Mel: melatonin; Ram: ramelteon; AMT: Abbreviated Mental Test; DRS: Delirium Rating Scale; DSM: Diagnostic and Statistical Manual of Mental Disorders; CAM: Confusion Assessment Method; ICDSC: Intensive Care Delirium Screening Checklist.") |>
-  # tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
+  # tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
   tab_footnote("Days over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |> 
   tab_footnote("Reported only daily incidence.", locations = cells_body(columns = delitotal_time, rows = delitotal_time == "Note")) |> 
   tab_footnote("Maximum of reported daily incidence.", locations = cells_body(columns = n_percent, rows = refid %in% refid_max_of_days), placement = "right")
@@ -1739,7 +1739,7 @@ dncr_dat |>
   tab_style(style = list(cell_text(color = "#104E8B")), locations = cells_body(columns = c(arm_n:pre_mmse, neurocog_nper), rows = !str_detect(arm, "Dex|Ket|Mel|Ram|Plac"))) |>
   tab_footnote("Mini-Mental State Exam; DST: Digit Span Test; MoCA: Montreal Cognitive Assessment; RR: risk ratio; Dex: Dexmedetomidine; Mid: Midazolam; Prop: Propofol; Ulin: ulinastatin; Plac/None: placebo or no intervention.") |> 
   tab_footnote("Day of assessment.",                   locations = cells_column_labels(columns = c(dncr_time))) |> 
-  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |>
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |>
   tab_footnote("Hasegawa's Dementia Scale; Trail-Making Test; Word Recall; Verbal Fluency Test.", locations = cells_body(columns = c(scale_other_tf), rows = !is.na(scale_other_tf) & study == "Ding 2022")) |> 
   tab_footnote("Trail Making Test; Words Recall Test; Verbal Fluency Test.", locations = cells_body(columns = c(scale_other_tf), rows = !is.na(scale_other_tf) & study == "Ding 2015")) |> 
   tab_footnote("American Psychiatric Association postoperative cognitive dysfunction diagnostic criteria.", locations = cells_body(columns = c(scale_other_tf), rows = !is.na(scale_other_tf) & study == "Gao 2020")) |> 
@@ -1835,12 +1835,12 @@ dncr_dat |>
   tab_style(style = list(cell_text(color = "#104E8B")), locations = cells_body(columns = c(arm_n:pre_mmse, neurocog_nper), rows = !str_detect(arm, "Plac|Dex|Ket|Mel|Ram"))) |> 
   tab_footnote("Mini-Mental State Exam; DST: Digit Span Test; MoCA: Montreal Cognitive Assessment; RR: risk ratio; Ket: ketamine; Hal: haloperidol; Plac: placebo.") |> 
   tab_footnote("Day of assessment.",                   locations = cells_column_labels(columns = c(dncr_time))) |> 
-  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |>
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |>
   tab_footnote("Short Portable Mental Status Questionnaire.", locations = cells_body(columns = c(scale_other_tf), rows = !is.na(scale_other_tf) & study == "Hudetz 2009a")) |> 
   tab_footnote("Repeatable Battery for the Assessment Of Neuropsychological Status Subtests; Brief Visual Memory Test Revised; Backward Digit Span; Semantic Fluency; Phonemic Fluency.", locations = cells_body(columns = c(scale_other_tf), rows = !is.na(scale_other_tf) & study == "Rascon-Martinez 2016")) |> 
   tab_footnote("Mini-Mental State Exam; DST: Digit Span Test; MoCA: Montreal Cognitive Assessment; RR: risk ratio; Dex: Dexmedetomidine; Mid: Midazolam; Prop: Propofol; Ulin: ulinastatin; Plac/None: placebo or no intervention.") |> 
   tab_footnote("Day of assessment.",                   locations = cells_column_labels(columns = c(dncr_time))) |> 
-  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |>
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |>
   tab_footnote("Hasegawa's Dementia Scale; Trail-Making Test; Word Recall; Verbal Fluency Test.", locations = cells_body(columns = c(scale_other_tf), rows = !is.na(scale_other_tf) & study == "Ding 2022")) |> 
   tab_footnote("Trail Making Test; Words Recall Test; Verbal Fluency Test.", locations = cells_body(columns = c(scale_other_tf), rows = !is.na(scale_other_tf) & study == "Ding 2015")) |> 
   tab_footnote("American Psychiatric Association postoperative cognitive dysfunction diagnostic criteria.", locations = cells_body(columns = c(scale_other_tf), rows = !is.na(scale_other_tf) & study == "Gao 2020")) |> 
@@ -2426,7 +2426,7 @@ ncd_dat |>
   tab_style(style = list(cell_text(color = "#104E8B")), locations = cells_body(columns = c(arm_n:pre_mmse, neurocog_nper), rows = !str_detect(arm, "Plac|Dex|Ket|Mel|Ram"))) |> 
   tab_footnote("Mini-Mental State Exam; DST: Digit Span Test; MoCA: Montreal Cognitive Assessment; RR: risk ratio; Dex: dexmedetomidine: Mel: melatonin; Plac: placebo.") |> 
   tab_footnote("Day of assessment.",                   locations = cells_column_labels(columns = c(ncd_time))) |> 
-  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |> 
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |> 
   tab_footnote("Stroop Color-Word Test; Associative Learning And Memory Test.", locations = cells_body(columns = c(scale_other_tf), rows = !is.na(scale_other_tf) & study == "Li 2019")) |> 
   tab_footnote("Charlson Comorbidity Index Dementia & Informant Questionnaire on Cognitive Decline", locations = cells_body(columns = c(scale_other_tf), rows = !is.na(scale_other_tf) & study == "de Johnghe 2014")) |> 
     tab_footnote('MMSE <26.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Mansouri 2019')) |>                       
@@ -2884,7 +2884,7 @@ los_tab |>
   tab_style(style = list(cell_text(color = "#F39C12")), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(drug_recode_abbr, "Ket"))) |> 
   tab_style(style = list(cell_text(color = "#104E8B")), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(drug_recode_abbr, "Mel|Ram"))) |> 
   tab_footnote(md("NR: not reported")) |> 
-  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, los_table))) |> 
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, los_table))) |> 
   tab_footnote(md("ASA Physical Status."), locations = cells_column_labels(columns = c(asa_ps_incl)))
   
 ```
@@ -3216,7 +3216,7 @@ mortality_dat |>
   ) |> 
   # opt_css(css = "#one .gt_column_spanner {border-bottom-style: hidden;}") |>
   tab_footnote("ASA PS: American Society of Anesthesiologists Physical Status; RD: risk difference; GI: gastrointestinal; Abd: abdominal (includes hepatic); Ortho: orthopedic; Various: more that one procedure category; Dex: Dexmedetomidine; Ulin: Ulinastatin; MS: morphine sulfate; Plac; placebo.") |> 
-  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table))) |> 
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table))) |> 
   tab_footnote("Different lengths of follow-up from the same trial.", locations = cells_body(columns = study_l, rows = study %in% c("Su 2016", "Zhang 2019b"))) 
 
 ```
@@ -3401,7 +3401,7 @@ mortality_dat |>
   ) |> 
   # opt_css(css = "#one .gt_column_spanner {border-bottom-style: hidden;}") |>
   tab_footnote("ASA PS: American Society of Anesthesiologists Physical Status; RD: risk difference; GI: gastrointestinal; Abd: abdominal (includes hepatic); Ortho: orthopedic; Various: more that one procedure category; Ram: ramelteon; Mel: melatonin; Plac; placebo.") |> 
-  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table))) |> 
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table))) |> 
   tab_footnote("Randomized clinical trial.", locations = cells_body(columns = study_l, rows = !str_detect(study_l, "Hokuto") & !is.na(study_l))) |> 
   tab_footnote("Before-after design.", locations = cells_body(columns = study_l, rows = study %in% c("Hokuto 2020")))
 ```

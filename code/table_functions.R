@@ -198,7 +198,7 @@ dichot_freq_fun <- function(data, add_footnote = NULL) {
       matches("stat_[1-9]") ~ "120px") |>
     tab_options(footnotes.marks = "letters") |>
     tab_footnote(paste0(add_footnote, foot_out_freq(data), ".")) |>
-    sub_values(values = c("0 (0)"), replacement = "—")
+    sub_values(values = c("0 (0%)"), replacement = "—")
   # opt_footnote_marks(marks = "standard")
 }
 
@@ -243,7 +243,7 @@ contin_freq_fun <- function(data, add_footnote = NULL) {
       matches("stat_[1-9]") ~ "120px") |>
     tab_options(footnotes.marks = "letters") |>
     tab_footnote(paste0(add_footnote, foot_out_freq(data), ".")) |>
-    sub_values(values = c("0 (0)"), replacement = "—")
+    sub_values(values = c("0 (0%)"), replacement = "—")
   # opt_footnote_marks(marks = "standard")
 }
 
@@ -291,7 +291,7 @@ likert_freq_fun <- function(data, add_footnote = NULL) {
       matches("stat_[1-9]") ~ "120px") |>
     tab_options(footnotes.marks = "letters") |>
     tab_footnote(paste0(add_footnote, foot_out_freq(data), ".")) |>
-    sub_values(values = c("0 (0)"), replacement = "—")
+    sub_values(values = c("0 (0%)"), replacement = "—")
   # opt_footnote_marks(marks = "standard")
 }
 

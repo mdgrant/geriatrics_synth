@@ -307,7 +307,7 @@ tiva_inh_tab |>
   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(asa_ps_incl))) |>
   tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(desflurane:tiva_other))) |> 
   tab_footnote(md("TIVA: total intravenous anesthesia; NR: not reported; ASA PS: ASA Physical Status; MMSE: Mini-Mental State Exam; Des: desflurane; Hal: halothane; Iso: isoflurane; Sev: sevoflurane; Oth: inhale_other; Fen: fentanyl; Pro: propofol; Rem: remifent; Oth: other.")) |> 
-  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |> 
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |> 
   tab_footnote("Thimylal", locations = cells_body(columns = tiva_other, rows = study == "Nishikawa 2007a" & arm_id == 2)) |> 
   tab_footnote("Induction with sevoflurane.", locations = cells_body(columns = c(isoflurane, sevoflurane), rows = study == "Forsmo 2016" & arm_id == 1)) |> 
   tab_footnote("Diazepam.", locations = cells_body(columns = arm, rows = study == "Salonia 2006" & arm_id == 2)) |>
@@ -374,7 +374,7 @@ tiva_inh_tab |>
   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(asa_ps_incl))) |>
   tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(desflurane:sevoflurane))) |> 
   tab_footnote(md("TIVA: total intravenous anesthesia; NR: not reported; ASA PS: ASA Physical Status; MMSE: Mini-Mental State Exam; Des: desflurane; Iso: isoflurane; Sev: sevoflurane; Fen: fentanyl; Pro: propofol; Rem: remifent; Suf: sufentanil.")) |> 
-  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |> 
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |> 
   tab_footnote("Either of the two inhalent agents used.", locations = cells_body(columns = c(desflurane, sevoflurane), rows = study %in% c("Koo 2016", "Cho 2021") & arm_id == 1)) |> 
   # tab_footnote("As needed.", locations = cells_body(columns = c(remifent), rows = study == "Cho 2021" & arm_id == 1)) 
   tab_footnote("Any agent used.", locations = cells_body(columns = c(desflurane, sevoflurane, isoflurane) , rows = study == "Yoshimura 2022" & arm_id == 1))
@@ -504,7 +504,7 @@ delirium_meta_dat |>
   tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(delitotal_time, effect))) |>
   tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:n_percent), rows = str_detect(arm, "TIVA"))) |>
   tab_footnote("RR: risk ratio; OR: odds ratio; DRS: Delirium Rating Scale; CAM: Confusion Assessment Method; NS: not specified.") |>
-  # tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
+  # tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
   tab_footnote("Days over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |> 
   tab_footnote("Adjusted from multivariable model.", locations = cells_body(columns = effect, rows = study ==  "Goins 2018" & arm_id == 2)) |> 
   tab_footnote("Propensity score matched.", locations = cells_body(columns = effect, rows = study == "Yoshimura 2022" & arm_id == 2)) 
@@ -799,7 +799,7 @@ dncr_dat |>
   tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:pre_mmse, neurocog_nper), rows = str_detect(arm, "TIVA"))) |>
   tab_footnote("Mini-Mental State Exam; DST: Digit Span Test; MoCA: Montreal Cognitive Assessment; RR: risk ratio; Dex: Dexmedetomidine; Mid: Midazolam; Prop: Propofol; Ulin: ulinastatin; Plac/None: placebo or no intervention.") |>
   tab_footnote("Day of assessment.", locations = cells_column_labels(columns = c(dncr_time))) |>
-  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |>
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |>
   tab_footnote("Z ≥1.96.", locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == "Zhang 2018a")) |>
   tab_footnote("Difference from baseline >20%.", locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == "Egawa 2016")) |>
   tab_footnote("Difference from baseline >20%.", locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == "Geng 2017")) |>
@@ -1043,7 +1043,7 @@ ncd_dat |>
   tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:pre_mmse, neurocog_nper), rows = str_detect(arm, "TIVA"))) |>
   tab_footnote("Mini-Mental State Exam; DST: Digit Span Test; MoCA: Montreal Cognitive Assessment; RR: risk ratio; Gen: general anesthesia; Reg: regional anesthesia.") |>
   tab_footnote("Day of assessment.",                   locations = cells_column_labels(columns = c(ncd_time))) |>
-  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |> 
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |> 
   tab_footnote('Z ≥1.96.', locations = cells_body(columns = c(scale_dst), rows = arm_id == 1 & study == 'Rasmussen 2003')) |> 
   tab_footnote("Uniform Data Set Battery", locations = cells_body(columns = c(scale_other_tf), rows = study == "Deiner 2015" & arm_id == 1))
 ```
@@ -1252,7 +1252,7 @@ adverse_events_gt_dat |>
   # tab_style(style = cell_text(align = "right"),      locations = cells_column_labels(columns = c())) |>
   tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(arm, age_table, rd_or, surgs_single))) |>
   tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(rd_or))) |>
-  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table))) |> 
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table))) |> 
   tab_footnote("Odds ratios reported for propensity-matched studies (risk difference with 95% CI reported accounting for matching were not reported).", locations = cells_column_labels(columns = c(rd_or))) |> 
   tab_footnote("RD: risk difference; OR: odds ratio; Ophtho: ophthalmologic.") |> 
   tab_footnote("Compared with combined inhalation arms — differed only in induction agents.", locations = cells_body(columns = c(rd_or), rows = study == "Luntz 2004" & arm_id == 3)) |>
@@ -1675,7 +1675,7 @@ los_tab |>
   tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study_l, age_table, los_table, bar, arm))) |> 
   tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(arm, "TIVA"))) |> 
   tab_footnote(md("NR: not reported")) |> 
-  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, los_table))) |> 
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, los_table))) |> 
   tab_footnote(md("ASA Physical Status."), locations = cells_column_labels(columns = c(asa_ps_incl)))
   
 ```
@@ -1960,7 +1960,7 @@ mortality_dat |>
   ) |> 
   # opt_css(css = "#one .gt_column_spanner {border-bottom-style: hidden;}") |>
   tab_footnote("ASA PS: American Society of Anesthesiologists Physical Status; RD: risk difference; GI: gastrointestinal; Abd: abdominal (includes hepatic); Various: more that one procedure category.") |> 
-  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table)))  
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table)))  
   # tab_footnote("Different lengths of follow-up from the same trial.", locations = cells_body(columns = study_l, rows = study %in% c("Su 2016", "Zhang 2019b"))) 
 
 ```
@@ -2038,7 +2038,7 @@ mortality_dat |>
   ) |> 
   # opt_css(css = "#one .gt_column_spanner {border-bottom-style: hidden;}") |>
   tab_footnote("ASA PS: American Society of Anesthesiologists Physical Status; RD: risk difference; GI: gastrointestinal; Abd: abdominal (includes hepatic); Various: more that one procedure category.") |> 
-  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table)))  
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table)))  
   # tab_footnote("Different lengths of follow-up from the same trial.", locations = cells_body(columns = study_l, rows = study %in% c("Su 2016", "Zhang 2019b"))) 
 
 ```
