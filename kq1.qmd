@@ -32,6 +32,9 @@ source("code/load_data.R")
 ## Data
 
 ```{r, data}
+# delete van der Vlies 2020 882 NRC
+kq1_refid <- kq1_refid[!kq1_refid == 882]
+
 # note working file not renamed
 study_char_dat <- study_char_dat |> 
   filter(refid %in% c(kq1_refid, kq8_refid)) |> 
@@ -250,7 +253,7 @@ studychar_tab <- study_arm_dat |>
     arm = replace_na(arm, "PACU Screen"),
     surg_design = paste0(surgs_single, " — ", design_f_lab),
     surg_design = fct(surg_design, 
-                      levels = c("Cardiac — Randomized Clinical Trial", "Cardiac — Before-After/Time Series", "Cardiac — Other", "GI/Abd — Randomized Clinical Trial", "GI/Abd — Before-After/Time Series", "GI/Abd — Retrospective Cohort", "Ortho — Randomized Clinical Trial", "Ortho — Before-After/Time Series", "Ortho — Prospective Cohort", "Various — Randomized Clinical Trial", "Various — Before-After/Time Series", "Neuro — Before-After/Time Series", "Urol — Before-After/Time Series")),
+                      levels = c("Cardiac — Randomized Clinical Trial", "Cardiac — Before-After/Time Series", "Cardiac — Other", "GI/Abd — Randomized Clinical Trial", "GI/Abd — Before-After/Time Series", "GI/Abd — Retrospective Cohort", "Ortho — Randomized Clinical Trial", "Ortho — Before-After/Time Series", "Ortho — Prospective Cohort", "Various — Randomized Clinical Trial", "Various — Nonrandomized Trial", "Various — Before-After/Time Series", "Neuro — Before-After/Time Series", "Urol — Before-After/Time Series")),
     surg_design = fct_recode(surg_design, "Cardiac — Fully Paired" = "Cardiac — Other")
   ) |> 
   arrange(surg_design, year, study, arm_id)
@@ -284,19 +287,19 @@ studychar_tab |>
   gt_theme_mg() |>
   cols_width(
     study_l          ~ px(165),
-    arm_n            ~ px(30),
+    arm_n            ~ px(45),
     arm              ~ px(90),
     pacu_screen      ~ px(80),
     asa_ps_incl      ~ px(60),
     age_table        ~ px(100),
     pre_mmse         ~ px(100)
     ) |> 
+  tab_style(style = cell_text(align = "right"),         locations = cells_body(columns = c(arm_n))) |>
   # tab_style(style = cell_text(align = "left"),        locations = cells_column_labels(columns = c())) |>
   tab_style(style = cell_text(align = "center"),        locations = cells_column_labels(columns = c(arm, pacu_screen, asa_ps_incl))) |>
   # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c())) |>
-  tab_style(style = cell_text(align = "left"),          locations = cells_body(columns = c())) |>
+  # tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(arm_n))) |>
   tab_style(style = cell_text(align = "center"),        locations = cells_body(columns = c(pacu_screen))) |>
-  tab_style(style = cell_text(align = "right"),         locations = cells_body(columns = c(arm_n))) |>
   tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
   tab_style(style = list(cell_text(color = color_2)),   locations = cells_body(columns = c(arm_n:pre_mmse), rows = str_detect(arm, "Exp"))) |>
   tab_style(style = list(cell_text(color = color_1)),   locations = cells_body(columns = c(arm_n:pre_mmse), rows = str_detect(arm, "PACU"))) |> 
@@ -308,11 +311,10 @@ studychar_tab |>
 
 ### Evaluation Components
 
-<font size = 4> `r table_ref()` Components of expanded preoperative evaluation and interventions prompted. </font>
+<font size = 4> `r table_ref()` Components of expanded preoperative evaluation and interventions prompted (excludes studies conducting only PACU screening). </font>
 
 ```{r comparators}
 #| eval: true
-#| warning: false
 expanded_dat <- study_arm_dat |>
   filter(refid %in% kq1_refid) |>
   select(refid, year, study, study_l, arm_id, arm_kq1_eval, kq1_eras, gen_blood, gen_comp, gen_multi, gen_comorbid, gen_nutrition, gen_other, kq1_frail, kq1_cog, kq1_phys_func, kq1_psych, pt_nutr, pt_mobility, pt_surgery, pt_social, pt_other, staff_comorbid, staff_inappmed, staff_geriatrician, staff_multidisc, staff_supplement, staff_treatplan, staff_other, pacu_screen) |>
@@ -325,6 +327,19 @@ expanded_dat <- study_arm_dat |>
     surg_design = paste0(surgs_single, " — ", design_f_lab)
   ) |> 
   filter(arm == "Exp") |> 
+  slice(1, .by = study)
+
+screenonly_dat <- study_arm_dat |>
+  filter(refid %in% kq8_refid) |> 
+  filter(!refid %in% expanded_dat$refid) |> 
+  select(refid, year, study, study_l, arm_id, arm_kq1_eval, kq1_eras, gen_blood, gen_comp, gen_multi, gen_comorbid, gen_nutrition, gen_other, kq1_frail, kq1_cog, kq1_phys_func, kq1_psych, pt_nutr, pt_mobility, pt_surgery, pt_social, pt_other, staff_comorbid, staff_inappmed, staff_geriatrician, staff_multidisc, staff_supplement, staff_treatplan, staff_other, pacu_screen) |>
+  left_join(surgs |> select(refid, surgs_single), by = "refid") |> 
+  left_join(study_char_dat |> select(refid, design_f_lab, design_f_abbrev), by = "refid") |> 
+  mutate(
+    arm = "Screen only",
+    surg_design = paste0(surgs_single, " — ", design_f_lab),
+    pacu_screen = ifelse(pacu_screen, " \U25CF", NA)
+  ) |> 
   slice(1, .by = study)
 
 standard_dat <- study_arm_dat |>
@@ -370,7 +385,9 @@ expanded_combined <- bind_rows(expanded_dat, standard_dat) |>
 #     outcomes = list(gen_blood:staff_other, arm_code)
 #   )
 
-groups_kq1 <- c("Cardiac — Randomized Clinical Trial", "Cardiac — Before-After/Time Series", "GI/Abd — Randomized Clinical Trial", "GI/Abd — Before-After/Time Series", "GI/Abd — Retrospective Cohort", "Ortho — Before-After/Time Series", "Ortho — Randomized Clinical Trial", "Various — Randomized Clinical Trial", "Various — Before-After/Time Series", "Neuro — Before-After/Time Series", "Urol — Before-After/Time Series") 
+expanded_combined |> tabyl(surg_design) |> pull(surg_design) |> toString()
+
+groups_kq1 <- c("Cardiac — Randomized Clinical Trial", "Cardiac — Before-After/Time Series", "GI/Abd — Randomized Clinical Trial", "GI/Abd — Before-After/Time Series", "GI/Abd — Retrospective Cohort", "Ortho — Randomized Clinical Trial", "Ortho — Before-After/Time Series", "Various — Randomized Clinical Trial", "Various — Nonrandomized Trial", "Various — Before-After/Time Series", "Neuro — Before-After/Time Series", "Urol — Before-After/Time Series") 
 
 expanded_combined |> 
   arrange(year, study, arm_id) |> 
@@ -425,7 +442,7 @@ expanded_combined |>
   tab_spanner(label = "Staff", columns = c(staff_comorbid:pacu_screen), level = 1) |>
   tab_spanner(label = "Patient Education", columns = c(pt_nutr:pt_other), level = 1) |>
   tab_spanner(label = "Interventions", columns = c(pt_nutr:pacu_screen), level = 2) |>
-  tab_style(style = cell_text(align = "right"), locations = cells_column_labels(columns = c(kq1_eras:pacu_screen))) |> 
+  # tab_style(style = cell_text(align = "right"), locations = cells_column_labels(columns = c(kq1_eras:pacu_screen))) |> 
   tab_style(style = cell_text(align = "right"), locations = cells_body(columns = c(kq1_psych:pacu_screen))) |> 
   tab_style(style = list(cell_text(color = color_1)), locations = cells_column_labels(columns = c(gen_comp:gen_other))) |> 
   tab_style(style = list(cell_text(color = color_2)), locations = cells_column_labels(columns = c(kq1_frail:kq1_psych))) |> 
@@ -440,7 +457,7 @@ expanded_combined |>
   tab_style(style = list(cell_text(color = color_2)), locations = cells_column_spanners(spanners = "Targeted")) |> 
   tab_style(style = list(cell_text(color = color_3)), locations = cells_column_spanners(spanners = "Patient Education")) |> 
   tab_style(style = list(cell_text(color = color_4)), locations = cells_column_spanners(spanners = "Staff")) |> 
-  tab_footnote(md("ERAS: enhanced recovery after surgery; CGA: comprehensive geriatric assessment; GI: gastrointestinal; Abd: abdominal; Suppl: supplement; PACU: post-anestheisa care unit; \U25CF expanded evaluation only; \UFFED in expanded and standard evaluation arms \U25CB: in standard evaluation arms only"))
+  tab_footnote(md("ERAS: enhanced recovery after surgery; CGA: comprehensive geriatric assessment; GI: gastrointestinal; Abd: abdominal; Suppl: supplement; PACU: post-anestheisa care unit; \U25CF expanded evaluation only; \UFFED in expanded and standard evaluation arms; \U25E6 in standard evaluation arms only"))
 
 ```
 
@@ -450,6 +467,7 @@ expanded_combined |>
 #| eval: true
 # NOTE: compared and reconciled reported and calculated % # mutate(calc_per = delitotal_n / arm_n * 100, per_diff = calc_per - delitotal_perc) |> filter(per_diff > 0.5)
 delirium_meta_dat <- dichot_dat |>
+  filter(refid %in% expanded_combined$refid) |> 
   mutate(
     arm_n = ifelse(!is.na(deli_update_arm_n), deli_update_arm_n, arm_n),
     delirium_inc_prop = ifelse(delirium_inc_prop == TRUE, "Incidence Proportion", "Maximum Daily"),
@@ -458,31 +476,13 @@ delirium_meta_dat <- dichot_dat |>
   left_join(study_char_dat |> select(refid, country), by = "refid") |> 
   left_join(surgs |> select(refid, surgs_single_f), by = c("refid")) |>
   rename(surg_f = surgs_single_f) |> 
-  select(refid, study, arm_id, arm, year, design_f_lab, country, surg_f, delitotal_n, arm_n, delirium_inc_prop, delitotal_time:delitotal_95high, deli_cam:deli_scale_otherspec) 
+  select(refid, study, arm_id, arm, year, design_f_lab, country, surg_f, delitotal_n, arm_n, delirium_inc_prop, delitotal_time:delitotal_95high, deli_cam:deli_scale_otherspec) |> 
+  arrange(design_f_lab, study, arm_id)
 
-delirium_meta_dat <- delirium_meta_dat |>
-  mutate(
-    delitotal_n = case_when(
-      study == "Shin 2020" & arm_id == 1 ~ collapse_dichot(dichot_dat, "Shin 2020", c(1, 2), delitotal_n),
-      study == "Bielka 2021" & arm_id == 1 ~ collapse_dichot(dichot_dat, "Bielka 2021", c(1, 3), delitotal_n),
-      .default = delitotal_n
-    ),
-    arm_n = case_when(
-      study == "Shin 2020" & arm_id == 2 ~ collapse_dichot(dichot_dat, "Shin 2020", c(1, 2), arm_n),
-      study == "Bielka 2021" & arm_id == 2 ~ collapse_dichot(dichot_dat, "Bielka 2021", c(1, 3), arm_n),
-      .default = arm_n
-    )
-  ) |>
-  filter(!(study %in% c("Shin 2020") & arm_id %in% c(2))) |>
-  filter(!(study %in% c("Bielka 2021") & arm_id %in% c(3))) |> 
-  mutate(arm = ifelse(study == "Bielka 2021" & arm_id == 2, "Neur/Block", as.character(arm)),
-         arm = factor(arm, levels = c("Gen", "Neur", "Neur/Block", "Block"))
-  )
-
-# delirium_meta_dat |> select(refid) |> distinct() # 2023-04-24 n = 14
 ```
 
 ```{r delirium_tab}
+#| eval: true
 # referent values for calculating rr and ci; rr_ci
 delirium_rr_ref <- delirium_meta_dat |>
   select(refid, refid, arm_id, delitotal_n, arm_n) |>
@@ -526,7 +526,9 @@ delirium_tab <- delirium_meta_dat |>
   unite(scale_delirium, cam:other, remove = TRUE, sep = "/", na.rm = TRUE) |>
   mutate(
     scale_delirium = ifelse(scale_delirium == "unspec", "NR", scale_delirium),
-    scale_delirium = ifelse(scale_delirium == "DELIRIUM INDEX (DI)", "DI", scale_delirium)
+    scale_delirium = ifelse(scale_delirium == "DELIRIUM INDEX (DI)", "DI", scale_delirium),
+    scale_delirium = ifelse(scale_delirium == "DELIRIUM OBSERVATION SCREENING (DOS)/DSM", "DOS/DSM", scale_delirium),
+    scale_delirium = ifelse(scale_delirium == "DELIRIUM OBSERVATION SCREENING (DOS)/other", "DOS/other", scale_delirium),
   ) |>
   select(year, refid, refid, design_f_lab, study, study_l, arm_id, arm_n, arm, scale_delirium, delitotal_time, n_percent, calc_percent, rr_ci, surg_f) |>
   # arrange(year, study, refid, desc(arm)) |>
@@ -538,10 +540,13 @@ delirium_tab <- delirium_meta_dat |>
 ```
 
 
-<font size = 4> `r table_ref()` Delirium incidence and ascertainment during hospitalization in trials comparing regional and general anesthesia. </font>
+<!-- <font size = 4> `r table_ref()` Delirium incidence and ascertainment during hospitalization in trials comparing regional and general anesthesia. </font> -->
 
 ```{r delirium_gt}
+#| eval: true
 delirium_tab |>
+    mutate(study = ifelse(study == "Tarazona-Santabalbina 2019", "T-Santabalbina 2019", study),
+         study_l = str_replace(study_l, "Tarazona-", "T-")) |> 
     arrange(year, study, arm_id) |>
     mutate(
       delitotal_time = ifelse(delitotal_time == 999, "Stay", as.character(delitotal_time)),
@@ -550,14 +555,14 @@ delirium_tab |>
       delitotal_time = ifelse(row_number() > 1, "", delitotal_time),
       scale_delirium = ifelse(row_number() > 1, "", scale_delirium),
       bar = case_when(
-        str_detect(arm, "Neur|Block") ~ bar_prop(calc_percent, color_2),
+        str_detect(arm, "Exp") ~ bar_prop(calc_percent, color_2),
         .default = bar_prop(calc_percent, "#969696")),
       .by = study
     ) |>
-    group_by(surg_f) |>
+    group_by(design_f_lab) |>
     gt(id = "one") |>
-    # row_group_order(groups = c("Ortho", "GI/Abd", "Headneck", "Spine", "Various")) |>
-    cols_hide(c(year, refid, arm_id, study, design_f_lab, age_table, calc_percent)) |>
+    row_group_order(groups = c("Randomized Clinical Trial", "Nonrandomized Trial", "Before-After/Time Series", "Retrospective Cohort")) |>
+    cols_hide(c(year, refid, arm_id, study, surg_f, age_table, calc_percent)) |>
     cols_label(
       study_l = "Study",
       arm_n = " N",
@@ -593,14 +598,120 @@ delirium_tab |>
       bar ~ px(100),
       rr_ci ~ px(140)
     ) |> 
+  tab_style(style = list(cell_text(color = color_2)),   locations = cells_body(columns = c(arm_n:n_percent), rows = str_detect(arm, "Exp"))) |>
   tab_footnote("RR: risk ratio; MMSE: Mini-Mental State Examination; CAM: Confusion Assessment Method; DI: Delirium Index; DRS: Delirium Rating Scale; DSM: Diagnostic and Statistical Manual of Mental Disorders; NR: not reported.") |>
-    tab_footnote("Gen: general anesthesia; Neur: neuraxial; RR: risk ratio; MMSE: Mini-Mental State Examination; DRS: Delirium Rating Scale; DSM: Diagnostic and Statistical Manual of Mental Disorders; CAM: Confusion Assessment Method; DI: Delirium Index.") |>
+    tab_footnote("Gen: general anesthesia; Neur: neuraxial; RR: risk ratio; MMSE: Mini-Mental State Examination; DRS: Delirium Rating Scale; DSM: Diagnostic and Statistical Manual of Mental Disorders; CAM: Confusion Assessment Method; DOS: Delirium Observation Screening.") |>
   tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |>
-  tab_footnote("Days over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |>
-  tab_footnote("Maximum of reported daily incidence.", locations = cells_body(columns = delitotal_time, rows = delitotal_time == "Note")) |> 
-  tab_footnote("Not included in pooled results owing to size.", locations = cells_body(columns = study_l, rows = str_detect(study_l, "Neuman 2016"))) 
+  tab_footnote("Days over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time))
 ```
 
+### *Pooled*
+
+```{r delirium_meta}
+delirium_meta_all_dat <- delirium_meta_dat |> 
+  arrange(year, study, arm)
+
+pairwise_all_dat <- pairwise(
+  treat = arm,
+  event = delitotal_n,
+  n = arm_n,
+  studlab = study,
+  data = delirium_meta_all_dat,
+  sm = "RR") |> 
+  select(studlab:surg_f) 
+
+del_meta_rct_dat <- pairwise_all_dat |>
+  filter(str_detect(design_f_lab, "Randomized")) |> 
+  left_join(rob2_meta_dat, by = "refid") |>
+  select(study, year, event2, n2, event1, n1, D1:Overall, surg_f) |>
+  mutate(
+    sample_size = n1 + n2,
+  )
+
+del_meta_nrsi_dat <- pairwise_all_dat |>
+  filter(!str_detect(design_f_lab, "Randomized")) |>
+  left_join(robinsi_meta_dat, by = "refid") |>
+  select(study, year, event2, n2, event1, n1, D1:Overall, surg_f) |>
+  mutate(
+    sample_size = n1 + n2
+  )
+
+delirium_rct_meta <- metabin(event1, n1, event2, n2,
+  data = del_meta_rct_dat,
+  studlab = study,
+  sm = "RR",
+  method = "MH",
+  method.tau = "PM",
+  hakn = TRUE,
+  prediction = TRUE,
+  allstudies = TRUE
+)
+
+delirium_nrsi_meta <- metabin(event1, n1, event2, n2,
+  data = del_meta_nrsi_dat ,
+  studlab = study,
+  sm = "RR",
+  method = "MH",
+  method.tau = "PM",
+  hakn = TRUE,
+  prediction = TRUE,
+  allstudies = TRUE
+)
+
+```
+
+<font size = 4> `r figure_ref()` Expanded versus standard properative evaluation (delirium incidence; randomized clinical trials). </font>
+
+```{r delirium_meta_rct_forest, fig.width = 14, fig.height = 5, fig.align = "left", warning = FALSE}
+forest(delirium_rct_meta,
+  allstudies = TRUE,
+  common = TRUE,
+  label.e = "Expanded",
+  label.c = "Standard",
+  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
+  just.addcols.right = "right",
+  digits = 2,
+  digits.tau2 = 1,
+  overall.hetstat = TRUE,
+  print.I2.ci = TRUE,
+  # sortvar = year,
+  prediction = TRUE,
+  fs.xlab = 11,
+  pooled.events = TRUE,
+  print.pval.Q = FALSE,
+  xlim = c(0.1, 3),
+  xlab = "Favors: Expanded                          Standard",
+  addrows.below.overall = 4,
+  text.addline1 = "Without Hartung-Knapp adjustment (95% CI, 0.40–0.92)."
+)
+```
+
+<font size = 4> `r figure_ref()` Expanded versus standard properative evaluation (delirium incidence; nonrandomized designs). </font>
+
+```{r delirium_meta_nrsi_forest, fig.width = 14, fig.height = 5, fig.align = "left", warning = FALSE}
+forest(delirium_nrsi_meta,
+  allstudies = TRUE,
+  common = TRUE,
+  label.e = "Expanded",
+  label.c = "Standard",
+  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
+  just.addcols.right = "right",
+  digits = 2,
+  digits.tau2 = 1,
+  overall.hetstat = TRUE,
+  print.I2.ci = TRUE,
+  # sortvar = year,
+  prediction = TRUE,
+  fs.xlab = 11,
+  pooled.events = TRUE,
+  print.pval.Q = FALSE,
+  xlim = c(0.1, 3),
+  xlab = "Favors: Expanded                          Standard",
+  addrows.below.overall = 4
+)
+```
 
 
 
