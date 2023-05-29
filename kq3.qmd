@@ -560,7 +560,7 @@ gen_reg_delirium_cummeta <- metacum(gen_reg_delirium_meta, pooled = "random")
 
 <font size = 4> `r figure_ref()` General versus regional anesthesia (randomized clinical trials). </font>
 
-```{r delirium_meta_forest, fig.width = 14, fig.height = 5.5, fig.align = "left", warning = FALSE}
+```{r delirium_meta_forest, fig.width = 14, fig.height = 5.5, fig.align = "left", warning = TRUE}
 forest(gen_reg_delirium_meta_nosub,
   allstudies = TRUE,
   common = TRUE,
@@ -589,7 +589,7 @@ forest(gen_reg_delirium_meta_nosub,
 
 <font size = 4> `r figure_ref()` General versus regional anesthesia cumulative meta-analysis (randomized clinical trials). </font>
 
-```{r delirium_meta_forest_cum, fig.width = 14, fig.height = 4.5, fig.align = "left", warning = FALSE}
+```{r delirium_meta_forest_cum, fig.width = 14, fig.height = 4.5, fig.align = "left", warning = TRUE}
 forest(gen_reg_delirium_cummeta,
   # common = TRUE,
   label.e = "Regional",
@@ -617,7 +617,7 @@ forest(gen_reg_delirium_cummeta,
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()` General versus regional anesthesia pooled with subgroups (randomized clinical trials). </font>
 
-```{r delirium_meta_forest_sub, fig.width = 14, fig.height = 8.7, fig.align = "left", warning = FALSE}
+```{r delirium_meta_forest_sub, fig.width = 14, fig.height = 8.7, fig.align = "left", warning = TRUE}
 forest(gen_reg_delirium_meta,
   allstudies = TRUE,
   common = TRUE,
@@ -854,7 +854,7 @@ dncr_dat |>
 
 <font size = 4> `r figure_ref()` Delayed neurocognitive recovery (regional versus general anesthesia; randomized clinical trials). </font>
 
-```{r dncr_meta,  fig.width = 14, fig.height = 3.5, fig.align = "left", warning = FALSE}
+```{r dncr_meta,  fig.width = 14, fig.height = 3.5, fig.align = "left", warning = TRUE}
 trts <- neurocog_meta_dat$arm_reg
 
 pairs_dat <- pairwise(
@@ -1785,7 +1785,6 @@ mortality_dat <- dichot_dat |>
   mutate(mort_percent = mort_n/arm_n,
          mort_period = factor(mort_period, levels = c("Hospital", "30-day", "90-day", "1-year"))) |>
   select(refid, refid_c, arm_id, year, study, study_l, arm_n, arm, asa_ps_incl, age_table, design_f_lab, mort_n, mort_percent, ref_mort_n, ref_arm_n, mort_period, mort_per_rep, surgs_single_f)
-
 
 ```
 

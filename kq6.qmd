@@ -3,7 +3,7 @@ title: "Delirium Prophylaxis"
 editor: source
 toc-title: "**Delirium Prophylaxis**"
 toc-location: "left"
-toc-depth: 4
+toc-depth: 3
 toc_float: 
   collapsed: true
 tbl-cap-location: "top"
@@ -1039,9 +1039,9 @@ netmeta_melram_nma <- netmeta(
 
 <font size = 4> `r figure_ref()` Randomized clinical trials and comparators reporting overall incidence of delirium. </font>
 
-```{r delirium_nma_plot, warning = FALSE, fig.dim = c(6, 5), out.width = "50%", fig.align = "center"}
-# ```{r delirium_nma_plot, fig.height = 8, fig.align = "left", warning = FALSE}
+```{r delirium_nma_plot, warning = TRUE, fig.dim = c(6, 5), out.width = "50%", fig.align = "center"}
 #| eval: true
+#| warning: false
 # CODE: network plot
 # FIXME: adjust offsets 
 ## Modify current setting for position of treatment labels
@@ -1089,7 +1089,7 @@ netgraph(netmeta_melram_nma,
 
 <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention (randomized clinical trials). </font>
 
-```{r nma_dat, fig.width = 14, fig.height = 8.5, fig.align = "left", warning = FALSE}
+```{r nma_dat, fig.width = 14, fig.height = 8.5, fig.align = "left", warning = TRUE}
 # ```{r nma_dat, out.width = 50%, out.height = 100%}
 dex_plac_refid <- pairwise_dat |> 
   filter(str_detect(to_select, "Plac") & str_detect(to_select, "Dex")) |> 
@@ -1128,7 +1128,7 @@ temp_meta <- update(temp_meta, subgroup = NULL, sm = "OR")
 temp_metabias <- metabias(temp_meta, method.bias = "Harbord", k.min = 10)
 
 # summary(dex_plac_meta)
-dex_meta_forest_fun <- function(data_meta, flag = FALSE) {
+dex_meta_forest_nosub_fun <- function(data_meta) {
 forest(data_meta,
   allstudies = TRUE,
   common = TRUE,
@@ -1142,8 +1142,31 @@ forest(data_meta,
   overall.hetstat = TRUE,
   print.I2.ci = TRUE,
   prediction = TRUE,
-  subgroup = flag,
-  prediction.subgroup = flag,
+  fs.xlab = 11,
+  pooled.events = TRUE,
+  print.pval.Q = FALSE,
+  xlim = c(0.1, 3),
+  xlab = "Favors: Dexmedetomidine               Placebo/None",
+  addrows.below.overall = 4
+)  
+}
+
+dex_meta_forest_fun <- function(data_meta) {
+forest(data_meta,
+  allstudies = TRUE,
+  common = TRUE,
+  label.e = "Dex     ",
+  label.c = "Plac/None  ",
+  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
+  just.addcols.right = "right",
+  digits = 2,
+  digits.tau2 = 1,
+  overall.hetstat = TRUE,
+  print.I2.ci = TRUE,
+  prediction = TRUE,
+  subgroup = TRUE,
+  prediction.subgroup = FALSE,
   print.subgroup.name = FALSE,
   fs.xlab = 11,
   pooled.events = TRUE,
@@ -1154,7 +1177,7 @@ forest(data_meta,
 )  
 }
 
-dex_meta_forest_fun(dex_plac_meta)
+dex_meta_forest_nosub_fun(dex_plac_meta)
 ```
 
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <a id="figure-4"></a><br/> `r paste0("Harbord test for small study effects P = ", formatC(temp_metabias$pval, digits = 4, format = "f"), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, dex_plac_refid), "; a secondary outcome in ", prim_sec_out_fun(sec_delirium, dex_plac_refid), ".")`</foot_mg><br/>
@@ -1165,7 +1188,7 @@ dex_meta_forest_fun(dex_plac_meta)
 ```{r dex_meta_sens_incidence_prop, fig.width = 14, fig.height = 10.5, fig.align = "left"}
 delirium_inc_pro_meta <- update(dex_plac_meta, subgroup = delirium_inc_prop)
 
-dex_meta_forest_fun(delirium_inc_pro_meta, TRUE)
+dex_meta_forest_fun(delirium_inc_pro_meta)
 
 rm(delirium_inc_pro_meta)
 ```
@@ -1182,7 +1205,7 @@ china_meta <- update(dex_plac_meta, subgroup = china_vs_other)
 temp_metareg <- update(china_meta, tau.common = TRUE, common = FALSE, method.random.ci = "HK")
 temp_metareg <- metareg(temp_metareg)
 
-dex_meta_forest_fun(china_meta, TRUE)
+dex_meta_forest_fun(china_meta)
 ```
 
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/> `r paste0("Meta-regression (China vs. Other) I² = ", digit0(temp_metareg$I2), "%.")` `r rm(temp_metareg, china_meta)` </foot_mg>
@@ -1194,7 +1217,7 @@ dex_meta_forest_fun(china_meta, TRUE)
 ```{r nma_dat_postop, fig.width = 14, fig.height = 10.5, fig.align = "left"}
 dex_plac_meta_postop <- update(dex_plac_meta, subgroup = postop_only)
 
-dex_meta_forest_fun(dex_plac_meta_postop, TRUE)
+dex_meta_forest_fun(dex_plac_meta_postop)
 
 rm(dex_plac_meta_postop)
 ```
@@ -1208,7 +1231,7 @@ rm(dex_plac_meta_postop)
 ```{r nma_dat_rob, fig.width = 14, fig.height = 11.7, fig.align = "left"}
 rob_meta <- update(dex_plac_meta, subgroup = rob)
 
-dex_meta_forest_fun(rob_meta, TRUE)
+dex_meta_forest_fun(rob_meta)
 
 rm(rob_meta)
 ```
@@ -1951,7 +1974,7 @@ netmeta_dncr_nma <- netmeta(
 
 <font size = 4> `r figure_ref()` Randomized clinical trials and comparators reporting delayed neurocognitive recovery. </font>
 
-```{r dncr_nma_plot, warning = FALSE, fig.dim = c(6, 5), out.width = "50%", fig.align = "center"}
+```{r dncr_nma_plot, warning = TRUE, fig.dim = c(6, 5), out.width = "50%", fig.align = "center"}
 #| eval: true
 # CODE: dncr network plot
 par(mfrow = c(1, 1), mar = c(1, 1, 1, 1))
@@ -1989,7 +2012,7 @@ Zhao 2020 no intervention (usual care) arm included as placebo.</foot_mg>
 
 <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention (randomized clinical trials, delayed neurocognitive recovery assessed postop day 3 or later). </font>
 
-```{r dncr_dex_plac_meta, fig.width = 14, fig.height = 6, fig.align = "left", warning = FALSE}
+```{r dncr_dex_plac_meta, fig.width = 14, fig.height = 6, fig.align = "left", warning = TRUE}
 #| eval: true
 dex_meta_dat <- pairs_dat |>
   arrange(year, study) |> 
@@ -2134,7 +2157,7 @@ rob_summary_fun(dex_meta_dat$refid)
 
 <font size = 4> `r figure_ref()` Ketamine compared with placebo or no intervention (randomized clinical trials, delayed neurocognitive recovery). </font>
 
-```{r dncr_ket_plac_meta, fig.width = 14, fig.height = 4.5, fig.align = "left", warning = FALSE}
+```{r dncr_ket_plac_meta, fig.width = 14, fig.height = 4.5, fig.align = "left", warning = TRUE}
 #| eval: true
 ket_meta_dat <- pairs_dat |>
   arrange(year, study) |>

@@ -555,7 +555,7 @@ rm(delirium_all_meta_dat)
 
 ```
 
-```{r delirium_meta_rct, warning = FALSE, fig.width = 14, fig.height = 4.0, fig.align = "left"}
+```{r delirium_meta_rct, warning = TRUE, fig.width = 14, fig.height = 4.0, fig.align = "left"}
 delirium_meta_rct <- metabin(event2, n2, event1, n1,
   data = delirium_rct_meta_dat,
   studlab = study,
@@ -856,7 +856,7 @@ pairs_dat <- pairwise(
 
 ```
 
-```{r dncr__meta, fig.width = 14, fig.height = 4, fig.align = "left", warning = FALSE}
+```{r dncr__meta, fig.width = 14, fig.height = 4, fig.align = "left", warning = TRUE}
 #| eval: true
 dncr_meta_dat <- pairs_dat |>
   arrange(year, study) |> 
@@ -1884,7 +1884,6 @@ mortality_dat <- dichot_dat |>
          mort_period = factor(mort_period, levels = c("Hospital", "30-day", "90-day", "1-year"))) |>
   select(refid, refid_c, arm_id, year, study, study_l, arm_n, arm, asa_ps_incl, age_table, design_f_lab, mort_n, mort_percent, ref_mort_n, ref_arm_n, mort_period, mort_per_rep, surgs_single_f)
 
-
 ```
 
 <font size = 4> `r table_ref()` Reported in-hospital, 30-day, and 1-year mortality from randomized clinical trials.</font>
@@ -2043,6 +2042,8 @@ mortality_dat |>
 
 ```
 
+### *Pooled*
+
 ```{r mortality_hosp_30d_meta}
 #| eval: true
 mortality_rct_meta_dat <- mortality_dat |>
@@ -2082,8 +2083,6 @@ pairwise_nrsi_mort_dat <- pairwise(
 )
 
 ```
-
-### *Pooled*
 
 <font size = 4> `r figure_ref()` Risk ratio for hospital or 30-day mortality (TIVA versus inhaled; randomized clinical trials). </font>
 
@@ -2137,6 +2136,8 @@ forest(mort_rct_meta,
 ```
 <foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg> 
 
+<br/>
+
 <font size = 4> `r figure_ref()` Risk ratio for hospital or 30-day mortality (TIVA versus inhaled; nonrandomized designs). </font>
 
 ```{r mort_nrsi_meta, fig.dim = c(14, 4), fig.align = "center"}
@@ -2149,7 +2150,7 @@ mort_meta_dat <- pairwise_nrsi_mort_dat |>
 # total_meta(mort_meta_dat)
 # refid_meta_fun(mort_meta_dat)
 
-mort_rct_meta <- metabin(event2, n2, event1, n1,
+mort_nrsi_meta <- metabin(event2, n2, event1, n1,
   data = mort_meta_dat,
   studlab = study,
   # cluster = refid,
@@ -2162,7 +2163,7 @@ mort_rct_meta <- metabin(event2, n2, event1, n1,
 )
 
 # summary(plac_meta)
-forest(mort_rct_meta,
+forest(mort_nrsi_meta,
   allstudies = TRUE,
   # random = FALSE,
   label.e = "TIVA     ",
@@ -2187,8 +2188,6 @@ forest(mort_rct_meta,
 ```
 <foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable.<br/>
 Note for Yoshimura 2022 naïve risk ratio, but identical to odds ratio reported respecting propensity matching.</foot_mg> 
-
-
 
 ## **Risk of Bias**
 
