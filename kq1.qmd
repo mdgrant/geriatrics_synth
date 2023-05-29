@@ -599,8 +599,7 @@ delirium_tab |>
       rr_ci ~ px(140)
     ) |> 
   tab_style(style = list(cell_text(color = color_2)),   locations = cells_body(columns = c(arm_n:n_percent), rows = str_detect(arm, "Exp"))) |>
-  tab_footnote("RR: risk ratio; MMSE: Mini-Mental State Examination; CAM: Confusion Assessment Method; DI: Delirium Index; DRS: Delirium Rating Scale; DSM: Diagnostic and Statistical Manual of Mental Disorders; NR: not reported.") |>
-    tab_footnote("Gen: general anesthesia; Neur: neuraxial; RR: risk ratio; MMSE: Mini-Mental State Examination; DRS: Delirium Rating Scale; DSM: Diagnostic and Statistical Manual of Mental Disorders; CAM: Confusion Assessment Method; DOS: Delirium Observation Screening.") |>
+  tab_footnote("RR: risk ratio; MMSE: Mini-Mental State Examination; CAM: Confusion Assessment Method; DI: Delirium Index; DRS: Delirium Rating Scale; DOS: delirium observation screening; DSM: Diagnostic and Statistical Manual of Mental Disorders; NR: not reported.") |>
   tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |>
   tab_footnote("Days over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time))
 ```
@@ -662,7 +661,7 @@ delirium_nrsi_meta <- metabin(event1, n1, event2, n2,
 
 <font size = 4> `r figure_ref()` Expanded versus standard properative evaluation (delirium incidence; randomized clinical trials). </font>
 
-```{r delirium_meta_rct_forest, fig.width = 14, fig.height = 5, fig.align = "left", warning = FALSE}
+```{r delirium_meta_rct_forest, fig.width = 14, fig.height = 4.5, fig.align = "left", warning = TRUE}
 forest(delirium_rct_meta,
   allstudies = TRUE,
   common = TRUE,
@@ -686,10 +685,13 @@ forest(delirium_rct_meta,
   text.addline1 = "Without Hartung-Knapp adjustment (95% CI, 0.40–0.92)."
 )
 ```
+<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg> 
+
+<br/>
 
 <font size = 4> `r figure_ref()` Expanded versus standard properative evaluation (delirium incidence; nonrandomized designs). </font>
 
-```{r delirium_meta_nrsi_forest, fig.width = 14, fig.height = 5, fig.align = "left", warning = FALSE}
+```{r delirium_meta_nrsi_forest, fig.width = 14, fig.height = 4.5, fig.align = "left", warning = TRUE}
 forest(delirium_nrsi_meta,
   allstudies = TRUE,
   common = TRUE,
@@ -712,7 +714,7 @@ forest(delirium_nrsi_meta,
   addrows.below.overall = 4
 )
 ```
-
+<foot_mg> RR: risk ratio; D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. </foot_mg>
 
 
 
