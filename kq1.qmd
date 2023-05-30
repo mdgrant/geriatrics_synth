@@ -1,7 +1,7 @@
 ---
 title: "Expanded Preoperative Evaluation & <br/> Postoperative Delirium Screening"
 editor: source
-toc-title: "**Expanded Preoperative Evaluation and Postoperative Delirium Screening**"
+toc-title: "**Expanded Preoperative Evaluation & Postoperative Delirium Screening**"
 toc-location: "left"
 cap-location: "top"
 toc-depth: 4
@@ -807,8 +807,9 @@ los_tab |>
   tab_footnote(md("NR: not reported")) |> 
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, los_table))) |> 
   tab_footnote(md("ASA Physical Status."), locations = cells_column_labels(columns = c(asa_ps_incl))) |> 
-  tab_footnote("Number of patients not reported (time-series).", locations = cells_body(columns = c(arm_n), rows = study == "Lau 2013" & is.na(arm_n)))
-
+  tab_footnote("Number of patients not reported (time-series).", locations = cells_body(columns = c(arm_n), rows = study == "Lau 2013" & is.na(arm_n))) |>
+  tab_footnote("Geometric mean.", locations = cells_body(columns = c(los_table), rows = study == "Partridge 2017")) 
+  
 # save refids for meta-analysis
 los_refid <- los_tab$refid
 ```
@@ -984,7 +985,8 @@ forest(los_meta,
 ```
 <foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
 When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range with between-group p-value used as a last resort.<br/>
-Ommundsen 2018 reported only median and between-group p-value with so was excluded.
+Partridge 2017 geometric means reported.<br/>
+Ommundsen 2018 reported only median and between-group p-value and was excluded.
 </foot_mg> 
 
 <br/>
