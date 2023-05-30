@@ -1791,7 +1791,7 @@ mortality_dat <- dichot_dat |>
 <font size = 4> `r table_ref()` Reported in-hospital, 30-day, and 1-year mortality from randomized clinical trials.</font>
 
 ```{r mortality_rct_gt}
-#| eval: false
+#| eval: true
 mortality_dat |>
   arrange(mort_period, surgs_single_f, year, study, arm_id) |>
   group_by(mort_period, study_l) |>
