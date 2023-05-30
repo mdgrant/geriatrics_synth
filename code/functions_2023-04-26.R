@@ -81,7 +81,7 @@ notna_to_x <- function(variable, symbol = "\U00D7") {
 
 # format to n (percent)
 # n_per_fun(9, 28, 1)
-n_per_fun <- function(events_n, total, n_sig_dig){
+n_per_fun <- function(events_n, total, n_sig_dig = 1){
   str_c(format(events_n, big.mark = ",")," (", formatC(events_n/total * 100, digits = n_sig_dig, format = "f"), ")")
 }
 

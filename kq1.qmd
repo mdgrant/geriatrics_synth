@@ -1049,26 +1049,117 @@ forest(los_meta,
 <foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. <br/> 
 When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range.  </foot_mg> 
 
+<br/>
+
 ## **Discharge Location**
+
+<font size = 4> `r table_ref()` Discharge location in studies comparing expanded preoperative assessments with standard preoperative assessments. </font>
+
 ```{r dc_loc}
-#| eval: false
-dc_loc_dat <- dichot_dat |> 
-  filter(refid %in% kq1_refid) |> 
-  filter(if_any(starts_with("disch_"), ~ !is.na(.x))) |> 
+#| eval: true
+dc_loc_dat <- dichot_dat |>
+  filter(refid %in% kq1_refid) |>
+  filter(if_any(starts_with("disch_"), ~ !is.na(.x))) |>
+  mutate(
+    arm_n = ifelse(!is.na(disch_update_arm_n), disch_update_arm_n, arm_n),
+    disch_nper = n_per_fun(disch_inst_n, arm_n, n_sig_dig = 1),
+    disch_per = disch_inst_n/arm_n
+  ) |>
   left_join(table_age_mn_med, by = c("refid", "arm_id")) |> # age_table
   left_join(study_arm_dat |> select(refid, arm_id, asa_ps_incl), by = c("refid", "arm_id")) |>
   left_join(surgs |> select(refid, surgs_noabbr_f), by = c("refid")) |>
-  left_join(study_char_dat |> select(refid, country), by = "refid" ) |>
-  select(refid, refid, arm_id, study, study_l, arm_n, arm, asa_ps_incl, age_table, surgs_noabbr_f, country, starts_with("disch_"))
-  
+  left_join(study_char_dat |> select(refid, country), by = "refid") |>
+  mutate(design_surg = paste0(design_f_lab, " — ", surgs_noabbr_f)) |>
+  select(refid, refid, arm_id, study, study_l, arm_n, arm, asa_ps_incl, age_table, design_surg, country, starts_with("disch_")) |>
+  select(-c(disch_inst_per:disch_inst_95high))
 
-select(refid, refid_arm_id, study, study_l, arm_n, arm, asa_ps_incl, age_table, los_table, bar, surg_groups, country)
+# referent values for calculating rr and ci; rr_ci
+disch_rr_ref <- dc_loc_dat |>
+  select(refid, arm_id, disch_inst_n, arm_n) |>
+  arrange(refid, arm_id) |>
+  rename(ref_disch_n = disch_inst_n, ref_arm_n = arm_n) |>
+  # group_by(refid) |>
+  mutate(
+    ref_arm_n = ifelse(row_number() > 1, NA, ref_arm_n),
+    ref_disch_n = ifelse(row_number() > 1, NA, ref_disch_n),
+    .by = refid
+  ) |>
+  fill(ref_arm_n, ref_disch_n) |>
+  mutate(
+    ref_arm_n = ifelse(row_number() == 1, NA, ref_arm_n),
+    ref_disch_n = ifelse(row_number() == 1, NA, ref_disch_n),
+    .by = refid
+  ) 
 
+dc_loc_dat <- dc_loc_dat |> 
+  left_join(disch_rr_ref, by = c("refid", "arm_id")) |> 
+  arrange(study, arm_id) |> 
+  mutate(rr_ci = ifelse(!is.na(ref_disch_n), rr_ci_fun(disch_inst_n, arm_n, ref_disch_n, ref_arm_n), NA)) |> 
+  select(-starts_with("ref_")) 
 
 ```
 
+```{r dc_loc_gt}
+dc_loc_dat |> 
+  group_by(study_l) |>
+  arrange(study, arm_id) |> 
+  mutate(
+    study_l = ifelse(row_number() == 1, study_l, NA),
+    country = ifelse(row_number() == 1, country, NA),
+    bar = case_when(
+      str_detect(arm, "Exp") ~ bar_prop(disch_per * 100, "#A93226"),
+      .default = bar_prop(disch_per * 100, "#969696")
+    ),
+  ) |>
+  ungroup() |>
+  select(refid, study_l, arm_n, arm, age_table, country, disch_nper, bar, rr_ci, everything()) |> 
+  group_by(design_surg) |>
+  gt(id = "one") |>
+  row_group_order(groups = c("Randomized Clinical Trial — Orthopedic", "Before-After/Time Series — Orthopedic", "Randomized Clinical Trial — Gastrointestinal/Abdominal", "Randomized Clinical Trial — Various", "Before-After/Time Series — Various", "Before-After/Time Series — Neurosurgical")) |>
+  cols_hide(c(refid, arm_id, study, disch_update_arm_n, asa_ps_incl, disch_inst_n, disch_per)) |>
+  cols_label(
+    study_l          = "Study",
+    arm_n            = " N",
+    arm              = "Arm",
+    age_table        = "   Age",
+    country          = "Country",
+    disch_nper       = "N (%)",
+    bar              = "0 — 100%",
+    rr_ci            = "RR (95% CI)"
+  ) |>
+  tab_spanner(label = "Discharge to Institution", columns = c(disch_nper:bar), level = 1) |>
+  fmt_markdown(columns = c(study_l, bar, age_table)) |>
+  # fmt_number(VARIABLE, decimals = 0) |>
+  # fmt_integer(use_seps = TRUE, sep_mark = ",") |>
+  sub_missing(columns = everything(), missing_text = "") |>
+  gt_theme_mg() |>
+  cols_width(
+    study_l          ~ px(165),
+    arm_n            ~ px(45),
+    arm              ~ px(50),
+    age_table        ~ px(90),
+    country          ~ px(80),
+    disch_nper       ~ px(80),
+    bar              ~ px(120),
+    rr_ci            ~ px(120)
+    ) |> 
+  tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(study, age_table, arm))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(rr_ci))) |>
+  tab_style(style = cell_text(align = "right"),  locations = cells_column_labels(columns = c(arm_n, disch_nper))) |>
+  tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study, arm, bar))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rr_ci))) |>
+  tab_style(style = cell_text(align = "right"),  locations = cells_body(columns = c(disch_nper))) |>
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n, arm, age_table, disch_nper), rows = str_detect(arm, "Exp"))) |> 
+    tab_footnote("Exp: expanded preoperative evaluation; Std: standard preoperative evaluation; RR: risk ratiodifference; Various: more that one procedure category.") |> 
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table)))
 
+```
 
+### *Pooled*
+
+Pending
+
+<br/>
 
 ## **Mortality**
 
