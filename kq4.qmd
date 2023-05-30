@@ -2229,35 +2229,7 @@ rob_traffic_light(robinsi_temp_dat, psize = 4, tool = "ROBINS-I", colour = "colo
 
 ## **References** {#references}
 
-```{r}
-#| eval: false
-dichot_dat |> 
-  select(matches("satis")) |> 
-  filter(if_any(matches("satis"), ~ !is.na(.x)))
 
-temp <- likert_dat |> 
-  select(cog_func_cdr:cog_func_other) |> 
-  filter(if_any(cog_func_cdr:cog_func_other, ~ !is.na(.x)))
-
-temp <- likert_dat |> 
-  select(digit_time1:drstotal_pval_betw) |> 
-  filter(if_any(digit_time1:drstotal_pval_betw, ~ !is.na(.x)))
-
-writexl::write_xlsx(temp, "/Users/mgrant/Desktop/temp.xlsx")
-
-
-
-
-
-
-cog_func_cfq
-cog_func_dst
-cog_func_mmse
-cog_func_moca
-cog_func_trail
-cog_func_other
-
-```
 
 
 
