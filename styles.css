@@ -86,6 +86,10 @@ div.callout-note.callout {
 	 display: block;
 }
 
+.toc-title {
+  toc-color: #A93226 ;
+}
+
 vertical-text {
    writing-mode: vertical-lr;
    transform: rotate(180deg);

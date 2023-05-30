@@ -1,7 +1,7 @@
 ---
 title: "Expanded Preoperative Evaluation & <br/> Postoperative Delirium Screening"
 editor: source
-toc-title: "Expanded Preoperative Evaluation and Postoperative Delirium Screening"
+toc-title: "**Expanded Preoperative Evaluation and Postoperative Delirium Screening**"
 toc-location: "left"
 cap-location: "top"
 toc-depth: 4
@@ -75,6 +75,7 @@ dichot_dat <- dichot_dat |>
 
 contin_dat <- contin_dat |>
   filter(refid %in% c(kq1_refid, kq8_refid)) |>
+  left_join(study_arm_dat |> select(refid, arm_id, arm), by = c("refid", "arm_id")) |>
   arrange(design_f) |>
   mutate(
     study = ifelse(study == "Tarazona-Santabalbina 2019", "T-Santabalbina 2019", study),
@@ -83,6 +84,7 @@ contin_dat <- contin_dat |>
 
 likert_dat <- likert_dat |> 
   filter(refid %in% c(kq1_refid, kq8_refid)) |> 
+  left_join(study_arm_dat |> select(refid, arm_id, arm), by = c("refid", "arm_id")) |>
   arrange(design_f) |> 
     mutate(
     study = ifelse(study == "Tarazona-Santabalbina 2019", "T-Santabalbina 2019", study),
@@ -733,6 +735,321 @@ forest(delirium_nrsi_meta,
 )
 ```
 <foot_mg> RR: risk ratio; D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. </foot_mg>
+
+## **Length of Stay**
+
+<font size = 4> `r table_ref()` Length of stay according to procedure classification and type of preoperative evaluation. </font>
+
+```{r length_of_stay}
+#| eval: true
+los_tab <- contin_dat |>
+  mutate(los_for_tables(contin_dat)) |>
+  filter(refid %in% kq1_refid) |> 
+  filter(if_any(los_m:los_diff_pval, ~ !is.na(.))) |>
+  left_join(table_age_mn_med, by = c("refid", "arm_id")) |> # age_table
+  left_join(study_arm_dat |> select(refid, arm_id, asa_ps_incl), by = c("refid", "arm_id")) |>
+  left_join(surgs |> select(refid, surgs_noabbr_f), by = c("refid")) |>
+  left_join(study_char_dat |> select(refid, country), by = "refid" ) |> 
+  mutate(
+    refid_arm_id = paste0(refid, "-", arm_id),
+    surg_groups = paste0(design_f_lab, " - ", surgs_noabbr_f),
+    mean_med = case_when(
+      !is.na(los_m) ~ los_m,
+      !is.na(los_med) ~ los_med
+    ),
+    calc_prop_25d = 100 * mean_med / 25,
+    bar = case_when(
+      str_detect(arm, "Exp") ~ bar_prop(calc_prop_25d, "#A93226"),
+      .default = bar_prop(calc_prop_25d, "#969696")
+    )
+  ) |>
+  arrange(surg_groups, year, study, arm_id) |> 
+  select(refid, refid_arm_id, study, study_l, arm_n, arm, asa_ps_incl, age_table, los_table, bar, surg_groups, country)
+
+los_tab |>
+  mutate(study_l = ifelse(row_number() > 1, "", study_l),
+         country = ifelse(row_number() > 1, "", country),
+         # arm_n = ifelse(is.na(arm_n), "–", arm_n),
+         .by = refid) |> 
+  # tabyl(surg_groups) |> pull(surg_groups) |> toString()
+  group_by(surg_groups) |>
+  gt(id = "one") |>
+  row_group_order(groups = c("Before-After/Time Series - Cardiac", "Randomized Clinical Trial - Gastrointestinal/Abdominal", "Before-After/Time Series - Gastrointestinal/Abdominal", "Retrospective Cohort - Gastrointestinal/Abdominal", "Randomized Clinical Trial - Orthopedic", "Before-After/Time Series - Orthopedic", "Randomized Clinical Trial - Various", "Before-After/Time Series - Various", "Before-After/Time Series - Neurosurgical", "Before-After/Time Series - Urologic")) |> 
+  sub_missing(columns = everything(), missing_text = "") |>
+  cols_hide(c(refid, refid_arm_id, study)) |>
+  cols_label(
+    study_l = "Study",
+    arm_n = " N",
+    arm = "Arm",
+    asa_ps_incl = "PS",
+    age_table = "    Age",
+    los_table = "    LOS",
+    bar = "0 – 25 days",
+    country = "Country"
+  ) |>
+  fmt_integer(use_seps = TRUE, sep_mark = ",") |>
+  gt_theme_mg() |> 
+  cols_width(
+    study_l ~ px(165),
+    arm_n ~ px(60),
+    arm ~ px(60),
+    asa_ps_incl ~ px(60),
+    age_table ~ px(100),
+    los_table ~ px(100),
+    bar ~ px(120),
+    country ~ px(80)
+    )  |> 
+  fmt_markdown(columns = c(study_l, bar, age_table, los_table)) |> 
+  tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, bar))) |>
+  tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(study_l, age_table, los_table))) |>
+  tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study_l, age_table, los_table, bar, arm))) |> 
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(arm, "Exp"))) |> 
+  tab_footnote(md("NR: not reported")) |> 
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, los_table))) |> 
+  tab_footnote(md("ASA Physical Status."), locations = cells_column_labels(columns = c(asa_ps_incl))) |> 
+  tab_footnote("Number of patients not reported (time-series).", locations = cells_body(columns = c(arm_n), rows = study == "Lau 2013" & is.na(arm_n)))
+
+# save refids for meta-analysis
+los_refid <- los_tab$refid
+```
+
+<font size = 4> `r table_ref()` Length of stay according in studies of postoperative delirium screening only. </font>
+
+```{r length_of_stay_nrsi}
+#| eval: true
+los_tab <- contin_dat |>
+  mutate(los_for_tables(contin_dat)) |>
+  filter(refid %in% screen_only_refid) |> 
+  filter(if_any(los_m:los_diff_pval, ~ !is.na(.))) |>
+  left_join(table_age_mn_med, by = c("refid", "arm_id")) |> # age_table
+  left_join(study_arm_dat |> select(refid, arm_id, asa_ps_incl, arm_kq8_pacu_screen), by = c("refid", "arm_id")) |>
+  left_join(surgs |> select(refid, surgs_noabbr_f), by = c("refid")) |>
+  left_join(study_char_dat |> select(refid, country), by = "refid" ) |> 
+  mutate(
+    arm = ifelse(arm_kq8_pacu_screen == "pacuscreen_yes", "Screened", "Unscreened"),
+    refid_arm_id = paste0(refid, "-", arm_id),
+    surg_groups = paste0(design_f_lab, " - ", surgs_noabbr_f),
+    mean_med = case_when(
+      !is.na(los_m) ~ los_m,
+      !is.na(los_med) ~ los_med
+    ),
+    calc_prop_25d = 100 * mean_med / 25,
+    bar = case_when(
+      str_detect(arm, "Screened") ~ bar_prop(calc_prop_25d, "#A93226"),
+      .default = bar_prop(calc_prop_25d, "#969696")
+    )
+  ) |>
+  arrange(surg_groups, year, study, arm_id) |> 
+  select(refid, refid_arm_id, study, study_l, arm_n, arm, asa_ps_incl, age_table, los_table, bar, surg_groups, country)
+
+los_tab |>
+  mutate(study_l = ifelse(row_number() > 1, "", study_l),
+         country = ifelse(row_number() > 1, "", country),
+         # arm_n = ifelse(is.na(arm_n), "–", arm_n),
+         .by = refid) |> 
+  # tabyl(surg_groups) |> pull(surg_groups) |> toString()
+  group_by(surg_groups) |>
+  gt(id = "one") |>
+  # row_group_order(groups = c("Before-After/Time Series - Cardiac", "Randomized Clinical Trial - Gastrointestinal/Abdominal", "Before-After/Time Series - Gastrointestinal/Abdominal", "Retrospective Cohort - Gastrointestinal/Abdominal", "Randomized Clinical Trial - Orthopedic", "Before-After/Time Series - Orthopedic", "Randomized Clinical Trial - Various", "Before-After/Time Series - Various", "Before-After/Time Series - Neurosurgical", "Before-After/Time Series - Urologic")) |> 
+  sub_missing(columns = everything(), missing_text = "") |>
+  cols_hide(c(refid, refid_arm_id, study)) |>
+  cols_label(
+    study_l = "Study",
+    arm_n = " N",
+    arm = "Arm",
+    asa_ps_incl = "PS",
+    age_table = "    Age",
+    los_table = "    LOS",
+    bar = "0 – 25 days",
+    country = "Country"
+  ) |>
+  fmt_integer(use_seps = TRUE, sep_mark = ",") |>
+  gt_theme_mg() |> 
+  cols_width(
+    study_l ~ px(165),
+    arm_n ~ px(60),
+    arm ~ px(80),
+    asa_ps_incl ~ px(60),
+    age_table ~ px(100),
+    los_table ~ px(100),
+    bar ~ px(120),
+    country ~ px(80)
+    )  |> 
+  fmt_markdown(columns = c(study_l, bar, age_table, los_table)) |> 
+  tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, bar))) |>
+  tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(study_l, age_table, los_table))) |>
+  tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study_l, age_table, los_table, bar, arm))) |> 
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(arm, "Screened"))) |> 
+  tab_footnote(md("NR: not reported")) |> 
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, los_table))) |> 
+  tab_footnote(md("ASA Physical Status."), locations = cells_column_labels(columns = c(asa_ps_incl))) |> 
+  tab_footnote("Number of patients not reported (time-series).", locations = cells_body(columns = c(arm_n), rows = study == "Lau 2013" & is.na(arm_n)))
+  
+```
+
+### *Pooled*
+
+<font size = 4> `r figure_ref()` Mean difference in lengths of stay (expanded versus standard preoperative evaluation; randomized clinical trials). </font>
+
+```{r los_meta_dat}
+#| echo: false
+los_meta_dat <- contin_dat |>
+  filter(refid %in% kq1_refid) |> 
+  filter(refid %in% los_refid) |> 
+  filter(!study %in% c("Lau 2013", "Vochteloo 2011")) |> # time-series, multiple times w/o sufficient data
+  filter(!study %in% c("Ommundsen 2018")) |> # only median and bwgrp p-value
+  # calculated sds from pvalues: Partridge 2017, Zhu 2022
+  mutate(
+    los_sd =
+      case_when(
+        study == "Partridge 2017" ~ sd_bwgrp_sdonly_fun(3.32, 5.53, 104, 105, .001),
+        # study == "Ommundsen 2018" ~ sd_bwgrp_fun(8, 8.1, 53, 63, .63)[6],
+        study == "Zhu 2022" ~ sd_bwgrp_sdonly_fun(20.8, 23.6, 70, 85, .001),
+        .default = los_sd
+      )
+  ) |> 
+  select(refid, study, design_f_lab, arm, arm_n, los_m, los_sd, los_med, los_rl, los_ru, los_iqrl, los_iqru, los_95l, los_95u) |> 
+  select(!matches("95")) |> 
+  rename_with(~ str_remove(.x, "los_")) |> 
+  pivot_wider(names_from = "arm", values_from = arm_n:iqru) |> 
+  mutate(year = str_extract(study, "\\d{4}")) |> 
+  arrange(year) 
+
+los_rct_meta_dat <- los_meta_dat |> 
+  filter(str_detect(design_f_lab, "Rand")) |> 
+  left_join(rob2_meta_dat, by = "refid") |> 
+  left_join(surgs |> select(refid, surgs_single), by = "refid")
+
+los_nrsi_meta_dat <- los_meta_dat |> 
+  filter(!str_detect(design_f_lab, "Rand")) |> 
+  left_join(robinsi_meta_dat, by = "refid") |> 
+  left_join(surgs |> select(refid, surgs_single), by = "refid")
+```
+
+```{r los_meta, fig.width = 14, fig.height = 4.55, fig.align = "left"}
+los_meta <- metacont(
+  n.e = arm_n_Exp, 
+  n.c = arm_n_Std,
+  common =  TRUE,
+  mean.e = m_Exp,
+  sd.e = sd_Exp,
+  median.e = med_Exp,
+  q1.e = iqrl_Exp,
+  q3.e = iqru_Exp,
+  min.e = rl_Exp,
+  max.e = ru_Exp,
+  mean.c = m_Std,
+  sd.c = sd_Std,
+  median.c = med_Std,
+  q1.c = iqrl_Std,
+  q3.c = iqru_Std,
+  min.c = rl_Std,
+  max.c = ru_Std,
+  data = los_rct_meta_dat,
+  sm = "MD",
+  method.tau = "REML",
+  hakn = FALSE,
+  prediction = TRUE,
+  studlab = study
+)
+
+forest(los_meta,
+  weight.study = "random",
+  # common =  FALSE,
+  label.e = "Expanded ",
+  label.c = "Standard ",
+  print.tau2 = FALSE,
+  print.tau = TRUE,
+  print.tau.ci = TRUE,
+  digits = 1,
+  digits.sd = 1,
+  digits.mean = 1,
+  digits.tau = 1,
+  # digits.pval.Q = 2,
+  print.I2.ci = TRUE,
+  fs.xlab = 10,
+  just.addcols.right = "right",
+  print.pval.Q = FALSE,
+  # sortvar = -TE,
+  # xlim = c(-10, 10),
+  # at = c(-80, -60, -40, -20, 0, 20, 40),
+  rightcols = c("effect", "ci", "surgs_single", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  rightlabs = c("MD ", "(95% CI)   ", "Procedure", "D1", "D2", "D3", "D4", "D5", "All"),
+  xlab = "Favors: Expanded                                      Standard           ",
+  smlab = "Mean Difference (days)",
+  addrows.below.overall = 4
+)
+
+```
+<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
+When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range with between-group p-value used as a last resort.<br/>
+Ommundsen 2018 reported only median and between-group p-value with so was excluded.
+</foot_mg> 
+
+<br/>
+
+<font size = 4> `r figure_ref()` Mean difference in lengths of stay (expanded versus standard preoperative evaluation; nonrandomized designs). </font>
+
+```{r los_nrsi_meta, fig.width = 14, fig.height = 5.5, fig.align = "left"}
+los_meta <- metacont(
+  n.e = arm_n_Exp, 
+  n.c = arm_n_Std,
+  common =  TRUE,
+  mean.e = m_Exp,
+  sd.e = sd_Exp,
+  median.e = med_Exp,
+  q1.e = iqrl_Exp,
+  q3.e = iqru_Exp,
+  min.e = rl_Exp,
+  max.e = ru_Exp,
+  mean.c = m_Std,
+  sd.c = sd_Std,
+  median.c = med_Std,
+  q1.c = iqrl_Std,
+  q3.c = iqru_Std,
+  min.c = rl_Std,
+  max.c = ru_Std,
+  data = los_nrsi_meta_dat,
+  sm = "MD",
+  method.tau = "REML",
+  hakn = FALSE,
+  prediction = TRUE,
+  studlab = study
+)
+
+forest(los_meta,
+  weight.study = "random",
+  common =  FALSE,
+  label.e = "Expanded ",
+  label.c = "Standard ",
+  print.tau2 = FALSE,
+  print.tau = TRUE,
+  print.tau.ci = TRUE,
+  digits = 1,
+  digits.sd = 1,
+  digits.mean = 1,
+  digits.tau = 1,
+  print.I2.ci = TRUE,
+  fs.xlab = 10,
+  just.addcols.right = "right",
+  print.pval.Q = FALSE,
+  # sortvar = -TE,
+  # xlim = c(-10, 10),
+  # at = c(-80, -60, -40, -20, 0, 20, 40),
+  rightcols = c("effect", "ci", "surgs_single", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "Overall"),
+  rightlabs = c("MD", "(95% CI)  ", "Procedure", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "All"),
+  xlab = "Favors: Expanded                                   Standard    ",
+  smlab = "Mean Difference (days)",
+  addrows.below.overall = 4
+)
+
+```
+<foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. <br/> 
+When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range.  </foot_mg> 
+
+#########
 
 ## **Mortality**
 

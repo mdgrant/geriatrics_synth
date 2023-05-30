@@ -180,6 +180,11 @@ sd_bwgrp_fun <- function(m1, m2, n1, n2, pVal) {
   print(c(n1, m1, sd1, n2, m2, sd2))
 }
 
+sd_bwgrp_sdonly_fun <- function(m1, m2, n1, n2, pVal) {
+  sd2 <- abs((m2 - m1) / qt(pVal / 2, n1 + n2 - 2)) * sqrt(n2 * n1 / (n2 + n1))
+  sd2
+}
+
 ## by_study_xlsx usage -------------------------------- (2023-03-06 22:52) @----
 # add design to tibble if not study characteristics file
 # temp_dat <- left_join(study_arm_dat, study_char_dat |> select(refid, design_f), by = "refid") |>
