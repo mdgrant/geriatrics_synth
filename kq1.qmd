@@ -29,7 +29,6 @@ Does screening older patients for delirium in the post anesthesia care unit impr
 source("code/load_data.R")
 ```
 
-
 ```{r, data}
 # delete van der Vlies 2020 882 NRC
 kq1_refid <- kq1_refid[!kq1_refid == 882]
@@ -270,7 +269,7 @@ studychar_tab <- study_arm_dat |>
   left_join(table_age_mn_med, by = c("refid", "arm_id")) |> 
   left_join(table_mn_med |> select(refid, arm_id, pre_mmse), by = c("refid", "arm_id")) |> 
   mutate(
-    arm = replace_na(arm, "PACU Screen"),
+    arm = replace_na(arm, "Active Screening"),
     surg_design = paste0(surgs_single, " — ", design_f_lab),
     surg_design = fct(surg_design, 
                       levels = c("Cardiac — Randomized Clinical Trial", "Cardiac — Before-After/Time Series", "Cardiac — Other", "GI/Abd — Randomized Clinical Trial", "GI/Abd — Before-After/Time Series", "GI/Abd — Retrospective Cohort", "Ortho — Randomized Clinical Trial", "Ortho — Before-After/Time Series", "Ortho — Prospective Cohort", "Various — Randomized Clinical Trial", "Various — Nonrandomized Trial", "Various — Before-After/Time Series", "Neuro — Before-After/Time Series", "Urol — Before-After/Time Series")),
@@ -292,12 +291,12 @@ studychar_tab |>
   group_by(surg_design) |>
   gt(id = "one") |>
   row_group_order(groups = c("Cardiac — Randomized Clinical Trial", "Cardiac — Before-After/Time Series", "Cardiac — Fully Paired", "GI/Abd — Randomized Clinical Trial", "GI/Abd — Before-After/Time Series", "GI/Abd — Retrospective Cohort", "Ortho — Randomized Clinical Trial", "Ortho — Before-After/Time Series", "Ortho — Prospective Cohort", "Various — Randomized Clinical Trial", "Various — Before-After/Time Series", "Neuro — Before-After/Time Series", "Urol — Before-After/Time Series")) |>
-  cols_hide(c(refid, arm_id, study, year, design_f_lab, surgs_single)) |>
+  cols_hide(c(refid, arm_id, study, year, design_f_lab, surgs_single, pacu_screen)) |>
   cols_label(
     study_l          = "Study",
     arm_n            = "N ",
     arm              = "Arm",
-    pacu_screen      = "PACU Screen",
+    # pacu_screen      = "PACU Screen",
     asa_ps_incl      = "ASA PS",
     age_table        = "   Age",
     pre_mmse         = "   MMSE",
@@ -309,7 +308,7 @@ studychar_tab |>
     study_l          ~ px(165),
     arm_n            ~ px(45),
     arm              ~ px(90),
-    pacu_screen      ~ px(80),
+    # pacu_screen      ~ px(80),
     asa_ps_incl      ~ px(60),
     age_table        ~ px(100),
     pre_mmse         ~ px(100)
@@ -323,7 +322,7 @@ studychar_tab |>
   tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
   tab_style(style = list(cell_text(color = color_2)),   locations = cells_body(columns = c(arm_n:pre_mmse), rows = str_detect(arm, "Exp"))) |>
   tab_style(style = list(cell_text(color = color_1)),   locations = cells_body(columns = c(arm_n:pre_mmse), rows = str_detect(arm, "PACU"))) |> 
-  tab_footnote(md("Exp: expanded preoperative evaluation; Std: standard preoperative evaluation; PACU: post-anesthesia care unit; NR: not reported")) |>
+  tab_footnote(md("Exp: expanded preoperative evaluation; Std: standard preoperative evaluation; Active Screening: active delirium screening; NR: not reported")) |>
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>  
   tab_footnote(md("ASA Physical Status."),              locations = cells_column_labels(columns = c(asa_ps_incl)))
 
@@ -331,7 +330,7 @@ studychar_tab |>
 
 ### Evaluation Components
 
-<font size = 4> `r table_ref()` Components of expanded preoperative evaluation and interventions prompted (excludes studies conducting only PACU screening). </font>
+<font size = 4> `r table_ref()` Components of expanded preoperative evaluation and interventions prompted. </font>
 
 ```{r comparators}
 #| eval: true
@@ -453,7 +452,7 @@ expanded_combined |>
     staff_supplement     = md(vert_lab_fun("Nutritional Suppl")),
     staff_treatplan      = md(vert_lab_fun("Treatment Plan")),  
     staff_other          = md(vert_lab_fun("Other")),
-    pacu_screen          = md(vert_lab_fun("PACU Delirium Screen")),
+    pacu_screen          = md(vert_lab_fun("Active Delirium Screen")),
   ) |> 
   cols_width(
     study_l        ~ px(165),
@@ -480,7 +479,7 @@ expanded_combined |>
   tab_style(style = list(cell_text(color = color_2)), locations = cells_column_spanners(spanners = "Targeted")) |> 
   tab_style(style = list(cell_text(color = color_3)), locations = cells_column_spanners(spanners = "Patient Education")) |> 
   tab_style(style = list(cell_text(color = color_4)), locations = cells_column_spanners(spanners = "Staff")) |> 
-  tab_footnote(md("ERAS: enhanced recovery after surgery; CGA: comprehensive geriatric assessment; GI: gastrointestinal; Abd: abdominal; Suppl: supplement; PACU: post-anestheisa care unit; \U25CF expanded evaluation only; \UFFED in expanded and standard evaluation arms; \U25E6 in standard evaluation arms only"))
+  tab_footnote(md("ERAS: enhanced recovery after surgery; CGA: comprehensive geriatric assessment; GI: gastrointestinal; Abd: abdominal; Suppl: supplement;  \U25CF expanded evaluation only; \UFFED in expanded and standard evaluation arms; \U25E6 in standard evaluation arms only"))
 
 ```
 
@@ -1049,6 +1048,27 @@ forest(los_meta,
 ```
 <foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. <br/> 
 When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range.  </foot_mg> 
+
+## **Discharge Location**
+```{r dc_loc}
+#| eval: false
+dc_loc_dat <- dichot_dat |> 
+  filter(refid %in% kq1_refid) |> 
+  filter(if_any(starts_with("disch_"), ~ !is.na(.x))) |> 
+  left_join(table_age_mn_med, by = c("refid", "arm_id")) |> # age_table
+  left_join(study_arm_dat |> select(refid, arm_id, asa_ps_incl), by = c("refid", "arm_id")) |>
+  left_join(surgs |> select(refid, surgs_noabbr_f), by = c("refid")) |>
+  left_join(study_char_dat |> select(refid, country), by = "refid" ) |>
+  select(refid, refid, arm_id, study, study_l, arm_n, arm, asa_ps_incl, age_table, surgs_noabbr_f, country, starts_with("disch_"))
+  
+
+select(refid, refid_arm_id, study, study_l, arm_n, arm, asa_ps_incl, age_table, los_table, bar, surg_groups, country)
+
+
+```
+
+
+
 
 ## **Mortality**
 
