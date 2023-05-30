@@ -29,7 +29,6 @@ Does screening older patients for delirium in the post anesthesia care unit impr
 source("code/load_data.R")
 ```
 
-## Data
 
 ```{r, data}
 # delete van der Vlies 2020 882 NRC
@@ -992,7 +991,7 @@ Ommundsen 2018 reported only median and between-group p-value with so was exclud
 
 <font size = 4> `r figure_ref()` Mean difference in lengths of stay (expanded versus standard preoperative evaluation; nonrandomized designs). </font>
 
-```{r los_nrsi_meta, fig.width = 14, fig.height = 5.5, fig.align = "left"}
+```{r los_nrsi_meta, fig.width = 14, fig.height = 5.2, fig.align = "left"}
 los_meta <- metacont(
   n.e = arm_n_Exp, 
   n.c = arm_n_Std,
@@ -1048,8 +1047,6 @@ forest(los_meta,
 ```
 <foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. <br/> 
 When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range.  </foot_mg> 
-
-#########
 
 ## **Mortality**
 
