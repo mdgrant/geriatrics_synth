@@ -96,7 +96,7 @@ domain_summary <- soe_kq3.dat |>
 
 ```
 
-<font size = 4> `r table_ref()` Strength of evidence summaries --- regional versus general anesthesia. </font>
+<font size = 4> `r table_ref()` Strength of evidence summaries — regional versus general anesthesia. </font>
 
 ```{r kq3SOE_gt}
 #| include: true
@@ -154,7 +154,7 @@ soe_summary |>
 
 ### GRADE Domains
 
-<font size = 4> Table `r table_n`. GRADE domains for strength of evidence ratings --- regional versus general anesthesia. </font>
+<font size = 4> `r table_ref()` GRADE domains for strength of evidence ratings — regional versus general anesthesia. </font>
 
 ```{r kq3Domain, eval = TRUE}
 #| warning: true
@@ -359,7 +359,7 @@ soe_summary |>
 
 ### GRADE Domains
 
-<font size = 4> Table `r table_n`. GRADE domains for strength of evidence ratings --- TIVA versus inhaled anesthesia. </font>
+<font size = 4> `r table_ref()` GRADE domains for strength of evidence ratings --- TIVA versus inhaled anesthesia. </font>
 
 ```{r kq4Domain, eval = TRUE}
 #| warning: true
@@ -577,9 +577,7 @@ soe_summary |>
 
 ### GRADE Domains
 
-<br>
-
-<font size = 4> Table `r table_n`. GRADE domains for strength of evidence rating for outcomes relevant to delirium prophylaxis. </font>
+<font size = 4> `r table_ref()` GRADE domains for strength of evidence rating for outcomes relevant to delirium prophylaxis. </font>
 
 ```{r kq6Domain, eval = TRUE}
 #| warning: false
