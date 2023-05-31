@@ -269,7 +269,7 @@ studychar_tab <- study_arm_dat |>
   left_join(table_age_mn_med, by = c("refid", "arm_id")) |> 
   left_join(table_mn_med |> select(refid, arm_id, pre_mmse), by = c("refid", "arm_id")) |> 
   mutate(
-    arm = replace_na(arm, "Active Screening"),
+    arm = replace_na(arm, "Scrn"),
     surg_design = paste0(surgs_single, " — ", design_f_lab),
     surg_design = fct(surg_design, 
                       levels = c("Cardiac — Randomized Clinical Trial", "Cardiac — Before-After/Time Series", "Cardiac — Other", "GI/Abd — Randomized Clinical Trial", "GI/Abd — Before-After/Time Series", "GI/Abd — Retrospective Cohort", "Ortho — Randomized Clinical Trial", "Ortho — Before-After/Time Series", "Ortho — Prospective Cohort", "Various — Randomized Clinical Trial", "Various — Nonrandomized Trial", "Various — Before-After/Time Series", "Neuro — Before-After/Time Series", "Urol — Before-After/Time Series")),
@@ -321,8 +321,8 @@ studychar_tab |>
   tab_style(style = cell_text(align = "center"),        locations = cells_body(columns = c(pacu_screen))) |>
   tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
   tab_style(style = list(cell_text(color = color_2)),   locations = cells_body(columns = c(arm_n:pre_mmse), rows = str_detect(arm, "Exp"))) |>
-  tab_style(style = list(cell_text(color = color_1)),   locations = cells_body(columns = c(arm_n:pre_mmse), rows = str_detect(arm, "PACU"))) |> 
-  tab_footnote(md("Exp: expanded preoperative evaluation; Std: standard preoperative evaluation; Active Screening: active delirium screening; NR: not reported")) |>
+  tab_style(style = list(cell_text(color = color_1)),   locations = cells_body(columns = c(arm_n:pre_mmse), rows = str_detect(arm, "Scrn"))) |> 
+  tab_footnote(md("Exp: expanded preoperative evaluation; Std: standard preoperative evaluation; Scrn: active delirium screening; NR: not reported")) |>
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>  
   tab_footnote(md("ASA Physical Status."),              locations = cells_column_labels(columns = c(asa_ps_incl)))
 
@@ -733,6 +733,42 @@ forest(delirium_nrsi_meta,
 )
 ```
 <foot_mg> RR: risk ratio; D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. </foot_mg>
+
+## **Complications**
+
+```{r complications_check}
+#| eval: false
+# create excel file to inspect
+complication_fun <- function(var_prefix) {
+  dichot_dat %>%
+    filter(if_any(!!paste0(var_prefix, "_per"):!!paste0(var_prefix, "_95high"), ~ !is.na(.x))) |>
+    select(refid, study, arm_id, arm, arm_n, comp_update_arm_n, !!paste0(var_prefix, "_n"):!!paste0(var_prefix, "_95high"))
+}
+
+complication_incl <- c("cardiac", "myoinfarct", "cardarr", "stroke", "kidneyinj", "asppneum", "atelec", "pulm", "pneum", "pthorax", "airleak", "pulcongest", "pe", "pinfiltrate", "respfail", "intub", "upperair", "vent48")
+
+# complication <- c("medical", "surg", "cardiac", "gastro", "neuro", "pulm", "thromb", "infect", "fall", "stroke", "othcomp", "asppneum", "atelec", "bronch", "cardarr", "myoinfarct", "ssi", "sepsis", "uti", "pneum", "pthorax", "airleak", "pulcongest", "pe", "pinfiltrate", "respfail", "intub", "upperair", "vent48", "kidneyinj", "nerveinj", "clavien1", "clavien2", "clavien3", "clavien4", "clavien5")
+
+adverse_events_dat <- map(complication_incl, complication_fun)
+
+wb <- openxlsx::createWorkbook("kq1_complications")
+
+for (i in 1:17) {
+    temp_sheet <- adverse_events_dat[[i]]
+    addWorksheet(wb, sheetName = complication_incl[i])
+    setColWidths(wb, i, cols = c(1:12), widths = c(rep(15, 12)))
+    writeData(wb, sheet = i, temp_sheet)
+}
+
+path <- glue::glue("/Users/mgrant/Desktop/temp.xlsx")
+saveWorkbook(wb, "/Users/mgrant/Desktop/kq4.xlsx", overwrite = TRUE)
+```
+
+
+
+
+
+
 
 ## **Length of Stay**
 
