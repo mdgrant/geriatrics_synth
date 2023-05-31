@@ -715,8 +715,8 @@ forest(delirium_nrsi_meta,
   common = TRUE,
   label.e = "Expanded",
   label.c = "Standard",
-  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
-  rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
+  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "Overall"),
+  rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "All"),
   just.addcols.right = "right",
   digits = 2,
   digits.tau2 = 1,
@@ -1053,7 +1053,7 @@ When the mean or standard deviation were not reported, they were imputed from fr
 
 ## **Discharge Location**
 
-<font size = 4> `r table_ref()` Discharge location in studies comparing expanded preoperative assessments with standard preoperative assessments. </font>
+<font size = 4> `r table_ref()` Discharge location in studies comparing expanded with standard preoperative assessments. </font>
 
 ```{r dc_loc}
 #| eval: true
@@ -1071,32 +1071,14 @@ dc_loc_dat <- dichot_dat |>
   left_join(study_char_dat |> select(refid, country), by = "refid") |>
   mutate(design_surg = paste0(design_f_lab, " — ", surgs_noabbr_f)) |>
   select(refid, refid, arm_id, study, study_l, arm_n, arm, asa_ps_incl, age_table, design_surg, country, starts_with("disch_")) |>
-  select(-c(disch_inst_per:disch_inst_95high))
-
-# referent values for calculating rr and ci; rr_ci
-disch_rr_ref <- dc_loc_dat |>
-  select(refid, arm_id, disch_inst_n, arm_n) |>
-  arrange(refid, arm_id) |>
-  rename(ref_disch_n = disch_inst_n, ref_arm_n = arm_n) |>
-  # group_by(refid) |>
+  select(-c(disch_inst_per:disch_inst_95high)) |> 
+  arrange(refid, arm_id) |> 
+  group_by(study) |> 
   mutate(
-    ref_arm_n = ifelse(row_number() > 1, NA, ref_arm_n),
-    ref_disch_n = ifelse(row_number() > 1, NA, ref_disch_n),
-    .by = refid
-  ) |>
-  fill(ref_arm_n, ref_disch_n) |>
-  mutate(
-    ref_arm_n = ifelse(row_number() == 1, NA, ref_arm_n),
-    ref_disch_n = ifelse(row_number() == 1, NA, ref_disch_n),
-    .by = refid
-  ) 
-
-dc_loc_dat <- dc_loc_dat |> 
-  left_join(disch_rr_ref, by = c("refid", "arm_id")) |> 
-  arrange(study, arm_id) |> 
-  mutate(rr_ci = ifelse(!is.na(ref_disch_n), rr_ci_fun(disch_inst_n, arm_n, ref_disch_n, ref_arm_n), NA)) |> 
+    ref_disch_n = ifelse(arm_id > 1, first(disch_inst_n), NA),
+    ref_arm_n = ifelse(arm_id > 1, first(arm_n), NA),
+    rr_ci = ifelse(!is.na(ref_disch_n), rr_ci_fun(disch_inst_n, arm_n, ref_disch_n, ref_arm_n), NA)) |> 
   select(-starts_with("ref_")) 
-
 ```
 
 ```{r dc_loc_gt}
@@ -1157,8 +1139,104 @@ dc_loc_dat |>
 
 ### *Pooled*
 
-Pending
+<font size = 4> `r figure_ref()` Pooled comparison of discharge location in studies comparing expanded with standard preoperative assessments (randomized clinical trials).   </font>
 
+```{r dc_loc_meta, fig.width = 14, fig.height = 3.8, fig.align = "left", warning = TRUE}
+dc_loc_rct_meta_dat <- dc_loc_dat |> 
+  filter(str_detect(design_surg, "Randomized")) |> 
+  select(refid, study, arm, disch_inst_n, arm_n) |> 
+  rename(disch_n = disch_inst_n) |> 
+  pivot_wider(names_from = arm, values_from = c(disch_n, arm_n)) |> 
+  left_join(rob2_meta_dat, by = "refid")
+
+dc_loc_rct_meta <- metabin(
+  disch_n_Exp, arm_n_Exp, disch_n_Std, arm_n_Std,
+  data = dc_loc_rct_meta_dat,
+  studlab = study,
+  sm = "RR",
+  method = "MH",
+  method.tau = "PM",
+  hakn = TRUE,
+  prediction = TRUE,
+  # allstudies = TRUE,
+  # subgroup = subgroup
+  )
+
+forest(dc_loc_rct_meta,
+  allstudies = TRUE,
+  common = TRUE,
+  label.e = "Expanded",
+  label.c = "Standard",
+  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
+  just.addcols.right = "right",
+  digits = 2,
+  digits.tau2 = 1,
+  overall.hetstat = TRUE,
+  print.I2.ci = TRUE,
+  # sortvar = year,
+  prediction = TRUE,
+  fs.xlab = 11,
+  pooled.events = TRUE,
+  print.pval.Q = FALSE,
+  xlim = c(0.3, 2),
+  xlab = "Favors: Expanded                          Standard",
+  addrows.below.overall = 4,
+  # text.addline1 = "Without Hartung-Knapp adjustment (95% CI, 0.40–0.92)."
+)
+```
+<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg> 
+
+<br/>
+
+<font size = 4> `r figure_ref()` Pooled comparison of discharge location in studies comparing expanded with standard preoperative assessments (nonrandomized designs).   </font>
+
+```{r dc_loc_nrsi_meta, fig.width = 14, fig.height = 3.5, warning = TRUE}
+#| fig-align: "left"
+dc_loc_nrsi_meta_dat <- dc_loc_dat |> 
+  filter(!str_detect(design_surg, "Randomized")) |> 
+  select(refid, study, arm, disch_inst_n, arm_n) |> 
+  rename(disch_n = disch_inst_n) |> 
+  pivot_wider(names_from = arm, values_from = c(disch_n, arm_n)) |> 
+  left_join(robinsi_meta_dat, by = "refid")
+
+dc_loc_nrsi_meta <- metabin(
+  disch_n_Exp, arm_n_Exp, disch_n_Std, arm_n_Std,
+  data = dc_loc_nrsi_meta_dat,
+  studlab = study,
+  sm = "RR",
+  method = "MH",
+  method.tau = "PM",
+  hakn = FALSE,
+  prediction = TRUE,
+  # allstudies = TRUE,
+  # subgroup = subgroup
+  )
+
+forest(dc_loc_nrsi_meta,
+  allstudies = TRUE,
+  common = TRUE,
+  label.e = "Expanded",
+  label.c = "Standard",
+  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "Overall"),
+  rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "All"),
+  just.addcols.right = "right",
+  digits = 2,
+  digits.tau2 = 1,
+  overall.hetstat = TRUE,
+  print.I2.ci = TRUE,
+  # sortvar = year,
+  prediction = TRUE,
+  fs.xlab = 11,
+  pooled.events = TRUE,
+  print.pval.Q = FALSE,
+  xlim = c(0.3, 2),
+  xlab = "Favors: Expanded                          Standard",
+  addrows.below.overall = 4,
+  # text.addline1 = "Without Hartung-Knapp adjustment (95% CI, 0.40–0.92)."
+)
+```
+<foot_mg> RR: risk ratio; D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. </foot_mg>
 <br/>
 
 ## **Mortality**
