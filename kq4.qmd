@@ -1346,41 +1346,6 @@ forest(adverse_meta,
 )
 }
 
-## old code ------------------------------------------- (2023-05-22 10:23) @----
-# adverse_meta <- metagen(or_ln_te, or_ln_se_te,
-#   data = adverse_meta_wide_dat,
-#   sm = "OR",
-#   backtransf = TRUE,
-#   subgroup = complication_nodesign
-# )  
-
-
-# forest(adverse_meta,
-#   allstudies = TRUE,
-#   random = TRUE,
-#   rightcols = c("effect", "ci"),
-#   rightlabs = c("OR ", "(95% CI)   "),
-#   leftcols = c("study_design", "n_TIVA", "arm_n_TIVA", "n_Inhaled", "arm_n_Inhaled"), 
-#   leftlabs = c("Complication &\nStudy", "Events", "TIVA\n Total", "Events", "Inhaled\n Total"),
-#   colgap.right = "4mm",
-#   just.addcols.right = "center",
-#   just.addcols.left = "right",
-#   digits.TE = 3,
-#   digits.tau2 = 1,
-#   overall.hetstat = FALSE,
-#   print.subgroup.name = FALSE,
-#   overall = FALSE,
-#   print.I2.ci = TRUE,
-#   prediction = FALSE,
-#   fs.xlab = 11,
-#   # pooled.events = TRUE,
-#   digits = 2, 
-#   print.pval.Q = FALSE,
-#   xlim = c(0.1, 10),
-#   xlab = "Favors: TIVA                             Inhaled",
-#   addrows.below.overall = 4,
-#   text.addline1 = "*Randomized clinical trial."
-# )
 ```
 
 #### Cardiac Composite
