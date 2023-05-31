@@ -640,6 +640,10 @@ robinsi_meta_dat <- robinsi_all_dat |>
 ## delete temporary files ----------------------------- (2022-12-24 13:23) @----
 rm(list = ls(pattern = ".*file"))
 
+## all_rob_meta_dat rct+nrsi--------------------------- (2023-05-31 11:39) @----
+all_rob_meta_dat <- bind_rows(rob2_meta_dat, robinsi_meta_dat |> select(-Study)) |>
+  relocate(Overall, .after = D7)
+
 ## refids by kq --------------------------------------- (2023-01-04 14:05) @----
 kq1_refid <- kq_refids(kq1_preop_eval)
 kq2_refid <- kq_refids(kq2_prehab)
