@@ -22,7 +22,7 @@ nocite: '@*'
 
 ## Key Question
 
-Among patients older patients undergoing surgery with general anesthesia, does the use of intravenous agents for maintenance of anesthesia improve postoperative outcomes compared with inhaled agents?
+Among older patients undergoing surgery with general anesthesia, does the use of intravenous agents for maintenance of anesthesia improve postoperative outcomes compared with inhaled agents?
 
 <!-- setup -------------------------------------------- (2022-12-24 16:56) @ --->
 
@@ -306,10 +306,10 @@ tiva_inh_tab |>
   tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:tiva_other), rows = str_detect(arm, "TIVA"))) |> 
   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(asa_ps_incl))) |>
   tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(desflurane:tiva_other))) |> 
-  tab_footnote(md("TIVA: total intravenous anesthesia; NR: not reported; ASA PS: ASA Physical Status; MMSE: Mini-Mental State Exam; Des: desflurane; Hal: halothane; Iso: isoflurane; Sev: sevoflurane; Oth: inhale_other; Fen: fentanyl; Pro: propofol; Rem: remifent; Oth: other.")) |> 
+  tab_footnote(md("TIVA: total intravenous anesthesia; NR: not reported; ASA PS: ASA Physical Status; MMSE: Mini-Mental State Exam; Des: desflurane; Hal: halothane; Iso: isoflurane; Sev: sevoflurane; Fen: fentanyl; Pro: propofol; Rem: remifentanil; Oth: other.")) |> 
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |> 
   tab_footnote("Thimylal", locations = cells_body(columns = tiva_other, rows = study == "Nishikawa 2007a" & arm_id == 2)) |> 
-  tab_footnote("Induction with sevoflurane.", locations = cells_body(columns = c(isoflurane, sevoflurane), rows = study == "Forsmo 2016" & arm_id == 1)) |> 
+  tab_footnote("Induction with sevoflurane; either inhalant used.", locations = cells_body(columns = c(isoflurane, sevoflurane), rows = study == "Forsmo 2016" & arm_id == 1)) |> 
   tab_footnote("Diazepam.", locations = cells_body(columns = arm, rows = study == "Salonia 2006" & arm_id == 2)) |>
   tab_footnote("Induction with sevoflurane.", locations = cells_body(columns = sevoflurane, rows = study == "Luntz 2004" & arm_id == 1)) |> 
   tab_footnote("Induction with sevoflurane.", locations = cells_body(columns = sevoflurane, rows = study == "Goins 2018" & arm_id == 1)) 
@@ -373,11 +373,13 @@ tiva_inh_tab |>
   tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:sufentanil), rows = str_detect(arm, "TIVA"))) |> 
   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(asa_ps_incl))) |>
   tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(desflurane:sevoflurane))) |> 
-  tab_footnote(md("TIVA: total intravenous anesthesia; NR: not reported; ASA PS: ASA Physical Status; MMSE: Mini-Mental State Exam; Des: desflurane; Iso: isoflurane; Sev: sevoflurane; Fen: fentanyl; Pro: propofol; Rem: remifent; Suf: sufentanil.")) |> 
+  tab_footnote(md("TIVA: total intravenous anesthesia; NR: not reported; ASA PS: ASA Physical Status; MMSE: Mini-Mental State Exam; Des: desflurane; Iso: isoflurane; Sev: sevoflurane; Fen: fentanyl; Pro: propofol; Rem: remifentanil; Suf: sufentanil.")) |> 
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |> 
-  tab_footnote("Either of the two inhalent agents used.", locations = cells_body(columns = c(desflurane, sevoflurane), rows = study %in% c("Koo 2016", "Cho 2021") & arm_id == 1)) |> 
+  tab_footnote("Either of the two inhalent agents used.", locations = cells_body(columns = c(desflurane, sevoflurane), rows = study %in% c("Koo 2016", "Cho 2021", "Goins 2018") & arm_id == 1)) |> 
   # tab_footnote("As needed.", locations = cells_body(columns = c(remifent), rows = study == "Cho 2021" & arm_id == 1)) 
-  tab_footnote("Any agent used.", locations = cells_body(columns = c(desflurane, sevoflurane, isoflurane) , rows = study == "Yoshimura 2022" & arm_id == 1))
+  tab_footnote("Any agent used.", locations = cells_body(columns = c(desflurane, sevoflurane, isoflurane) , rows = study == "Yoshimura 2022" & arm_id == 1)) |> 
+  tab_footnote("Agent used not specified.", locations = cells_body(columns = c(desflurane, sevoflurane, isoflurane) , rows = study == "Park 2020" & arm_id == 1))
+
 ```
 
 ## **Delirium Incidence**
@@ -797,9 +799,11 @@ dncr_dat |>
   tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(starts_with("scale"), dncr_time, rr_ci))) |>
   tab_style(style = cell_text(align = "right"), locations = cells_body(columns = c(neurocog_nper))) |>
   tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:pre_mmse, neurocog_nper), rows = str_detect(arm, "TIVA"))) |>
-  tab_footnote("Mini-Mental State Exam; DST: Digit Span Test; MoCA: Montreal Cognitive Assessment; RR: risk ratio; Dex: Dexmedetomidine; Mid: Midazolam; Prop: Propofol; Ulin: ulinastatin; Plac/None: placebo or no intervention.") |>
+  tab_footnote("Mini-Mental State Exam; DST: Digit Span Test; MoCA: Montreal Cognitive Assessment; RR: risk ratio.") |>
   tab_footnote("Day of assessment.", locations = cells_column_labels(columns = c(dncr_time))) |>
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |>
+  tab_footnote("Included Digit Symbol Substitution Test; Cumulative Test; Trail Making Test; Rey Auditory Verbal Learning Test; Grooved Pegboard Test.", locations = cells_body(columns = c(scale_other_tf), rows = study == "Geng 2017" & arm_id == 1)) |>
+  tab_footnote("Trail Making Test Part A, Trail Making Test Part B, Digit Span Forward, Digit Span Backward, Pegboard (dominant hand), Pegboard (non-dominant hand).", locations = cells_body(columns = c(scale_other_tf), rows = study == "Egawa 2016")) |>
   tab_footnote("Z ≥1.96.", locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == "Zhang 2018a")) |>
   tab_footnote("Difference from baseline >20%.", locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == "Egawa 2016")) |>
   tab_footnote("Difference from baseline >20%.", locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == "Geng 2017")) |>
@@ -1041,7 +1045,7 @@ ncd_dat |>
   tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(starts_with("scale"), ncd_time, rr_ci))) |>
   tab_style(style = cell_text(align = "right"),       locations = cells_body(columns = c(neurocog_nper))) |>
   tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:pre_mmse, neurocog_nper), rows = str_detect(arm, "TIVA"))) |>
-  tab_footnote("Mini-Mental State Exam; DST: Digit Span Test; MoCA: Montreal Cognitive Assessment; RR: risk ratio; Gen: general anesthesia; Reg: regional anesthesia.") |>
+  tab_footnote("Mini-Mental State Exam; DST: Digit Span Test; MoCA: Montreal Cognitive Assessment; RR: risk ratio.") |>
   tab_footnote("Day of assessment.",                   locations = cells_column_labels(columns = c(ncd_time))) |>
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |> 
   tab_footnote('Z ≥1.96.', locations = cells_body(columns = c(scale_dst), rows = arm_id == 1 & study == 'Rasmussen 2003')) |> 
@@ -1080,7 +1084,7 @@ path <- glue::glue("/Users/mgrant/Desktop/temp.xlsx")
 saveWorkbook(wb, "/Users/mgrant/Desktop/kq4.xlsx", overwrite = TRUE)
 ```
 
-<font size = 4> `r table_ref()` Reported complications in TIVA versus general anesthesia — cardiac, pulmonary, and acute kidney injury (TIVA versus inhaled; randomized and nonrandomized designs). </font>
+<font size = 4> `r table_ref()` Reported complications in TIVA versus inhaled anesthesia — cardiac, pulmonary, and acute kidney injury (TIVA versus inhaled; randomized and nonrandomized designs). </font>
 
 ```{r complications}
 #| warning: false
@@ -1254,7 +1258,7 @@ adverse_events_gt_dat |>
   tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(rd_or))) |>
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table))) |> 
   tab_footnote("Odds ratios reported for propensity-matched studies (risk difference with 95% CI reported accounting for matching were not reported).", locations = cells_column_labels(columns = c(rd_or))) |> 
-  tab_footnote("RD: risk difference; OR: odds ratio; Ophtho: ophthalmologic.") |> 
+  tab_footnote("RD: risk difference; OR: odds ratio; Ophtho: ophthalmologic; GI: gastointestinal; Abd: abdominal.") |> 
   tab_footnote("Compared with combined inhalation arms — differed only in induction agents.", locations = cells_body(columns = c(rd_or), rows = study == "Luntz 2004" & arm_id == 3)) |>
   tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "TIVA"))) 
   # tab_style(style = cell_text(align = "right"),       locations = cells_body(columns = c())) |>
@@ -1357,18 +1361,19 @@ temp_meta <- complication_meta_fun("Cardiac", use_hakn = FALSE)
 complication_forest_rct_fun(temp_meta)
 ```
 <foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
+Similar/Inhaled arms combined for Luntz 2004.<br/>
 Hartung-Knapp adjustment not used — applying yielded a 95% confidence interval of (0.33–4.19).
 </foot_mg> 
 
 #### Myocardial Infarction
 
-<font size = 4> `r figure_ref()` Risk ratio for myocardial infarction (regional versus general anesthesia; randomized and nonrandomized studies). </font>
+<font size = 4> `r figure_ref()` Risk ratio for myocardial infarction (TIVA versus inhaled anesthesia; randomized and nonrandomized studies). </font>
 
 ```{r complication_mi,  fig.width = 14, fig.height = 3.75, fig.align = "left"}
 temp_meta <- complication_meta_fun("MI", use_hakn = FALSE)
 complication_forest_fun(temp_meta)
 ```
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
+<foot_mg> RR: risk ratio.<br/>
 Similar arms combined for Liang 2017.
 </foot_mg> 
 
@@ -1378,13 +1383,13 @@ Not reported in included studies.
 
 #### Acute Kidney Injury
 
-<font size = 4> `r figure_ref()` Risk ratio for acute kidney injury (regional versus general anesthesia; nonrandomized studies). </font>
+<font size = 4> `r figure_ref()` Risk ratio for acute kidney injury (TIVA versus inhaled anesthesia; nonrandomized studies). </font>
 
 ```{r complication_aki,  fig.width = 14, fig.height = 3.35, fig.align = "left"}
 temp_meta <- complication_meta_fun("Acute Kidney Injury", use_hakn = FALSE, predictive = FALSE)
 complication_forest_fun(temp_meta)
 ```
-<foot_mg> RR: risk ratio; ; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
+<foot_mg> RR: risk ratio.<br/>
 </foot_mg> 
 
 #### Pulmonary
@@ -1400,7 +1405,6 @@ temp_meta <- complication_meta_fun("Pneumonia", use_hakn = FALSE, predictive = F
 complication_forest_rct_fun(temp_meta, use_predictive = FALSE)
 ```
 <foot_mg> RR: risk ratio; ; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
-Similar arms combined for Bielka 2021 and Liang 2017.
 </foot_mg> 
 
 #### Pulmonary Embolism
@@ -1411,7 +1415,7 @@ Similar arms combined for Bielka 2021 and Liang 2017.
 temp_meta <- complication_meta_fun("Pulmonary Embolism", use_hakn = FALSE, predictive = FALSE)
 complication_forest_fun(temp_meta, use_predictive = FALSE)
 ```
-<foot_mg> RR: risk ratio; ; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
+<foot_mg> RR: risk ratio.<br/>
 Similar arms combined for Liang 2017.
 </foot_mg> 
 
@@ -1481,7 +1485,7 @@ satis_dat_gt |>
         asa_ps_incl = ifelse(row_number() > 1, "", asa_ps_incl), 
         .by = study) |>
   gt(id = "one") |>
-  cols_hide(c(refid, year, arm_id, study, design_f_lab, satis_n, satis_per, notes_d, ref_arm_n, ref_n)) |>
+  cols_hide(c(refid, year, arm_id, study, design_f_lab, satis_n, satis_per, notes_d, ref_arm_n, ref_n, satis_update_arm_n)) |>
   cols_label(
     study_l          = "Study",
     arm_n            = " N",
@@ -1569,7 +1573,8 @@ forest(satis_meta,
 )
 
 ```
-<foot_mg> RD: risk difference; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg> 
+<foot_mg> RD: risk difference; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
+Similar/Inhaled arms combined for Luntz 2004.</foot_mg> 
 
 <br/>
 
@@ -1923,7 +1928,7 @@ mortality_dat |>
     rd_ci ~ px(145)
   ) |> 
   # opt_css(css = "#one .gt_column_spanner {border-bottom-style: hidden;}") |>
-  tab_footnote("ASA PS: American Society of Anesthesiologists Physical Status; RD: risk difference; GI: gastrointestinal; Abd: abdominal (includes hepatic); Various: more that one procedure category.") |> 
+  tab_footnote("ASA PS: American Society of Anesthesiologists Physical Status; RD: risk difference; NR: not reported.") |> 
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table)))  
   # tab_footnote("Different lengths of follow-up from the same trial.", locations = cells_body(columns = study_l, rows = study %in% c("Su 2016", "Zhang 2019b"))) 
 
