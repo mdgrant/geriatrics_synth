@@ -485,6 +485,10 @@ expanded_combined |>
 
 ## **Delirium Incidence**
 
+<font size = 4> `r table_ref()` Delirium incidence with expanded versus standard preoperative evaluation. </font>
+
+
+
 ```{r delirium_meta_data}
 #| eval: true
 # NOTE: compared and reconciled reported and calculated % # mutate(calc_per = delitotal_n / arm_n * 100, per_diff = calc_per - delitotal_perc) |> filter(per_diff > 0.5)
@@ -677,7 +681,7 @@ delirium_nrsi_meta <- metabin(event1, n1, event2, n2,
 
 ```
 
-<font size = 4> `r figure_ref()` Expanded versus standard properative evaluation (delirium incidence; randomized clinical trials). </font>
+<font size = 4> `r figure_ref()` Expanded versus standard preoperative evaluation (delirium incidence; randomized clinical trials). </font>
 
 ```{r delirium_meta_rct_forest, fig.width = 14, fig.height = 4.5, fig.align = "left", warning = TRUE}
 forest(delirium_rct_meta,
@@ -707,7 +711,7 @@ forest(delirium_rct_meta,
 
 <br/>
 
-<font size = 4> `r figure_ref()` Expanded versus standard properative evaluation (delirium incidence; nonrandomized designs). </font>
+<font size = 4> `r figure_ref()` Expanded versus standard preoperative evaluation (delirium incidence; nonrandomized designs). </font>
 
 ```{r delirium_meta_nrsi_forest, fig.width = 14, fig.height = 4.5, fig.align = "left", warning = TRUE}
 forest(delirium_nrsi_meta,
