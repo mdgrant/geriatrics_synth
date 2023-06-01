@@ -487,18 +487,16 @@ expanded_combined |>
 
 <font size = 4> `r table_ref()` Delirium incidence with expanded versus standard preoperative evaluation. </font>
 
-
-
 ```{r delirium_meta_data}
 #| eval: true
 # NOTE: compared and reconciled reported and calculated % # mutate(calc_per = delitotal_n / arm_n * 100, per_diff = calc_per - delitotal_perc) |> filter(per_diff > 0.5)
-delirium_meta_dat <- dichot_dat |>
+delirium_meta_dat <- dichot_dat |> 
   filter(refid %in% expanded_combined$refid) |> 
   mutate(
     arm_n = ifelse(!is.na(deli_update_arm_n), deli_update_arm_n, arm_n),
     delirium_inc_prop = ifelse(delirium_inc_prop == TRUE, "Incidence Proportion", "Maximum Daily"),
   ) |> 
-  filter(!is.na(delitotal_n)) |> # 
+  filter(!is.na(delitotal_n) | refid == 16629) |> # 
   left_join(study_char_dat |> select(refid, country), by = "refid") |> 
   left_join(surgs |> select(refid, surgs_single_f), by = c("refid")) |>
   rename(surg_f = surgs_single_f) |> 
@@ -875,7 +873,6 @@ adverse_events_gt_dat <- adverse_events_dat |>
   unite(complication, complication, design_f_lab, sep = " – ") |> 
   arrange(year, study_compl, arm_id) 
 
-
 adverse_meta_wide_dat <- adverse_events_gt_dat |> 
   filter(study != "Lau 2013") |> 
   mutate(arm_n = as.numeric(arm_n)) |> 
@@ -1055,7 +1052,6 @@ complication_forest_nrsi_fun(adverse_meta, use_predictive = TRUE)
 
 <font size = 4> `r figure_ref()` Risk ratio for complications reported as "pulmonary" (expanded versus standard preoperative evaluation; randomized clinical trials). </font>
 
-
 ```{r complication_pulmonary,  fig.width = 14, fig.height = 3, fig.align = "left"}
 adverse_meta <- complication_meta_fun("Pulmonary", randomized = "Randomized", use_hakn = FALSE, predictive = FALSE)
 complication_forest_rct_fun(adverse_meta, use_predictive = FALSE)
@@ -1113,6 +1109,7 @@ los_tab <- contin_dat |>
   left_join(surgs |> select(refid, surgs_noabbr_f), by = c("refid")) |>
   left_join(study_char_dat |> select(refid, country), by = "refid" ) |> 
   mutate(
+    arm_n = ifelse(study == "Lau 2013" & arm_id %in% c(2:5), " — ", arm_n),
     refid_arm_id = paste0(refid, "-", arm_id),
     surg_groups = paste0(design_f_lab, " - ", surgs_noabbr_f),
     mean_med = case_when(
@@ -1126,19 +1123,27 @@ los_tab <- contin_dat |>
     )
   ) |>
   arrange(surg_groups, year, study, arm_id) |> 
-  select(refid, refid_arm_id, study, study_l, arm_n, arm, asa_ps_incl, age_table, los_table, bar, surg_groups, country)
+  select(refid, refid_arm_id, study, study_l, arm_id, arm_n, arm, asa_ps_incl, age_table, los_table, bar, surg_groups, country)
 
 los_tab |>
   mutate(study_l = ifelse(row_number() > 1, "", study_l),
          country = ifelse(row_number() > 1, "", country),
          # arm_n = ifelse(is.na(arm_n), "–", arm_n),
          .by = refid) |> 
+  mutate(
+      study_l = case_when(
+      study == "Lau 2013" & arm_id == 2 ~ "   2007",
+      study == "Lau 2013" & arm_id == 3 ~ "   2008",
+      study == "Lau 2013" & arm_id == 4 ~ "   2009",
+      study == "Lau 2013" & arm_id == 5 ~ "   2010",
+      .default = study_l
+    )) |> 
   # tabyl(surg_groups) |> pull(surg_groups) |> toString()
   group_by(surg_groups) |>
   gt(id = "one") |>
   row_group_order(groups = c("Before-After/Time Series - Cardiac", "Randomized Clinical Trial - Gastrointestinal/Abdominal", "Before-After/Time Series - Gastrointestinal/Abdominal", "Retrospective Cohort - Gastrointestinal/Abdominal", "Randomized Clinical Trial - Orthopedic", "Before-After/Time Series - Orthopedic", "Randomized Clinical Trial - Various", "Before-After/Time Series - Various", "Before-After/Time Series - Neurosurgical", "Before-After/Time Series - Urologic")) |> 
   sub_missing(columns = everything(), missing_text = "") |>
-  cols_hide(c(refid, refid_arm_id, study)) |>
+  cols_hide(c(refid, refid_arm_id, arm_id, study)) |>
   cols_label(
     study_l = "Study",
     arm_n = " N",
@@ -1166,11 +1171,12 @@ los_tab |>
   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, bar))) |>
   tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(study_l, age_table, los_table))) |>
   tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study_l, age_table, los_table, bar, arm))) |> 
+  tab_style(style = cell_text(align = "right"), locations = cells_body(columns = c(arm_n))) |>
   tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(arm, "Exp"))) |> 
   tab_footnote(md("NR: not reported")) |> 
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, los_table))) |> 
   tab_footnote(md("ASA Physical Status."), locations = cells_column_labels(columns = c(asa_ps_incl))) |> 
-  tab_footnote("Number of patients not reported (time-series).", locations = cells_body(columns = c(arm_n), rows = study == "Lau 2013" & is.na(arm_n))) |>
+  tab_footnote("Number of patients not reported (time-series each).", locations = cells_body(columns = c(arm_n), rows = study == "Lau 2013" & arm_n == " — "), placement = "right") |>
   tab_footnote("Geometric mean.", locations = cells_body(columns = c(los_table), rows = study == "Partridge 2017")) 
   
 # save refids for meta-analysis
@@ -1422,6 +1428,7 @@ When the mean or standard deviation were not reported, they were imputed from fr
 ```{r dc_loc}
 #| eval: true
 dc_loc_dat <- dichot_dat |>
+  filter(study != "Vidan 2005") |> 
   filter(refid %in% kq1_refid) |>
   filter(if_any(starts_with("disch_"), ~ !is.na(.x))) |>
   mutate(
@@ -1505,7 +1512,7 @@ dc_loc_dat |>
 
 <font size = 4> `r figure_ref()` Pooled comparison of discharge location in studies comparing expanded with standard preoperative assessments (randomized clinical trials).   </font>
 
-```{r dc_loc_meta, fig.width = 14, fig.height = 3.8, fig.align = "left", warning = TRUE}
+```{r dc_loc_meta, fig.width = 14, fig.height = 3.4, fig.align = "left", warning = TRUE}
 dc_loc_rct_meta_dat <- dc_loc_dat |> 
   filter(str_detect(design_surg, "Randomized")) |> 
   select(refid, study, arm, disch_inst_n, arm_n) |> 
