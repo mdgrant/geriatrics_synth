@@ -255,12 +255,11 @@ study_char_dat |>
 
 ```
 
-
 ## **Comparators**
 
 ### Study Characteristics
 
-<font size = 4> `r table_ref()` Selected characteristic of included studies.  </font>
+<font size = 4> `r table_ref()` Selected characteristic of included studies. </font>
 
 ```{r studychar_tab}
 studychar_tab <- study_arm_dat |>
@@ -542,10 +541,23 @@ delirium_tab <- delirium_meta_dat |>
     # other = ifelse(str_detect(otherspec, "Psychiatrist consultation"), "Psych", other),
     # other = ifelse(str_detect(otherspec, "Chinese"), "Note", other),
     # other = ifelse(other == "other", NA_character_, other),
+    delitotal_n = ifelse(study == "Vochteloo 2011" & arm_id == 4, 102, delitotal_n),
     calc_percent = delitotal_n / arm_n * 100,
+    calc_percent = ifelse(study == "Vochteloo 2011", delitotal_perc, calc_percent), 
     n_percent = n_per_fun(delitotal_n, arm_n, 1),
-    rr_ci = ifelse(!is.na(ref_arm_n), rr_ci_fun(delitotal_n, arm_n, ref_deli_n, ref_arm_n), "—")
+    rr_ci = ifelse(!is.na(ref_arm_n), rr_ci_fun(delitotal_n, arm_n, ref_deli_n, ref_arm_n), "—"),
+    n_percent = ifelse(study == "Vochteloo 2011" & arm_id %in% c(1:3), paste0("(", formatC(delitotal_perc, digits = 1, format = "f"), ")"), n_percent),
+    arm_n = ifelse(study == "Vochteloo 2011" & arm_id %in% c(1:3), "", arm_n)
+    # arm_n = ifelse(refid == 16629 & arm_id %in% c(1:3), "—", arm_n),
   ) |>
+    # mutate(
+    #   study_l = case_when(
+    #   study == "Lau 2013" & arm_id == 2 ~ "   2007",
+    #   study == "Lau 2013" & arm_id == 3 ~ "   2008",
+    #   study == "Lau 2013" & arm_id == 4 ~ "   2009",
+    #   study == "Lau 2013" & arm_id == 5 ~ "   2010",
+    #   .default = study_l
+    # )) |> 
   relocate(calc_percent, .after = delitotal_perc) |>
   unite(scale_delirium, cam:other, remove = TRUE, sep = "/", na.rm = TRUE) |>
   mutate(
@@ -600,7 +612,7 @@ delirium_tab |>
     tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, delitotal_time, n_percent, rr_ci))) |>
     tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(arm, scale_delirium, bar))) |>
     tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(delitotal_time, rr_ci))) |>
-    tab_style(style = cell_text(align = "right"),  locations = cells_body(columns = c(n_percent))) |>
+    tab_style(style = cell_text(align = "right"),  locations = cells_body(columns = c(n_percent, arm_n))) |>
     tab_style(style = cell_text(align = "right"),  locations = cells_column_labels(columns = c(n_percent))) |>
     tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:n_percent), rows = str_detect(arm, "Neur|Block"))) |>
     sub_missing(columns = delitotal_time, missing_text = "Note") |>
@@ -620,7 +632,11 @@ delirium_tab |>
   tab_style(style = list(cell_text(color = color_2)),   locations = cells_body(columns = c(arm_n:n_percent), rows = str_detect(arm, "Exp"))) |>
   tab_footnote("RR: risk ratio; MMSE: Mini-Mental State Examination; CAM: Confusion Assessment Method; DI: Delirium Index; DRS: Delirium Rating Scale; DOS: delirium observation screening; DSM: Diagnostic and Statistical Manual of Mental Disorders; NR: not reported.") |>
   tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |>
-  tab_footnote("Days over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time))
+  tab_footnote("Days over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |> 
+  tab_footnote("N = 611 for the 3 years of standard evaluation (2005-2007); outcomes reported by year separately.", locations = cells_body(columns = c(arm_n), rows = study == "Vochteloo 2011" & arm_id %in% c(1:3)), placement = "right") |> 
+  tab_footnote("2005.", locations = cells_body(columns = c(arm), rows = study == "Vochteloo 2011" & arm_id %in% c(1)), placement = "right") |> 
+  tab_footnote("2006.", locations = cells_body(columns = c(arm), rows = study == "Vochteloo 2011" & arm_id %in% c(2)), placement = "right") |> 
+  tab_footnote("2007.", locations = cells_body(columns = c(arm), rows = study == "Vochteloo 2011" & arm_id %in% c(3)), placement = "right")
 ```
 
 ### *Pooled*
@@ -666,6 +682,16 @@ delirium_rct_meta <- metabin(event1, n1, event2, n2,
   allstudies = TRUE
 )
 
+vochteloo_dat <- tribble(
+  ~study, ~year, ~event2, ~n2, ~event1, ~n1,
+  "Vochteloo 2011", 2011, 164, 611, 102, 378
+)
+
+# for senstivity
+# del_meta_nrsi_dat_voch <- del_meta_nrsi_dat |> 
+#   select(study:n1) |> 
+#   rbind(vochteloo_dat)
+
 delirium_nrsi_meta <- metabin(event1, n1, event2, n2,
   data = del_meta_nrsi_dat ,
   studlab = study,
@@ -705,7 +731,8 @@ forest(delirium_rct_meta,
   text.addline1 = "Without Hartung-Knapp adjustment (95% CI, 0.46–0.88)."
 )
 ```
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg> 
+
+<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg>
 
 <br/>
 
@@ -734,7 +761,8 @@ forest(delirium_nrsi_meta,
   addrows.below.overall = 4
 )
 ```
-<foot_mg> RR: risk ratio; D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. </foot_mg>
+
+<foot_mg> RR: risk ratio; D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable.<br/> Sensitivity analysis including Vochteloo 2011 assuming effectively equal numbers of participants studied each year, obtained RR 0.63 (95% CI, 0.46--0.87; *I*^ 2^ = 44%). </foot_mg>
 
 ## **Complications**
 
@@ -766,7 +794,7 @@ path <- glue::glue("/Users/mgrant/Desktop/temp.xlsx")
 saveWorkbook(wb, "/Users/mgrant/Desktop/kq4.xlsx", overwrite = TRUE)
 ```
 
-<font size = 4> `r table_ref()` Reported complications in expanded versus standard preoperative evaluation — cardiac, pulmonary, and acute kidney injury (randomized and nonrandomized designs). </font>
+<font size = 4> `r table_ref()` Reported complications in expanded versus standard preoperative evaluation --- cardiac, pulmonary, and acute kidney injury (randomized and nonrandomized designs). </font>
 
 ```{r complications}
 #| warning: true
@@ -838,7 +866,6 @@ adverse_events_dat <- adverse_events_dat |>
   select(refid, year, arm_id, study, study_l, study_compl, arm_n, arm, n, age_table, surgs_single, n_per, bar, rd_ci, rr_ci, complication, design_f_lab, effect:high)
 
 ```
-
 
 ```{r complications_gt}
 #| eval: true
@@ -1023,8 +1050,8 @@ forest(adverse_meta,
 adverse_meta <- complication_meta_fun("Cardiac", randomized = "Randomized", use_hakn = FALSE, predictive = FALSE)
 complication_forest_rct_fun(adverse_meta, use_predictive = FALSE)
 ```
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .
-</foot_mg> 
+
+<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . </foot_mg>
 
 <br/>
 
@@ -1034,6 +1061,7 @@ complication_forest_rct_fun(adverse_meta, use_predictive = FALSE)
 adverse_meta <- complication_meta_fun("Cardiac", randomized = "Nonrandomized", use_hakn = FALSE, predictive = FALSE)
 complication_forest_nrsi_fun(adverse_meta, use_predictive = TRUE)
 ```
+
 <foot_mg> RR: risk ratio; D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. </foot_mg>
 
 <br/>
@@ -1046,6 +1074,7 @@ complication_forest_nrsi_fun(adverse_meta, use_predictive = TRUE)
 adverse_meta <- complication_meta_fun("MI", randomized = "Nonrandomized", use_hakn = FALSE, predictive = FALSE)
 complication_forest_nrsi_fun(adverse_meta, use_predictive = TRUE)
 ```
+
 <foot_mg> RR: risk ratio; MI: myocardial infarction; D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. </foot_mg>
 
 #### Pulmonary
@@ -1056,8 +1085,8 @@ complication_forest_nrsi_fun(adverse_meta, use_predictive = TRUE)
 adverse_meta <- complication_meta_fun("Pulmonary", randomized = "Randomized", use_hakn = FALSE, predictive = FALSE)
 complication_forest_rct_fun(adverse_meta, use_predictive = FALSE)
 ```
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .
-</foot_mg> 
+
+<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . </foot_mg>
 
 <br/>
 
@@ -1069,8 +1098,8 @@ complication_forest_rct_fun(adverse_meta, use_predictive = FALSE)
 adverse_meta <- complication_meta_fun("Pneumonia", randomized = "Randomized", use_hakn = FALSE, predictive = FALSE)
 complication_forest_rct_fun(adverse_meta, use_predictive = FALSE)
 ```
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .
-</foot_mg> 
+
+<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . </foot_mg>
 
 <br/>
 
@@ -1080,6 +1109,7 @@ complication_forest_rct_fun(adverse_meta, use_predictive = FALSE)
 adverse_meta <- complication_meta_fun("Pneumonia", randomized = "Nonrandomized", use_hakn = FALSE, predictive = FALSE)
 complication_forest_nrsi_fun(adverse_meta, use_predictive = TRUE)
 ```
+
 <foot_mg> RR: risk ratio; D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. </foot_mg>
 
 <br/>
@@ -1092,6 +1122,7 @@ complication_forest_nrsi_fun(adverse_meta, use_predictive = TRUE)
 adverse_meta <- complication_meta_fun("AKI", randomized = "Nonrandomized", use_hakn = FALSE, predictive = FALSE)
 complication_forest_nrsi_fun(adverse_meta, use_predictive = FALSE)
 ```
+
 <foot_mg> RR: risk ratio; D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. </foot_mg>
 
 ## **Length of Stay**
@@ -1352,11 +1383,8 @@ forest(los_meta,
 )
 
 ```
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
-When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range with between-group p-value used as a last resort.<br/>
-Partridge 2017 geometric means reported.<br/>
-Ommundsen 2018 reported only median and between-group p-value and was excluded.
-</foot_mg> 
+
+<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range with between-group p-value used as a last resort.<br/> Partridge 2017 geometric means reported.<br/> Ommundsen 2018 reported only median and between-group p-value and was excluded. </foot_mg>
 
 <br/>
 
@@ -1416,8 +1444,8 @@ forest(los_meta,
 )
 
 ```
-<foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. <br/> 
-When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range.  </foot_mg> 
+
+<foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. <br/> When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range. </foot_mg>
 
 <br/>
 
@@ -1510,7 +1538,7 @@ dc_loc_dat |>
 
 ### *Pooled*
 
-<font size = 4> `r figure_ref()` Pooled comparison of discharge location in studies comparing expanded with standard preoperative assessments (randomized clinical trials).   </font>
+<font size = 4> `r figure_ref()` Pooled comparison of discharge location in studies comparing expanded with standard preoperative assessments (randomized clinical trials). </font>
 
 ```{r dc_loc_meta, fig.width = 14, fig.height = 3.4, fig.align = "left", warning = TRUE}
 dc_loc_rct_meta_dat <- dc_loc_dat |> 
@@ -1556,11 +1584,12 @@ forest(dc_loc_rct_meta,
   # text.addline1 = "Without Hartung-Knapp adjustment (95% CI, 0.40–0.92)."
 )
 ```
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg> 
+
+<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg>
 
 <br/>
 
-<font size = 4> `r figure_ref()` Pooled comparison of discharge location in studies comparing expanded with standard preoperative assessments (nonrandomized designs).   </font>
+<font size = 4> `r figure_ref()` Pooled comparison of discharge location in studies comparing expanded with standard preoperative assessments (nonrandomized designs). </font>
 
 ```{r dc_loc_nrsi_meta, fig.width = 14, fig.height = 3.5, warning = TRUE}
 #| fig-align: "left"
@@ -1607,8 +1636,8 @@ forest(dc_loc_nrsi_meta,
   # text.addline1 = "Without Hartung-Knapp adjustment (95% CI, 0.40–0.92)."
 )
 ```
-<foot_mg> RR: risk ratio; D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. </foot_mg>
-<br/>
+
+<foot_mg> RR: risk ratio; D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. </foot_mg> <br/>
 
 ## **Mortality**
 
@@ -1938,7 +1967,8 @@ forest(mort_rct_meta,
 )
 
 ```
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg> 
+
+<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg>
 
 <br/>
 
@@ -1990,7 +2020,8 @@ forest(mort_nrsi_meta,
   addrows.below.overall = 4
 )
 ```
-<foot_mg> RR: risk ratio;D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable.</foot_mg> 
+
+<foot_mg> RR: risk ratio;D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable.</foot_mg>
 
 <br/>
 
@@ -2042,8 +2073,8 @@ forest(mort_nrsi_1yr_meta,
   addrows.below.overall = 4
 )
 ```
-<foot_mg> RR: risk ratio;D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable.</foot_mg> 
 
+<foot_mg> RR: risk ratio;D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable.</foot_mg>
 
 ## **Risk of Bias**
 
@@ -2083,6 +2114,4 @@ rob_summary(robinsi_temp_dat, tool = "ROBINS-I", colour = "colourblind", weighte
 rob_traffic_light(robinsi_temp_dat, psize = 4, tool = "ROBINS-I", colour = "colourblind")
 ```
 
-
 ## **References** {#references}
-
