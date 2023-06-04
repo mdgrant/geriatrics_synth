@@ -817,7 +817,7 @@ dncr_dat |>
 
 ### *Pooled*
 
-<font size = 4> `r figure_ref()` Delayed neurocognitive recovery assessed postoperative day 3 or later (TIVA versus inhaled; randomized clinical trials). </font>
+<font size = 4> `r figure_ref()` Cognitive dysfunction ≤ 30 days assessed postoperative day 3 or later (TIVA versus inhaled; randomized clinical trials). </font>
 
 ```{r dncr_meta_dat}
 #| eval: true
