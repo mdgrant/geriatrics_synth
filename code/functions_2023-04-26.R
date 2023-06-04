@@ -91,6 +91,12 @@ firstup <- function(x) {
   x
 }
 
+# lower case 1st letter
+firstlower <- function(x) {
+  substr(x, 1, 1) <- tolower(substr(x, 1, 1))
+  x
+}
+
 # convert columns guessed as logical to character
 type_col <- function(data) {
   data %>%

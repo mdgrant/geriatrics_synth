@@ -1,8 +1,9 @@
 ---
 title: "Potentially Inappropriate Medications"
 editor: source
-toc-title: "Potentially Inappropriate Medications"
+toc-title: "**Potentially Inappropriate Medications**"
 toc-location: "left"
+toc-depth: 3
 toc_float: 
   collapsed: true
 tbl-cap-location: "top"
@@ -13,10 +14,10 @@ tables:
       caption:
         pre: "Table "
         sep: " -- "
-# bibliography: "bib/kq5.bib"
-# csl: jama.csl
-# link-citations: false
-# nocite: '@*'
+bibliography: "bib/kq3.bib"
+csl: "bib/jama.csl"
+link-citations: false
+nocite: '@*'
 ---
 
 ## Key Question
@@ -35,7 +36,7 @@ dichot_dat <- data_kq(dichot_dat, kq5_refid)
 likert_dat <- data_kq(likert_dat, kq5_refid)
 ```
 
-## Outcome Importance Rankings
+## Outcome Importance
 
 <font size = 4> `r table_ref()`</font> Rankings for the 5 most important outcomes (11 respondents).
 
@@ -47,7 +48,7 @@ outcome_dat <- rankings("KQ5")
 outcome_tab(outcome_dat, 11)
 ```
 
-### Outcome Reporting Frequency
+## Outcomes Reported
 
 <font size = 4> `r table_ref()` Dichotomous and count outcomes. </font>
 

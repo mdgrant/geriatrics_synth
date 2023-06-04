@@ -24,14 +24,6 @@ nocite: '@*'
 
 Among older patients undergoing surgery and anesthesia, does regional anesthesia as the primary anesthetic technique improve postoperative outcomes compared with general anesthesia?
 
-<!-- ::: {.callout-note collapse="true" appearance="default" icon="true"} -->
-<!-- ## DRAFT results last updated `r lubridate::now()` -->
-
-<!-- 2023-05-18 added remainder of outcomes -->
-
-<!-- 2023-04-27 added delirium results -->
-<!-- ::: -->
-
 ```{r read_data}
 #| include: false
 source("code/load_data.R")
@@ -674,14 +666,14 @@ legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#A
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <font size = 4> `r figure_ref()` Summary risk of bias from randomized clinical trials of dexmedetomidine compared with placebo or no intervention. </font>
+#### <font size = 4> `r figure_ref()` Summary risk of bias from randomized clinical trials comparing regional and general anesthesia. </font>
 
 ```{r rob2_summary_delirim, fig.height = 3, out.width = "60%"}
 rob_summary_fun(delirium_meta_dat$refid)
 ```
 :::
 
-## **Delayed Neurocognitive Recovery**
+## **Cognitive dysfunction ≤ 30d**
 
 ```{r dncr_ncd_dat}
 #| eval: true
@@ -737,7 +729,7 @@ dncr_dat <- dichot_dat |>
   ) |>
   select(refid, year, arm_id, study, study_l, design_f_lab, pre_mmse, country, surg_f, arm, arm_reg, pre_mmse, dncr_time, neurocog_total_n, arm_n, arm, neurocog_nper, neurocog_prop, bar, scale_mmse:scale_other_tf, neuro_threshold)
 
-# add referents for rr calculation
+## add referents for rr calculation ------------------- (2023-06-02 06:30) @----
 dncr_rr_ref <- dncr_dat |>
   select(refid, arm_id, neurocog_total_n, arm_n) |>
   arrange(refid, arm_id) |>
@@ -766,7 +758,7 @@ dncr_dat <- dncr_dat |>
 rm(dncr_rr_ref)
 ```
 
-<font size = 4> `r table_ref()` Delayed neurocognitive recovery incidence and ascertainment in trials of dexmedetomidine. </font>
+<font size = 4> `r table_ref()` Cognitive dysfunction ≤ 30 days incidence and ascertainment in trials comparing regions and general anesthesia. </font>
 
 ```{r dncr_dex_gt}
 #| eval: true
@@ -814,7 +806,7 @@ dncr_dat |>
   fmt_number(dncr_time, decimals = 0) |>
   sub_missing(columns = everything(), missing_text = "") |>
   tab_spanner(label = "Instrument", columns = c(scale_mmse:scale_other_tf), level = 1) |>
-  tab_spanner(label = "Delayed Neurocognitive Recovery", columns = c(neurocog_nper:rr_ci), level = 1) |>
+  tab_spanner(label = "Cognitive dysfunction ≤ 30d", columns = c(neurocog_nper:rr_ci), level = 1) |>
   tab_spanner(label = "Preop", columns = c(pre_mmse), level = 1) |>
   cols_width(
     study_l          ~ px(165),
@@ -848,11 +840,27 @@ dncr_dat |>
   tab_footnote('Difference from baseline >2 points.', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == 'Casati 2003')) 
 ```
 
+```{r dncr_ncd_likert_dat}
+#| eval: false
+# RESUME: likert ncd finish
+temp_dat <- likert_dat |>
+  filter(if_any(c(mmse_time1, mmse_time2, mmse_time3, mmse_time1, mmselast_time, mmsetotal_time), ~ !is.na(.x))) |> 
+  select(refid, study, mmse_time1, mmse_time2, mmse_time3, mmse_time1, mmselast_time, mmsetotal_time)
+  select(starts_with("mmse"))
+  filter(if_any(c(mmse_M1, mmse_SD1, mmse_Med1, mmse_RL1, mmse_RU1, mmse_IQRL1, mmse_IQRU1, mmse_M2, mmse_SD, mmse_Med2, mmse_RL2, mmse_RU2, mmse_IQRL2, mmse_IQRU2, mmse_M3, mmse_SD, mmse_Med3, mmse_RL3, mmse_RU3, mmse_IQRL3, mmse_IQRU3, mmselast_M, mmselast_SD, mmselast_Med, mmselast_RL, mmselast_RU, mmselast_IQRL, mmselast_IQRU, mmsetotal_M, mmsetotal_SD, mmsetotal_Med, mmsetotal_RL, mmsetotal_RU, mmsetotal_IQRL, mmsetotal_IQRU), ~ !is.na(.x)))
+  # > 30 day exam
+  # filter(if_any(matches("neurocog.*time.*"), ~ .x <= 30)) |>
+  # mutate(
+  #   arm_n = ifelse(!is.na(neurocog_update_arm_n), neurocog_update_arm_n, arm_n)
+  # )
+
+```
+
 <br/>
 
 ### *Pooled*
 
-<font size = 4> `r figure_ref()` Delayed neurocognitive recovery (regional versus general anesthesia; randomized clinical trials). </font>
+<font size = 4> `r figure_ref()` Cognitive dysfunction > 30 days  (regional versus general anesthesia; randomized clinical trials). </font>
 
 ```{r dncr_meta,  fig.width = 14, fig.height = 3.5, fig.align = "left", warning = TRUE}
 trts <- neurocog_meta_dat$arm_reg
@@ -914,9 +922,9 @@ forest(gen_reg_dncr_meta,
 
 <br/>
 
-## **Neurocognitive Disorders**
+## **Cognitive dysfunction > 30d**
 
-<font size = 4> `r table_ref()` Neurocognitive disorders and ascertainment. </font>
+<font size = 4> `r table_ref()` Cognitive dysfunction > 30 days and ascertainment. </font>
 
 ```{r ncd_dat}
 ncd_dat <- dichot_dat |>
@@ -1018,7 +1026,7 @@ ncd_dat |>
   fmt_number(ncd_time, decimals = 0) |>
   sub_missing(columns = everything(), missing_text = "") |>
   tab_spanner(label = "Instrument", columns = c(scale_mmse:scale_other_tf), level = 1) |>
-  tab_spanner(label = "Neurocognitive Disorders", columns = c(neurocog_nper:rr_ci), level = 1) |>
+  tab_spanner(label = "Cognitive dysfunction > 30d", columns = c(neurocog_nper:rr_ci), level = 1) |>
   tab_spanner(label = "Preop", columns = c(pre_mmse), level = 1) |>
   cols_width(
     study_l          ~ px(165),
@@ -1116,6 +1124,7 @@ adverse_meta_dat <- adverse_events_dat |>
   select(refid, year, study, arm_id, arm, arm_n, n, complication)
 
 adverse_events_dat <- adverse_events_dat |>
+  left_join(cardiac_compl, by = c("refid", "complication")) |>
   left_join(study_char_dat |> select(refid, study_l, surgs_single, design_f_lab), by = "refid") |>
   left_join(table_age_mn_med, by = c("refid", "arm_id")) |>
   arrange(complication, surgs_single, year, study, arm_id) |>
@@ -1144,7 +1153,17 @@ adverse_events_dat <- adverse_events_dat |>
       # str_detect(arm, "Ket|Mel|Ram") ~ bar_prop(calc_per, "#A93226"),
       str_detect(arm, "Gen") ~ bar_prop(calc_per, "#969696"),
       .default = bar_prop(calc_per, "#A93226"))) |>
-  select(refid, year, arm_id, study, study_l, study_compl, arm_n, arm, n, age_table, surgs_single, n_per, bar, rd_ci, complication, design_f_lab)
+  select(refid, year, arm_id, study, study_l, study_compl, arm_n, arm, n, age_table, surgs_single, n_per, bar, rd_ci, complication, design_f_lab, detail_cardiac)
+
+
+# adverse_events_dat |> filter(!is.na(detail_cardiac)) |> select(study, detail_cardiac) |> distinct()
+
+# for summary table
+# adverse_events_dat |> 
+#   group_by(refid, arm_id) |> 
+#   slice(1) |> 
+#   ungroup() |> 
+#   summarise(total = sum(arm_n))
 
 ```
 
@@ -1158,11 +1177,12 @@ adverse_events_gt_dat <- adverse_events_dat |>
 
 adverse_events_gt_dat |> 
   mutate(study_l = ifelse(row_number() > 1, "", study_l),
+         detail_cardiac = ifelse(row_number() > 1, "", detail_cardiac),
          surgs_single = ifelse(row_number() > 1, "", surgs_single), .by = study_compl) |>
   group_by(complication) |>
   gt(id = "one") |>
   row_group_order(groups = c("Cardiac", "MI", "Cardiac Arrest", "Stroke", "AKI", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Reintubation")) |>
-  cols_hide(c(refid, year, study, arm_id, n, study, study_compl, design_f_lab)) |>
+  cols_hide(c(refid, year, study, arm_id, n, study, study_compl, design_f_lab, detail_cardiac)) |>
   cols_label(
     study_l          = "Study",
     arm_n            = " N",
@@ -1188,18 +1208,23 @@ adverse_events_gt_dat |>
     bar              ~ px(100),
     rd_ci            ~ px(140)
   ) |>
-  tab_style(style = cell_text(align = "left"),        locations = cells_column_labels(columns = c(arm))) |>
-  tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(arm_n, rd_ci))) |>
+  tab_style(style = cell_text(align = "left"),          locations = cells_column_labels(columns = c(arm))) |>
+  tab_style(style = cell_text(align = "center"),        locations = cells_column_labels(columns = c(arm_n, rd_ci))) |>
   # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c())) |>
-  tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(arm, age_table, rd_ci, surgs_single))) |>
-  tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(rd_ci))) |>
+  tab_style(style = cell_text(align = "left"),          locations = cells_body(columns = c(arm, age_table, rd_ci, surgs_single))) |>
+  tab_style(style = cell_text(align = "center"),        locations = cells_body(columns = c(rd_ci))) |>
   # tab_style(style = cell_text(align = "right"),       locations = cells_body(columns = c())) |>
   # tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
   tab_style(style = list(cell_text(color = "#969696")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Gen"))) |>
   # tab_style(style = list(cell_text(color = "#F39C12")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Ket|Mel|Ram"))) |>
   # tab_style(style = list(cell_text(color = "#969696")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Plac|None"))) |>
   tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = !str_detect(arm, "Gen"))) |> 
-  tab_footnote("Gen: general anesthesia; Neur: neuraxial; RD: risk difference; Ortho: orthopedic; GI: gastrointestinal; Abd: abdominal; PE: pulmonary embolism; Ophtho: ophthalmologic.") 
+  tab_footnote("Gen: general anesthesia; Neur: neuraxial; RD: risk difference; Ortho: orthopedic; GI: gastrointestinal; Abd: abdominal; PE: pulmonary embolism; Ophtho: ophthalmologic.") |> 
+  tab_footnote("Bradycardia.",                          locations = cells_body(columns = c(study_l), rows = detail_cardiac == "bradycardia")) |> 
+  tab_footnote("Unspecified adverse cardiac events.",   locations = cells_body(columns = c(study_l), rows = detail_cardiac %in% c("adverse cardiologic events unspecified", "unspecified"))) |> 
+  tab_footnote("Arrhythmia.",                           locations = cells_body(columns = c(study_l), rows = detail_cardiac == "arrhythmia")) |> 
+  tab_footnote("MI, heart failure, new onset arrhythmia.", locations = cells_body(columns = c(study_l), rows = detail_cardiac == "mI, heart failure, new onset arrhythmia")) |> 
+  tab_footnote("Tachycardia",                           locations = cells_body(columns = c(study_l), rows = detail_cardiac == "tachycardia")) 
 
 ```
 
@@ -1721,6 +1746,95 @@ forest(los_meta,
 ```
 <foot_mg> MD: mean difference; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
 When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, range, or between-arm, p-value.  </foot_mg> 
+
+<br/>
+
+## **Discharge Location**
+
+<font size = 4> `r table_ref()` Discharge location in studies comparing expanded with standard preoperative assessments. </font>
+
+```{r dc_loc}
+#| eval: true
+dc_loc_dat <- dichot_dat |>
+  filter(if_any(starts_with("disch_"), ~ !is.na(.x))) |>
+  mutate(
+    arm_n = ifelse(!is.na(disch_update_arm_n), disch_update_arm_n, arm_n),
+    disch_nper = n_per_fun(disch_inst_n, arm_n, n_sig_dig = 1),
+    disch_per = disch_inst_n/arm_n
+  ) |>
+  left_join(table_age_mn_med, by = c("refid", "arm_id")) |> # age_table
+  left_join(study_arm_dat |> select(refid, arm_id, asa_ps_incl), by = c("refid", "arm_id")) |>
+  left_join(surgs |> select(refid, surgs_noabbr_f), by = c("refid")) |>
+  left_join(study_char_dat |> select(refid, country), by = "refid") |>
+  mutate(design_surg = paste0(design_f_lab, " — ", surgs_noabbr_f)) |>
+  select(refid, refid, arm_id, study, study_l, arm_n, arm, asa_ps_incl, age_table, design_surg, country, starts_with("disch_")) |>
+  select(-c(disch_inst_per:disch_inst_95high)) |> 
+  arrange(refid, arm_id) |> 
+  group_by(study) |> 
+  mutate(
+    ref_disch_n = ifelse(arm_id > 1, first(disch_inst_n), NA),
+    ref_arm_n = ifelse(arm_id > 1, first(arm_n), NA),
+    rr_ci = ifelse(!is.na(ref_disch_n), rr_ci_fun(disch_inst_n, arm_n, ref_disch_n, ref_arm_n), NA)) |> 
+  select(-starts_with("ref_")) 
+```
+
+```{r dc_loc_gt}
+dc_loc_dat |> 
+  group_by(study_l) |>
+  arrange(study, arm_id) |> 
+  mutate(
+    study_l = ifelse(row_number() == 1, study_l, NA),
+    country = ifelse(row_number() == 1, country, NA),
+    bar = case_when(
+      str_detect(arm, "Neur") ~ bar_prop(disch_per * 100, "#A93226"),
+      .default = bar_prop(disch_per * 100, "#969696")
+    ),
+  ) |>
+  ungroup() |>
+  select(refid, study_l, arm_n, arm, age_table, country, disch_nper, bar, rr_ci, everything()) |> 
+  group_by(design_surg) |>
+  gt(id = "one") |>
+  row_group_order(groups = c("Randomized Clinical Trial — Orthopedic")) |>
+  cols_hide(c(refid, arm_id, study, disch_update_arm_n, asa_ps_incl, disch_inst_n, disch_per)) |>
+  cols_label(
+    study_l          = "Study",
+    arm_n            = " N",
+    arm              = "Arm",
+    age_table        = "   Age",
+    country          = "Country",
+    disch_nper       = "N (%)",
+    bar              = "0 — 100%",
+    rr_ci            = "RR (95% CI)"
+  ) |>
+  tab_spanner(label = "Discharge to Institution", columns = c(disch_nper:bar), level = 1) |>
+  fmt_markdown(columns = c(study_l, bar, age_table)) |>
+  # fmt_number(VARIABLE, decimals = 0) |>
+  # fmt_integer(use_seps = TRUE, sep_mark = ",") |>
+  sub_missing(columns = everything(), missing_text = "") |>
+  gt_theme_mg() |>
+  cols_width(
+    study_l          ~ px(165),
+    arm_n            ~ px(45),
+    arm              ~ px(50),
+    age_table        ~ px(90),
+    country          ~ px(80),
+    disch_nper       ~ px(80),
+    bar              ~ px(120),
+    rr_ci            ~ px(120)
+    ) |> 
+  tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(study, age_table, arm))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(rr_ci))) |>
+  tab_style(style = cell_text(align = "right"),  locations = cells_column_labels(columns = c(arm_n, disch_nper))) |>
+  tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study, arm, bar))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rr_ci))) |>
+  tab_style(style = cell_text(align = "right"),  locations = cells_body(columns = c(disch_nper))) |>
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n, arm, age_table, disch_nper), rows = str_detect(arm, "Neur"))) |> 
+  tab_footnote("Gen: general; Neur: neuraxial; RR: risk ratio.") |> 
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table)))
+
+```
+
+
 
 ## **Mortality**
 

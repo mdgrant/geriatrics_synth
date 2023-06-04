@@ -630,7 +630,7 @@ forest(delirium_meta_nrsi,
 <foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. <br/> 
 Note: pooling of adjusted odds ratios from Yoshimura 2022 (propensity matching) and Goins 2018 (multivariable adjustment). </foot_mg>
 
-## **Delayed Neurocognitive Recovery**
+## **Cognitive dysfunction ≤ 30d**
 
 ```{r dncr_ncd_dat}
 #| eval: true
@@ -718,7 +718,7 @@ dncr_dat <- dncr_dat |>
 rm(dncr_rr_ref)
 ```
 
-<font size = 4> `r table_ref()` Delayed neurocognitive recovery incidence and ascertainment (TIVA versus inhaled; randomized and nonrandomized designs). </font>
+<font size = 4> `r table_ref()` Cognitive dysfunction ≤ 30 days incidence and ascertainment (TIVA versus inhaled; randomized and nonrandomized designs). </font>
 
 ```{r dncr_gt}
 #| eval: true
@@ -776,7 +776,7 @@ dncr_dat |>
   fmt_number(dncr_time, decimals = 0) |>
   sub_missing(columns = everything(), missing_text = "") |>
   tab_spanner(label = "Instrument", columns = c(scale_mmse:scale_other_tf), level = 1) |>
-  tab_spanner(label = "Delayed Neurocognitive Recovery", columns = c(neurocog_nper:rr_ci), level = 1) |>
+  tab_spanner(label = "Cognitive dysfunction ≤ 30d", columns = c(neurocog_nper:rr_ci), level = 1) |>
   tab_spanner(label = "Preop", columns = c(pre_mmse), level = 1) |>
   cols_width(
     study_l ~ px(165),
@@ -919,9 +919,9 @@ forest(tiva_inhaled_meta,
 <foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> 
 Five trials conducted in China and 1 each in Norway and Japan.</foot_mg><br/>
 
-## **Neurocognitive Disorders**
+## **Cognitive dysfunction > 30d**
 
-<font size = 4> `r table_ref()` Neurocognitive disorders and ascertainment (TIVA versus inhaled; prospective cohort studies). </font>
+<font size = 4> `r table_ref()` Cognitive dysfunction > 30 days and ascertainment (TIVA versus inhaled; prospective cohort studies). </font>
 
 ```{r ncd_dat}
 ncd_dat <- dichot_dat |>
@@ -991,6 +991,27 @@ ncd_dat <- ncd_dat |>
   select(refid, year, design_f_lab, study, study_l, arm_id, arm_n, arm, pre_mmse, scale_mmse:scale_other_tf, ncd_time, neurocog_nper, bar, rr_ci)
 ```
 
+```{r ncd_pool}
+#| eval: false
+temp_dat <- ncd_dat |> 
+  mutate(n = as.numeric(str_extract(neurocog_nper, "\\d{1,2}"))) |> 
+  select(study, arm, n, arm_n) |> 
+  pivot_wider(names_from = "arm", values_from = c("n", "arm_n"))
+
+metabin(n_TIVA, arm_n_TIVA, n_Inhaled, arm_n_Inhaled,
+  data = temp_dat,
+  studlab = study,
+  sm = "RR",
+  method = "MH",
+  method.tau = "REML",
+  # hakn = TRUE,
+  # prediction = FALSE,
+  allstudies = TRUE,
+)
+
+```
+
+
 ```{r ncd_gt}
 #| eval: true
 ncd_dat |>
@@ -1022,7 +1043,7 @@ ncd_dat |>
   fmt_number(ncd_time, decimals = 0) |>
   sub_missing(columns = everything(), missing_text = "") |>
   tab_spanner(label = "Instrument", columns = c(scale_mmse:scale_other_tf), level = 1) |>
-  tab_spanner(label = "Neurocognitive Disorders", columns = c(neurocog_nper:rr_ci), level = 1) |>
+  tab_spanner(label = "Cognitive dysfunction > 30d", columns = c(neurocog_nper:rr_ci), level = 1) |>
   tab_spanner(label = "Preop", columns = c(pre_mmse), level = 1) |>
   cols_width(
     study_l          ~ px(165),
@@ -1046,6 +1067,7 @@ ncd_dat |>
   tab_style(style = cell_text(align = "right"),       locations = cells_body(columns = c(neurocog_nper))) |>
   tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:pre_mmse, neurocog_nper), rows = str_detect(arm, "TIVA"))) |>
   tab_footnote("Mini-Mental State Exam; DST: Digit Span Test; MoCA: Montreal Cognitive Assessment; RR: risk ratio.") |>
+  tab_footnote("Pooled RR 1.15 (95% CI, 0.68–1.95)") |> 
   tab_footnote("Day of assessment.",                   locations = cells_column_labels(columns = c(ncd_time))) |>
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |> 
   tab_footnote('Z ≥1.96.', locations = cells_body(columns = c(scale_dst), rows = arm_id == 1 & study == 'Rasmussen 2003')) |> 
@@ -1119,6 +1141,7 @@ adverse_events_dat <- map_df(complication_incl, complication_fun) |>
 # if neither use estimate
 
 adverse_events_dat <- adverse_events_dat |>
+  left_join(cardiac_compl, by = c("refid", "complication")) |>
   left_join(study_char_dat |> select(refid, study_l, surgs_single, design_f_lab), by = "refid") |>
   left_join(table_age_mn_med, by = c("refid", "arm_id")) |>
   arrange(complication, surgs_single, year, study, arm_id) |>
@@ -1155,7 +1178,19 @@ adverse_events_dat <- adverse_events_dat |>
       # str_detect(arm, "Ket|Mel|Ram") ~ bar_prop(calc_per, "#A93226"),
       str_detect(arm, "Inhaled") ~ bar_prop(calc_per, "#969696"),
       .default = bar_prop(calc_per, "#A93226"))) |>
-  select(refid, year, arm_id, study, study_l, study_compl, arm_n, arm, n, age_table, surgs_single, n_per, bar, rd_ci, rr_ci, or_ci, or_ln_te, or_ln_se_te, complication, design_f_lab, effect:high)
+  select(refid, year, arm_id, study, study_l, study_compl, arm_n, arm, n, age_table, surgs_single, n_per, bar, rd_ci, rr_ci, or_ci, or_ln_te, or_ln_se_te, complication, design_f_lab, effect:high, detail_cardiac)
+
+# adverse_events_dat |> filter(!is.na(detail_cardiac)) |> select(study, detail_cardiac) |> distinct()
+
+# for summary table
+# temp <- adverse_events_dat |>
+#   group_by(refid, arm_id) |>
+#   filter(str_detect(design_f_lab, "Rand")) |>
+#   slice(1) |>
+#   ungroup() |>
+#   summarise(total = sum(arm_n, na.rm = TRUE))
+# 
+# length(unique(temp$refid))
 
 # temp <- adverse_events_dat |>
 #   # filter(!str_detect(design_f_lab, "Random")) |>
@@ -1225,7 +1260,7 @@ adverse_events_gt_dat |>
   group_by(complication) |>
   gt(id = "one") |>
   row_group_order(groups = c("Cardiac – Randomized Clinical Trial", "MI – Randomized Clinical Trial", "MI – Retrospective Cohort", "Cardiac Arrest – Retrospective Cohort", "Pneumonia – Randomized Clinical Trial", "Respiratory Failure – Randomized Clinical Trial", "Respiratory Failure – Retrospective Cohort", "PE – Randomized Clinical Trial", "PE – Retrospective Cohort", "Pulmonary Congestion – Retrospective Cohort", "AKI – Retrospective Cohort")) |>
-  cols_hide(c(refid, year, study, arm_id, n, study, study_compl, rd_ci, rr_ci, or_ci, or_ln_te, or_ln_se_te, effect, adjcrude, est, low, high )) |>
+  cols_hide(c(refid, year, study, arm_id, n, study, study_compl, rd_ci, rr_ci, or_ci, or_ln_te, or_ln_se_te, effect, adjcrude, est, low, high, detail_cardiac )) |>
   cols_label(
     study_l          = "Study",
     arm_n            = " N",
@@ -1251,22 +1286,20 @@ adverse_events_gt_dat |>
     bar              ~ px(100),
     rd_or            ~ px(140)
   ) |>
-  tab_style(style = cell_text(align = "left"),        locations = cells_column_labels(columns = c(arm))) |>
-  tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(arm_n, rd_or))) |>
-  # tab_style(style = cell_text(align = "right"),      locations = cells_column_labels(columns = c())) |>
-  tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(arm, age_table, rd_or, surgs_single))) |>
-  tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(rd_or))) |>
+  tab_style(style = cell_text(align = "left"),          locations = cells_column_labels(columns = c(arm))) |>
+  tab_style(style = cell_text(align = "center"),        locations = cells_column_labels(columns = c(arm_n, rd_or))) |>
+  # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c())) |>
+  tab_style(style = cell_text(align = "left"),          locations = cells_body(columns = c(arm, age_table, rd_or, surgs_single))) |>
+  tab_style(style = cell_text(align = "center"),        locations = cells_body(columns = c(rd_or))) |>
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table))) |> 
   tab_footnote("Odds ratios reported for propensity-matched studies (risk difference with 95% CI reported accounting for matching were not reported).", locations = cells_column_labels(columns = c(rd_or))) |> 
   tab_footnote("RD: risk difference; OR: odds ratio; Ophtho: ophthalmologic; GI: gastointestinal; Abd: abdominal.") |> 
   tab_footnote("Compared with combined inhalation arms — differed only in induction agents.", locations = cells_body(columns = c(rd_or), rows = study == "Luntz 2004" & arm_id == 3)) |>
-  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "TIVA"))) 
-  # tab_style(style = cell_text(align = "right"),       locations = cells_body(columns = c())) |>
-  # tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
-  # tab_style(style = list(cell_text(color = "#969696")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Inhaled"))) |>
-  # tab_style(style = list(cell_text(color = "#F39C12")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Ket|Mel|Ram"))) |>
-  # tab_style(style = list(cell_text(color = "#969696")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Plac|None"))) |>
-  # gtsave(filename = "/Users/mgrant/Desktop/table.", inline_css = TRUE)
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "TIVA"))) |> 
+  tab_footnote("Bradycardia.",                          locations = cells_body(columns = c(study_l), rows = detail_cardiac == "bradycardia" & arm_id == 1)) |> 
+  tab_footnote("Atrial fibrillation.",                  locations = cells_body(columns = c(study_l), rows = detail_cardiac == "atrial fibrillation" & arm_id == 1)) |> 
+  tab_footnote("Cardiac dysfunction.",                  locations = cells_body(columns = c(study_l), rows = detail_cardiac == "cardiac dysfunction" & arm_id == 1))
+
 ```
 
 ### *Pooled*
@@ -1527,7 +1560,7 @@ satis_dat_gt |>
 
 ### *Pooled*
 
-<font size = 4> `r figure_ref()` Risk difference in patient satisfaction (TIVA versus inhaled; randomized clinical trials). </font>
+<font size = 4> `r figure_ref()` Risk ratio in patient satisfaction (TIVA versus inhaled; randomized clinical trials). </font>
 
 ```{r satis_rct_meta, fig.dim = c(14, 3), fig.align = "center"}
 satis_meta_dat <- satis_dat_gt |> 
@@ -1789,6 +1822,11 @@ forest(los_meta,
 ```
 <foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. <br/> 
 When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range.  </foot_mg> 
+
+## **Discharge Location**
+
+No studies reported
+
 
 ## **Mortality**
 
