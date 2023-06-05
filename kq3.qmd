@@ -673,7 +673,7 @@ rob_summary_fun(delirium_meta_dat$refid)
 ```
 :::
 
-## **Cognitive dysfunction ≤ 30d**
+## **Cognitive Dysfunction** ≤ **30d**
 
 ```{r dncr_ncd_dat}
 #| eval: true
@@ -922,7 +922,7 @@ forest(gen_reg_dncr_meta,
 
 <br/>
 
-## **Cognitive dysfunction > 30d**
+## **Cognitive Dysfunction** > **30d**
 
 <font size = 4> `r table_ref()` Cognitive dysfunction > 30 days and ascertainment. </font>
 

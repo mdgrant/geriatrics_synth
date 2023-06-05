@@ -762,7 +762,7 @@ forest(delirium_nrsi_meta,
 
 <foot_mg> RR: risk ratio; D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable.<br/> Sensitivity analysis including Vochteloo 2011 assuming effectively equal numbers of participants studied each year, obtained RR 0.68 (95% CI, 0.50--0.92; *I*^ 2^ = 64%). </foot_mg>
 
-## **Cognitive dysfunction ≤ 30d **
+## **Cognitive Dysfunction** ≤ **30d **
 
 ```{r dncr_ncd_dat}
 #| eval: true

@@ -572,7 +572,8 @@ delirium_meta_rct <- metabin(event2, n2, event1, n1,
   method.tau = "REML",
   hakn = FALSE,
   prediction = TRUE,
-  allstudies = TRUE
+  allstudies = TRUE,
+  # subset = study %in% c("Cao 2023", "Dai 2021")
 )
 
 # too few studies to exam small study effects
@@ -598,6 +599,7 @@ forest(delirium_meta_rct,
   addrows.below.overall = 4
 )
 ```
+
 <foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/> Hartung-Knapp adjustment not applied. Continuity correction of 0.5 added to studies arms with no events. Too few studies to examine small study effects. </foot_mg><br/>
 
 <br/>
@@ -633,10 +635,10 @@ forest(delirium_meta_nrsi,
   addrows.below.overall = 4
 )
 ```
-<foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. <br/> 
-Note: pooling of adjusted odds ratios from Yoshimura 2022 (propensity matching) and Goins 2018 (multivariable adjustment). </foot_mg>
 
-## **Cognitive dysfunction ≤ 30d**
+<foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. <br/> Note: pooling of adjusted odds ratios from Yoshimura 2022 (propensity matching) and Goins 2018 (multivariable adjustment). </foot_mg>
+
+## **Cognitive Dysfunction** ≤ **30d**
 
 ```{r dncr_ncd_dat}
 #| eval: true
@@ -922,12 +924,12 @@ forest(tiva_inhaled_meta,
 )  
 
 ```
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> 
-Five trials conducted in China and 1 each in Norway and Japan.</foot_mg><br/>
 
-## **Cognitive dysfunction > 30d**
+<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> Five trials conducted in China and 1 each in Norway and Japan.</foot_mg><br/>
 
-<font size = 4> `r table_ref()` Cognitive dysfunction > 30 days and ascertainment (TIVA versus inhaled; prospective cohort studies). </font>
+## **Cognitive Dysfunction** \> **30d**
+
+<font size = 4> `r table_ref()` Cognitive dysfunction \> 30 days and ascertainment (TIVA versus inhaled; prospective cohort studies). </font>
 
 ```{r ncd_dat}
 ncd_dat <- dichot_dat |>
@@ -1016,7 +1018,6 @@ metabin(n_TIVA, arm_n_TIVA, n_Inhaled, arm_n_Inhaled,
 )
 
 ```
-
 
 ```{r ncd_gt}
 #| eval: true
@@ -1112,7 +1113,7 @@ path <- glue::glue("/Users/mgrant/Desktop/temp.xlsx")
 saveWorkbook(wb, "/Users/mgrant/Desktop/kq4.xlsx", overwrite = TRUE)
 ```
 
-<font size = 4> `r table_ref()` Reported complications in TIVA versus inhaled anesthesia — cardiac, pulmonary, and acute kidney injury (TIVA versus inhaled; randomized and nonrandomized designs). </font>
+<font size = 4> `r table_ref()` Reported complications in TIVA versus inhaled anesthesia --- cardiac, pulmonary, and acute kidney injury (TIVA versus inhaled; randomized and nonrandomized designs). </font>
 
 ```{r complications}
 #| warning: false
@@ -1399,10 +1400,8 @@ forest(adverse_meta,
 temp_meta <- complication_meta_fun("Cardiac", use_hakn = FALSE)
 complication_forest_rct_fun(temp_meta)
 ```
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
-Similar/Inhaled arms combined for Luntz 2004.<br/>
-Hartung-Knapp adjustment not used — applying yielded a 95% confidence interval of (0.33–4.19).
-</foot_mg> 
+
+<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> Similar/Inhaled arms combined for Luntz 2004.<br/> Hartung-Knapp adjustment not used --- applying yielded a 95% confidence interval of (0.33--4.19). </foot_mg>
 
 #### Myocardial Infarction
 
@@ -1412,9 +1411,8 @@ Hartung-Knapp adjustment not used — applying yielded a 95% confidence interval
 temp_meta <- complication_meta_fun("MI", use_hakn = FALSE)
 complication_forest_fun(temp_meta)
 ```
-<foot_mg> RR: risk ratio.<br/>
-Similar arms combined for Liang 2017.
-</foot_mg> 
+
+<foot_mg> RR: risk ratio.<br/> Similar arms combined for Liang 2017. </foot_mg>
 
 #### Stroke
 
@@ -1428,8 +1426,8 @@ Not reported in included studies.
 temp_meta <- complication_meta_fun("Acute Kidney Injury", use_hakn = FALSE, predictive = FALSE)
 complication_forest_fun(temp_meta)
 ```
-<foot_mg> RR: risk ratio.<br/>
-</foot_mg> 
+
+<foot_mg> RR: risk ratio.<br/> </foot_mg>
 
 #### Pulmonary
 
@@ -1443,8 +1441,8 @@ Complications categorized as "pulmonary" not reported in included studies.
 temp_meta <- complication_meta_fun("Pneumonia", use_hakn = FALSE, predictive = FALSE)
 complication_forest_rct_fun(temp_meta, use_predictive = FALSE)
 ```
-<foot_mg> RR: risk ratio; ; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
-</foot_mg> 
+
+<foot_mg> RR: risk ratio; ; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> </foot_mg>
 
 #### Pulmonary Embolism
 
@@ -1454,9 +1452,8 @@ complication_forest_rct_fun(temp_meta, use_predictive = FALSE)
 temp_meta <- complication_meta_fun("Pulmonary Embolism", use_hakn = FALSE, predictive = FALSE)
 complication_forest_fun(temp_meta, use_predictive = FALSE)
 ```
-<foot_mg> RR: risk ratio.<br/>
-Similar arms combined for Liang 2017.
-</foot_mg> 
+
+<foot_mg> RR: risk ratio.<br/> Similar arms combined for Liang 2017. </foot_mg>
 
 ```{r complication_pulmonary-congestion,  fig.width = 14, fig.height = 2, fig.align = "left"}
 #| eval: false
@@ -1612,8 +1609,8 @@ forest(satis_meta,
 )
 
 ```
-<foot_mg> RD: risk difference; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
-Similar/Inhaled arms combined for Luntz 2004.</foot_mg> 
+
+<foot_mg> RD: risk difference; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> Similar/Inhaled arms combined for Luntz 2004.</foot_mg>
 
 <br/>
 
@@ -1767,8 +1764,8 @@ forest(los_meta,
 )
 
 ```
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
-When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range.  </foot_mg> 
+
+<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range. </foot_mg>
 
 <font size = 4> `r figure_ref()` Mean difference in lengths of stay (TIVA versus inhaled; nonrandomized designs). </font>
 
@@ -1826,13 +1823,12 @@ forest(los_meta,
 )
 
 ```
-<foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. <br/> 
-When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range.  </foot_mg> 
+
+<foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. <br/> When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range. </foot_mg>
 
 ## **Discharge Location**
 
 No studies reported
-
 
 ## **Mortality**
 
@@ -2148,7 +2144,8 @@ forest(mort_rct_meta,
 )
 
 ```
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg> 
+
+<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg>
 
 <br/>
 
@@ -2200,8 +2197,8 @@ forest(mort_nrsi_meta,
   addrows.below.overall = 4
 )
 ```
-<foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable.<br/>
-Note for Yoshimura 2022 naïve risk ratio, but identical to odds ratio reported respecting propensity matching.</foot_mg> 
+
+<foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable.<br/> Note for Yoshimura 2022 naïve risk ratio, but identical to odds ratio reported respecting propensity matching.</foot_mg>
 
 ## **Risk of Bias**
 
@@ -2242,9 +2239,3 @@ rob_traffic_light(robinsi_temp_dat, psize = 4, tool = "ROBINS-I", colour = "colo
 ```
 
 ## **References** {#references}
-
-
-
-
-
-
