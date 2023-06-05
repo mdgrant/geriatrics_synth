@@ -24,8 +24,6 @@ nocite: '@*'
 
 Among older patients undergoing surgery with general anesthesia, does the use of intravenous agents for maintenance of anesthesia improve postoperative outcomes compared with inhaled agents?
 
-<!-- setup -------------------------------------------- (2022-12-24 16:56) @ --->
-
 ```{r read_data}
 #| include: false
 source("code/load_data.R")
@@ -545,6 +543,14 @@ delirium_rct_meta_dat <- pairwise_dat |>
   left_join(rob2_meta_dat, by = "refid") |> 
   select(-design_f_lab) |> 
   arrange(year, study)
+
+cao_2023 <- tribble(
+  ~refid , ~study , ~treat1, ~treat2, ~event1, ~n1, ~event2, ~n2, ~year, ~D1, ~D2, ~D3, ~D4, ~D5, ~Overall,
+  99999, "Cao 2023", "Inhaled", "TIVA", 74, 597, 50, 598, 2023, NA, NA, NA, NA, NA, NA
+)
+
+delirium_rct_meta_dat <-  delirium_rct_meta_dat |> 
+  bind_rows(cao_2023)
 
 delirium_nsri_meta_dat <- pairwise_dat |> 
   filter(!str_detect(design_f_lab, "Rand")) |> 
