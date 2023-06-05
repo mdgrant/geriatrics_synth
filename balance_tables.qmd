@@ -369,7 +369,9 @@ tiva_inhaled_dat |>
   tab_footnote("Cardiovascular, pulmonary, and acute kidney injury.", locations = cells_body(columns = c(outcome), rows = outcome == "Complications")) |> 
   tab_footnote("0 events in one study; second did not detect a difference.", locations = cells_body(columns = c(est), rows = outcome == "Pulmonary congestion/edema")) |> 
   tab_footnote("2 versus 0 events.", locations = cells_body(columns = c(est), rows = outcome == "Cardiac arrest")) |> 
-  tab_footnote(md("[Comparing higher/highest category or categories compared with lower ones.](kq4.html#patient-satisfaction)"), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") 
+  tab_footnote(md("[Comparing higher/highest category or categories compared with lower ones.](kq4.html#patient-satisfaction)"), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |> 
+  tab_footnote("Pending formal inclusion of Ca0 2023.", locations = cells_body(columns = c(grade), rows = outcome == "Delirium" & measure == "RR"))
+
 
 ```
 
