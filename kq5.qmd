@@ -698,6 +698,72 @@ pim_delirium_tab |>
   tab_footnote("Not included in pooled results owing to size.", locations = cells_body(columns = study_l, rows = str_detect(study_l, "Neuman 2016"))) 
 ```
 
+<font size = 4> `r table_ref()` Delirium incidence and ascertainment during hospitalization in non-randomized studies comparing potentially inappropriate medications. </font>
+
+```{r pim_nrsi_delirium_gt}
+pim_delirium_tab |>
+    arrange(year, study, arm_id) |>
+   filter(!str_detect(design_f_lab, "Rand")) |> 
+    mutate(
+      delitotal_time = ifelse(delitotal_time == 999, "Stay", as.character(delitotal_time)),
+      delitotal_time = ifelse(is.na(delitotal_time), "Note", delitotal_time),
+      study_l = ifelse(row_number() > 1, "", study_l),
+      delitotal_time = ifelse(row_number() > 1, "", delitotal_time),
+      scale_delirium = ifelse(row_number() > 1, "", scale_delirium),
+      bar = case_when(
+        arm_id == 1 ~ bar_prop(calc_percent, "#969696"),
+        # str_detect(arm, "benz") ~ bar_prop(calc_percent, color_2),
+        .default = bar_prop(calc_percent, color_2)),
+      .by = study
+    ) |>
+    group_by(design_f_lab) |>
+    gt(id = "one") |>
+    # row_group_order(groups = c("Ortho", "GI/Abd", "Headneck", "Spine", "Various")) |>
+    cols_hide(c(year, refid, arm_id, study, design_f_lab, age_table, calc_percent, surg_f)) |>
+    cols_label(
+      study_l = "Study",
+      arm_n = " N",
+      # age_table = "  Age",
+      arm = md("Arm"),
+      pre_mmse = md("  MMSE<br/>(preop)"),
+      scale_delirium = "Scale",
+      delitotal_time = "Days",
+      n_percent = "N (%)",
+      bar = "0 – 100%",
+      rr_ci = "RR (95% CI)"
+    ) |>
+    fmt_markdown(columns = c(study_l, pre_mmse, bar)) |>
+    tab_spanner(label = "Incidence Proportion", columns = c(n_percent, bar)) |>
+    tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(study, arm, scale_delirium))) |>
+    tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, delitotal_time, n_percent, rr_ci))) |>
+    tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(arm, scale_delirium, bar))) |>
+    tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(delitotal_time, rr_ci))) |>
+    tab_style(style = cell_text(align = "right"),  locations = cells_body(columns = c(n_percent))) |>
+    tab_style(style = cell_text(align = "right"),  locations = cells_column_labels(columns = c(n_percent))) |>
+    tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:n_percent), rows = str_detect(arm, "Neur|Block"))) |>
+    sub_missing(columns = delitotal_time, missing_text = "Note") |>
+    gt_theme_mg() |>
+    cols_width(
+      study_l ~ px(165),
+      arm_n ~ px(45),
+      # age_table ~ px(100),
+      arm ~ px(170),
+      pre_mmse ~ px(95),
+      scale_delirium ~ px(105),
+      delitotal_time ~ px(50),
+      n_percent ~ px(90),
+      bar ~ px(100),
+      rr_ci ~ px(140)
+    ) |> 
+  tab_footnote("RR: risk ratio; MMSE: Mini-Mental State Examination; CAM: Confusion Assessment Method; DI: Delirium Index; DRS: Delirium Rating Scale; DSM: Diagnostic and Statistical Manual of Mental Disorders; NR: not reported.") |>
+    tab_footnote("Gen: general anesthesia; Neur: neuraxial; RR: risk ratio; MMSE: Mini-Mental State Examination; DRS: Delirium Rating Scale; DSM: Diagnostic and Statistical Manual of Mental Disorders; CAM: Confusion Assessment Method; DI: Delirium Index.") |>
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |>
+  tab_footnote("Days over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |>
+  tab_footnote("Maximum of reported daily incidence.", locations = cells_body(columns = delitotal_time, rows = delitotal_time == "Note")) |> 
+  tab_footnote("Not included in pooled results owing to size.", locations = cells_body(columns = study_l, rows = str_detect(study_l, "Neuman 2016"))) 
+```
+
+
 
 ## References {#references}
 
