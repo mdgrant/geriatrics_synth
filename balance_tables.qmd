@@ -135,10 +135,9 @@ expanded_dat |>
   # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c(est))) |>
   # tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(est))) |>
   tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(grade, measure, rct, nrsi))) |>
-  tab_footnote("RCT: randomized clinical trial; NRSI: nonrandomized studies of interventions; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; MD: mean difference.") |>
+  tab_footnote(md("RCT: randomized clinical trial; NRSI: nonrandomized studies of interventions;  [GRADE: Grades of Recommendation, Assessment, Development, and Evaluation](soe_gt.html#grade); RR: risk ratio; MD: mean difference.")) |>
   # tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |> 
   tab_footnote("Cardiovascular, pulmonary, and acute kidney injury.", locations = cells_body(columns = c(outcome), rows = outcome == "Complications")) |> 
-  tab_footnote("Complications includes bradycardia, tachycardia, arrhythmia, or unspecified.", locations = cells_body(columns = c(outcome), rows = outcome == "Cardiac complications")) |> 
   tab_footnote("Studies reported 0 and 2 events.", locations = cells_body(columns = c(est), rows = outcome == "Cardiac arrest"), placement = "right") 
   # tab_footnote(md("Per 100 patients for [higher or highest category or categories compared with lower ones.](kq3.html#patient-satisfaction)"), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") 
 
