@@ -130,7 +130,7 @@ expanded_dat |>
   tab_spanner(label = "Expanded", columns = c(event_e), level = 1) |>
   tab_spanner(label = "Standard", columns = c(event_c), level = 1) |>
   opt_footnote_marks(marks = "standard") |> 
-  tab_style(style = cell_text(align = "right"),        locations = cells_column_labels(columns = c(event_c, event_e))) |>
+  tab_style(style = cell_text(align = "center"),        locations = cells_column_labels(columns = c(event_c, event_e))) |>
   tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(n, grade, rct, nrsi))) |>
   # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c(est))) |>
   # tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(est))) |>
@@ -206,7 +206,7 @@ expanded_dat |>
   tab_spanner(label = "Expanded", columns = c(event_e), level = 1) |>
   tab_spanner(label = "Standard", columns = c(event_c), level = 1) |>
   opt_footnote_marks(marks = "standard") |> 
-  tab_style(style = cell_text(align = "right"),        locations = cells_column_labels(columns = c(event_c, event_e))) |>
+  tab_style(style = cell_text(align = "center"),        locations = cells_column_labels(columns = c(event_c, event_e))) |>
   tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(n, grade, rct, nrsi))) |>
   # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c(est))) |>
   # tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(est))) |>
@@ -282,7 +282,7 @@ reg_gen_dat |>
   tab_spanner(label = "Regional", columns = c(event_e), level = 1) |>
   tab_spanner(label = "General", columns = c(event_c), level = 1) |>
   opt_footnote_marks(marks = "standard") |> 
-  tab_style(style = cell_text(align = "right"),        locations = cells_column_labels(columns = c(event_c, event_e))) |>
+  tab_style(style = cell_text(align = "center"),        locations = cells_column_labels(columns = c(event_c, event_e))) |>
   tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(n, grade, rct))) |>
   # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c(est))) |>
   # tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(est))) |>
@@ -356,7 +356,7 @@ reg_gen_dat |>
   tab_spanner(label = "Regional", columns = c(event_e), level = 1) |>
   tab_spanner(label = "General", columns = c(event_c), level = 1) |>
   opt_footnote_marks(marks = "standard") |> 
-  tab_style(style = cell_text(align = "right"),        locations = cells_column_labels(columns = c(event_c, event_e))) |>
+  tab_style(style = cell_text(align = "center"),        locations = cells_column_labels(columns = c(event_c, event_e))) |>
   tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(n, grade, rct))) |>
   # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c(est))) |>
   # tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(est))) |>
