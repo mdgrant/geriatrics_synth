@@ -146,7 +146,7 @@ expanded_dat |>
 
 <br/>
 
-<font size = 4> `r table_ref()` Included complications and strength of evidence (GRADE) for regional versus general anesthesia. </font>
+<font size = 4> `r table_ref()` Included complications and strength of evidence (GRADE) for expanded versus standard preoperative evaluation. </font>
 
 ```{r exp_preop_complications}
 #| warning: false
