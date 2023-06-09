@@ -104,17 +104,6 @@ outcome_dat <- rankings("KQ1")
 outcome_tab(outcome_dat, 11)
 ```
 
-<!-- ### Postoperative Delirium Screening -->
-
-<!-- <font size = 4> `r table_ref()` Rankings of the 5 most important outcomes (11 respondents). </font> -->
-
-<!-- ```{r, outcome_priority_kq8} -->
-<!-- #| include: true -->
-<!-- #| eval: true -->
-<!-- outcome_dat <- rankings("KQ8") -->
-<!-- outcome_tab(outcome_dat, 11) -->
-<!-- ``` -->
-
 ## **Outcomes Reported**
 
 <font size = 4> `r table_ref()` Dichotomous or count outcomes. </font>
