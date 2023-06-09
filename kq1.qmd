@@ -104,16 +104,16 @@ outcome_dat <- rankings("KQ1")
 outcome_tab(outcome_dat, 11)
 ```
 
-### Postoperative Delirium Screening
+<!-- ### Postoperative Delirium Screening -->
 
-<font size = 4> `r table_ref()` Rankings of the 5 most important outcomes (11 respondents). </font>
+<!-- <font size = 4> `r table_ref()` Rankings of the 5 most important outcomes (11 respondents). </font> -->
 
-```{r, outcome_priority_kq8}
-#| include: true
-#| eval: true
-outcome_dat <- rankings("KQ8")
-outcome_tab(outcome_dat, 11)
-```
+<!-- ```{r, outcome_priority_kq8} -->
+<!-- #| include: true -->
+<!-- #| eval: true -->
+<!-- outcome_dat <- rankings("KQ8") -->
+<!-- outcome_tab(outcome_dat, 11) -->
+<!-- ``` -->
 
 ## **Outcomes Reported**
 
@@ -807,7 +807,7 @@ forest(delirium_nrsi_meta,
 ## dncr_dat ------------------------------------------- (2023-04-15 15:55) @----
 dncr_dat <- dichot_dat |>
   filter(if_any(c(neurocog_n1, neurocog_n2, neurocog_n3, neurocog_last_n, neurocog_total_n), ~ !is.na(.x))) |>
-  filter(if_any(matches("neurocog.*time.*"), ~ .x == 999)) |> # note pecularity of studies 
+  # filter(if_any(matches("neurocog.*time.*"), ~ .x == 999)) |> # note pecularity of studies 
   # select(refid, study, arm_n, neurocog_update_arm_n, neurocog_n1, neurocog_n2, neurocog_n3, neurocog_last_n, neurocog_total_n, matches("neurocog.*time")) |>
   mutate(
     arm_n = ifelse(!is.na(neurocog_update_arm_n), neurocog_update_arm_n, arm_n),
