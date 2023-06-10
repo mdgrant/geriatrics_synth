@@ -266,7 +266,7 @@ studychar_tab <- study_arm_dat |>
   ) |>
   arrange(surg_design, year, study, arm_id)
 
-studychar_tab |> tabyl(surg_design)
+# studychar_tab |> tabyl(surg_design)
 
 studychar_tab |>
   # remove time-series entries
