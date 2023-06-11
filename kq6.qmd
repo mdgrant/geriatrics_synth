@@ -1360,6 +1360,11 @@ mel_ram_plac_meta <- metabin(event2, n2, event1, n1,
   subgroup = mel_ram
   )
 
+# small study effects; here to have result of Harbord test
+temp_meta <- mel_ram_plac_meta 
+temp_meta <- update(mel_ram_plac_meta, subgroup = NULL, sm = "OR")
+temp_metabias <- metabias(temp_meta, method.bias = "Harbord", k.min = 10)
+
 # summary(mel_ram_plac_meta)
 forest(mel_ram_plac_meta,
   allstudies = TRUE,
