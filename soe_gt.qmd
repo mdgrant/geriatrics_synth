@@ -710,7 +710,7 @@ domain_summary <- soe_kq6_dat |>
 
 ```
 
-<font size = 4> `r table_ref()` GRADE domains for strength of evidence ratinsg --- delirium prophylaxis. </font>
+<font size = 4> `r table_ref()` GRADE domains for strength of evidence ratings --- delirium prophylaxis. </font>
 
 ```{r kq6_soe_gt}
 #| include: true
