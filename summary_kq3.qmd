@@ -179,7 +179,8 @@ library(kableExtra)
 opt_font <-  c("Source Sans Pro")
 opt_boot <- c("striped", "hover", "condensed")
 
-write_csv(table, "/Users/mgrant/Desktop/study_char_tab_kq3.csv", na = "")
+writexl::write_xlsx(table, "/Users/mgrant/Desktop/study_char_tab_kq3.xlsx")
+
 ```
 
 <br/>
@@ -251,7 +252,7 @@ pt_char_tab <- study_arm_dat |>
     # asa_34_all = round(sum(asa_34 * wgt, na.rm = FALSE)),
     age_mn_all = round(sum(age_mean * wgt, na.rm = FALSE)),
     age_md_all = round(sum(age_med * wgt, na.rm = FALSE)),
-    sex_all = round(sum(female * wgt, na.rm = FALSE)),
+    sex_all = round(sum(female_perc * wgt, na.rm = FALSE)),
     white_all = round(sum(white * wgt, na.rm = FALSE)),
     black_all = round(sum(black * wgt, na.rm = FALSE)),
     asian_all = round(sum(asian * wgt, na.rm = FALSE)),
@@ -316,6 +317,6 @@ pt_char_tab |>
   ) |> 
  gt_theme_mg()
   
-write_csv(pt_char_tab, "/Users/mgrant/Desktop/pt_char_tab_kq3.csv", na = "")
+writexl::write_xlsx(pt_char_tab, "/Users/mgrant/Desktop/pt_char_tab.xlsx")
 
 ```
