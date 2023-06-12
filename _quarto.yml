@@ -39,6 +39,8 @@ website:
             text: "Study-level evidence tables"
           - href: outcome_rankings.html
             text: "Outcome rankings"
+          - href: summary_kq3.html
+            text: "Summary: Regional versus General Anesthesia"
           - href: protocol.html
             text: "Draft protocol"
       - about.qmd
