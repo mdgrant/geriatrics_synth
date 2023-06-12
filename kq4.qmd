@@ -28,7 +28,7 @@ Among older patients undergoing surgery with general anesthesia, does the use of
 #| include: false
 source("code/load_data.R")
 settings.meta(CIbracket = "(")
-kq4_refid <- kq4_refid[!kq4_refid %in% c(290)]
+kq4_refid <- kq4_refid[!kq4_refid %in% c(290, 17101)]
 
 study_char_dat <- data_kq(study_char_dat, kq4_refid) |> 
   mutate(
@@ -544,13 +544,13 @@ delirium_rct_meta_dat <- pairwise_dat |>
   select(-design_f_lab) |> 
   arrange(year, study)
 
-cao_2023 <- tribble(
-  ~refid , ~study , ~treat1, ~treat2, ~event1, ~n1, ~event2, ~n2, ~year, ~D1, ~D2, ~D3, ~D4, ~D5, ~Overall,
-  99999, "Cao 2023", "Inhaled", "TIVA", 74, 597, 50, 598, 2023, NA, NA, NA, NA, NA, NA
-)
-
-delirium_rct_meta_dat <-  delirium_rct_meta_dat |> 
-  bind_rows(cao_2023)
+# cao_2023 <- tribble(
+#   ~refid , ~study , ~treat1, ~treat2, ~event1, ~n1, ~event2, ~n2, ~year, ~D1, ~D2, ~D3, ~D4, ~D5, ~Overall,
+#   99999, "Cao 2023", "Inhaled", "TIVA", 74, 597, 50, 598, 2023, NA, NA, NA, NA, NA, NA
+# )
+# 
+# delirium_rct_meta_dat <-  delirium_rct_meta_dat |> 
+#   bind_rows(cao_2023)
 
 delirium_nsri_meta_dat <- pairwise_dat |> 
   filter(!str_detect(design_f_lab, "Rand")) |> 
@@ -575,6 +575,8 @@ delirium_meta_rct <- metabin(event2, n2, event1, n1,
   allstudies = TRUE,
   # subset = study %in% c("Cao 2023", "Dai 2021")
 )
+
+# forest(delirium_meta_rct)
 
 # too few studies to exam small study effects
 
