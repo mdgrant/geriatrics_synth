@@ -33,6 +33,11 @@ kq3_refid <- kq3_refid[!kq3_refid %in% c(813, 3434)] # retrospective cohort
 
 study_char_dat <- data_kq(study_char_dat, kq3_refid)
 
+# ortho only hip fx ortho_hipfx_only_refid
+ortho_hipfx_only_refid <- ortho_proc |> 
+  filter(ortho == "HipFx") |> 
+  pull(refid)
+
 ## VARIABLE: kq3_anesth_neur, kq3_anesth_reg, kq3_anesth_gen, kq3_anesth_neur_type, kq3_anesth_gen_type  — anesthetic and type, no specifics recorded for regional
 study_arm_dat <- data_kq(study_arm_dat, kq3_refid) |>
   # delete anesthetic variables not relevant (avoid potential confusion)
@@ -354,7 +359,14 @@ delirium_meta_dat <- dichot_dat |>
   left_join(study_char_dat |> select(refid, country), by = "refid") |> 
   left_join(surgs |> select(refid, surgs_single_f), by = c("refid")) |>
   rename(surg_f = surgs_single_f) |> 
-  select(refid, study, arm_id, arm, year, design_f_lab, country, surg_f, delitotal_n, arm_n, delirium_inc_prop, delitotal_time:delitotal_95high, deli_cam:deli_scale_otherspec) 
+  # add hipfx only surg
+  mutate(
+    surg_f = fct_recode(surg_f, "Hip fx" = "Ortho"),
+    surg_hip_oth = ifelse(refid %in% ortho_hipfx_only_refid, "Hip fx", "Other"),
+    surg_hip_oth = factor(surg_hip_oth, levels = c("Hip fx", "Other"), labels = c("Hip fx", "Other"))
+    # surg_hip_oth = ifelse(refid %in% ortho_hipfx_only_refid, "Hip fx", "Other")
+  ) |> 
+  select(refid, study, arm_id, arm, year, design_f_lab, country, surg_f, surg_hip_oth, delitotal_n, arm_n, delirium_inc_prop, delitotal_time:delitotal_95high, deli_cam:deli_scale_otherspec) 
 
 # NOTE: collapse arms delirium meta;Bielka 2021 arm 1 psoas block, Shin 2020 tiva and volatile
 delirium_meta_dat <- delirium_meta_dat |>
@@ -376,7 +388,6 @@ delirium_meta_dat <- delirium_meta_dat |>
          arm = factor(arm, levels = c("Gen", "Neur", "Neur/Block", "Block"))
   )
   
-
 # delirium_meta_dat |> select(refid) |> distinct() # 2023-04-24 n = 14
 ```
 
@@ -426,7 +437,7 @@ reg_gen_delirium_tab <- delirium_meta_dat |>
     scale_delirium = ifelse(scale_delirium == "unspec", "NR", scale_delirium),
     scale_delirium = ifelse(scale_delirium == "DELIRIUM INDEX (DI)", "DI", scale_delirium)
   ) |>
-  select(year, refid, refid, design_f_lab, study, study_l, arm_id, arm_n, arm, scale_delirium, delitotal_time, n_percent, calc_percent, rr_ci, surg_f) |>
+  select(year, refid, refid, design_f_lab, study, study_l, arm_id, arm_n, arm, scale_delirium, delitotal_time, n_percent, calc_percent, rr_ci, surg_f, surg_hip_oth) |>
   # arrange(year, study, refid, desc(arm)) |>
   left_join(table_mn_med |> select(refid, arm_id, pre_mmse), by = c("refid", "arm_id")) |>
   left_join(table_age_mn_med, by = c("refid", "arm_id")) |>
@@ -453,8 +464,8 @@ reg_gen_delirium_tab |>
     ) |>
     group_by(surg_f) |>
     gt(id = "one") |>
-    row_group_order(groups = c("Ortho", "GI/Abd", "Headneck", "Spine", "Various")) |>
-    cols_hide(c(year, refid, arm_id, study, design_f_lab, age_table, calc_percent)) |>
+    row_group_order(groups = c("Hip fx", "GI/Abd", "Headneck", "Spine", "Various")) |>
+    cols_hide(c(year, refid, arm_id, study, design_f_lab, age_table, calc_percent, surg_hip_oth)) |>
     cols_label(
       study_l = "Study",
       arm_n = " N",
@@ -512,11 +523,11 @@ pairwise_dat <- pairwise(
   studlab = study,
   data = delirium_meta_dat,
   sm = "RR") |> 
-  select(studlab:surg_f) 
+  select(studlab:country, surg_hip_oth) 
 
 del_meta_dat <- pairwise_dat |>
   left_join(rob2_meta_dat, by = "refid") |>
-  select(study, year, event2, n2, event1, n1, D1:Overall, surg_f) |>
+  select(study, year, event2, n2, event1, n1, D1:Overall, surg_hip_oth) |>
   mutate(
     sample_size = n1 + n2,
     rob = case_when(
@@ -537,7 +548,7 @@ gen_reg_delirium_meta <- metabin(event2, n2, event1, n1,
   hakn = TRUE,
   prediction = TRUE,
   allstudies = TRUE,
-  subgroup = surg_f
+  subgroup = surg_hip_oth
 )
 
 gen_reg_delirium_meta_nosub <- update(gen_reg_delirium_meta, subgroup = NULL)
@@ -552,8 +563,8 @@ gen_reg_delirium_cummeta <- metacum(gen_reg_delirium_meta, pooled = "random")
 
 <font size = 4> `r figure_ref()` General versus regional anesthesia (randomized clinical trials). </font>
 
-```{r delirium_meta_forest, fig.width = 14, fig.height = 5.5, fig.align = "left", warning = TRUE}
-forest(gen_reg_delirium_meta_nosub,
+```{r delirium_meta_forest, fig.width = 14, fig.height = 7.0, fig.align = "left", warning = TRUE}
+forest(gen_reg_delirium_meta,
   allstudies = TRUE,
   common = TRUE,
   label.e = "Regional",
@@ -567,6 +578,9 @@ forest(gen_reg_delirium_meta_nosub,
   print.I2.ci = TRUE,
   # sortvar = year,
   prediction = TRUE,
+  subgroup = TRUE,
+  prediction.subgroup = TRUE,
+  print.subgroup.name = FALSE,
   fs.xlab = 11,
   pooled.events = TRUE,
   print.pval.Q = FALSE,
@@ -575,11 +589,14 @@ forest(gen_reg_delirium_meta_nosub,
   addrows.below.overall = 4
 )
 ```
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .  `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, delirium_meta_dat$refid), "; a secondary outcome in ", prim_sec_out_fun(sec_delirium, delirium_meta_dat$refid), ".")`</foot_mg>
+<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/>
+For hip fracture subgroup not applying the Hartung-Knapp adjustment — RR 1.03 (95% CI, 0.85–1.24)<br/>
+`r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, delirium_meta_dat$refid), "; a secondary outcome in ", prim_sec_out_fun(sec_delirium, delirium_meta_dat$refid), ".")`</foot_mg>
 
 <br/>
 
-<font size = 4> `r figure_ref()` General versus regional anesthesia cumulative meta-analysis (randomized clinical trials). </font>
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <font size = 4> `r figure_ref()` General versus regional anesthesia cumulative meta-analysis (randomized clinical trials). </font>
 
 ```{r delirium_meta_forest_cum, fig.width = 14, fig.height = 4.5, fig.align = "left", warning = TRUE}
 forest(gen_reg_delirium_cummeta,
@@ -605,39 +622,40 @@ forest(gen_reg_delirium_cummeta,
   addrows.below.overall = 4
 )
 ```
-
-::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <font size = 4> `r figure_ref()` General versus regional anesthesia pooled with subgroups (randomized clinical trials). </font>
-
-```{r delirium_meta_forest_sub, fig.width = 14, fig.height = 8.7, fig.align = "left", warning = TRUE}
-forest(gen_reg_delirium_meta,
-  allstudies = TRUE,
-  common = TRUE,
-  label.e = "Regional",
-  label.c = "General",
-  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
-  rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
-  just.addcols.right = "right",
-  digits = 2,
-  digits.tau2 = 1,
-  overall.hetstat = TRUE,
-  print.I2.ci = TRUE,
-  # sortvar = year,
-  prediction = TRUE,
-  subgroup = TRUE,
-  prediction.subgroup = FALSE,
-  print.subgroup.name = FALSE,
-  fs.xlab = 11,
-  pooled.events = TRUE,
-  print.pval.Q = FALSE,
-  # xlim = c(0.1, 3),
-  xlab = "Favors: Regional                          General",
-  addrows.below.overall = 4
-)  
-```
-
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg><br/>
 :::
+
+<!-- ::: {.callout-note collapse="true" appearance="minimal" icon="false"} -->
+<!-- #### <font size = 4> General versus regional anesthesia pooled with subgroups (randomized clinical trials). </font> -->
+
+<!-- ```{r delirium_meta_forest_sub, fig.width = 14, fig.height = 8.7, fig.align = "left", warning = TRUE} -->
+<!-- forest(gen_reg_delirium_meta, -->
+<!--   allstudies = TRUE, -->
+<!--   common = TRUE, -->
+<!--   label.e = "Regional", -->
+<!--   label.c = "General", -->
+<!--   rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"), -->
+<!--   rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"), -->
+<!--   just.addcols.right = "right", -->
+<!--   digits = 2, -->
+<!--   digits.tau2 = 1, -->
+<!--   overall.hetstat = TRUE, -->
+<!--   print.I2.ci = TRUE, -->
+<!--   # sortvar = year, -->
+<!--   prediction = TRUE, -->
+<!--   subgroup = TRUE, -->
+<!--   prediction.subgroup = FALSE, -->
+<!--   print.subgroup.name = FALSE, -->
+<!--   fs.xlab = 11, -->
+<!--   pooled.events = TRUE, -->
+<!--   print.pval.Q = FALSE, -->
+<!--   # xlim = c(0.1, 3), -->
+<!--   xlab = "Favors: Regional                          General", -->
+<!--   addrows.below.overall = 4 -->
+<!-- )   -->
+<!-- ``` -->
+
+<!-- <foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg><br/> -->
+<!-- ::: -->
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()` General versus regional anesthesia small study effects. </font>
@@ -1327,17 +1345,17 @@ forest(adverse_meta,
 
 ```
 
-#### Cardiac Composite
+<!-- #### Cardiac Composite -->
 
-<font size = 4> `r figure_ref()` Risk ratio for composite measures of cardiac complications (regional versus general anesthesia; randomized clinical trials). </font>
+<!-- <font size = 4> `r figure_ref()` Risk ratio for composite measures of cardiac complications (regional versus general anesthesia; randomized clinical trials). </font> -->
 
-```{r complication_cardiac,  fig.width = 14, fig.height = 4.5, fig.align = "left"}
-temp_meta <- complication_meta_fun("Cardiac")
-complication_forest_fun(temp_meta)
-```
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
-Similar arms combined for Shin 2020 and Bielka 2021.
-</foot_mg> 
+<!-- ```{r complication_cardiac,  fig.width = 14, fig.height = 4.5, fig.align = "left"} -->
+<!-- temp_meta <- complication_meta_fun("Cardiac") -->
+<!-- complication_forest_fun(temp_meta) -->
+<!-- ``` -->
+<!-- <foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> -->
+<!-- Similar arms combined for Shin 2020 and Bielka 2021. -->
+<!-- </foot_mg>  -->
 
 #### Myocardial Infarction
 

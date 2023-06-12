@@ -281,7 +281,7 @@ pt_char_tab <- study_arm_dat |>
   summarise(
     "Age (average of mean or med, range)" = paste0(round(sum(age/(n() - sum(is.na(age_mn) & is.na(age_md))), na.rm = TRUE), 1), " (", min(age, na.rm = TRUE), "-", max(age, na.rm = TRUE), ")"),
     "Female (%, range)" = paste0(round(sum(sex, na.rm = TRUE)/(n() - sum(is.na(sex))), 1), " (", min(sex, na.rm = TRUE), "-", max(sex, na.rm = TRUE), ")"),
-    "ASA Class (%)" = " ",
+    "ASA Physical Status (%)" = " ",
     "  I-II" =   round(100 * mean(asa == "12"), 1),
     "  I-III" =  round(100 * mean(asa == "123"), 1),
     "  I-IV" =  round(100 * mean(asa == "1234"), 1),
