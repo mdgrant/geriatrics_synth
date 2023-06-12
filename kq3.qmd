@@ -251,7 +251,7 @@ reg_gen_tab <- study_arm_dat |>
   mutate(
     # volatile_spec = if_any(kq3_gen_desflurane:kq3_gen_inhaleother, ~ !is.na(.x), "\U2713", NA), # verifies kq3_gen_type
     volatile = ifelse(kq3_gen_type %in% c("inhalation", "tiva_inhal"), "\U25CF", NA),
-    tiva = ifelse(kq3_gen_type  %in% c("tiva", "tiva_inhal"), "\U25CF", NA),
+    tiva = ifelse(kq3_gen_type %in% c("tiva", "tiva_inhal"), "\U25CF", NA),
     # tiva_inhal = ifelse(kq3_gen_type == "tiva_inhal", "\U2713", NA),
     # tiva_inhal = ifelse(kq3_gen_type == "tiva_inhal", "\U2713", NA),
     kq3_reg_block = notna_to_x(kq3_reg_block, "\U2714"),
@@ -1111,7 +1111,7 @@ complication_fun <- function(var_prefix) {
     arrange(complication, year, study, arm_id)
 }
 
-# adverse event data includes all reported complications in liss=t
+# adverse event data includes all reported complications in list
 adverse_events_dat <- map_df(complication_incl, complication_fun) |>
   mutate(
     arm_n = ifelse(!is.na(comp_update_arm_n), comp_update_arm_n, arm_n),
