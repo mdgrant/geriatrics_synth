@@ -548,8 +548,11 @@ gen_reg_delirium_meta <- metabin(event2, n2, event1, n1,
   hakn = TRUE,
   prediction = TRUE,
   allstudies = TRUE,
+  # subset = surg_hip_oth == "Hip fx"
   subgroup = surg_hip_oth
 )
+
+summary(gen_reg_delirium_meta)
 
 gen_reg_delirium_meta_nosub <- update(gen_reg_delirium_meta, subgroup = NULL)
 
@@ -590,7 +593,8 @@ forest(gen_reg_delirium_meta,
 )
 ```
 <foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/>
-For hip fracture subgroup not applying the Hartung-Knapp adjustment — RR 1.03 (95% CI, 0.85–1.24)<br/>
+In hip fracture subgroup not applying the Hartung-Knapp adjustment — RR 1.03 (95% CI, 0.85–1.24); random effects pooled estimate dominated by Neuman 2021 (74.1%) and Li 2022 (13.0%).<br/>
+
 `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, delirium_meta_dat$refid), "; a secondary outcome in ", prim_sec_out_fun(sec_delirium, delirium_meta_dat$refid), ".")`</foot_mg>
 
 <br/>
@@ -1190,7 +1194,7 @@ adverse_events_dat <- adverse_events_dat |>
 adverse_events_gt_dat <- adverse_events_dat |>
   filter(complication %in% complication_incl) |>
   # tabyl(complication) |> pull(complication) |> toString()
-  mutate(complication = factor(complication, levels = c("cardiac", "myoinfarct", "cardarr", "stroke", "kidneyinj", "pulm", "pneum", "pulcongest", "pe", "intub"), labels = c("Cardiac", "MI", "Cardiac Arrest", "Stroke", "AKI", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Reintubation"))) |>
+  mutate(complication = factor(complication, levels = c("cardiac", "myoinfarct", "cardarr", "stroke", "kidneyinj", "pulm", "pneum", "pulcongest", "pe", "intub"), labels = c("Other Cardiac", "MI", "Cardiac Arrest", "Stroke", "AKI", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Reintubation"))) |>
   arrange(year, study, arm) 
 
 adverse_events_gt_dat |> 
@@ -1199,7 +1203,7 @@ adverse_events_gt_dat |>
          surgs_single = ifelse(row_number() > 1, "", surgs_single), .by = study_compl) |>
   group_by(complication) |>
   gt(id = "one") |>
-  row_group_order(groups = c("Cardiac", "MI", "Cardiac Arrest", "Stroke", "AKI", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Reintubation")) |>
+  row_group_order(groups = c("MI", "Cardiac Arrest", "Other Cardiac", "Stroke", "AKI", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Reintubation")) |>
   cols_hide(c(refid, year, study, arm_id, n, study, study_compl, design_f_lab, detail_cardiac)) |>
   cols_label(
     study_l          = "Study",

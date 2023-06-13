@@ -1224,7 +1224,7 @@ propensity_refid <- c(1134, 132, 16890)
 
 adverse_events_gt_dat <- adverse_events_dat |>
   filter(complication %in% complication_incl) |>
-  mutate(complication = factor(complication, levels = c("cardiac", "myoinfarct", "cardarr", "kidneyinj", "pneum", "pulcongest", "pe", "respfail"), labels = c("Cardiac", "MI", "Cardiac Arrest", "AKI", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure"))) |>
+  mutate(complication = factor(complication, levels = c("cardiac", "myoinfarct", "cardarr", "kidneyinj", "pneum", "pulcongest", "pe", "respfail"), labels = c("Other Cardiac", "MI", "Cardiac Arrest", "AKI", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure"))) |>
   arrange(year, study, arm) |>
   mutate(
     rd_or = ifelse(refid %in% propensity_refid & row_number() != 1, paste0("<u>", or_ci, "</u>"), rd_ci),
@@ -1268,7 +1268,7 @@ adverse_events_gt_dat |>
   # tabyl(complication) |> arrange(desc(percent)) |> pull(complication) |> toString()
   group_by(complication) |>
   gt(id = "one") |>
-  row_group_order(groups = c("Cardiac – Randomized Clinical Trial", "MI – Randomized Clinical Trial", "MI – Retrospective Cohort", "Cardiac Arrest – Retrospective Cohort", "Pneumonia – Randomized Clinical Trial", "Respiratory Failure – Randomized Clinical Trial", "Respiratory Failure – Retrospective Cohort", "PE – Randomized Clinical Trial", "PE – Retrospective Cohort", "Pulmonary Congestion – Retrospective Cohort", "AKI – Retrospective Cohort")) |>
+  row_group_order(groups = c("MI – Randomized Clinical Trial", "MI – Retrospective Cohort", "Cardiac Arrest – Retrospective Cohort", "Other Cardiac – Randomized Clinical Trial", "Pneumonia – Randomized Clinical Trial", "Respiratory Failure – Randomized Clinical Trial", "Respiratory Failure – Retrospective Cohort", "PE – Randomized Clinical Trial", "PE – Retrospective Cohort", "Pulmonary Congestion – Retrospective Cohort", "AKI – Retrospective Cohort")) |>
   cols_hide(c(refid, year, study, arm_id, n, study, study_compl, rd_ci, rr_ci, or_ci, or_ln_te, or_ln_se_te, effect, adjcrude, est, low, high, detail_cardiac )) |>
   cols_label(
     study_l          = "Study",
@@ -1316,6 +1316,7 @@ adverse_events_gt_dat |>
 ```{r complication_meta,  fig.width = 14, fig.height = 12.5, fig.align = "left"}
 complication_meta_fun <- function(compl_label, use_hakn = TRUE, predictive = TRUE){
 meta_dat <- adverse_meta_wide_dat |>
+  filter(!str_detect(complication, "Other Cardiac")) |> 
   select(-complication) |>
   rename(complication = complication_nodesign) |>
   filter(complication %in% compl_label) |> 
@@ -1394,16 +1395,16 @@ forest(adverse_meta,
 
 ```
 
-#### Cardiac Composite
+<!-- #### Cardiac Composite -->
 
-<font size = 4> `r figure_ref()` Risk ratio for composite measures of cardiac complications (TIVA versus inhaled anesthesia; randomized clinical trials). </font>
+<!-- <font size = 4> Risk ratio for composite measures of cardiac complications (TIVA versus inhaled anesthesia; randomized clinical trials). </font> -->
 
-```{r complication_cardiac,  fig.width = 14, fig.height = 3.75, fig.align = "left"}
-temp_meta <- complication_meta_fun("Cardiac", use_hakn = FALSE)
-complication_forest_rct_fun(temp_meta)
-```
+<!-- ```{r complication_cardiac,  fig.width = 14, fig.height = 3.75, fig.align = "left"} -->
+<!-- temp_meta <- complication_meta_fun("Cardiac", use_hakn = FALSE) -->
+<!-- complication_forest_rct_fun(temp_meta) -->
+<!-- ``` -->
 
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> Similar/Inhaled arms combined for Luntz 2004.<br/> Hartung-Knapp adjustment not used --- applying yielded a 95% confidence interval of (0.33--4.19). </foot_mg>
+<!-- <foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> Similar/Inhaled arms combined for Luntz 2004.<br/> Hartung-Knapp adjustment not used --- applying yielded a 95% confidence interval of (0.33--4.19). </foot_mg> -->
 
 #### Myocardial Infarction
 
