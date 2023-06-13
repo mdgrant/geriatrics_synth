@@ -1037,54 +1037,16 @@ adl_likert_dat <- likert_dat |>
   select(refid, study_l, study, arm_id, arm, arm_n, adl_scale, !contains("_")) |> 
   rename_with(~ paste0("adl_", .x), .cols = matches("[1-3]")) 
 
-adl_times_dat <- 
-  mean_med_table_adl(exp_likert_dat, "adl_", 1, 0) |> 
-  left_join(mean_med_table_adl(exp_likert_dat, "adl_", 2, 0), by = c("refid", "arm_id")) |> 
-  left_join(mean_med_table_adl(exp_likert_dat, "adl_", 3, 0), by = c("refid", "arm_id"))
-
-adl_likert_tab <- exp_likert_dat |> 
-  select(refid, study, study_l, arm_id, arm, arm_n, adl_scale) |> 
-  left_join(adl_times_dat, by = c("refid", "arm_id")) 
-  
-
-
-example mmse1_dat <- mean_med_table(likert_dat, "mmse_", 1, 0)
-  
-sd1
-_95l1
-_95u1
-med1
-rl1
-ru1
-iqrl1
-iqru1
-diff1
-diffsd1
-diff95low1
-diff95high1
-pval1_in
-pval1_betw
-  
-
-
-time1 = coalesce(!!!select(., contains("time1"))),
-         `1pbZoFVrxX` = coalesce(!!!select(., contains("1pbZoFVrxX"))),
-          `8xOGZuvswo` = coalesce(!!!select(., contains("8xOGZuvswo")))) %>%
-  select(RmiNdhdGoy, `1pbZoFVrxX`, `8xOGZuvswo`, col_blah, col_foo)
-
-
-
-'
-  # select(refid, study, arm, adl_scale, matches("sf36"))
-  remove_empty(which = "cols") 
-  
-writexl::write_xlsx(exp_likert_dat, "/Users/mgrant/Desktop/exp_likert_dat.xlsx")
-  
+# adl_times_dat <- 
+#   mean_med_table_adl(exp_likert_dat, "adl_", 1, 0) |> 
+#   left_join(mean_med_table_adl(exp_likert_dat, "adl_", 2, 0), by = c("refid", "arm_id")) |> 
+#   left_join(mean_med_table_adl(exp_likert_dat, "adl_", 3, 0), by = c("refid", "arm_id"))
+# 
+# adl_likert_tab <- exp_likert_dat |> 
+#   select(refid, study, study_l, arm_id, arm, arm_n, adl_scale) |> 
+#   left_join(adl_times_dat, by = c("refid", "arm_id")) 
 
 ```
-
-
-
 
 ## **Complications**
 
@@ -1203,7 +1165,7 @@ adverse_events_dat <- adverse_events_dat |>
 ```{r complications_gt}
 #| eval: true
 adverse_events_gt_dat <- adverse_events_dat |> 
-  mutate(complication = factor(complication, levels = c("cardiac", "myoinfarct", "cardarr", "kidneyinj", "pulm", "pneum", "atelec", "pe", "respfail", "vent48"), labels = c("Cardiac", "MI", "Cardiac Arrest", "AKI", "Pulmonary", "Pneumonia", "Atelectasis", "PE", "Respiratory Failure", "Ventilator >48hr"))) |>
+  mutate(complication = factor(complication, levels = c("cardiac", "myoinfarct", "cardarr", "kidneyinj", "pulm", "pneum", "atelec", "pe", "respfail", "vent48"), labels = c("Other Cardiac", "MI", "Cardiac Arrest", "AKI", "Pulmonary", "Pneumonia", "Atelectasis", "PE", "Respiratory Failure", "Ventilator >48hr"))) |>
   mutate(
     surgs_single = ifelse(surgs_single == "Vasc", "Vascular", surgs_single),
     study_l = ifelse(row_number() > 1, "", study_l),
@@ -1255,7 +1217,7 @@ adverse_events_gt_dat |>
   # tabyl(complication) |> arrange(desc(percent)) |> pull(complication) |> toString()
   group_by(complication) |>
   gt(id = "one") |>
-  row_group_order(groups = c("Cardiac – Randomized Clinical Trial", "Cardiac – Before-After/Time Series", "Cardiac Arrest – Randomized Clinical Trial", "Cardiac Arrest – Before-After/Time Series", "MI – Randomized Clinical Trial", "MI – Before-After/Time Series", "Pulmonary – Randomized Clinical Trial", "Pneumonia – Randomized Clinical Trial", "Pneumonia – Before-After/Time Series", "Atelectasis – Before-After/Time Series", "Respiratory Failure – Before-After/Time Series", "Ventilator >48hr – Before-After/Time Series", "PE – Before-After/Time Series", "AKI – Randomized Clinical Trial", "AKI – Before-After/Time Series")) |>
+  row_group_order(groups = c("Cardiac Arrest – Randomized Clinical Trial", "Cardiac Arrest – Before-After/Time Series", "MI – Randomized Clinical Trial", "MI – Before-After/Time Series", "Other Cardiac – Randomized Clinical Trial", "Other Cardiac – Before-After/Time Series", "Pulmonary – Randomized Clinical Trial", "Pneumonia – Randomized Clinical Trial", "Pneumonia – Before-After/Time Series", "Atelectasis – Before-After/Time Series", "Respiratory Failure – Before-After/Time Series", "Ventilator >48hr – Before-After/Time Series", "PE – Before-After/Time Series", "AKI – Randomized Clinical Trial", "AKI – Before-After/Time Series")) |>
   cols_hide(c(refid, year, study, arm_id, n, study, study_compl, rr_ci, adjcrude, est, low, high, effect, detail_cardiac)) |>
   cols_label(
     study_l          = "Study",
@@ -1282,16 +1244,20 @@ adverse_events_gt_dat |>
     bar              ~ px(120),
     rd_ci            ~ px(130)
   ) |>
-  tab_style(style = cell_text(align = "left"),        locations = cells_column_labels(columns = c(arm))) |>
-  tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(arm_n, rd_ci))) |>
-  # tab_style(style = cell_text(align = "right"),      locations = cells_column_labels(columns = c())) |>
-  tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(arm, age_table, rd_ci, surgs_single))) |>
-  tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(rd_ci))) |>
+  tab_style(style = cell_text(align = "left"),          locations = cells_column_labels(columns = c(arm))) |>
+  tab_style(style = cell_text(align = "center"),        locations = cells_column_labels(columns = c(arm_n, rd_ci))) |>
+  # tab_style(style = cell_text(align = "right"),        locations = cells_column_labels(columns = c())) |>
+  tab_style(style = cell_text(align = "left"),          locations = cells_body(columns = c(arm, age_table, rd_ci, surgs_single))) |>
+  tab_style(style = cell_text(align = "center"),        locations = cells_body(columns = c(rd_ci))) |>
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table))) |> 
   tab_footnote("RD: risk difference; GI: gastrointestinal; Abd: abdominal; Ortho: orthopedic; Neuro: neurologic.") |> 
-  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Exp"))) 
-  
-  
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Exp"))) |> 
+  tab_footnote("Cardiac failure.",                     locations = cells_body(columns = c(study_l), rows = detail_cardiac == "cardiac failure" & arm_id == 1)) |> 
+  tab_footnote("Arrhythmia, cardiac failure.",          locations = cells_body(columns = c(study_l), rows = detail_cardiac == "arrhythmia, cardiac failure" & arm_id == 1)) |> 
+  tab_footnote("Unspecified.",                          locations = cells_body(columns = c(study_l), rows = detail_cardiac == "unspecified" & arm_id == 1)) |> 
+  tab_footnote("Acute coronary syndrome, heart failure, tachyarrhythmia, or bradyarrhythmia.", locations = cells_body(columns = c(study_l), rows = detail_cardiac == "acute coronary syndrome, heart failure, tachyarrhythmia, or bradyarrhythmia" & arm_id == 1)) |> 
+  tab_footnote("MI, cardiac arrest, ventricular fibrillation, dysrhythmia, or heart failure.", locations = cells_body(columns = c(study_l), rows = detail_cardiac == "acute MI, cardiac arrest and ventricular fibrillation, cardiac dysrhythmia, and acute CHF combined" & arm_id == 1)) 
+
 # 1 Bjorkelund 2010  cardiac failure                                                                                   
 # 2 Hempenius 2013   arrhythmia, cardiac failure                                                                       
 # 3 Watne 2014       unspecified                                                                                       
@@ -1386,29 +1352,29 @@ forest(adverse_meta,
 
 ```
 
-#### Cardiac Composite
+<!-- #### Cardiac Composite -->
 
-<font size = 4> `r figure_ref()` Risk ratio for composite measures of cardiac complications (expanded versus standard preoperative evaluation; randomized clinical trials). </font>
+<!-- <font size = 4>  Risk ratio for composite measures of cardiac complications (expanded versus standard preoperative evaluation; randomized clinical trials). </font> -->
 
-```{r complication_cardiac,  fig.width = 14, fig.height = 3, fig.align = "left"}
-adverse_meta <- complication_meta_fun("Cardiac", randomized = "Randomized", use_hakn = FALSE, predictive = FALSE)
-complication_forest_rct_fun(adverse_meta, use_predictive = FALSE)
-```
+<!-- ```{r complication_cardiac,  fig.width = 14, fig.height = 3, fig.align = "left"} -->
+<!-- adverse_meta <- complication_meta_fun("Cardiac", randomized = "Randomized", use_hakn = FALSE, predictive = FALSE) -->
+<!-- complication_forest_rct_fun(adverse_meta, use_predictive = FALSE) -->
+<!-- ``` -->
 
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . </foot_mg>
+<!-- <foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . </foot_mg> -->
 
-<br/>
+<!-- <br/> -->
 
-<font size = 4> `r figure_ref()` Risk ratio for composite measures of cardiac complications (expanded versus standard preoperative evaluation; nonrandomized designs. </font>
+<!-- <font size = 4>  Risk ratio for composite measures of cardiac complications (expanded versus standard preoperative evaluation; nonrandomized designs. </font> -->
 
-```{r complication_nrsi_cardiac,  fig.width = 14, fig.height = 3.8, fig.align = "left"}
-adverse_meta <- complication_meta_fun("Cardiac", randomized = "Nonrandomized", use_hakn = FALSE, predictive = FALSE)
-complication_forest_nrsi_fun(adverse_meta, use_predictive = TRUE)
-```
+<!-- ```{r complication_nrsi_cardiac,  fig.width = 14, fig.height = 3.8, fig.align = "left"} -->
+<!-- adverse_meta <- complication_meta_fun("Cardiac", randomized = "Nonrandomized", use_hakn = FALSE, predictive = FALSE) -->
+<!-- complication_forest_nrsi_fun(adverse_meta, use_predictive = TRUE) -->
+<!-- ``` -->
 
-<foot_mg> RR: risk ratio; D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. </foot_mg>
+<!-- <foot_mg> RR: risk ratio; D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. </foot_mg> -->
 
-<br/>
+<!-- <br/> -->
 
 #### Myocardial Infarction
 
