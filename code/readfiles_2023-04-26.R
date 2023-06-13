@@ -464,7 +464,7 @@ dichot_dat <- read_csv(path_csv(dichot_out_file)) |>
   relocate(study:study_id, .after = design_f_abbrev)
 
 ## cardiac complication defn -------------------------- (2023-06-03 11:05) @----
-cardiac_compl <- readxl::read_xlsx("data/cardiac_complications_2023-05-22.xlsx", range = "A1:D57") |>
+cardiac_compl <- readxl::read_xlsx("data/cardiac_complications_2023-05-22.xlsx", range = "A1:E56") |>
   clean_names() |>
   mutate(cardiac_complications = firstlower(cardiac_complications),
          complication = "cardiac") |>

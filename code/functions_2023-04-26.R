@@ -303,6 +303,33 @@ mean_med_table <- function(data, variable_select, observation_n, digs = 0) {
     rename(!!paste0(variable_select, "time", observation_n) := time)
 }
 
+mean_med_table_adl <- function(data, variable_select, observation_n, digs = 0) {
+  data |>
+    select(starts_with(variable_select), refid, arm_id, arm_n) |>
+    select(matches(paste0(observation_n, "$")), refid, arm_id, arm_n) |>
+    select(!matches("diff"), refid, arm_id, arm_n) |>
+    # rename_with(~ gsub("95", "ci95", .x, fixed = TRUE)) |>
+    rename_with(~ gsub(variable_select, "", .x, fixed = TRUE)) |>
+    rename_with(~ str_replace(.x, "[1-4]", "")) |>
+    mutate(
+      sd = ifelse(is.na(sd) & !is.na(ci95l + ci95u), (ci95u - ci95l) / (1.96 * 2) * sqrt(arm_n), sd),
+      sd_f = formatC(sd, digits = 1, format = "f"),
+      table =
+        case_when(
+          !is.na(m + sd) ~ paste0(formatC(m, digits = digs + 1, format = "f"), " (", sd_f, ")"),
+          !is.na(m + rl + ru) ~ paste0(formatC(m, digits = digs + 1, format = "f"), " [", formatC(rl, digits = digs, format = "f"), "-", formatC(ru, digits = digs, format = "f"), "]"),
+          !is.na(med + rl + ru) ~ paste0("<u>", formatC(med, digits = digs, format = "f"), "</u>", " [", formatC(rl, digits = digs, format = "f"), "-", formatC(ru, digits = digs, format = "f"), "]"),
+          !is.na(med + iqrl + iqru) ~ paste0("<u>", formatC(med, digits = digs, format = "f"), "</u>", " {", formatC(iqrl, digits = digs, format = "f"), "-", formatC(iqru, digits = digs, format = "f"), "}"),
+          !is.na(m) ~ as.character(formatC(m, digits = digs + 1, format = "f")),
+          !is.na(med) ~ paste0("<u>", formatC(med, digits = digs, format = "f"), "</u>"),
+          .default = ""
+        )
+    ) |>
+    select(refid, arm_id, time, table) |>
+    rename(!!paste0(variable_select, "table", observation_n) := table) |>
+    rename(!!paste0(variable_select, "time", observation_n) := time)
+}
+
 # single time
 # mean_med_table_single(study_arm_dat, "pre_mmse_", 0)
 mean_med_table_single <- function(data, variable_select, digs = 1) {
