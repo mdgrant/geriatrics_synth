@@ -144,7 +144,6 @@ study_char_dat |>
 
 <font size = 4> `r table_ref()` Study design, enrollment, centers, country, and surgery (see [References](#references) for citations). </font>
 
-
 ```{r drugs_by_arm}
 #| label: design_contry_surg
 #| tbl-cap: Study design, enrollment, centers, country, and surgery (see [References](#references) for citations).
@@ -968,7 +967,7 @@ rm(refid_max_of_days)
 #| eval: true
 # CODE: * delirium meta data, pairwise and network (netmeta)
 nma_rct_dat <- delirium_meta_dat |> 
-  mutate(arm = fct_collapse(arm, "Benzo" = c("Oxaz", "Mid"))) |> 
+  mutate(arm = fct_collapse(arm, "Benzo" = c("Oxaz", "Mid"))) |>
   filter(design_f_lab == "Randomized Clinical Trial") |> 
   # filter(surg_f == "Cardiac") |> 
   # filter(postop_only == TRUE) |> 
@@ -1079,7 +1078,7 @@ netgraph(netmeta_melram_nma,
 
 ```
 
-<foot_mg> Dex: Dexmedetomidine; Ket: Ketamine; Mel/Ram: Melatonin or ramelteon; Benz: benzodiazepine (midazolam or oxazepam); MS: Morphine sulfate; Plac/None: Placebo or no intervention; Prop: Propofol. </foot_mg>
+<foot_mg> Dex: Dexmedetomidine; Ket: Ketamine; Mel/Ram: Melatonin or ramelteon; Benz: benzodiazepine (midazolam or oxazepam); MS: Morphine sulfate; Plac/None: Placebo or no intervention; Prop: Propofol.<br/> Only ramelteon-placebo comparisons with effect similar to melatonin-placebo.</foot_mg>
 
 <br/>
 
@@ -1122,10 +1121,20 @@ dex_plac_meta <- metabin(event2, n2, event1, n1,
   allstudies = TRUE
   )
 
+dex_plac_china_meta <- update(dex_plac_meta, subset = china_vs_other == "China")
+dex_plac_other_meta <- update(dex_plac_meta, subset = china_vs_other != "China")
+
 # small study effects; here to have result of Harbord test
 temp_meta <- dex_plac_meta
 temp_meta <- update(temp_meta, subgroup = NULL, sm = "OR")
 temp_metabias <- metabias(temp_meta, method.bias = "Harbord", k.min = 10)
+
+# small study effects; here to have result of Harbord test; china only
+temp_china_meta <- update(dex_plac_meta, subgroup = NULL, sm = "OR", subset = china_vs_other == "China")
+temp_china_metabias <- metabias(temp_china_meta, method.bias = "Harbord", k.min = 10)
+
+# small study effects; here to have result of Harbord test; china only
+temp_other_meta <- update(dex_plac_meta, subgroup = NULL, sm = "OR", subset = china_vs_other != "China")
 
 # summary(dex_plac_meta)
 dex_meta_forest_nosub_fun <- function(data_meta) {
@@ -1166,7 +1175,7 @@ forest(data_meta,
   print.I2.ci = TRUE,
   prediction = TRUE,
   subgroup = TRUE,
-  prediction.subgroup = FALSE,
+  prediction.subgroup = TRUE,
   print.subgroup.name = FALSE,
   fs.xlab = 11,
   pooled.events = TRUE,
@@ -1182,21 +1191,6 @@ dex_meta_forest_nosub_fun(dex_plac_meta)
 
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <a id="figure-4"></a><br/> `r paste0("Harbord test for small study effects P = ", formatC(temp_metabias$pval, digits = 4, format = "f"), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, dex_plac_refid), "; a secondary outcome in ", prim_sec_out_fun(sec_delirium, dex_plac_refid), ".")`</foot_mg><br/>
 
-::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <font size = 4> `r figure_ref()` <a id="figure-china"></a> Dexmedetomidine compared with placebo or no intervention according to reporting incidence proportion (randomized clinical trials). </font>
-
-```{r dex_meta_sens_incidence_prop, fig.width = 14, fig.height = 10.5, fig.align = "left"}
-delirium_inc_pro_meta <- update(dex_plac_meta, subgroup = delirium_inc_prop)
-
-dex_meta_forest_fun(delirium_inc_pro_meta)
-
-rm(delirium_inc_pro_meta)
-```
-
-<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . </foot_mg>
-:::
-
-::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()`Dexmedetomidine compared with placebo or no intervention --- trials from China vs. other countries (randomized clinical trials). </font>
 
 ```{r nma_dat_china, fig.width = 14, fig.height = 10.5, fig.align = "left"}
@@ -1209,6 +1203,88 @@ dex_meta_forest_fun(china_meta)
 ```
 
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/> `r paste0("Meta-regression (China vs. Other) I² = ", digit0(temp_metareg$I2), "%.")` `r rm(temp_metareg, china_meta)` </foot_mg>
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention small study effects --- funnel plot and limit meta-analysis. </font>
+
+```{r dex_plac_meta_funnel_limit, fig.dim = c(7, 5.5), out.width = "70%", fig.align = "center"}
+# {r name, fig.dim = c(6, 6), out.width = "60%", fig.align = "center"}
+# {r dex_plac_meta_funnel_limit, out.width = "85%", out.height = "100%", fig.align = "center"}
+par(mar = c(4, 4, 2, 1))
+
+limit_colors <- c("#AAB7B8", "#D5DBDB", "#F4F6F6")
+
+temp_limit_meta <- limitmeta(temp_meta)
+
+par(bty = "n", xaxt = "s", yaxt = "s")
+
+funnel(temp_limit_meta, ylim = c(0.8, 0.0), xlim = c(0.1, 5), pch = 20, contour = c(0.9, 0.95, 0.99), col.contour = limit_colors, studlab = TRUE, pos.studlab = 4, fs.smlab = 6, ff.smlab = "italic")
+
+legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#AAB7B8", "#D5DBDB", "#F4F6F6"), bty = "n")
+
+text(1.2, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .9)
+```
+
+<foot_mg> Estimates (odds ratio and 95% CI) from random effects models --- unadjusted `r paste0(digit2(exp(temp_limit_meta$TE.random)), " (", digit2(exp(temp_limit_meta$lower.random)), "–", digit2(exp(temp_limit_meta$upper.random)), ")")`; adjusted for small study effects: `r paste0(digit2(exp(temp_limit_meta$TE.adjust)), " (", digit2(exp(temp_limit_meta$lower.adjust)), "–", digit2(exp(temp_limit_meta$upper.adjust)), ")")`.</font>
+:::
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention small study effects for trials conducted in China --- funnel plot and limit meta-analysis. </font>
+
+```{r dex_plac_china_meta_funnel_limit, fig.dim = c(7, 5.5), out.width = "70%", fig.align = "center"}
+# {r name, fig.dim = c(6, 6), out.width = "60%", fig.align = "center"}
+# {r dex_plac_meta_funnel_limit, out.width = "85%", out.height = "100%", fig.align = "center"}
+par(mar = c(4, 4, 2, 1))
+
+limit_colors <- c("#AAB7B8", "#D5DBDB", "#F4F6F6")
+
+temp_limit_china_meta <- limitmeta(temp_china_meta)
+
+par(bty = "n", xaxt = "s", yaxt = "s")
+
+funnel(temp_limit_china_meta, ylim = c(0.8, 0.0), xlim = c(0.1, 5), pch = 20, contour = c(0.9, 0.95, 0.99), col.contour = limit_colors, studlab = TRUE, pos.studlab = 4, fs.smlab = 6, ff.smlab = "italic")
+
+legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#AAB7B8", "#D5DBDB", "#F4F6F6"), bty = "n")
+
+text(1.2, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .9)
+```
+
+<foot_mg> Estimates (odds ratio and 95% CI) from random effects models --- unadjusted `r paste0(digit2(exp(temp_limit_meta$TE.random)), " (", digit2(exp(temp_limit_meta$lower.random)), "–", digit2(exp(temp_limit_meta$upper.random)), ")")`; adjusted for small study effects: `r paste0(digit2(exp(temp_limit_china_meta$TE.adjust)), " (", digit2(exp(temp_limit_china_meta$lower.adjust)), "–", digit2(exp(temp_limit_china_meta$upper.adjust)), ")")`.<br/> `r paste0("Harbord test for small study effects P = ", formatC(temp_china_metabias$pval, digits = 4, format = "f"), ".")`<br/></font>
+:::
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention potential small study effects for trials conducted outside of China --- funnel plot. </font>
+
+```{r dex_plac_other_meta_funnel, fig.dim = c(7, 5.5), out.width = "70%", fig.align = "center"}
+# {r name, fig.dim = c(6, 6), out.width = "60%", fig.align = "center"}
+# {r dex_plac_meta_funnel_limit, out.width = "85%", out.height = "100%", fig.align = "center"}
+par(mar = c(4, 4, 2, 1))
+
+limit_colors <- c("#AAB7B8", "#D5DBDB", "#F4F6F6")
+
+par(bty = "n", xaxt = "s", yaxt = "s")
+
+funnel(temp_other_meta, ylim = c(0.8, 0.0), xlim = c(0.1, 5), pch = 20, contour = c(0.9, 0.95, 0.99), col.contour = limit_colors, studlab = TRUE, pos.studlab = 4, fs.smlab = 6, ff.smlab = "italic")
+
+legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#AAB7B8", "#D5DBDB", "#F4F6F6"), bty = "n")
+
+```
+
+<foot_mg> Estimates (odds ratio and 95% CI) from random effects model. Too few studies for tests of small study effects.</font>
+:::
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <font size = 4> `r figure_ref()` <a id="figure-china"></a> Dexmedetomidine compared with placebo or no intervention according to reporting incidence proportion (randomized clinical trials). </font>
+
+```{r dex_meta_sens_incidence_prop, fig.width = 14, fig.height = 10.5, fig.align = "left"}
+delirium_inc_pro_meta <- update(dex_plac_meta, subgroup = delirium_inc_prop)
+
+dex_meta_forest_fun(delirium_inc_pro_meta)
+
+rm(delirium_inc_pro_meta)
+```
+
+<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . </foot_mg>
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
@@ -1237,30 +1313,6 @@ rm(rob_meta)
 ```
 
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . </foot_mg>
-:::
-
-::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention small study effects --- funnel plot and limit meta-analysis. </font>
-
-```{r dex_plac_meta_funnel_limit, fig.dim = c(7, 5.5), out.width = "70%", fig.align = "center"}
-# {r name, fig.dim = c(6, 6), out.width = "60%", fig.align = "center"}
-# {r dex_plac_meta_funnel_limit, out.width = "85%", out.height = "100%", fig.align = "center"}
-par(mar = c(4, 4, 2, 1))
-
-limit_colors <- c("#AAB7B8", "#D5DBDB", "#F4F6F6")
-
-temp_limit_meta <- limitmeta(temp_meta)
-
-par(bty = "n", xaxt = "s", yaxt = "s")
-
-funnel(temp_limit_meta, ylim = c(0.8, 0.0), xlim = c(0.1, 5), pch = 20, contour = c(0.9, 0.95, 0.99), col.contour = limit_colors, studlab = TRUE, pos.studlab = 4, fs.smlab = 6, ff.smlab = "italic")
-
-legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#AAB7B8", "#D5DBDB", "#F4F6F6"), bty = "n")
-
-text(1.2, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .9)
-```
-
-<foot_mg> Estimates (odds ratio and 95% CI) from random effects models --- unadjusted `r paste0(digit2(exp(temp_limit_meta$TE.random)), " (", digit2(exp(temp_limit_meta$lower.random)), "–", digit2(exp(temp_limit_meta$upper.random)), ")")`; adjusted for small study effects: `r paste0(digit2(exp(temp_limit_meta$TE.adjust)), " (", digit2(exp(temp_limit_meta$lower.adjust)), "–", digit2(exp(temp_limit_meta$upper.adjust)), ")")`.</font>
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
@@ -1564,6 +1616,7 @@ netsplit(netmeta_melram_nma, order = trts_melram) %>%
     rightlabs = c("RR", "(95% CI)")
   )
 ```
+
 <foot_mg> Dex: Dexmedetomidine; Ket: Ketamine; Mel/Ram: Melatonin/Ramelteon; Mid: Midazolam; MS: Morphine; Prop: Propofol; Plac/None: Placebo or no comparator. </foot_mg>
 :::
 
@@ -2010,14 +2063,14 @@ netgraph(
 # forest(netmeta_dncr_nma)
 
 ```
-<foot_mg> Dex: Dexmedetomidine; Ket: ketamine; Hal: haloperidol; Mid: midazolam; Prop: propofol; Ulin: ulinastatin; Plac/None: Placebo or no intervention; Prop: Propofol. <br/>
-Zhao 2020 no intervention (usual care) arm included as placebo.</foot_mg>
+
+<foot_mg> Dex: Dexmedetomidine; Ket: ketamine; Hal: haloperidol; Mid: midazolam; Prop: propofol; Ulin: ulinastatin; Plac/None: Placebo or no intervention; Prop: Propofol. <br/> Zhao 2020 no intervention (usual care) arm included as placebo.</foot_mg>
 
 #### Dexmedetomidine
 
 <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention (randomized clinical trials, cognitive dysfunction ≤ 30d assessed postop day 3 or later). </font>
 
-```{r dncr_dex_plac_meta, fig.width = 14, fig.height = 6, fig.align = "left", warning = TRUE}
+```{r dncr_dex_plac_meta, fig.width = 14, fig.height = 5, fig.align = "left", warning = TRUE}
 #| eval: true
 dex_meta_dat <- pairs_dat |>
   arrange(year, study) |> 
@@ -2084,12 +2137,8 @@ forest(dex_plac_meta,
 )  
 
 ```
-<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <a id="figure-4"></a><br/> 
-<!-- `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/>  -->
-`r paste0("Neurocognitive recovery a designated primary outcome in ", prim_sec_out_fun(prim_pocd, dex_meta_dat$refid), "; a secondary outcome in ", prim_sec_out_fun(sec_pocd, dex_meta_dat$refid), ".")`<br/>
-Six trials conducted in China and 1 each in Egypt and Iran.<br/>
-Using odds ratios, pooled OR 0.36 (95% CI, 0.19–0.70; *I*<sup> 2</sup> 44%), prediction interval (0.09–1.45).
-</foot_mg><br/>
+
+<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <a id="figure-4"></a><br/> <!-- `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/>  --> `r paste0("Neurocognitive recovery a designated primary outcome in ", prim_sec_out_fun(prim_pocd, dex_meta_dat$refid), "; a secondary outcome in ", prim_sec_out_fun(sec_pocd, dex_meta_dat$refid), ".")`<br/> Six trials conducted in China and 1 each in Egypt and Iran.<br/> Using odds ratios, pooled OR 0.36 (95% CI, 0.19--0.70; *I*<sup> 2</sup> 44%), prediction interval (0.09--1.45). </foot_mg><br/>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention according to risk of bias appraisals (randomized clinical trials; cognitive dysfunction ≤ 30d). </font>
@@ -2162,7 +2211,7 @@ rob_summary_fun(dex_meta_dat$refid)
 
 <font size = 4> `r figure_ref()` Ketamine compared with placebo or no intervention (randomized clinical trials, cognitive dysfunction ≤ 30d). </font>
 
-```{r dncr_ket_plac_meta, fig.width = 14, fig.height = 4.5, fig.align = "left", warning = TRUE}
+```{r dncr_ket_plac_meta, fig.width = 14, fig.height = 4, fig.align = "left", warning = TRUE}
 #| eval: true
 ket_meta_dat <- pairs_dat |>
   arrange(year, study) |>
@@ -2222,8 +2271,8 @@ forest(ket_plac_meta,
   addrows.below.overall = 4
 )
 ```
-<foot_mg> Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/>
-Too few studies to examine small study effects. </foot_mg><br/>
+
+<foot_mg> Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/> Too few studies to examine small study effects. </foot_mg><br/>
 
 #### All Comparators
 
@@ -2240,6 +2289,7 @@ forest(netmeta_dncr_nma,
   at = c(0.2, 0.5, 1, 2)
 )
 ```
+
 <foot_mg> Dex: Dexmedetomidine; Ket: ketamine; Hal: haloperidol; Mid: midazolam; Prop: propofol; Ulin: ulinastatin; Plac/None: Placebo or no intervention; Prop: Propofol. </foot_mg>
 
 <br/>
@@ -2303,6 +2353,7 @@ netsplit(netmeta_dncr_nma, order = trts) %>%
     rightlabs = c("RR", "(95% CI)")
   )
 ```
+
 <foot_mg> Dex: Dexmedetomidine; Ket: Ketamine; Mel/Ram: Melatonin/Ramelteon; Mid: Midazolam; MS: Morphine; Prop: Propofol; Plac/None: Placebo or no comparator. </foot_mg>
 :::
 
@@ -2312,7 +2363,7 @@ netsplit(netmeta_dncr_nma, order = trts) %>%
 
 ### Dexmedetomidine or Melatonin
 
-<font size = 4> `r table_ref()` Cognitive dysfunction > 30d and ascertainment reported in dexmedetomidine and melatonin trials. </font>
+<font size = 4> `r table_ref()` Cognitive dysfunction \> 30d and ascertainment reported in dexmedetomidine and melatonin trials. </font>
 
 ```{r ncd_dat}
 #| eval: true
@@ -2489,7 +2540,7 @@ No studies
 
 ### Dexmedetomidine
 
-<font size = 4> `r table_ref()` Reported complications in dexmedetomidine studies — cardiac, MI, stroke, pulmonary, pneumonia, and acute kidney injury (randomized clinical trials unless noted). </font>
+<font size = 4> `r table_ref()` Reported complications in dexmedetomidine studies --- cardiac, MI, stroke, pulmonary, pneumonia, and acute kidney injury (randomized clinical trials unless noted). </font>
 
 ```{r complications_dat}
 #| eval: true
@@ -2520,18 +2571,38 @@ adverse_events_dat <- map_df(complication_incl, complications_kq6_fun) |>
   )
 
 adverse_meta_dat <- adverse_events_dat |>
+  left_join(cardiac_compl, by = c("refid", "complication")) |>
   mutate(
     study_compl = paste0(study, complication),
-    complication = factor(complication, levels = c("cardiac", "myoinfarct", "cardarr", "kidneyinj", "stroke", "pulm", "pneum", "pulcongest", "pe", "respfail", "intub"), labels = c("Cardiac", "MI", "Cardiac Arrest", "AKI", "Stroke", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "Reintubation"))
+    complication = as.character(complication),
+    complication = case_when(
+      detail_cardiac == "bradycardia" ~ "bradycardia",
+      detail_cardiac %in% c("arrhythmia", "atrial fibrillation", "tachycardia", "ventricular fibrillation") ~ "other arrhythmia",
+      detail_cardiac %in% c("heart failure", "cardiac failure") ~ "pulcongest",
+      .default = complication
+    ),
+    complication = factor(complication, levels = c("bradycardia", "other arrhythmia", "myoinfarct", "cardarr", "kidneyinj", "stroke", "pulm", "pneum", "pulcongest", "pe", "respfail", "intub"), labels = c("Bradycardia", "Other arrhythmia", "MI", "Cardiac Arrest", "AKI", "Stroke", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "Reintubation"))
   ) |>
-  select(refid, year, study, arm_id, arm, arm_n, n, complication, study_compl)
+  select(refid, year, study, arm_id, arm, arm_n, n, complication, study_compl, detail_cardiac)
 
-adverse_events_dat <- adverse_events_dat |> 
-  left_join(study_char_dat |> select(refid, study_l, surgs_single, design_f_lab), by = "refid") |> 
-  left_join(table_age_mn_med, by = c("refid", "arm_id")) |> 
-  arrange(complication, surgs_single, year, study, arm_id) |> 
+adverse_events_dat <- adverse_events_dat |>
+  left_join(study_char_dat |> select(refid, study_l, surgs_single, design_f_lab), by = "refid") |>
+  left_join(table_age_mn_med, by = c("refid", "arm_id")) |>
+  left_join(cardiac_compl, by = c("refid", "complication")) |>
   mutate(
-    study_compl = paste0(study, complication), 
+    study_compl = paste0(study, complication),
+    complication = as.character(complication),
+    complication = case_when(
+      detail_cardiac == "bradycardia" ~ "bradycardia",
+      detail_cardiac %in% c("arrhythmia", "atrial fibrillation", "tachycardia", "ventricular fibrillation") ~ "other arrhythmia",
+      detail_cardiac %in% c("heart failure", "cardiac failure") ~ "pulcongest",
+      .default = complication
+    ),
+    complication = factor(complication, levels = c("bradycardia", "other arrhythmia", "myoinfarct", "cardarr", "kidneyinj", "stroke", "pulm", "pneum", "pulcongest", "pe", "respfail", "intub"), labels = c("Bradycardia", "Other arrhythmia", "MI", "Cardiac Arrest", "AKI", "Stroke", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "Reintubation"))
+  ) |> 
+arrange(complication, surgs_single, year, study, arm_id) |>
+  mutate(
+    study_compl = paste0(study, complication),
     ref_arm_n = arm_n,
     ref_n = n
   ) |>
@@ -2545,14 +2616,16 @@ adverse_events_dat <- adverse_events_dat |>
     ref_arm_n = ifelse(row_number() == 1, NA, ref_arm_n),
     ref_n = ifelse(row_number() == 1, NA, ref_n)
   ) |>
-  ungroup() |> 
+  ungroup() |>
   mutate(
     rd_ci = ifelse(!is.na(ref_n), rd_per_ci_fun(n, arm_n, ref_n, ref_arm_n, digits = 1), "—"),
     bar = case_when(
       str_detect(arm, "Dex") ~ bar_prop(calc_per, "#A93226"),
       str_detect(arm, "Ket|Mel|Ram") ~ bar_prop(calc_per, "#A93226"),
       str_detect(arm, "Plac|None") ~ bar_prop(calc_per, "#969696"),
-      .default = bar_prop(calc_per, "#104E8B"))) |> 
+      .default = bar_prop(calc_per, "#104E8B")
+    )
+  ) |>
   select(refid, year, arm_id, study, study_l, study_compl, arm_n, arm, n, age_table, surgs_single, n_per, bar, rd_ci, complication, design_f_lab)
 
 # for summary table
@@ -2568,16 +2641,16 @@ adverse_events_dat <- adverse_events_dat |>
 adverse_events_dat |>
   filter(!refid %in% mel_ram_refid) |>
   mutate(
-    complication = factor(complication, levels = c("cardiac", "myoinfarct", "cardarr", "kidneyinj", "stroke", "pulm", "pneum", "pulcongest", "pe", "respfail", "intub"), labels = c("Cardiac", "MI", "Cardiac Arrest", "AKI", "Stroke", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "Reintubation")),
+    # complication = factor(complication, levels = c("cardiac", "myoinfarct", "cardarr", "kidneyinj", "stroke", "pulm", "pneum", "pulcongest", "pe", "respfail", "intub"), labels = c("Bradycardia", "MI", "Cardiac Arrest", "AKI", "Stroke", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "Reintubation")),
     complication = fct_drop(complication)
-  ) |>
+  ) |>  # tabyl(complication)
   mutate(
     study_l = ifelse(row_number() > 1, "", study_l),
     surgs_single = ifelse(row_number() > 1, "", surgs_single), .by = study_compl
   ) |>
   group_by(complication) |>
   gt(id = "one") |>
-  row_group_order(groups = c("Cardiac", "MI", "Cardiac Arrest", "Stroke", "AKI", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "Reintubation")) |>
+  row_group_order(groups = c("Bradycardia", "Other arrhythmia", "MI", "Cardiac Arrest", "Stroke", "AKI", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "Reintubation")) |>
   cols_hide(c(refid, year, study, arm_id, n, study, study_compl, design_f_lab)) |>
   cols_label(
     study_l          = "Study",
@@ -2619,7 +2692,8 @@ adverse_events_dat |>
   # tab_style(style = list(cell_text(color = color_3)), locations = cells_body(columns = c(), rows = str_detect()))
   tab_footnote(md("Before-After/Time Series"), locations = cells_body(columns = study_l, rows = study_l != "" & design_f_lab == "Before-After/Time Series")) |>
   tab_footnote(md("Nonrandomized Trial"), locations = cells_body(columns = study_l, rows = study_l != "" & design_f_lab == "Nonrandomized Trial")) |>
-  tab_footnote("RD: risk difference; MI: myocardial infarction; AKI: acute kidney injury.")
+  tab_footnote("RD: risk difference; MI: myocardial infarction; AKI: acute kidney injury.") |> 
+  tab_footnote("Pulmonary congestion includes heart failure diagnosis.", locations = cells_row_groups(groups = "Pulmonary Congestion"))
 
 ```
 
@@ -2629,19 +2703,18 @@ No studies
 
 ### Ramelteon
 
-<font size = 4> `r table_ref()` Report complications in ramelteon studies — cardiac, MI, stroke, pulmonary, pneumonia, acute kidney injury (all before-after designs). </font>
+<font size = 4> `r table_ref()` Report complications in ramelteon studies --- cardiac, MI, stroke, pulmonary, pneumonia, acute kidney injury (all before-after designs). </font>
 
 ```{r complications_mel_ram_gt}
 adverse_events_dat |>
   filter(refid %in% mel_ram_refid) |>
     mutate(
-    complication = factor(complication, levels = c("cardiac", "myoinfarct", "cardarr", "kidneyinj", "stroke", "pulm", "pneum", "pulcongest", "pe", "respfail", "intub"), labels = c("Cardiac", "MI", "Cardiac Arrest", "AKI", "Stroke", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "Reintubation")),
-    complication = fct_drop(complication)) |> 
-  # mutate(complication = factor(complication, levels = c("cardiac", "pulm", "pneum"), labels = c("Cardiac", "Pulmonary", "Pneumonia"))) |>
+    complication = fct_drop(complication),
+    complication = fct_recode(complication, "Arrhythmia" = "Other arrhythmia")) |> 
   mutate(study_l = ifelse(row_number() > 1, "", study_l), .by = study_compl) |>
   group_by(complication) |>
   gt(id = "one") |>
-  row_group_order(groups = c("Cardiac", "Pulmonary", "Pneumonia")) |>
+  row_group_order(groups = c("Arrhythmia", "Pulmonary", "Pneumonia")) |>
   cols_hide(c(refid, year, study, arm_id, n, study, study_compl, design_f_lab)) |>
   cols_label(
     study_l          = "Study",
@@ -2689,7 +2762,7 @@ adverse_events_dat |>
 
 ### *Pooled*
 
-```{r}
+```{r compl_meta_dex}
 adverse_dex_meta_dat <- adverse_meta_dat |>
   filter(refid %in% dex_refid) |>
   filter(!arm %in% c("Dex/Preg", "Preg")) |>
@@ -2697,6 +2770,7 @@ adverse_dex_meta_dat <- adverse_meta_dat |>
   filter(any(arm %in% c("Plac", "None"))) |>
   ungroup() |> 
   mutate(
+    # complication = ifelse(complication == "Cardiac", "Bradycardia", complication),
     n = case_when(
       study_compl == "Zhao 2020cardiac" & arm_id == 2 ~ collapse_dichot_study_compl(adverse_meta_dat, "Zhao 2020cardiac", c(2, 3, 4), n),
       study_compl == "Zhao 2020pulm"   & arm_id == 2 ~ collapse_dichot_study_compl(adverse_meta_dat, "Zhao 2020pulm", c(2, 3, 4), n),
@@ -2716,7 +2790,8 @@ adverse_dex_meta_dat <- adverse_meta_dat |>
   filter(!(study_compl %in% c("Li 2021bcardiac") & arm_id %in% c(3, 4))) 
 
 adverse_dex_meta_wide_dat <- adverse_dex_meta_dat |>
-  mutate(study = ifelse(study %in% c("Wang 2020d", "Li 2020"), paste0(study, "*"), study)) |>
+  # mutate(study = ifelse(study %in% c("Wang 2020d", "Li 2020"), paste0(study, "*"), study)) |>
+  filter(!study %in% c("Wang 2020d", "Li 2020")) |> # not rcts
   arrange(refid, complication) |>
   pivot_wider(names_from = "arm", values_from = arm_n:n) |>
   group_by(study_compl) |>
@@ -2728,15 +2803,95 @@ adverse_dex_meta_wide_dat <- adverse_dex_meta_dat |>
 
 ```
 
-<font size = 4> `r figure_ref()` Risk ratio for complications — cardiac, stroke, pulmonary, and acute kidney injury (dexmedetomidine versus placebo or no interventions; randomized clinical trials except and Li 2020). </font>
+<font size = 4> `r figure_ref()` Risk ratio for bradycardia (dexmedetomidine versus placebo or no interventions; randomized clinical trials). </font>
 
-```{r complication_meta,  fig.width = 14, fig.height = 17, fig.align = "left"}
+```{r complication_brady_meta, fig.width = 14, fig.height = 6, fig.align = "left"}
+#| warning: false
+# add bradycardia definition
+brady_meta_dat <- adverse_dex_meta_wide_dat |> 
+  left_join(cardiac_compl |> select(refid, brady_defn), by = c("refid"))
+
+adverse_meta <- metabin(
+  n_Dex, arm_n_Dex, n_Plac, arm_n_Plac,
+  data = brady_meta_dat,
+  studlab = study,
+  hakn = TRUE,
+  sm = "RR",
+  method.tau = "REML",
+  # subset = !grepl("\\*", study),
+  subset = complication == "Bradycardia",
+  allstudies = FALSE
+)  
+
+# small study effects; here to have result of Harbord test
+temp_meta <- adverse_meta
+temp_meta <- update(temp_meta, sm = "OR")
+temp_metabias <- metabias(temp_meta, method.bias = "Harbord", k.min = 10)
+
+forest(adverse_meta,
+  allstudies = TRUE,
+  random = TRUE,
+  label.e = "Dex",
+  label.c = "Placebo",
+  # rightcols = c("effect", "ci"),
+  # rightlabs = c("RD ", "(95% CI)   "),
+  just.addcols.right = "left",
+  rightcols = c("effect", "ci", "brady_defn", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  rightlabs = c("RR", "(95% CI)", "Bradycardia \n Criteria", "D1", "D2", "D3", "D4", "D5", "All"),
+  # leftlabs = c("Complication &\nStudy", "Events", "TIVA\n Total", "Events", "Inhaled\n Total"),
+  colgap.right = "4mm",
+  digits.TE = 3,
+  digits.tau2 = 1,
+  print.I2.ci = TRUE,
+  prediction = TRUE,
+  fs.xlab = 11,
+  # pscale = 100,
+  # pooled.events = TRUE,
+  digits = 2, 
+  print.pval.Q = FALSE,
+  # xlim = c(-20, 20),
+  xlab = "Favors: Dexmedetomidine                     Plac/None",
+  addrows.below.overall = 4,
+  text.addline1 = "NR: not reported."
+)
+```
+
+<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- ; NR: not reported.<br/> `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> Similar arms combined in Li 2021b and Zhao 2020. </foot_mg>
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention small study effects and bradycardia --- funnel plot and limit meta-analysis. </font>
+
+```{r dex_plac_brady_meta_funnel_limit, fig.dim = c(7, 5.5), out.width = "70%", fig.align = "center"}
+# {r name, fig.dim = c(6, 6), out.width = "60%", fig.align = "center"}
+# {r dex_plac_meta_funnel_limit, out.width = "85%", out.height = "100%", fig.align = "center"}
+par(mar = c(4, 4, 2, 1))
+
+limit_colors <- c("#AAB7B8", "#D5DBDB", "#F4F6F6")
+
+temp_limit_meta <- limitmeta(temp_meta)
+
+par(bty = "n", xaxt = "s", yaxt = "s")
+
+funnel(temp_limit_meta, pch = 20, contour = c(0.9, 0.95, 0.99), col.contour = limit_colors, studlab = TRUE, pos.studlab = 4, fs.smlab = 6, ff.smlab = "italic")
+
+legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#AAB7B8", "#D5DBDB", "#F4F6F6"), bty = "n")
+
+text(5.5, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .9)
+```
+
+<foot_mg> Estimates (odds ratio and 95% CI) from random effects models --- unadjusted `r paste0(digit2(exp(temp_limit_meta$TE.random)), " (", digit2(exp(temp_limit_meta$lower.random)), "–", digit2(exp(temp_limit_meta$upper.random)), ")")`; adjusted for small study effects: `r paste0(digit2(exp(temp_limit_meta$TE.adjust)), " (", digit2(exp(temp_limit_meta$lower.adjust)), "–", digit2(exp(temp_limit_meta$upper.adjust)), ")")`.</font>
+:::
+
+<font size = 4> `r figure_ref()` Risk ratio for other complications --- cardiac, stroke, pulmonary, and acute kidney injury (dexmedetomidine versus placebo or no interventions; randomized clinical trials except and Li 2020). </font>
+
+```{r complication_meta,  fig.width = 14, fig.height = 14.5, fig.align = "left"}
 adverse_meta <- metabin(
   n_Dex, arm_n_Dex, n_Plac, arm_n_Plac,
   data = adverse_dex_meta_wide_dat,
   studlab = study,
   sm = "RR",
   subgroup = complication,
+  subset = complication != "Bradycardia" & !grepl("\\*", study),
   allstudies = FALSE
 )  
 
@@ -2769,12 +2924,11 @@ forest(adverse_meta,
   # xlim = c(-20, 20),
   xlab = "Favors: Dexmedetomidine                     Plac/None",
   addrows.below.overall = 4,
-  text.addline1 = "*Non randomized trial."
+  # text.addline1 = "*Non randomized trial."
 )
 ```
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
-Similar arms combined in Li 2021b and Zhao 2020.
-</foot_mg> 
+
+<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> Similar arms combined in Li 2021b and Zhao 2020. </foot_mg>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()` Summary risk of bias for studies reporting complications (dexmedetomidine versus placebo or no intervention). </font>
@@ -2844,6 +2998,7 @@ forest(adverse_ram_meta,
   addrows.below.overall = 4
 )
 ```
+
 <foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. </foot_mg>
 
 ## **Length of Stay**
@@ -3039,8 +3194,8 @@ forest(los_dex_meta,
 )
 
 ```
-<foot_mg> MD: mean difference; Dex: Dexmedetomidine; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
-When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range.  </foot_mg> 
+
+<foot_mg> MD: mean difference; Dex: Dexmedetomidine; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range. </foot_mg>
 
 #### Melatonin/Ramelteon
 
@@ -3101,8 +3256,8 @@ forest(los_mel_ram_meta,
 )
 
 ```
-<foot_mg> MD: mean difference; Mel: melatonin; Ram: ramelteon; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
-When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range.  </foot_mg> 
+
+<foot_mg> MD: mean difference; Mel: melatonin; Ram: ramelteon; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range. </foot_mg>
 
 ## **Mortality**
 
@@ -3506,7 +3661,7 @@ forest(dex_plac_mort_meta,
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/> `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")` </foot_mg><br/>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention small study effects --- funnel plot. </font>
+#### <font size = 4> `r figure_ref()` Mortality for dexmedetomidine compared with placebo or no intervention small study effects --- funnel plot. </font>
 
 ```{r dex_plac_meta_funnel_limit_mort, fig.dim = c(7, 5.5), out.width = "70%", fig.align = "center"}
 # {r name, fig.dim = c(6, 6), out.width = "60%", fig.align = "center"}
@@ -3532,7 +3687,6 @@ funnel(dex_plac_mort_meta,
 legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#AAB7B8", "#D5DBDB", "#F4F6F6"), bty = "n")
 # text(0.3, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .9)
 ```
-
 :::
 
 #### Melatonin/Ramelteon
