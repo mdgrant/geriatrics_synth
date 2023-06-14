@@ -80,17 +80,15 @@ likert_freq_fun(likert_dat)
 
 ## Causal Model
 
-<font size = 4> `r figure_ref()` Causal model for the relationship between potentially inappropriate medications and outcomes. Potential mediators include anesthetics, other drugs, pain, hypotension, clinical instability, infection, electrolytes, and sleep deprivation. </font>
+<font size = 4> `r figure_ref()` Causal model for the relationship between potentially inappropriate medications and outcomes. Likely mediators include anesthetics, other drugs, pain, hypotension, clinical instability, infection, electrolytes, and sleep deprivation. </font>
 
 ![](assets/pim_dag.png){fig-align="center" width="8in"}
 
-<font size = 3> PIM: potentially inappropriate medications. </font>
+<font size = 3> PIM: potentially inappropriate medications.<br/> </font>
 
 ## Included Studies
 
 <font size = 4> `r table_ref()` Number of studies by design. </font>
-
-<!-- Number of studies by design ----------------------- (2022-12-28 10:44) @ --->
 
 ```{r studies_design}
 # CODE: study design table — design and number; no duplicate counting
@@ -137,8 +135,6 @@ study_char_dat |>
 ## Design, centers, country, surgery
 
 <font size = 4> `r table_ref()` Study design, enrollment, centers, country, and surgery (see [References](#references) for citations). </font>
-
-<!-- design, enrollment, centers ... ------------------- (2022-12-28 10:44) @ --->
 
 ```{r included}
 # CODE: drug classes by study
@@ -198,14 +194,23 @@ included_dat |>
   group_by(design_f_lab) |>
   gt(id = "one") |>
   cols_label(
-    refid = "ID",
-    study_l = "Study",
-    n_enroll = "Enrolled",
-    country = "Country",
-    centers = "Centers",
-    agents_up = "Drug Class",
-    surgs = "Surgery",
+    refid       = "ID",
+    study_l     = "Study",
+    n_enroll    = "Enrolled",
+    country     = "Country",
+    centers     = "Centers",
+    agents_up   = "Drug Class",
+    surgs       = "Surgery",
   ) |>
+  cols_width(
+    refid      ~ px(30),
+    study_l    ~ px(135),
+    n_enroll   ~ px(45),
+    centers    ~ px(40),
+    country    ~ px(60),
+    agents_up  ~ px(200),
+    surgs      ~ px(120)
+    )  |>
   cols_hide(non_vh_hdi) |>
   fmt_markdown(columns = c(study_l, agents_up)) |>
   tab_footnote(
@@ -252,7 +257,7 @@ study_char_dat |>
 
 ```
 
-```{r}
+```{r pim_drug}
 #| include: false
 # CODE: drug pim classes by study
 # DATA: drug_classes
@@ -361,7 +366,7 @@ kq5_by_arm_tab <- study_arm_dat |>
   left_join(drug_classes, by = "refid") # note by study, NOT arm
 
 # save file for use in KQ6
-write_csv(kq5_by_arm_tab |> filter(refid %in% kq56_refid) |> select(refid, arm_id, agents_up, drug_f, other_spec, control_desc), "data/kq56_drug_by_arm.csv")
+# write_csv(kq5_by_arm_tab |> filter(refid %in% kq56_refid) |> select(refid, arm_id, agents_up, drug_f, other_spec, control_desc), "data/kq56_drug_by_arm.csv")
 
 # data for analysis variables 
 kq5_by_arm_tab <- kq5_by_arm_tab |> 
@@ -396,6 +401,7 @@ likert_dat <- likert_dat |>
 # CODE: drugs by studies function for table
 kq5_char_drugs_tab <- function(drugs, footnote) {
   kq5_by_arm_tab |>
+    select(-arm, -arm_f) |> 
     # for comparator detail
     mutate(
       drug_f = as.character(drug_f),
@@ -453,7 +459,7 @@ kq5_char_drugs_tab <- function(drugs, footnote) {
     tab_footnote(footnote) |>
     gt_theme_mg() |>
     cols_width(
-      study_l ~ px(120),
+      study_l ~ px(160),
       arm_n ~ px(40),
       drug_f_nopim ~ px(130),
       dose_sched ~ px(150),
@@ -534,7 +540,7 @@ temp <- dichot_dat |>
   remove_empty(which = "cols")
 
 
-writexl::write_xlsx(temp, "/Users/mgrant/Desktop/temp.xlsx")
+# writexl::write_xlsx(temp, "/Users/mgrant/Desktop/temp.xlsx")
 
 ```
 
@@ -543,12 +549,13 @@ writexl::write_xlsx(temp, "/Users/mgrant/Desktop/temp.xlsx")
 ```{r delirium_meta_data}
 #| eval: true
 # NOTE: compared and reconciled reported and calculated % # mutate(calc_per = delitotal_n / arm_n * 100, per_diff = calc_per - delitotal_perc) |> filter(per_diff > 0.5)
+
 delirium_meta_dat <- dichot_dat |>
   mutate(
     arm_n = ifelse(!is.na(deli_update_arm_n), deli_update_arm_n, arm_n),
     delirium_inc_prop = ifelse(delirium_inc_prop == TRUE, "Incidence Proportion", "Maximum Daily"),
   ) |> 
-  filter(!is.na(delitotal_n)) |> # 
+  filter(!is.na(delitotal_n)) |> 
   left_join(study_char_dat |> select(refid, country), by = "refid") |> 
   left_join(surgs |> select(refid, surgs_single_f), by = c("refid")) |>
   rename(surg_f = surgs_single_f) |> 
@@ -573,7 +580,6 @@ delirium_meta_dat <- dichot_dat |>
 #   mutate(arm = ifelse(study == "Bielka 2021" & arm_id == 2, "Neur/Block", as.character(arm)),
 #          arm = factor(arm, levels = c("Gen", "Neur", "Neur/Block", "Block"))
 #   )
-  
 
 # delirium_meta_dat |> select(refid) |> distinct() # 2023-04-24 n = 14
 ```
@@ -633,13 +639,14 @@ pim_delirium_tab <- delirium_meta_dat |>
 
 ```
 
-<font size = 4> `r table_ref()` Delirium incidence and ascertainment during hospitalization in trials comparing potentially inappropriate medications. </font>
+<font size = 4> `r table_ref()` Delirium incidence and ascertainment during hospitalization in trials examining potentially inappropriate medications. </font>
 
 ```{r pim_delirium_gt}
 pim_delirium_tab |>
-    arrange(year, study, arm_id) |>
+  arrange(year, study, arm_id) |>
    filter(str_detect(design_f_lab, "Rand")) |> 
     mutate(
+      scale_delirium = ifelse(scale_delirium == "neech", "Neecham", scale_delirium),
       delitotal_time = ifelse(delitotal_time == 999, "Stay", as.character(delitotal_time)),
       delitotal_time = ifelse(is.na(delitotal_time), "Note", delitotal_time),
       study_l = ifelse(row_number() > 1, "", study_l),
@@ -761,6 +768,7 @@ pim_delirium_tab |>
   tab_footnote("Days over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |>
   tab_footnote("Maximum of reported daily incidence.", locations = cells_body(columns = delitotal_time, rows = delitotal_time == "Note")) |> 
   tab_footnote("Not included in pooled results owing to size.", locations = cells_body(columns = study_l, rows = str_detect(study_l, "Neuman 2016"))) 
+
 ```
 
 
