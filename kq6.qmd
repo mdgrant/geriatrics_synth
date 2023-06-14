@@ -2882,9 +2882,9 @@ text(5.5, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .
 <foot_mg> Estimates (odds ratio and 95% CI) from random effects models --- unadjusted `r paste0(digit2(exp(temp_limit_meta$TE.random)), " (", digit2(exp(temp_limit_meta$lower.random)), "–", digit2(exp(temp_limit_meta$upper.random)), ")")`; adjusted for small study effects: `r paste0(digit2(exp(temp_limit_meta$TE.adjust)), " (", digit2(exp(temp_limit_meta$lower.adjust)), "–", digit2(exp(temp_limit_meta$upper.adjust)), ")")`.</font>
 :::
 
-<font size = 4> `r figure_ref()` Risk ratio for other complications --- cardiac, stroke, pulmonary, and acute kidney injury (dexmedetomidine versus placebo or no interventions; randomized clinical trials except and Li 2020). </font>
+<font size = 4> `r figure_ref()` Risk ratio for other complications --- cardiac, stroke, pulmonary, and acute kidney injury (dexmedetomidine versus placebo or no interventions; randomized clinical trials). </font>
 
-```{r complication_meta,  fig.width = 14, fig.height = 14.5, fig.align = "left"}
+```{r complication_meta,  fig.width = 14, fig.height = 15, fig.align = "left"}
 adverse_meta <- metabin(
   n_Dex, arm_n_Dex, n_Plac, arm_n_Plac,
   data = adverse_dex_meta_wide_dat,
