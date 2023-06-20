@@ -22,8 +22,6 @@ nocite: '@*'
 
 Among older patients anticipating surgery and anesthesia, does expanded preoperative evaluation (e.g., for frailty, cognitive impairment, functional status, or psychosocial issues) lead to improved postoperative outcomes?
 
-<!-- Does screening older patients for delirium in the post anesthesia care unit improve postoperative outcomes? -->
-
 ```{r, read_data}
 #| include: false
 source("code/load_data.R")
@@ -785,6 +783,103 @@ forest(delirium_nrsi_meta,
 ```
 
 <foot_mg> RR: risk ratio; D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable.<br/> Sensitivity analysis including Vochteloo 2011 assuming effectively equal numbers of participants studied each year, obtained RR 0.68 (95% CI, 0.50--0.92; *I*^ 2^ = 64%). </foot_mg>
+
+### *Exploratory Comp NMA*
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <font size = 4> Exploratory component network meta-analysis including all designs. Assumes that a comprehensive geriatric assessment incorporates all components.  </font>
+
+```{r component_nma, fig.width = 10, fig.height = 4.55, fig.align = "left"}
+#| eval: true
+#| warning: false
+component <- bind_rows(component_exp_dat, component_std_dat)
+
+component_nma_dat <- delirium_meta_dat |>
+  filter(refid != 16629) |>
+  left_join(component |> select(refid, arm_id, gen_comp:kq1_psych), by = c("refid", "arm_id")) |>
+  select(refid, study, arm_id, design_f_lab, delitotal_n, arm_n, gen_comp:kq1_psych) |>
+  rename_with(~ str_replace(.x, "gen_|kq1_", "")) |>
+  mutate(
+    across(multi:psych,
+      ~ case_when(
+        !is.na(comp) ~ NA,
+        .default = .x
+      )
+    ),
+    across(comp:psych, ~ str_replace(.x, "gen_|kq1_", "")),
+    across(comp:psych, ~ str_replace(.x, "_std", "")),
+    across(comp:psych, ~ str_replace(.x, "_p", "p")),
+  ) |>
+  unite(arm, comp:psych, sep = " + ", na.rm = TRUE) |>
+  mutate(arm = ifelse(arm == "", "std", arm)) |>
+  filter(study != "Wang 2020c")
+
+trts <- unique(component_nma_dat$arm)
+
+# tabyl(component_nma_dat$arm)
+
+pairwise_comp_dat <- pairwise(
+  treat = arm,
+  event = delitotal_n,
+  n = arm_n,
+  studlab = study,
+  data = component_nma_dat,
+  sm = "RR") |> 
+  select(studlab:seTE)
+
+# net_disc <- discomb(TE, seTE, treat1, treat2, studlab,
+#   data = pairwise_comp_dat, 
+#   ref = "std",
+#   sm = "OR",
+#   trts = trts
+# )
+
+net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
+  data = pairwise_comp_dat, 
+  ref = "std",
+  sm = "OR",
+  trts = trts
+)
+
+net_comb <- netcomb(net1, inactive = "std")
+
+# netleague(net1,
+#   digits = 2,
+#   common =  FALSE,
+#   # direct = FALSE,
+#   seq = trts
+# )
+
+# forest(net_disc)
+netgraph(net1,
+  lwd = 4,
+  plastic = FALSE,
+  thickness = TRUE,
+  points = TRUE,
+  alpha.transparency = 2,
+  col = "azure3",
+  col.points = "#F39C12",
+  number.of.studies = TRUE,
+  # seq = trts_melram,
+  rescale.pointsize = TRUE,
+  # cex.points = c(1, 2, 3, 4, 5),
+  # cex.points = node_size$n/40,
+  # cex.points = netmeta_melram_nma$n.trts,
+  # labels = paste0(trts, "\n(n=", round(n.trts), ")"),
+  col.number.of.studies = "black",
+  cex.number.of.studies = 1.2,
+  col.highlight = "white",
+  bg.number.of.studies = c("#FFFFFF"),
+  offset = .02)
+```
+
+#### <font size = 4> Exploratory component network meta-analysis including all designs. Assumes that a comprehensive geriatric assessment incorporates all components.  </font>
+
+```{r component_nma_forest, fig.width = 12, fig.height = 4.55, fig.align = "left"}
+forest(net_comb, xlab = "Odds Ratio")  
+```
+
+:::
 
 ## **Cognitive Dysfunction** ≤ **30d **
 
