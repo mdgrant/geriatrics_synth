@@ -2771,7 +2771,7 @@ hypotension_foot_dat <- dichot_dat |>
 adverse_events_dat |>
   bind_rows(hypotension_dat) |>
   left_join(hypotension_foot_dat |> select(refid, hypo_def), by = c("refid")) |> 
-  arrange(hypo_def, year) |> 
+  arrange(hypo_def, year, study, arm_id) |> 
   filter(complication == "Hypotension") |> 
   mutate(
     study_l = ifelse(row_number() > 1, "", study_l),
