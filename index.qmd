@@ -7,7 +7,7 @@ editor: source
 
 <font size = 5> Key Questions </font>
 
-[Expanded Preoperative Evaluation & Postoperative Delirium Screening](kq1.html)
+[Expanded Preoperative Evaluation](kq1.html)
 
 [Prehabilitation](kq2.html)
 
