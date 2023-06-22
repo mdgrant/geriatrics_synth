@@ -1553,6 +1553,14 @@ complication_forest_nrsi_fun(adverse_meta, use_predictive = FALSE)
 
 #### Renal
 
+
+<font size = 4> `r figure_ref()` Risk ratio for renal complications (expanded versus standard preoperative evaluation; randomized clinical trials). </font>
+
+```{r complication_rct_aki,  fig.width = 14, fig.height = 3, fig.align = "left"}
+adverse_meta <- complication_meta_fun("Renal", randomized = "Randomized", use_hakn = FALSE, predictive = FALSE)
+complication_forest_rct_fun(adverse_meta, use_predictive = FALSE)
+```
+
 <font size = 4> `r figure_ref()` Risk ratio for renal complications (expanded versus standard preoperative evaluation; nonrandomized designs). </font>
 
 ```{r complication_nrsi_aki,  fig.width = 14, fig.height = 3, fig.align = "left"}
