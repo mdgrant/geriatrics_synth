@@ -1329,7 +1329,7 @@ forest(adverse_meta,
   rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
   rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
   # just.addcols.right = "right",
-  colgap.right = "4mm",
+
   pool.events = TRUE, 
   digits.TE = 3,
   digits.tau2 = 1,
