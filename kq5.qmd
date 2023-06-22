@@ -203,11 +203,11 @@ included_dat |>
     surgs       = "Surgery",
   ) |>
   cols_width(
-    refid      ~ px(30),
+    refid      ~ px(50),
     study_l    ~ px(135),
-    n_enroll   ~ px(45),
-    centers    ~ px(40),
-    country    ~ px(60),
+    n_enroll   ~ px(60),
+    centers    ~ px(60),
+    country    ~ px(90),
     agents_up  ~ px(200),
     surgs      ~ px(120)
     )  |>

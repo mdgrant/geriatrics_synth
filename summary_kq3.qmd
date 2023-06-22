@@ -1,8 +1,8 @@
 ---
-title: "Study Characteristics Regional vs. General"
+title: "Study/Paient Characteristics Regional vs. General"
 date: "`r format(Sys.time(), '%d %B, %Y (%H:%M)')`"
 editor: source
-toc-title: "**Study Characteristics**"
+toc-title: "**Characteristics**"
 toc-location: "left"
 cap-location: "top"
 toc-depth: 3
