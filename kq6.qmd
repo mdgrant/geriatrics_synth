@@ -1328,7 +1328,7 @@ rob_summary_fun(cogfunc_refid)
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> Exploratory component network meta-analysis incorporating timing of dexmedetomidine administration. </font>
 
-```{r component_nma, fig.width = 10, fig.height = 4.55, fig.align = "left"}
+```{r component_nma}
 # NOTE: component meta data
 # VARIABLE: postop_only <lgl> from study arm only post-op administration [postop_only_dat]
 # study arm postop only
@@ -1382,7 +1382,7 @@ delirium_dex_comp_meta_dat <- dichot_dat |>
 
 ```
 
-```{r delirium_comp_meta}
+```{r delirium_comp_meta, fig.width = 12, fig.height = 9, fig.align = "center"}
 library(netmeta)
 component_nma_dat <- delirium_dex_comp_meta_dat
 
