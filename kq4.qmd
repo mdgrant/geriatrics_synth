@@ -640,7 +640,7 @@ forest(delirium_meta_nrsi,
 
 <foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. <br/> Note: pooling of adjusted odds ratios from Yoshimura 2022 (propensity matching) and Goins 2018 (multivariable adjustment). </foot_mg>
 
-## **Cognitive Dysfunction** ≤ **30d**
+## **Delayed Neurocognitive Recovery**
 
 ```{r dncr_ncd_dat}
 #| eval: true
@@ -728,7 +728,7 @@ dncr_dat <- dncr_dat |>
 rm(dncr_rr_ref)
 ```
 
-<font size = 4> `r table_ref()` Cognitive dysfunction ≤ 30 days incidence and ascertainment (TIVA versus inhaled; randomized and nonrandomized designs). </font>
+<font size = 4> `r table_ref()` Delayed neurocognitive recovery incidence and ascertainment (TIVA versus inhaled; randomized and nonrandomized designs). </font>
 
 ```{r dncr_gt}
 #| eval: true
@@ -786,7 +786,7 @@ dncr_dat |>
   fmt_number(dncr_time, decimals = 0) |>
   sub_missing(columns = everything(), missing_text = "") |>
   tab_spanner(label = "Instrument", columns = c(scale_mmse:scale_other_tf), level = 1) |>
-  tab_spanner(label = "Cognitive dysfunction ≤ 30d", columns = c(neurocog_nper:rr_ci), level = 1) |>
+  tab_spanner(label = "Delayed Neurocognitive Recovery", columns = c(neurocog_nper:rr_ci), level = 1) |>
   tab_spanner(label = "Preop", columns = c(pre_mmse), level = 1) |>
   cols_width(
     study_l ~ px(165),
@@ -827,7 +827,7 @@ dncr_dat |>
 
 ### *Pooled*
 
-<font size = 4> `r figure_ref()` Cognitive dysfunction ≤ 30 days assessed postoperative day 3 or later (TIVA versus inhaled; randomized clinical trials). </font>
+<font size = 4> `r figure_ref()` Delayed neurocognitive recovery assessed postoperative day 3 or later (TIVA versus inhaled; randomized clinical trials). </font>
 
 ```{r dncr_meta_dat}
 #| eval: true
@@ -929,7 +929,7 @@ forest(tiva_inhaled_meta,
 
 <foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> Five trials conducted in China and 1 each in Norway and Japan.</foot_mg><br/>
 
-## **Cognitive Dysfunction** \> **30d**
+## **Neurocognitive Disorder**
 
 <font size = 4> `r table_ref()` Cognitive dysfunction \> 30 days and ascertainment (TIVA versus inhaled; prospective cohort studies). </font>
 
@@ -1052,7 +1052,7 @@ ncd_dat |>
   fmt_number(ncd_time, decimals = 0) |>
   sub_missing(columns = everything(), missing_text = "") |>
   tab_spanner(label = "Instrument", columns = c(scale_mmse:scale_other_tf), level = 1) |>
-  tab_spanner(label = "Cognitive dysfunction > 30d", columns = c(neurocog_nper:rr_ci), level = 1) |>
+  tab_spanner(label = "Neurocognitive Disorder", columns = c(neurocog_nper:rr_ci), level = 1) |>
   tab_spanner(label = "Preop", columns = c(pre_mmse), level = 1) |>
   cols_width(
     study_l          ~ px(165),
@@ -1115,7 +1115,7 @@ path <- glue::glue("/Users/mgrant/Desktop/temp.xlsx")
 saveWorkbook(wb, "/Users/mgrant/Desktop/kq4.xlsx", overwrite = TRUE)
 ```
 
-<font size = 4> `r table_ref()` Reported complications in TIVA versus inhaled anesthesia --- cardiac, pulmonary, and acute kidney injury (TIVA versus inhaled; randomized and nonrandomized designs). </font>
+<font size = 4> `r table_ref()` Reported complications in TIVA versus inhaled anesthesia --- cardiac, pulmonary, and renal (TIVA versus inhaled; randomized and nonrandomized designs). </font>
 
 ```{r complications}
 #| warning: false
@@ -1261,7 +1261,7 @@ adverse_meta_wide_dat <- adverse_meta_dat |>
   mutate(
     complication_nodesign = str_remove(complication, " – .*$"),
     study_design = ifelse(str_detect(complication, "Rand"), paste0(study, "*"), study),
-    complication_nodesign = factor(complication_nodesign, levels = c("Cardiac", "MI", "Cardiac Arrest", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "AKI"), labels = c("Cardiac", "MI", "Cardiac Arrest", "Pneumonia", "Pulmonary Congestion", "Pulmonary Embolism", "Respiratory Failure", "Acute Kidney Injury"))
+    complication_nodesign = factor(complication_nodesign, levels = c("Cardiac", "MI", "Cardiac Arrest", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "AKI"), labels = c("Cardiac", "MI", "Cardiac Arrest", "Pneumonia", "Pulmonary Congestion", "Pulmonary Embolism", "Respiratory Failure", "Renal"))
   )
 
 adverse_events_gt_dat |> 
@@ -1421,12 +1421,12 @@ complication_forest_fun(temp_meta)
 
 Not reported in included studies.
 
-#### Acute Kidney Injury
+#### Renal
 
-<font size = 4> `r figure_ref()` Risk ratio for acute kidney injury (TIVA versus inhaled anesthesia; nonrandomized studies). </font>
+<font size = 4> `r figure_ref()` Risk ratio for renal complications (TIVA versus inhaled anesthesia; nonrandomized studies). </font>
 
 ```{r complication_aki,  fig.width = 14, fig.height = 3.35, fig.align = "left"}
-temp_meta <- complication_meta_fun("Acute Kidney Injury", use_hakn = FALSE, predictive = FALSE)
+temp_meta <- complication_meta_fun("Renal", use_hakn = FALSE, predictive = FALSE)
 complication_forest_fun(temp_meta)
 ```
 

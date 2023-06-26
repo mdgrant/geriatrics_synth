@@ -1323,6 +1323,8 @@ rob_summary_fun(cogfunc_refid)
 ```
 :::
 
+### *Exploratory Comp NMA*
+
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> Exploratory component network meta-analysis incorporating timing of dexmedetomidine administration. </font>
 
@@ -2704,7 +2706,7 @@ adverse_meta_dat <- adverse_events_dat |>
       detail_cardiac %in% c("heart failure", "cardiac failure") ~ "pulcongest",
       .default = complication
     ),
-    complication = factor(complication, levels = c("bradycardia", "other arrhythmia", "myoinfarct", "cardarr", "kidneyinj", "stroke", "pulm", "pneum", "pulcongest", "pe", "respfail", "intub"), labels = c("Bradycardia", "Other arrhythmia", "MI", "Cardiac Arrest", "AKI", "Stroke", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "Reintubation"))
+    complication = factor(complication, levels = c("bradycardia", "other arrhythmia", "myoinfarct", "cardarr", "kidneyinj", "stroke", "pulm", "pneum", "pulcongest", "pe", "respfail", "intub"), labels = c("Bradycardia", "Other arrhythmia", "MI", "Cardiac Arrest", "Renal", "Stroke", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "Reintubation"))
   ) |>
   select(refid, year, study, arm_id, arm, arm_n, n, complication, study_compl, detail_cardiac)
 
@@ -2721,7 +2723,7 @@ adverse_events_dat <- adverse_events_dat |>
       detail_cardiac %in% c("heart failure", "cardiac failure") ~ "pulcongest",
       .default = complication
     ),
-    complication = factor(complication, levels = c("bradycardia", "other arrhythmia", "myoinfarct", "cardarr", "kidneyinj", "stroke", "pulm", "pneum", "pulcongest", "pe", "respfail", "intub"), labels = c("Bradycardia", "Other arrhythmia", "MI", "Cardiac Arrest", "AKI", "Stroke", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "Reintubation"))
+    complication = factor(complication, levels = c("bradycardia", "other arrhythmia", "myoinfarct", "cardarr", "kidneyinj", "stroke", "pulm", "pneum", "pulcongest", "pe", "respfail", "intub"), labels = c("Bradycardia", "Other arrhythmia", "MI", "Cardiac Arrest", "Renal", "Stroke", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "Reintubation"))
   ) |> 
 arrange(complication, surgs_single, year, study, arm_id) |>
   mutate(
@@ -2946,7 +2948,7 @@ adverse_events_dat |>
   tab_footnote("RD: risk difference; MAP: mean arterial blood pressure; Dex: Dexmedetomidine; Dex/Preg: Dexmedetomidine/Pregabalin; Mid: Midazolam; Prop: Propofol; Ram: ramelteon; Plac: placebo; None: no active or placebo comparator; GI/Abd: gastrointestinal/abdominal; Ortho: orthopedic;  Urol: urologic; Oralmax: oral or maxilofacial; NS: not specified.")
 ```
 
-<font size = 4> `r table_ref()` Other reported complications in dexmedetomidine studies --- cardiac, MI, stroke, pulmonary, pneumonia, and acute kidney injury (randomized clinical trials unless noted). </font>
+<font size = 4> `r table_ref()` Other reported complications in dexmedetomidine studies --- cardiac, MI, stroke, pulmonary, pneumonia, and renal (randomized clinical trials unless noted). </font>
 
 ```{r other_compl_dex_gt}
 adverse_events_dat |>
@@ -2954,8 +2956,8 @@ adverse_events_dat |>
   filter(!refid %in% mel_ram_refid) |> # tabyl(complication) |> arrange(n)
   mutate(
     complication = factor(complication,
-      levels = c("Other arrhythmia", "MI", "Cardiac Arrest", "AKI", "Stroke", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "Reintubation"),
-      labels = c("Other Arrhythmia", "MI", "Cardiac Arrest", "AKI", "Stroke", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "Reintubation")
+      levels = c("Other arrhythmia", "MI", "Cardiac Arrest", "Renal", "Stroke", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "Reintubation"),
+      labels = c("Other Arrhythmia", "MI", "Cardiac Arrest", "Renal", "Stroke", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "Reintubation")
     ),
     complication = fct_drop(complication)
   ) |> # tabyl(complication) |> arrange(n)
@@ -2965,7 +2967,7 @@ adverse_events_dat |>
   ) |>
   group_by(complication) |>
   gt(id = "one") |>
-  row_group_order(groups = c("Other Arrhythmia", "MI", "Cardiac Arrest", "Stroke", "AKI", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "Reintubation")) |>
+  row_group_order(groups = c("Other Arrhythmia", "MI", "Cardiac Arrest", "Stroke", "Renal", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "Reintubation")) |>
   cols_hide(c(refid, year, study, arm_id, n, study, study_compl, design_f_lab)) |>
   cols_label(
     study_l          = "Study",
@@ -3007,7 +3009,7 @@ adverse_events_dat |>
   # tab_style(style = list(cell_text(color = color_3)), locations = cells_body(columns = c(), rows = str_detect()))
   tab_footnote(md("Before-After/Time Series"), locations = cells_body(columns = study_l, rows = study_l != "" & design_f_lab == "Before-After/Time Series")) |>
   tab_footnote(md("Nonrandomized Trial"), locations = cells_body(columns = study_l, rows = study_l != "" & design_f_lab == "Nonrandomized Trial")) |>
-  tab_footnote("RD: risk difference; MI: myocardial infarction; AKI: acute kidney injury.") |>
+  tab_footnote("RD: risk difference; MI: myocardial infarction.") |>
   tab_footnote("Pulmonary congestion includes heart failure diagnosis.", locations = cells_row_groups(groups = "Pulmonary Congestion")) 
 
 ```
@@ -3018,7 +3020,7 @@ No studies
 
 ### Ramelteon
 
-<font size = 4> `r table_ref()` Report complications in ramelteon studies --- cardiac, MI, stroke, pulmonary, pneumonia, acute kidney injury (all before-after designs). </font>
+<font size = 4> `r table_ref()` Report complications in ramelteon studies --- cardiac, MI, stroke, pulmonary, pneumonia, and renal (all before-after designs). </font>
 
 ```{r complications_mel_ram_gt}
 adverse_events_dat |>
@@ -3291,7 +3293,7 @@ text(4, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .9)
 <foot_mg> Estimates (odds ratio and 95% CI) from random effects models --- unadjusted `r paste0(digit2(exp(temp_limit_meta$TE.random)), " (", digit2(exp(temp_limit_meta$lower.random)), "–", digit2(exp(temp_limit_meta$upper.random)), ")")`; adjusted for small study effects: `r paste0(digit2(exp(temp_limit_meta$TE.adjust)), " (", digit2(exp(temp_limit_meta$lower.adjust)), "–", digit2(exp(temp_limit_meta$upper.adjust)), ")")`.</font>
 :::
 
-<font size = 4> `r figure_ref()` Risk ratios for other complications --- cardiac, stroke, pulmonary, and acute kidney injury (dexmedetomidine versus placebo or no interventions; randomized clinical trials). </font>
+<font size = 4> `r figure_ref()` Risk ratios for other complications --- cardiac, stroke, pulmonary, and renal (dexmedetomidine versus placebo or no interventions; randomized clinical trials). </font>
 
 ```{r complication_meta,  fig.width = 14, fig.height = 16.5, fig.align = "left"}
 adverse_meta <- metabin(
