@@ -28,6 +28,7 @@ Among older patients undergoing surgery and anesthesia, does regional anesthesia
 #| include: false
 source("code/load_data.R")
 settings.meta(CIbracket = "(")
+conflicts_prefer(dplyr::lag)
 
 kq3_refid <- kq3_refid[!kq3_refid %in% c(813, 3434)] # retrospective cohort 
 
@@ -109,7 +110,7 @@ outcome_tab(outcome_dat, 11)
 
 ```{r dichot_outcome_freq}
 # CODE: reporting frequency tabulation
-dichot_freq_fun(dichot_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; NCD: neurocognitive disorder; QoR: quality of recovery; ")
+dichot_freq_fun(dichot_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
 ```
 
 <font size = 4> `r table_ref()` Continuous outcomes. </font>
@@ -121,7 +122,7 @@ contin_freq_fun(contin_dat)
 <font size = 4> `r table_ref()` Likert or ordinal outcomes. </font>
 
 ```{r likert_outcome_freq}
-likert_freq_fun(likert_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; NCD: neurocognitive disorder; QoR: quality of recovery; ")
+likert_freq_fun(likert_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
 ```
 
 ## **Included Studies**
@@ -944,7 +945,7 @@ forest(gen_reg_dncr_meta,
 
 <br/>
 
-## **Neurocognitive Disorder**
+## **Postoperative Neurocognitive Disorder**
 
 <font size = 4> `r table_ref()` Neurcognitive disorder and ascertainment. </font>
 
@@ -1048,7 +1049,7 @@ ncd_dat |>
   fmt_number(ncd_time, decimals = 0) |>
   sub_missing(columns = everything(), missing_text = "") |>
   tab_spanner(label = "Instrument", columns = c(scale_mmse:scale_other_tf), level = 1) |>
-  tab_spanner(label = "Neurocognitive Disorder", columns = c(neurocog_nper:rr_ci), level = 1) |>
+  tab_spanner(label = "Postoperative Neurocognitive Disorder", columns = c(neurocog_nper:rr_ci), level = 1) |>
   tab_spanner(label = "Preop", columns = c(pre_mmse), level = 1) |>
   cols_width(
     study_l          ~ px(165),
@@ -1078,6 +1079,245 @@ ncd_dat |>
 ```
 
 <br/>
+
+## **Physical Function**
+
+<font size = 4> `r table_ref()` Physical functional status for expanded versus standard preoperative evaluation. </font>
+
+```{r exp_std_adl}
+#| include: true
+#| eval: true
+#| warning: false
+
+## main data ------------------------------------------ (2023-07-13 10:05) @----
+adl_likert_dat <- likert_dat |> 
+  # filter(!study %in% c("Tzimas 2018", "Neuman2021", "Wang2020b")) |> 
+  mutate(
+    # adl_koos, adl_sf36, adl_womac_func, adl_womac_stiff, adl_qlq_func, adl_other
+    adl_scale = coalesce(adl_koos, adl_sf36, adl_womac_func, adl_womac_stiff, adl_qlq_func, adl_other),
+    adl_scale = case_when(
+      adl_scale == adl_sf36 ~ "SF-36 physical",
+      str_detect(adl_other_spec, "Bar?thel") ~ "Barthel Index",
+      adl_other_spec ==  "Short Performance Physical Battery" ~ "SPPB",
+      str_detect(adl_other_spec, "Groningen") ~ "GARS"
+    )
+  ) |> 
+  filter(!is.na(l_adl)) |> 
+  relocate(adl_scale, .after = arm) |> 
+  select(refid, study_l, study, arm_id, arm, arm_n, adl_scale, adl_koos:adl_other_spec, matches("sf36_pcs|womac_func|qlq_fs|adl")) |> 
+  # select(refid, study, arm, adl_scale, matches("otheradl")) |> 
+  rename_with(~ str_replace(., "_95", "ci95")) |> 
+  rename_with(~ str_replace(., "other", "other_")) %>%
+  mutate(
+    time1       = coalesce(!!!select(., contains("time1"))),
+    m1          = coalesce(!!!select(., contains("m1"))),
+    sd1         = coalesce(!!!select(., contains("sd1"))),
+    ci95l1      = coalesce(!!!select(., contains("ci95l1"))),
+    ci95u1      = coalesce(!!!select(., contains("ci95u1"))),
+    med1        = coalesce(!!!select(., contains("med1"))),
+    rl1         = coalesce(!!!select(., contains("rl1"))),
+    ru1         = coalesce(!!!select(., contains("ru1"))),
+    iqrl1       = coalesce(!!!select(., contains("iqrl1"))),
+    iqru1       = coalesce(!!!select(., contains("iqru1"))),
+    diff1       = coalesce(!!!select(., contains("diff1"))),
+    diffsd1     = coalesce(!!!select(., contains("diffsd1"))),
+    diff95low1  = coalesce(!!!select(., contains("diff95low1"))),
+    diff95high1 = coalesce(!!!select(., contains("diff95high1"))),
+    pval1in    = coalesce(!!!select(., contains("pval1_in"))),
+    pval1betw  = coalesce(!!!select(., contains("pval1_betw"))),
+    time2       = coalesce(!!!select(., contains("time2"))),
+    sd2         = coalesce(!!!select(., contains("sd2"))),
+    m2          = coalesce(!!!select(., contains("m2"))),
+    ci95l2      = coalesce(!!!select(., contains("ci95l2"))),
+    ci95u2      = coalesce(!!!select(., contains("ci95u2"))),
+    med2        = coalesce(!!!select(., contains("med2"))),
+    rl2         = coalesce(!!!select(., contains("rl2"))),
+    ru2         = coalesce(!!!select(., contains("ru2"))),
+    iqrl2       = coalesce(!!!select(., contains("iqrl2"))),
+    iqru2       = coalesce(!!!select(., contains("iqru2"))),
+    diff2       = coalesce(!!!select(., contains("diff2"))),
+    diffsd2     = coalesce(!!!select(., contains("diffsd2"))),
+    diff95low2  = coalesce(!!!select(., contains("diff95low2"))),
+    diff95high2 = coalesce(!!!select(., contains("diff95high2"))),
+    pval2in    = coalesce(!!!select(., contains("pval2_in"))),
+    pval2betw  = coalesce(!!!select(., contains("pval2_betw"))),
+    time3       = coalesce(!!!select(., contains("time3"))),
+    m3          = coalesce(!!!select(., contains("m3"))),
+    sd3         = coalesce(!!!select(., contains("sd3"))),
+    ci95l3      = coalesce(!!!select(., contains("ci95l3"))),
+    ci95u3      = coalesce(!!!select(., contains("ci95u3"))),
+    med3        = coalesce(!!!select(., contains("med3"))),
+    rl3         = coalesce(!!!select(., contains("rl3"))),
+    ru3         = coalesce(!!!select(., contains("ru3"))),
+    iqrl3       = coalesce(!!!select(., contains("iqrl3"))),
+    iqru3       = coalesce(!!!select(., contains("iqru3"))),
+    diff3       = coalesce(!!!select(., contains("diff3"))),
+    diffsd3     = coalesce(!!!select(., contains("diffsd3"))),
+    diff95low3  = coalesce(!!!select(., contains("diff95low3"))),
+    diff95high3 = coalesce(!!!select(., contains("diff95high3"))),
+    pval3in    = coalesce(!!!select(., contains("pval3_in"))),
+    pval3betw  = coalesce(!!!select(., contains("pval3_betw"))),
+  ) |> 
+  select(refid, study_l, study, arm_id, arm, arm_n, adl_scale, !contains("_"), matches("adl_update_arm_n[1-3]")) |> 
+  rename_with(~ paste0("adl_", .x), .cols = matches("[1-3]")) |> 
+  rename_with(~ str_remove(.x, "adl_adl_"))
+
+## adl_transpose -------------------------------------- (2023-07-13 10:06) @----
+adl_transpose <- function(data, obs_number){
+  obs_number <- as.character(obs_number)
+  data |> 
+  select(refid:adl_scale, matches(obs_number)) |> 
+  rename_with(~ str_replace(.x, obs_number, ""))
+}
+
+## adl_long_dat --------------------------------------- (2023-07-13 10:06) @----
+adl_long_dat <- bind_rows(
+  adl_transpose(adl_likert_dat, 1),
+  adl_transpose(adl_likert_dat, 2),
+  adl_transpose(adl_likert_dat, 3)) |>
+  # update arms at follow-up times
+  mutate(arm_n = ifelse(!is.na(update_arm_n), update_arm_n, arm_n)) |>
+  select(-update_arm_n) |>
+  filter(!is.na(adl_time))
+
+```
+
+```{r exp_std_adl_estimates}
+# add formatted m/med and imputed mean sd if missing
+adl_mn_med_dat <- mean_med_table_adl(adl_long_dat, "adl_") |>
+  filter(!is.na(adl_time)) |>
+  select(-scale)
+
+adl_long_dat <- left_join(adl_long_dat, adl_mn_med_dat, by = c("refid", "arm_id", "adl_time")) |> 
+  rename_with(~ str_remove(.x, "adl_")) |> 
+  mutate(study = paste0(study, "-", time))
+
+# function to calculate means, sd, and create analytical data set
+calc_mn_sd <- function(n_e, m_e, sd_e, md_e, q1_e, q3_e, min_e, max_e, study, tx, refid, data = NULL) {
+  temp_dat <- data |> 
+    select(all_of(c(n_e, m_e, sd_e, md_e, q1_e, q3_e, min_e, max_e, study, tx, refid))) %>%
+    mutate(n_c = 20, m_c = 2, sd_c = 1, md_c = 3, q1_c = 2, q3_c = 3, min_c = 1, max_c = 5)
+  names(temp_dat)[1:10] <- c("n_e", "m_e", "sd_e", "md_e", "q1_e", "q3_e", "min_e", "max_e", "study", "tx")
+
+  temp <- metacont(
+    n.e = n_e,
+    n.c = n_c,
+    comb.fixed = TRUE,
+    mean.e = m_e,
+    sd.e = sd_e,
+    median.e = md_e,
+    q1.e = q1_e,
+    q3.e = q3_e,
+    min.e = min_e,
+    max.e = max_e,
+    mean.c = m_c,
+    sd.c = sd_c,
+    median.c = md_c,
+    q1.c = q1_c,
+    q3.c = q3_c,
+    min.c = min_c,
+    max.c = max_c,
+    sm = "SMD",
+    studlab = study,
+    data = temp_dat
+  )
+
+  temp <- as_tibble(temp[c("studlab", "n.e", "mean.e", "sd.e")])
+  cbind(temp_dat$tx, temp) 
+}
+
+adl_scales_dat <- tribble(
+  ~study, ~scale, ~metric,
+  "Purwar 2015", "SF-36 physical", "0→100",
+)
+
+adl_long_dat <- left_join(
+  adl_long_dat,
+  calc_mn_sd("arm_n", "m", "sd", "med", "iqrl", "iqru", "rl", "ru", "study", "arm", refid = "refid", data = adl_long_dat) |> rename(arm = "temp_dat$tx", study = studlab),
+  by = c("study", "arm")
+) |>
+  # add calculable missing sd estimates, for Zhu 2022 sd_bwgrp_fun(51.7, 50.5, 85, 70, 0.522)[3]; Bakker use diff
+  mutate(
+    sd.e = ifelse(study == "Zhu 2022-21", 11.85844, sd.e),
+    mean.e = ifelse(is.na(mean.e) & str_detect(study, "Bakker"), -diff, mean.e),
+    study_time = study,
+    study = str_remove(study_time, "-.*$"),
+    year = str_extract(study, "\\d{4}"),
+    period = case_when(
+      time < 30 ~ "<30 days",
+      time <= 90 ~ "30-90 days",
+      time > 90 ~ ">90 days"
+    )
+  ) |>
+  left_join(adl_scales_dat |> select(-scale), by = "study") |>
+  select(-c(ci95l:pvalbetw)) |>
+  select(refid:study, study_time, arm_id, arm_n, arm, scale, metric, everything()) |>
+  arrange(year, study_time, arm_id) |>
+  filter(time != 0) |>
+  mutate(
+    smd = case_when(
+      arm_id == 2 ~ suppressWarnings(smd_ci(n.e, mean.e, sd.e, lag(n.e), lag(mean.e), lag(sd.e))),
+      arm_id == 1 ~ NA
+    ),
+    .by = study_time
+  ) 
+
+adl_meta_dat <- adl_long_dat |> 
+  select(study, arm, time, period, n.e, mean.e, sd.e) |> 
+  pivot_wider(names_from = arm, values_from = c(n.e, mean.e, sd.e)) |> 
+  rename_with(~ str_remove(.x, "\\.e"))
+```
+
+```{r exp_std_adl_gt}
+adl_long_dat |>
+  left_join(table_age_mn_med, by = c("refid", "arm_id")) |>
+  relocate(age_table, .after = arm) |>
+  mutate(
+    study_l = ifelse(row_number() > 1, "", study_l),
+    scale = ifelse(row_number() > 1, "", scale),
+    time = ifelse(row_number() > 1, "", time),
+    metric = ifelse(row_number() > 1, "", metric),
+    .by = study_time
+  ) |>
+  group_by(period) |>
+  gt(id = "one") |>
+  # row_group_order(groups = c("30-90 days")) |>
+  cols_hide(c(refid, study, study_time, arm_id, m, sd, sd.e, n.e, mean.e, year, )) |>
+  cols_label(
+    study_l          = "Study",
+    arm_n            = "N",
+    arm              = "Arm",
+    age_table        = "    Age",
+    scale            = "Scale",
+    metric           = "Range",
+    time             = "Days",
+    table            = "Rating",
+    smd              = "SMD (95% CI)"
+  ) |>
+  # tab_spanner(label = "", columns = c(VARIABLES), level = 1) |>
+  fmt_markdown(columns = c(study_l, age_table, table)) |>
+  # fmt_number(VARIABLE, decimals = 0) |>
+  # fmt_integer(use_seps = TRUE, sep_mark = ",") |>
+  sub_missing(columns = everything(), missing_text = "") |>
+  # replace relative effects calculated from studies with 0 events in one arm
+  gt_theme_mg() |>
+  cols_width(
+    study_l ~ px(135),
+    arm_n ~ px(45),
+    arm ~ px(50),
+    age_table ~ px(90),
+    scale ~ px(100),
+    metric ~ px(70),
+    time ~ px(40),
+    table ~ px(90),
+    smd ~ px(140)
+  ) |>
+  tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:smd), rows = str_detect(arm, "Neur"))) |>
+  tab_footnote("SMD: standardized mean difference; Neur: neuraxial") |>
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, table))) |>
+  tab_footnote("For scale reverse to be consistent with other studies.", locations = cells_body(columns = c(smd), rows = str_detect(study, "Bakker 2014") & arm == "Exp")) |>
+  tab_footnote("Study reported only difference scores.", locations = cells_body(columns = c(table), rows = str_detect(study, "Bakker 2014")))
+```
 
 ## **Complications**
 
@@ -1388,7 +1628,7 @@ complication_forest_fun(temp_meta)
 
 <font size = 4> `r figure_ref()` Risk ratio for renal complications (regional versus general anesthesia; randomized clinical trials). </font>
 
-```{r complication_aki,  fig.width = 14, fig.height = 2.75, fig.align = "left"}
+```{r complication_aki,  fig.width = 14, fig.height = 3.25, fig.align = "left"}
 temp_meta <- complication_meta_fun("Renal", use_hakn = FALSE, predictive = FALSE)
 complication_forest_fun(temp_meta)
 ```

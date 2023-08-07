@@ -80,7 +80,7 @@ outcome_tab(outcome_dat, 11)
 
 ```{r dichot_outcome_freq}
 # CODE: reporting frequency tabulation
-dichot_freq_fun(dichot_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; NCD: neurocognitive disorder; QoR: quality of recovery; ")
+dichot_freq_fun(dichot_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
 ```
 
 <font size = 4> `r table_ref()` Continuous outcomes. </font>
@@ -92,7 +92,7 @@ contin_freq_fun(contin_dat)
 <font size = 4> `r table_ref()` Likert or ordinal outcomes. </font>
 
 ```{r likert_outcome_freq}
-likert_freq_fun(likert_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; NCD: neurocognitive disorder; QoR: quality of recovery; ")
+likert_freq_fun(likert_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
 ```
 
 ## **Included Studies**
@@ -1083,7 +1083,10 @@ ncd_dat |>
   tab_footnote("Uniform Data Set Battery", locations = cells_body(columns = c(scale_other_tf), rows = study == "Deiner 2015" & arm_id == 1))
 ```
 
-<br/>
+## **Physical Function**
+
+No studies
+
 
 ## **Complications**
 

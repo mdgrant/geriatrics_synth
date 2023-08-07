@@ -51,7 +51,7 @@ soe_footnote <- function(x) {
 domain_footnote <- function(x) {
   x |>
     tab_footnote("If not specified in footnotes, all references are to 95% confidence and prediction intervals.") |>
-    tab_footnote("RCT: randomized clinical trial; NRSI: non-randomized studies of interventions (inlcudes non-randomized trials, before-after/time series, and observational)RR: risk ratio; OR: odds ratio.") |>
+    tab_footnote("RCT: randomized clinical trial; NRSI: non-randomized studies of interventions (inlcudes non-randomized trials, before-after/time series, and observational); RR: risk ratio; OR: odds ratio.") |>
     tab_footnote(md(domain_footnotes))
 }
 
