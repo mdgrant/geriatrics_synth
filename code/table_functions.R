@@ -163,7 +163,7 @@ dichot_freq_fun <- function(data, add_footnote = NULL) {
     ungroup() |>
     rename(
       "Complications" = "d_complication",
-      "Delayed NCR/NCD" = "d_cog_delay",
+      "Delayed NCR/POCD" = "d_cog_delay",
       "Delirium duration" = "d_deli_duration",
       "Discharge location" = "d_disch_location",
       "Opioid use" = "d_opioid",
@@ -260,7 +260,7 @@ likert_freq_fun <- function(data, add_footnote = NULL) {
     ungroup() |>
     rename(
       "ADL" = "l_adl",
-      "Delayed NCR/NCD" = "l_cogfunc",
+      "Delayed NCR/POCD" = "l_cogfunc",
       "Delirium"	= "l_delirium",
       "Complications" = "l_complications",
       "Depression/anxiety" = "l_depression",

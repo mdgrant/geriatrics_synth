@@ -303,7 +303,7 @@ mean_med_table <- function(data, variable_select, observation_n, digs = 0) {
     rename(!!paste0(variable_select, "time", observation_n) := time)
 }
 
-mean_med_table_adl <- function(data, variable_select, observation_n, digs = 0) {
+mean_med_table_adl <- function(data, variable_select, observation_n = NULL, digs = 0) {
   data |>
     select(starts_with(variable_select), refid, arm_id, arm_n) |>
     select(matches(paste0(observation_n, "$")), refid, arm_id, arm_n) |>
@@ -325,10 +325,38 @@ mean_med_table_adl <- function(data, variable_select, observation_n, digs = 0) {
           .default = ""
         )
     ) |>
-    select(refid, arm_id, time, table) |>
-    rename(!!paste0(variable_select, "table", observation_n) := table) |>
-    rename(!!paste0(variable_select, "time", observation_n) := time)
+    select(refid, arm_id, scale, time, table) |>
+    rename(!!paste0(variable_select, "table") := table) |>
+    rename(!!paste0(variable_select, "time") := time)
 }
+
+mean_med_all_adl <- function(data, digs = 0) {
+  data |>
+    # select(starts_with(variable_select), refid, arm_id, arm_n) |>
+    # select(matches(paste0(observation_n, "$")), refid, arm_id, arm_n) |>
+    select(!matches("diff"), refid, arm_id, arm_n) |>
+    rename_with(~ gsub("95", "ci95", .x, fixed = TRUE)) |>
+    # rename_with(~ gsub(variable_select, "", .x, fixed = TRUE)) |>
+    # rename_with(~ str_replace(.x, "[1-4]", "")) |>
+    mutate(
+      sd = ifelse(is.na(sd) & !is.na(ci95l + ci95u), (ci95u - ci95l) / (1.96 * 2) * sqrt(arm_n), sd),
+      sd_f = formatC(sd, digits = 1, format = "f"),
+      table =
+        case_when(
+          !is.na(m + sd) ~ paste0(formatC(m, digits = digs + 1, format = "f"), " (", sd_f, ")"),
+          !is.na(m + rl + ru) ~ paste0(formatC(m, digits = digs + 1, format = "f"), " [", formatC(rl, digits = digs, format = "f"), "-", formatC(ru, digits = digs, format = "f"), "]"),
+          !is.na(med + rl + ru) ~ paste0("<u>", formatC(med, digits = digs, format = "f"), "</u>", " [", formatC(rl, digits = digs, format = "f"), "-", formatC(ru, digits = digs, format = "f"), "]"),
+          !is.na(med + iqrl + iqru) ~ paste0("<u>", formatC(med, digits = digs, format = "f"), "</u>", " {", formatC(iqrl, digits = digs, format = "f"), "-", formatC(iqru, digits = digs, format = "f"), "}"),
+          !is.na(m) ~ as.character(formatC(m, digits = digs + 1, format = "f")),
+          !is.na(med) ~ paste0("<u>", formatC(med, digits = digs, format = "f"), "</u>"),
+          .default = ""
+        )
+    ) |>
+    select(refid, arm_id, time, table)
+    # rename(!!paste0(variable_select, "table", observation_n) := table) |>
+    # rename(!!paste0(variable_select, "time", observation_n) := time)
+}
+
 
 # single time
 # mean_med_table_single(study_arm_dat, "pre_mmse_", 0)
@@ -369,6 +397,14 @@ bar_prop <- function(proportion, fill_color, background_color = "#EAECEE") {
   purrr::map(proportion, ~ bar_chart(label = .x, fill = fill_color, background = background_color))
 }
 
+## adl_transpose_fun ---------------------------------- (2023-07-07 13:43) @----
+adl_transpose_fun <- function(data, obs_number){
+  obs_number <- as.character(obs_number)
+  data |>
+    select(refid:adl_scale, matches(obs_number)) |>
+    rename_with(~ str_replace(.x, obs_number, ""))
+}
+
 ## bar_prop_select ------------------------------------ (2023-03-06 22:52) @----
 # bar_prop_select <- function(selector, proportion, fill_color, background = "#d2d2d2") {
 #   ifelse(selector,
@@ -376,7 +412,6 @@ bar_prop <- function(proportion, fill_color, background_color = "#EAECEE") {
 #     purrr::map(proportion, ~ bar_chart(label = .x, fill = fill_color, background = background))
 #   )
 # }
-
 
 ## rr_ci_fun ------------------------------------------ (2023-03-06 22:53) @----
 # calculate relative risk, ci, and format no refid
@@ -410,6 +445,21 @@ or_ln_se_fun <- function(event1, n1, event2, n2, digits = 2) {
 se_ln_ci_fun <- function(low, high) {
   se <- (abs(log(high) - log(low)) / 3.92)
   se
+}
+
+## se from confint of est
+se_ci_fun <- function(low, high) {
+  se <- (abs(high - low) / 3.92)
+  se
+}
+
+## smd_ci_function ------------------------------------ (2023-07-13 13:34) @----
+smd_ci <- function(n1, mean1, sd1, n2, mean2, sd2, digits = 2){
+  a <- meta::metacont(n.e = n1, mean.e = mean1, sd.e = sd1, n.c = n2, mean.c = mean2, sd.c = sd2, sm = "SMD")
+  with(a, paste0(
+    sprintf(paste0("%.", digits, "f"), round(TE, digits)), " (",
+    sprintf(paste0("%.", digits, "f"), round(lower, digits)), " to ",
+    sprintf(paste0("%.", digits, "f"), round(upper, digits)), ")"))
 }
 
 ## format_est_ci_fun ---------------------------------- (2023-05-13 10:20) @----
