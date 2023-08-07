@@ -22,15 +22,14 @@ nocite: '@*'
 
 ## Key Question
 
-Among older patients undergoing surgery and anesthesia, do dexmedetomidine, ketamine, ramelteon, or melatonin administered during the perioperative period decrease the risk of postoperative delirium or other adverse cognitive outcomes?
+Among older patients undergoing surgery and anesthesia, does dexmedetomidine, ketamine, ramelteon, or melatonin administered during the perioperative period decrease the risk of postoperative delirium or other adverse cognitive outcomes?
 
 ```{r read_data}
 #| include: false
-# CODE: * read data
-# FIXME: ? delete 13734 
 # FIXME: revise with purrr
 source("code/load_data.R")
 settings.meta(CIbracket = "(")
+conflicts_prefer(dplyr::lag)
 # load("data/geri_data_2023-03-13.Rdata")
 kq6_refid <- kq6_refid[!kq6_refid %in% c(13734, 5269, 13630)] # Fan 2017b rhythim, Gao 2021 duplicate, Xuan 2016 "Eligible patients were more than 60 years old with joint replacement surgery in ICU."
 study_char_dat <- data_kq(study_char_dat, kq6_refid)
@@ -80,7 +79,7 @@ outcome_tab(outcome_dat, 11)
 
 ```{r dichot_outcome_freq}
 # CODE: reporting frequency tabulation
-dichot_freq_fun(dichot_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; NCD: neurocognitive disorder; QoR: quality of recovery; ")
+dichot_freq_fun(dichot_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
 ```
 
 <font size = 4> `r table_ref()` Continuous outcomes. </font>
@@ -92,7 +91,7 @@ contin_freq_fun(contin_dat)
 <font size = 4> `r table_ref()` Likert or ordinal outcomes. </font>
 
 ```{r likert_outcome_freq}
-likert_freq_fun(likert_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; NCD: neurocognitive disorder; QoR: quality of recovery; ")
+likert_freq_fun(likert_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
 ```
 
 ## **Included Studies**
@@ -146,7 +145,6 @@ study_char_dat |>
 
 ```{r drugs_by_arm}
 #| label: design_contry_surg
-#| tbl-cap: Study design, enrollment, centers, country, and surgery (see [References](#references) for citations).
 #| message: false
 # CODE: * drugs & recode drugs/comparators so that usable; "other" category recoded to comparator
 # DATA: drugs_dat <- study_arm_dat include drug arm data; adds kq5/6 arms
@@ -186,7 +184,8 @@ drugs_dat <- study_arm_dat |>
   ) |>
   select(-matches("\\.x|\\.y")) |>
   mutate(
-  # FIXME: temporary fix for 13171
+  # FIXME: fix for 13171 Mahrose 2021 Melatonin/Dex vs Dex 
+  # VARIABLE: drug_f main not combination
     drug = ifelse(refid == 13171 & arm_id == 1, "None", drug),
     drug_f = fct(drug,
       levels = c("Dexmedetomidine", "Ketamine", "Melatonin", "Ramelteon", "Ulinastatin", "Midazolam", "Oxazepam", "Haloperidol", "None", "Placebo", "Other")
@@ -225,7 +224,7 @@ drugs_dat <- study_arm_dat |>
     drug_recode = fct(drug_recode,
       levels = c("Dexmedetomidine", "Dexmedetomidine/Pregabalin", "Dexmedetomidine/Ulinastatin", "Ketamine", "Melatonin", "Melatonin/Dexmedetomidine","Ramelteon", "Ulinastatin", "Haloperidol", "Midazolam", "Oxazepam", "Midazolam/propofol", "Midazolam/sevoflurane", "Morphine", "Pregabalin", "Propofol", "Sufentanil", "Placebo", "None")
     ),
-    drug_recode_abbr = fct_recode(drug_recode, Dex = "Dexmedetomidine", "Dex/Preg" = "Dexmedetomidine/Pregabalin", "Dex/Ulin" = "Dexmedetomidine/Ulinastatin", Ket = "Ketamine", Mel = "Melatonin", "Mel/Dex" = "Melatonin/Dexmedetomidine", Ram = "Ramelteon", Ulin = "Ulinastatin", Hal = "Haloperidol", Mid = "Midazolam", Oxaz = "Oxazepam", "Mid/Prop" = "Midazolam/propofol", "Mid/Sevo" = "Midazolam/sevoflurane", MS = "Morphine", Preg = "Pregabalin", Prop = "Propofol", Sufen = "Sufentanil", Plac = "Placebo"),
+    drug_recode_abbr = fct_recode(drug_recode, Dex = "Dexmedetomidine", "Dex/Preg" = "Dexmedetomidine/Pregabalin", "Dex/Ulin" = "Dexmedetomidine/Ulinastatin", Ket = "Ketamine", Mel = "Melatonin", "Mel/Dex" = "Melatonin/Dexmedetomidine", Ram = "Ramelteon", Ulin = "Ulinastatin", Hal = "Haloperidol", Mid = "Midazolam", Oxaz = "Oxazepam", "Mid/Prop" = "Midazolam/propofol", "Mid/Sevo" = "Midazolam/sevoflurane", MS = "Morphine", Preg = "Pregabalin", Prop = "Propofol", Suf = "Sufentanil", Plac = "Placebo"),
   ) |>
   ungroup() |>
   relocate(c(drug, drug_f, drug_recode, drug_recode_abbr, drug_study), .after = arm_id) |>
@@ -239,6 +238,9 @@ drugs_dat <- study_arm_dat |>
 ```{r drug_tables}
 #| eval = FALSE
 # CODE: eval = FALSE; drug and drug_recode can save to desktop; working only 
+# VARIABLE: drug_recode - includes combination
+# VARIABLE: drug_recode_abbr - includes combination abbreviated
+
 drugs_dat |> tabyl(drug)
 drugs_dat |> filter(drug == "Ulinastatin")
 drugs_dat |> filter(is.na(drug))
@@ -343,7 +345,6 @@ included_dat |>
 locations = cells_row_groups(groups = )) |> 
   tab_footnote("GI: gastrointestinal; Ortho: orthopedic; Neuro: neurological; Oralmax: oral maxillofacial; Vasc: vascular.")
 
-
 ```
 
 ### Country Summary
@@ -368,7 +369,7 @@ study_char_dat |>
 
 ## **Interventions & Comparators**
 
-#### Dexmedetomidine
+### Dexmedetomidine
 
 <font size = 4> `r table_ref()` Selected characteristics, comparators, and dosing in dexmedetomidine trials. </font>
 
@@ -496,7 +497,8 @@ dex_by_arm |>
     post ~ px(35)
   ) |>
   # opt_css(css = "#one .gt_column_spanner {border-bottom-style: hidden;}") |>
-  tab_footnote("GI: gastrointestinal; Abd: abdominal (includes hepatic); Ortho: orthopedic; Various: more that one procedure category; Oralmax: oral and maxillofacial; Ophtho; ophthalmologic; Dex: Dexmedetomidine; Ulin: Ulinastatin; Hal: Haloperidol; Mid: Midazolam; Mid/Prop: Midazolam/propofol; Mid/Seve: Midazolam/sevoflurane; Preg: Pregabalin; Prop: Propofol; Plac; placebo; PS: physical status; Vol: volatile; TIVA: total intravenous anesthesia; Reg: regional; MMSE: Mini-Mental State Exam; Pre: preoperative; Ind: induction; Intr: intraoperative; Post(op): postoperative; —: unspecified.") |>
+  fmt_number(columns = c(postdose), drop_trailing_zeros = TRUE) |>
+  tab_footnote("GI: gastrointestinal; Abd: abdominal (includes hepatic); Ortho: orthopedic; Various: more that one procedure category; Oralmax: oral and maxillofacial; Ophtho; ophthalmologic; Dex: dexmedetomidine; Ulin: ulinastatin; Hal: haloperidol; Mid: midazolam; Mid/Prop: midazolam/propofol; Mid/Seve: midazolam/sevoflurane; Preg: pregabalin; Prop: propofol; Plac; placebo; PS: physical status; Vol: volatile; TIVA: total intravenous anesthesia; Reg: regional; MMSE: Mini-Mental State Exam; Pre: preoperative; Ind: induction; Intr: intraoperative; Post(op): postoperative; —: unspecified.") |>
   tab_footnote("Maintenance range if reported in parentheses.", locations = cells_column_labels(columns = maintain_range)) |> 
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |> 
   tab_footnote(md("ASA Physical Status of patients included (proportions can be found here[link to table add])."), locations = cells_column_labels(columns = c(asa_ps_incl))) |> 
@@ -506,7 +508,7 @@ dex_by_arm |>
   # |>  tab_info()
 ```
 
-#### Ketamine
+### Ketamine
 
 <font size = 4> `r table_ref()` Selected characteristics, comparators, and dosing in ketamine studies. </font>
 
@@ -555,7 +557,7 @@ ket_group_levels <- ket_by_arm |>
 ket_by_arm <- ket_by_arm |> 
   mutate(  
   ket_groups = factor(ket_groups, levels = ket_group_levels)) |> 
-  select(study, year, refid, study_l, arm_n, drug, asa_ps_incl, volatile_tab, tiva_tab, regional_tab, sedation_only_tab, age_table, pre_mmse, dose, dose_iv, pre, ind, intr, post, ket_groups)
+  select(study, year, refid, study_l, arm_n, drug_recode_abbr, asa_ps_incl, volatile_tab, tiva_tab, regional_tab, sedation_only_tab, age_table, pre_mmse, dose, dose_iv, pre, ind, intr, post, ket_groups)
 
 rm(ket_group_levels)
 
@@ -578,7 +580,7 @@ ket_by_arm |>
   cols_label(
     study_l = "Study",
     arm_n = "N",
-    drug = "Comparator",
+    drug_recode_abbr = "Comparator",
     asa_ps_incl = md("  PS"),
     volatile_tab = "Vol",
     tiva_tab = "TIVA",
@@ -598,13 +600,14 @@ ket_by_arm |>
   tab_spanner(label = "Dose", columns = c(dose), level = 1) |>
   tab_spanner(label = "ASA", columns = c(asa_ps_incl)) |>
   tab_spanner(label = "Anesthetic", columns = c(volatile_tab:regional_tab)) |>
-  tab_style(style = cell_text(align = "left"), locations = cells_column_labels(columns = c(drug))) |>
+  tab_style(style = cell_text(align = "left"), locations = cells_column_labels(columns = c(drug_recode_abbr))) |>
   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(dose, dose_iv))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(dose, dose_iv))) |>
   tab_style(style = cell_text(align = "right"), locations = cells_body(columns = c(arm_n))) |>
-  tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(study_l, drug, dose, dose_iv, pre:post))) |>
+  tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(study_l, drug_recode_abbr, pre:post))) |>
   tab_style(style = cell_text(size = px(9)), locations = cells_column_labels(columns = c(volatile_tab:regional_tab))) |>
   tab_style(style = cell_text(size = px(10)), locations = cells_column_labels(columns = c(pre:post))) |>
-  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n, drug:post), rows = drug == "Ketamine")) |>
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n, drug_recode_abbr:post), rows = drug_recode_abbr == "Ket")) |>
   sub_missing(columns = everything(), rows = everything(), missing_text = "") |>
   sub_values(values = c("NS"), replacement = "—") |>
   # tab_row_group(label = "numbered", rows = 1:10) |> 
@@ -612,7 +615,7 @@ ket_by_arm |>
   cols_width(
     study_l ~ px(165),
     arm_n ~ px(45),
-    drug ~ px(90),
+    drug_recode_abbr ~ px(90),
     asa_ps_incl ~ px(45),
     volatile_tab ~ px(32),
     tiva_tab ~ px(32),
@@ -627,21 +630,19 @@ ket_by_arm |>
     intr ~ px(30),
     post ~ px(32)
   ) |>
-  fmt_number(columns = dose, drop_trailing_zeros = TRUE, ) |>
-# TODO: * fix ketamine footnote Bornemann and Tu  
-  tab_footnote(footnote = md("S-Ketamine."), locations = cells_body(columns = drug, rows = refid %in% c(13184, 15285) & drug == "Ketamine")) |>
-  tab_footnote(footnote = "Time administered not reported.", locations = cells_body(columns = pre, rows = arm_n == 38 & drug == "Ketamine")) |>
-  tab_footnote("GI: gastrointestinal; Abd: abdominal (includes hepatic); Ortho: orthopedic; Various: more that one procedure category; Plac; placebo; PS: physical status; Vol: volatile; TIVA: total intravenous anesthesia; Reg: regional; MMSE: Mini-Mental State Exam; Pre: preoperative; Ind: induction; Intr: intraoperative; Post: postoperative; —: unspecified.") |> 
+  fmt_number(columns = c(dose, dose_iv), drop_trailing_zeros = TRUE) |>
+  tab_footnote(footnote = md("S-Ketamine."), locations = cells_body(columns = drug_recode_abbr, rows = refid %in% c(13184, 15285) & drug_recode_abbr == "Ket")) |>
+  tab_footnote(footnote = "Time administered not reported.", locations = cells_body(columns = pre, rows = arm_n == 38 & drug_recode_abbr == "Ket")) |>
+  tab_footnote("GI: gastrointestinal; Abd: abdominal (includes hepatic); Ortho: orthopedic; Various: more that one procedure category; Dex: dexmedetomidine; Hal: haloperidol; Suf: sufentanil; Prop: propofol; Plac; placebo; PS: physical status; Vol: volatile; TIVA: total intravenous anesthesia; Reg: regional; MMSE: Mini-Mental State Exam; Pre: preoperative; Ind: induction; Intr: intraoperative; Post: postoperative; —: unspecified.") |> 
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |> 
   tab_footnote(md("ASA Physical Status of patients included (proportions can be found here[link to table add])."), locations = cells_column_labels(columns = c(asa_ps_incl))) 
 
 ```
 
-#### Melatonin/Ramelteon
+### Melatonin/Ramelteon
 
 ```{r melatonin_ramelteon_compare}
 #| eval: true
-# CODE: melatonin ramelteon studies
 mel_ram_refid <- drugs_dat |> 
   filter(drug %in% c("Melatonin", "Ramelteon")) |> 
   pull(refid)
@@ -685,7 +686,7 @@ mel_ram_group_levels <- mel_ram_by_arm |>
 mel_ram_by_arm <- mel_ram_by_arm |>
   mutate(
     mel_ram_groups = factor(mel_ram_groups, levels = mel_ram_group_levels)) |>
-  select(study, year, refid, study_l, arm_n, drug, asa_ps_incl, volatile_tab, tiva_tab, regional_tab, sedation_only_tab, age_table, pre_mmse, dose, pre, post, mel_ram_groups)
+  select(study, year, refid, study_l, arm_n, drug_recode_abbr, asa_ps_incl, volatile_tab, tiva_tab, regional_tab, sedation_only_tab, age_table, pre_mmse, dose, pre, post, mel_ram_groups)
 
 rm(mel_ram_group_levels)
 ```
@@ -708,7 +709,7 @@ mel_ram_by_arm |>
   cols_label(
     study_l = "Study",
     arm_n = "N",
-    drug = "Comparator",
+    drug_recode_abbr = "Comparator",
     asa_ps_incl = md("  PS"),
     volatile_tab = "Vol",
     tiva_tab = "TIVA",
@@ -723,10 +724,10 @@ mel_ram_by_arm |>
   fmt_markdown(columns = c(study_l, pre_mmse, age_table, pre, post)) |>
   tab_spanner(label = "ASA", columns = c(asa_ps_incl)) |>
   tab_spanner(label = "Anesthetic", columns = c(volatile_tab:regional_tab)) |>
-  tab_style(style = cell_text(align = "left"), locations = cells_column_labels(columns = c(drug:post))) |>
+  tab_style(style = cell_text(align = "left"), locations = cells_column_labels(columns = c(drug_recode_abbr:post))) |>
   tab_style(style = cell_text(align = "right"), locations = cells_body(columns = c(arm_n))) |>
-  tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(study_l, drug, dose, pre, post))) |>
-  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:post), rows = drug %in% c("Melatonin", "Ramelteon"))) |>
+  tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(study_l, drug_recode_abbr, dose, pre, post))) |>
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:post), rows = drug_recode_abbr %in% c("Mel", "Ram"))) |>
   tab_style(style = cell_text(size = px(9)), locations = cells_column_labels(columns = c(volatile_tab:regional_tab))) |>
   tab_style(style = cell_text(size = px(10)), locations = cells_column_labels(columns = c(pre, post))) |>
   sub_missing(columns = everything(), rows = everything(), missing_text = "") |>
@@ -735,7 +736,7 @@ mel_ram_by_arm |>
   cols_width(
     study_l ~ px(165),
     arm_n ~ px(45),
-    drug ~ px(90),
+    drug_recode_abbr ~ px(90),
     asa_ps_incl ~ px(45),
     volatile_tab ~ px(32),
     tiva_tab ~ px(32),
@@ -747,7 +748,7 @@ mel_ram_by_arm |>
     pre ~ px(30),
     post ~ px(32),
   ) |>
-  tab_footnote("GI: gastrointestinal; Abd: abdominal (includes hepatic); Ortho: orthopedic; Various: more that one procedure category; PS: physical status; Vol: volatile; TIVA: total intravenous anesthesia; Reg: regional; MMSE: Mini-Mental State Exam; Pre: preoperative; Post: postoperative.") |> 
+  tab_footnote("GI: gastrointestinal; Abd: abdominal (includes hepatic); Ortho: orthopedic; Various: more that one procedure category; PS: physical status; Vol: volatile; TIVA: total intravenous anesthesia; Reg: regional; MMSE: Mini-Mental State Exam; Pre: preoperative; Post: postoperative; Mel: melatonin; Ram: ramelteon; Oxaz: oxazepam; Dex: dexmedetomidine; Mid: midazolam; Plac; placebo.") |> 
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |> 
   tab_footnote(md("ASA Physical Status of patients included (proportions can be found here[link to table add])."), locations = cells_column_labels(columns = c(asa_ps_incl))) 
 
@@ -1082,7 +1083,7 @@ netgraph(netmeta_melram_nma,
 
 <br/>
 
-<!-- Dex: Dexmedetomidine; "Dex/Preg": Dexmedetomidine/Pregabalin; "Dex/Ulin": Dexmedetomidine/Ulinastatin; Ket: Ketamine; Mel: Melatonin; Ram: Ramelteon; Ulin: Ulinastatin; Hal: Haloperidol; Mid: Midazolam; "Mid/Prop": Midazolam/propofol; "Mid/Sevo": Midazolam/sevoflurane; MS: Morphine; Preg: Pregabalin; Prop: Propofol; Rhyth: Rhythim; Sufen: Sufentanil; Plac/None: Placebo or no comparator. -->
+<!-- Dex: Dexmedetomidine; "Dex/Preg": Dexmedetomidine/Pregabalin; "Dex/Ulin": Dexmedetomidine/Ulinastatin; Ket: Ketamine; Mel: Melatonin; Ram: Ramelteon; Ulin: Ulinastatin; Hal: Haloperidol; Mid: Midazolam; "Mid/Prop": Midazolam/propofol; "Mid/Sevo": Midazolam/sevoflurane; MS: Morphine; Preg: Pregabalin; Prop: Propofol; Rhyth: Rhythim; Suf: Sufentanil; Plac/None: Placebo or no comparator. -->
 
 #### Dexmedetomidine
 
@@ -1373,7 +1374,7 @@ delirium_dex_comp_meta_dat <- dichot_dat |>
       study == "Zhao 2020" & arm_id == 2 ~ collapse_dichot(dichot_dat, "Zhao 2020", c(2, 3, 4), arm_n),
       .default = arm_n
     ),
-    arm_time = ifelse(study == "Lee 2018b" & arm_id == 4, "Induction|Intraop|Preg", arm_time)
+    arm_time = ifelse(study == "Lee 2018b" & arm_id == 4, "Induction/Preop|Intraop|Preg", arm_time)
   ) |>
   filter(!(study %in% c("Zhao 2020") & arm_id %in% c(3, 4)))
   # filter(!(study == "He 2018" & arm_id == 2)) |>
@@ -2662,6 +2663,297 @@ ncd_dat |>
 ### Ketamine
 
 No studies
+
+## **Physical Function**
+
+<font size = 4> `r table_ref()` Physical functional status for expanded versus standard preoperative evaluation. </font>
+
+```{r exp_std_adl}
+#| include: true
+#| eval: false
+#| warning: false
+
+## main data ------------------------------------------ (2023-07-13 10:05) @----
+adl_likert_dat <- likert_dat |> 
+  left_join(drugs_dat |> select(refid, arm_id, drug_recode_abbr), by = c("refid", "arm_id")) |>
+  rename(arm = drug_recode_abbr) |>
+  mutate(
+    # adl_koos, adl_sf36, adl_womac_func, adl_womac_stiff, adl_qlq_func, adl_other
+    adl_scale = coalesce(adl_koos, adl_sf36, adl_womac_func, adl_womac_stiff, adl_qlq_func, adl_other),
+    adl_scale = case_when(
+      adl_scale == adl_sf36 ~ "SF-36 physical",
+      str_detect(adl_other_spec, "Bar?thel") ~ "Barthel Index",
+      adl_other_spec ==  "Short Performance Physical Battery" ~ "SPPB",
+      str_detect(adl_other_spec, "Groningen") ~ "GARS"
+    )
+  ) |> 
+  filter(!is.na(l_adl)) |> 
+  relocate(adl_scale, .after = arm) |> 
+  select(refid, study_l, study, arm_id, arm, arm_n, adl_scale, adl_koos:adl_other_spec, matches("sf36_pcs|womac_func|qlq_fs|adl")) |> 
+  # select(refid, study, arm, adl_scale, matches("otheradl")) |> 
+  rename_with(~ str_replace(., "_95", "ci95")) |> 
+  rename_with(~ str_replace(., "other", "other_")) %>%
+  mutate(
+    time1       = coalesce(!!!select(., contains("time1"))),
+    m1          = coalesce(!!!select(., contains("m1"))),
+    sd1         = coalesce(!!!select(., contains("sd1"))),
+    ci95l1      = coalesce(!!!select(., contains("ci95l1"))),
+    ci95u1      = coalesce(!!!select(., contains("ci95u1"))),
+    med1        = coalesce(!!!select(., contains("med1"))),
+    rl1         = coalesce(!!!select(., contains("rl1"))),
+    ru1         = coalesce(!!!select(., contains("ru1"))),
+    iqrl1       = coalesce(!!!select(., contains("iqrl1"))),
+    iqru1       = coalesce(!!!select(., contains("iqru1"))),
+    diff1       = coalesce(!!!select(., contains("diff1"))),
+    diffsd1     = coalesce(!!!select(., contains("diffsd1"))),
+    diff95low1  = coalesce(!!!select(., contains("diff95low1"))),
+    diff95high1 = coalesce(!!!select(., contains("diff95high1"))),
+    pval1in    = coalesce(!!!select(., contains("pval1_in"))),
+    pval1betw  = coalesce(!!!select(., contains("pval1_betw"))),
+    time2       = coalesce(!!!select(., contains("time2"))),
+    sd2         = coalesce(!!!select(., contains("sd2"))),
+    m2          = coalesce(!!!select(., contains("m2"))),
+    ci95l2      = coalesce(!!!select(., contains("ci95l2"))),
+    ci95u2      = coalesce(!!!select(., contains("ci95u2"))),
+    med2        = coalesce(!!!select(., contains("med2"))),
+    rl2         = coalesce(!!!select(., contains("rl2"))),
+    ru2         = coalesce(!!!select(., contains("ru2"))),
+    iqrl2       = coalesce(!!!select(., contains("iqrl2"))),
+    iqru2       = coalesce(!!!select(., contains("iqru2"))),
+    diff2       = coalesce(!!!select(., contains("diff2"))),
+    diffsd2     = coalesce(!!!select(., contains("diffsd2"))),
+    diff95low2  = coalesce(!!!select(., contains("diff95low2"))),
+    diff95high2 = coalesce(!!!select(., contains("diff95high2"))),
+    pval2in    = coalesce(!!!select(., contains("pval2_in"))),
+    pval2betw  = coalesce(!!!select(., contains("pval2_betw"))),
+    time3       = coalesce(!!!select(., contains("time3"))),
+    m3          = coalesce(!!!select(., contains("m3"))),
+    sd3         = coalesce(!!!select(., contains("sd3"))),
+    ci95l3      = coalesce(!!!select(., contains("ci95l3"))),
+    ci95u3      = coalesce(!!!select(., contains("ci95u3"))),
+    med3        = coalesce(!!!select(., contains("med3"))),
+    rl3         = coalesce(!!!select(., contains("rl3"))),
+    ru3         = coalesce(!!!select(., contains("ru3"))),
+    iqrl3       = coalesce(!!!select(., contains("iqrl3"))),
+    iqru3       = coalesce(!!!select(., contains("iqru3"))),
+    diff3       = coalesce(!!!select(., contains("diff3"))),
+    diffsd3     = coalesce(!!!select(., contains("diffsd3"))),
+    diff95low3  = coalesce(!!!select(., contains("diff95low3"))),
+    diff95high3 = coalesce(!!!select(., contains("diff95high3"))),
+    pval3in    = coalesce(!!!select(., contains("pval3_in"))),
+    pval3betw  = coalesce(!!!select(., contains("pval3_betw"))),
+  ) |> 
+  select(refid, study_l, study, arm_id, arm, arm_n, adl_scale, !contains("_"), matches("adl_update_arm_n[1-3]")) |> 
+  rename_with(~ paste0("adl_", .x), .cols = matches("[1-3]")) |> 
+  rename_with(~ str_remove(.x, "adl_adl_"))
+
+## adl_transpose -------------------------------------- (2023-07-13 10:06) @----
+adl_transpose <- function(data, obs_number){
+  obs_number <- as.character(obs_number)
+  data |> 
+  select(refid:adl_scale, matches(obs_number)) |> 
+  rename_with(~ str_replace(.x, obs_number, ""))
+}
+
+## adl_long_dat --------------------------------------- (2023-07-13 10:06) @----
+adl_long_dat <- bind_rows(
+  adl_transpose(adl_likert_dat, 1),
+  adl_transpose(adl_likert_dat, 2),
+  adl_transpose(adl_likert_dat, 3)) |>
+  # update arms at follow-up times
+  mutate(arm_n = ifelse(!is.na(update_arm_n), update_arm_n, arm_n)) |>
+  select(-update_arm_n) |>
+  filter(!is.na(adl_time))
+
+```
+
+```{r exp_std_adl_estimates}
+#| eval: false
+# add formatted m/med and imputed mean sd if missing
+adl_mn_med_dat <- mean_med_table_adl(adl_long_dat, "adl_") |>
+  filter(!is.na(adl_time)) |>
+  select(-scale)
+
+adl_long_dat <- left_join(adl_long_dat, adl_mn_med_dat, by = c("refid", "arm_id", "adl_time")) |> 
+  rename_with(~ str_remove(.x, "adl_")) |> 
+  mutate(study = paste0(study, "-", time))
+
+# function to calculate means, sd, and create analytical data set
+calc_mn_sd <- function(n_e, m_e, sd_e, md_e, q1_e, q3_e, min_e, max_e, study, tx, refid, data = NULL) {
+  temp_dat <- data |> 
+    select(all_of(c(n_e, m_e, sd_e, md_e, q1_e, q3_e, min_e, max_e, study, tx, refid))) %>%
+    mutate(n_c = 20, m_c = 2, sd_c = 1, md_c = 3, q1_c = 2, q3_c = 3, min_c = 1, max_c = 5)
+  names(temp_dat)[1:10] <- c("n_e", "m_e", "sd_e", "md_e", "q1_e", "q3_e", "min_e", "max_e", "study", "tx")
+
+  temp <- metacont(
+    n.e = n_e,
+    n.c = n_c,
+    comb.fixed = TRUE,
+    mean.e = m_e,
+    sd.e = sd_e,
+    median.e = md_e,
+    q1.e = q1_e,
+    q3.e = q3_e,
+    min.e = min_e,
+    max.e = max_e,
+    mean.c = m_c,
+    sd.c = sd_c,
+    median.c = md_c,
+    q1.c = q1_c,
+    q3.c = q3_c,
+    min.c = min_c,
+    max.c = max_c,
+    sm = "SMD",
+    studlab = study,
+    data = temp_dat
+  )
+
+  temp <- as_tibble(temp[c("studlab", "n.e", "mean.e", "sd.e")])
+  cbind(temp_dat$tx, temp) 
+}
+
+adl_scales_dat <- tribble(
+  ~study, ~scale, ~metric,
+  "de Jonghe 2014", "Katz ADL score", "15→0",
+  "Chitnis 2022", "SF-36 physical", "0→100",
+)
+
+# adl_long_dat <- 
+  left_join(
+  adl_long_dat,
+  calc_mn_sd("arm_n", "m", "sd", "med", "iqrl", "iqru", "rl", "ru", "study", "arm", refid = "refid", data = adl_long_dat) |> rename(arm = "temp_dat$tx", study = studlab),
+  by = c("study", "arm")
+) |>
+  # add calculable missing sd estimates, for Zhu 2022 sd_bwgrp_fun(51.7, 50.5, 85, 70, 0.522)[3]; Bakker use diff
+  mutate(
+    sd.e = ifelse(study == "Zhu 2022-21", 11.85844, sd.e),
+    mean.e = ifelse(is.na(mean.e) & str_detect(study, "Bakker"), -diff, mean.e),
+    study_time = study,
+    study = str_remove(study_time, "-.*$"),
+    year = str_extract(study, "\\d{4}"),
+    period = case_when(
+      time < 30 ~ "<30 days",
+      time <= 90 ~ "30-90 days",
+      time > 90 ~ ">90 days"
+    )
+  ) |>
+  select(-scale) |> 
+  left_join(adl_scales_dat, by = "study") |>
+  select(-c(ci95l:pvalbetw)) |>
+  select(refid:study, study_time, arm_id, arm_n, arm, scale, metric, everything()) |>
+  arrange(year, study_time, arm_id) |>
+  filter(time != 0) |>
+  mutate(
+    smd = case_when(
+      arm_id == 2 ~ suppressWarnings(smd_ci(n.e, mean.e, sd.e, lag(n.e), lag(mean.e), lag(sd.e))),
+      arm_id == 1 ~ NA
+    ),
+    .by = study_time
+  ) |> 
+  mutate(table = ifelse(study == "Chitnis 2022", str_extract(table, "^\\d{2}\\.\\d{1}"), table),
+         smd = ifelse(study == "Chitnis 2022" & arm_id == 2, "0.39 (-1.57, 2.34)", smd))
+
+adl_meta_dat <- adl_long_dat |> 
+  select(study, arm, time, period, n.e, mean.e, sd.e) |> 
+  pivot_wider(names_from = arm, values_from = c(n.e, mean.e, sd.e)) |> 
+  rename_with(~ str_remove(.x, "\\.e"))
+```
+
+```{r exp_std_adl_gt}
+#| eval: false
+adl_long_dat |>
+  left_join(table_age_mn_med, by = c("refid", "arm_id")) |>
+  relocate(age_table, .after = arm) |>
+  mutate(
+    study_l = ifelse(row_number() > 1, "", study_l),
+    scale = ifelse(row_number() > 1, "", scale),
+    time = ifelse(row_number() > 1, "", time),
+    metric = ifelse(row_number() > 1, "", metric),
+    .by = study_time
+  ) |>
+  group_by(period) |>
+  gt(id = "one") |>
+  row_group_order(groups = c("<30 days", "30-90 days", ">90 days")) |>
+  cols_hide(c(refid, study, study_time, arm_id, m, sd, sd.e, n.e, mean.e, year, )) |>
+  cols_label(
+    study_l          = "Study",
+    arm_n            = "N",
+    arm              = "Arm",
+    age_table        = "    Age",
+    scale            = "Scale",
+    metric           = "Range",
+    time             = "Days",
+    table            = "Rating",
+    smd              = "SMD (95% CI)"
+  ) |>
+  # tab_spanner(label = "", columns = c(VARIABLES), level = 1) |>
+  fmt_markdown(columns = c(study_l, age_table, table)) |>
+  # fmt_number(VARIABLE, decimals = 0) |>
+  # fmt_integer(use_seps = TRUE, sep_mark = ",") |>
+  sub_missing(columns = everything(), missing_text = "") |>
+  # replace relative effects calculated from studies with 0 events in one arm
+  gt_theme_mg() |>
+  cols_width(
+    study_l ~ px(135),
+    arm_n ~ px(45),
+    arm ~ px(50),
+    age_table ~ px(90),
+    scale ~ px(100),
+    metric ~ px(70),
+    time ~ px(40),
+    table ~ px(90),
+    smd ~ px(140)
+  ) |>
+  tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:smd), rows = str_detect(arm, "Exp"))) |>
+  tab_footnote(md("SMD: standardized mean difference")) |>
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, table))) |>
+  tab_footnote("For scale reverse to be consistent with other studies.", locations = cells_body(columns = c(smd), rows = str_detect(study, "Bakker 2014") & arm == "Exp")) |>
+  tab_footnote("Study reported only difference scores.", locations = cells_body(columns = c(table), rows = str_detect(study, "Bakker 2014")))
+```
+
+### *Pooled*
+
+<font size = 4> `r figure_ref()` Pooled results for physical functional status for expanded versus standard preoperative evaluation (higher is better). </font>
+
+```{r exp_std_forest, fig.width = 14, fig.height = 7.5, fig.align = "left", warning = TRUE}
+#| eval: false
+adl_meta <- metacont(n_Exp, mean_Exp, sd_Exp, n_Std, mean_Std, sd_Std,
+  data = adl_meta_dat,
+  studlab = study,
+  sm = "SMD",
+  subgroup = period,
+  cluster = study
+)
+
+forest(adl_meta,
+  common = TRUE,
+  label.e = "Expanded",
+  label.c = "Standard",
+  leftcols = c("studlab", "n.e", "mean.e", "sd.e", "n.c", "mean.c", "sd.c"),
+  rightcols = c("effect", "ci"),
+  # rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  # rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
+  # just.addcols.right = "right",
+  digits = 2,
+  digits.tau2 = 1,
+  overall.hetstat = TRUE,
+  print.I2.ci = TRUE,
+  # sortvar = year,
+  prediction = TRUE,
+  fs.xlab = 11,
+  digits.sd = 1,
+  digits.mean = 1,
+  # pooled.events = TRUE,
+  print.pval.Q = FALSE,
+  test.subgroup = FALSE,
+  print.subgroup.name = FALSE,
+  # xlim = c(0.1, 3),
+  xlab = "Favors: Expanded                          Standard",
+  addrows.below.overall = 4
+)
+
+# <foot_mg> Multilevel model fitted accounting for studies with more than one time point. </foot_mg> 
+```
 
 ## **Complications**
 
