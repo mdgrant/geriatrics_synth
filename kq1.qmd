@@ -25,6 +25,7 @@ Among older patients anticipating surgery and anesthesia, does expanded preopera
 ```{r, read_data}
 #| include: false
 source("code/load_data.R")
+conflicts_prefer(dplyr::lag)
 
 # delete van der Vlies 2020 882 NRC
 kq1_refid <- kq1_refid[!kq1_refid %in% c(3815, 5094, 3547, 882)]
@@ -124,7 +125,7 @@ outcome_tab(outcome_dat, 11)
 <font size = 4> `r table_ref()` Dichotomous or count outcomes. </font>
 
 ```{r dichot_outcome_freq}
-dichot_freq_fun(dichot_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; NCD: neurocognitive disorder; QoR: quality of recovery; ")
+dichot_freq_fun(dichot_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
 ```
 
 <font size = 4> `r table_ref()` Continuous outcomes. </font>
@@ -136,7 +137,7 @@ contin_freq_fun(contin_dat)
 <font size = 4> `r table_ref()` Likert or ordinal outcomes. </font>
 
 ```{r likert_outcome_freq}
-likert_freq_fun(likert_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; NCD: neurocognitive disorder; QoR: quality of recovery; ")
+likert_freq_fun(likert_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
 ```
 
 ## **Included Studies**
@@ -666,7 +667,7 @@ delirium_tab |>
     tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(delitotal_time, rr_ci))) |>
     tab_style(style = cell_text(align = "right"),  locations = cells_body(columns = c(n_percent, arm_n))) |>
     tab_style(style = cell_text(align = "right"),  locations = cells_column_labels(columns = c(n_percent))) |>
-    tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:n_percent), rows = str_detect(arm, "Neur|Block"))) |>
+    tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:n_percent), rows = str_detect(arm, "Exp"))) |>
     sub_missing(columns = delitotal_time, missing_text = "Note") |>
     gt_theme_mg() |>
     cols_width(
@@ -735,6 +736,9 @@ delirium_rct_meta <- metabin(event1, n1, event2, n2,
   allstudies = TRUE,
   subgroup = surg_f
 )
+
+# temp <- update(delirium_rct_meta, sm = "OR", subgroup = NULL)
+# DescTools::ORToRelRisk(0.81, 0.36)
 
 # vochteloo_dat <- tribble(
 #   ~study, ~year, ~event2, ~n2, ~event1, ~n1,
@@ -1096,11 +1100,12 @@ dncr_dat |>
 
 <font size = 4> `r table_ref()` Physical functional status for expanded versus standard preoperative evaluation. </font>
 
-![](assets/kq1_adl.png){fig-align="left"}
-
 ```{r exp_std_adl}
-#| include: false
-#| eval: false
+#| include: true
+#| eval: true
+#| warning: false
+
+## main data ------------------------------------------ (2023-07-13 10:05) @----
 adl_likert_dat <- likert_dat |> 
   mutate(
     # adl_koos, adl_sf36, adl_womac_func, adl_womac_stiff, adl_qlq_func, adl_other
@@ -1133,8 +1138,8 @@ adl_likert_dat <- likert_dat |>
     diffsd1     = coalesce(!!!select(., contains("diffsd1"))),
     diff95low1  = coalesce(!!!select(., contains("diff95low1"))),
     diff95high1 = coalesce(!!!select(., contains("diff95high1"))),
-    pval1_in    = coalesce(!!!select(., contains("pval1_in"))),
-    pval1_betw  = coalesce(!!!select(., contains("pval1_betw"))),
+    pval1in    = coalesce(!!!select(., contains("pval1_in"))),
+    pval1betw  = coalesce(!!!select(., contains("pval1_betw"))),
     time2       = coalesce(!!!select(., contains("time2"))),
     sd2         = coalesce(!!!select(., contains("sd2"))),
     m2          = coalesce(!!!select(., contains("m2"))),
@@ -1149,7 +1154,8 @@ adl_likert_dat <- likert_dat |>
     diffsd2     = coalesce(!!!select(., contains("diffsd2"))),
     diff95low2  = coalesce(!!!select(., contains("diff95low2"))),
     diff95high2 = coalesce(!!!select(., contains("diff95high2"))),
-    pval2_in    = coalesce(!!!select(., contains("pval2_in"))),
+    pval2in    = coalesce(!!!select(., contains("pval2_in"))),
+    pval2betw  = coalesce(!!!select(., contains("pval2_betw"))),
     time3       = coalesce(!!!select(., contains("time3"))),
     m3          = coalesce(!!!select(., contains("m3"))),
     sd3         = coalesce(!!!select(., contains("sd3"))),
@@ -1164,21 +1170,218 @@ adl_likert_dat <- likert_dat |>
     diffsd3     = coalesce(!!!select(., contains("diffsd3"))),
     diff95low3  = coalesce(!!!select(., contains("diff95low3"))),
     diff95high3 = coalesce(!!!select(., contains("diff95high3"))),
-    pval3_in    = coalesce(!!!select(., contains("pval3_in"))),
+    pval3in    = coalesce(!!!select(., contains("pval3_in"))),
+    pval3betw  = coalesce(!!!select(., contains("pval3_betw"))),
   ) |> 
-  select(refid, study_l, study, arm_id, arm, arm_n, adl_scale, !contains("_")) |> 
-  rename_with(~ paste0("adl_", .x), .cols = matches("[1-3]")) 
+  select(refid, study_l, study, arm_id, arm, arm_n, adl_scale, !contains("_"), matches("adl_update_arm_n[1-3]")) |> 
+  rename_with(~ paste0("adl_", .x), .cols = matches("[1-3]")) |> 
+  rename_with(~ str_remove(.x, "adl_adl_"))
 
-# adl_times_dat <- 
-#   mean_med_table_adl(exp_likert_dat, "adl_", 1, 0) |> 
-#   left_join(mean_med_table_adl(exp_likert_dat, "adl_", 2, 0), by = c("refid", "arm_id")) |> 
-#   left_join(mean_med_table_adl(exp_likert_dat, "adl_", 3, 0), by = c("refid", "arm_id"))
-# 
-# adl_likert_tab <- exp_likert_dat |> 
-#   select(refid, study, study_l, arm_id, arm, arm_n, adl_scale) |> 
-#   left_join(adl_times_dat, by = c("refid", "arm_id")) 
+## adl_transpose -------------------------------------- (2023-07-13 10:06) @----
+adl_transpose <- function(data, obs_number){
+  obs_number <- as.character(obs_number)
+  data |> 
+  select(refid:adl_scale, matches(obs_number)) |> 
+  rename_with(~ str_replace(.x, obs_number, ""))
+}
+
+## adl_long_dat --------------------------------------- (2023-07-13 10:06) @----
+adl_long_dat <- bind_rows(
+  adl_transpose(adl_likert_dat, 1),
+  adl_transpose(adl_likert_dat, 2),
+  adl_transpose(adl_likert_dat, 3)) |>
+  # update arms at follow-up times
+  mutate(arm_n = ifelse(!is.na(update_arm_n), update_arm_n, arm_n)) |>
+  select(-update_arm_n) |>
+  filter(!is.na(adl_time))
 
 ```
+
+```{r exp_std_adl_estimates}
+# add formatted m/med and imputed mean sd if missing
+adl_mn_med_dat <- mean_med_table_adl(adl_long_dat, "adl_") |>
+  filter(!is.na(adl_time)) |>
+  select(-scale)
+
+adl_long_dat <- left_join(adl_long_dat, adl_mn_med_dat, by = c("refid", "arm_id", "adl_time")) |> 
+  rename_with(~ str_remove(.x, "adl_")) |> 
+  mutate(study = paste0(study, "-", time))
+
+# function to calculate means, sd, and create analytical data set
+calc_mn_sd <- function(n_e, m_e, sd_e, md_e, q1_e, q3_e, min_e, max_e, study, tx, refid, data = NULL) {
+  temp_dat <- data |> 
+    select(all_of(c(n_e, m_e, sd_e, md_e, q1_e, q3_e, min_e, max_e, study, tx, refid))) %>%
+    mutate(n_c = 20, m_c = 2, sd_c = 1, md_c = 3, q1_c = 2, q3_c = 3, min_c = 1, max_c = 5)
+  names(temp_dat)[1:10] <- c("n_e", "m_e", "sd_e", "md_e", "q1_e", "q3_e", "min_e", "max_e", "study", "tx")
+
+  temp <- metacont(
+    n.e = n_e,
+    n.c = n_c,
+    comb.fixed = TRUE,
+    mean.e = m_e,
+    sd.e = sd_e,
+    median.e = md_e,
+    q1.e = q1_e,
+    q3.e = q3_e,
+    min.e = min_e,
+    max.e = max_e,
+    mean.c = m_c,
+    sd.c = sd_c,
+    median.c = md_c,
+    q1.c = q1_c,
+    q3.c = q3_c,
+    min.c = min_c,
+    max.c = max_c,
+    sm = "SMD",
+    studlab = study,
+    data = temp_dat
+  )
+
+  temp <- as_tibble(temp[c("studlab", "n.e", "mean.e", "sd.e")])
+  cbind(temp_dat$tx, temp) 
+}
+
+adl_scales_dat <- tribble(
+  ~study, ~scale, ~metric,
+  "Watne 2014", "Barthel Index", "0→20",
+  "Prestmo 2015", "Barthel Index", "0→20",
+  "Zhu 2022", "Barthel Index", "0→100",
+  "Hempenius 2016", "SF-36 physical", "0→100",
+  "Bakker 2014", "GARS", "44→11",
+  "Richter 2005", "SF-36 physical", "0→100",
+)
+
+adl_long_dat <- left_join(
+  adl_long_dat,
+  calc_mn_sd("arm_n", "m", "sd", "med", "iqrl", "iqru", "rl", "ru", "study", "arm", refid = "refid", data = adl_long_dat) |> rename(arm = "temp_dat$tx", study = studlab),
+  by = c("study", "arm")
+) |>
+  # add calculable missing sd estimates, for Zhu 2022 sd_bwgrp_fun(51.7, 50.5, 85, 70, 0.522)[3]; Bakker use diff
+  mutate(
+    sd.e = ifelse(study == "Zhu 2022-21", 11.85844, sd.e),
+    mean.e = ifelse(is.na(mean.e) & str_detect(study, "Bakker"), -diff, mean.e),
+    study_time = study,
+    study = str_remove(study_time, "-.*$"),
+    year = str_extract(study, "\\d{4}"),
+    period = case_when(
+      time < 30 ~ "<30 days",
+      time <= 90 ~ "30-90 days",
+      time > 90 ~ ">90 days"
+    )
+  ) |>
+  left_join(adl_scales_dat |> select(-scale), by = "study") |>
+  select(-c(ci95l:pvalbetw)) |>
+  select(refid:study, study_time, arm_id, arm_n, arm, scale, metric, everything()) |>
+  arrange(year, study_time, arm_id) |>
+  filter(time != 0) |>
+  mutate(
+    smd = case_when(
+      arm_id == 2 ~ suppressWarnings(smd_ci(n.e, mean.e, sd.e, lag(n.e), lag(mean.e), lag(sd.e))),
+      arm_id == 1 ~ NA
+    ),
+    .by = study_time
+  ) 
+
+adl_meta_dat <- adl_long_dat |> 
+  select(study, arm, time, period, n.e, mean.e, sd.e) |> 
+  pivot_wider(names_from = arm, values_from = c(n.e, mean.e, sd.e)) |> 
+  rename_with(~ str_remove(.x, "\\.e"))
+```
+
+```{r exp_std_adl_gt}
+adl_long_dat |>
+  left_join(table_age_mn_med, by = c("refid", "arm_id")) |>
+  relocate(age_table, .after = arm) |>
+  mutate(
+    study_l = ifelse(row_number() > 1, "", study_l),
+    scale = ifelse(row_number() > 1, "", scale),
+    time = ifelse(row_number() > 1, "", time),
+    metric = ifelse(row_number() > 1, "", metric),
+    .by = study_time
+  ) |>
+  group_by(period) |>
+  gt(id = "one") |>
+  row_group_order(groups = c("<30 days", "30-90 days", ">90 days")) |>
+  cols_hide(c(refid, study, study_time, arm_id, m, sd, sd.e, n.e, mean.e, year, )) |>
+  cols_label(
+    study_l          = "Study",
+    arm_n            = "N",
+    arm              = "Arm",
+    age_table        = "    Age",
+    scale            = "Scale",
+    metric           = "Range",
+    time             = "Days",
+    table            = "Rating",
+    smd              = "SMD (95% CI)"
+  ) |>
+  # tab_spanner(label = "", columns = c(VARIABLES), level = 1) |>
+  fmt_markdown(columns = c(study_l, age_table, table)) |>
+  # fmt_number(VARIABLE, decimals = 0) |>
+  # fmt_integer(use_seps = TRUE, sep_mark = ",") |>
+  sub_missing(columns = everything(), missing_text = "") |>
+  # replace relative effects calculated from studies with 0 events in one arm
+  gt_theme_mg() |>
+  cols_width(
+    study_l ~ px(135),
+    arm_n ~ px(45),
+    arm ~ px(50),
+    age_table ~ px(90),
+    scale ~ px(100),
+    metric ~ px(70),
+    time ~ px(40),
+    table ~ px(90),
+    smd ~ px(140)
+  ) |>
+  tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:smd), rows = str_detect(arm, "Exp"))) |>
+  tab_footnote(md("SMD: standardized mean difference")) |>
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, table))) |>
+  tab_footnote("For scale reverse to be consistent with other studies.", locations = cells_body(columns = c(smd), rows = str_detect(study, "Bakker 2014") & arm == "Exp")) |>
+  tab_footnote("Study reported only difference scores.", locations = cells_body(columns = c(table), rows = str_detect(study, "Bakker 2014")))
+```
+
+### *Pooled*
+
+<font size = 4> `r figure_ref()` Pooled results for physical functional status for expanded versus standard preoperative evaluation (higher is better). </font>
+
+```{r exp_std_forest, fig.width = 14, fig.height = 7.5, fig.align = "left", warning = TRUE}
+adl_meta <- metacont(n_Exp, mean_Exp, sd_Exp, n_Std, mean_Std, sd_Std,
+  data = adl_meta_dat,
+  studlab = study,
+  sm = "SMD",
+  subgroup = period,
+  cluster = study
+)
+
+forest(adl_meta,
+  common = TRUE,
+  label.e = "Expanded",
+  label.c = "Standard",
+  leftcols = c("studlab", "n.e", "mean.e", "sd.e", "n.c", "mean.c", "sd.c"),
+  rightcols = c("effect", "ci"),
+  # rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  # rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
+  # just.addcols.right = "right",
+  digits = 2,
+  digits.tau2 = 1,
+  overall.hetstat = TRUE,
+  print.I2.ci = TRUE,
+  # sortvar = year,
+  prediction = TRUE,
+  fs.xlab = 11,
+  digits.sd = 1,
+  digits.mean = 1,
+  # pooled.events = TRUE,
+  print.pval.Q = FALSE,
+  test.subgroup = FALSE,
+  print.subgroup.name = FALSE,
+  # xlim = c(0.1, 3),
+  xlab = "Favors: Expanded                          Standard",
+  addrows.below.overall = 4
+)
+
+
+```
+<foot_mg> Multilevel model fitted accounting for studies with more than one time point. </foot_mg> 
 
 ## **Complications**
 
@@ -1438,8 +1641,10 @@ forest(adverse_meta,
   random = TRUE,
   label.e = "Expanded",
   label.c = "Standard",
-  rightcols = c("effect", "ci", "surgs", "D1", "D2", "D3", "D4", "D5", "Overall"),
-  rightlabs = c("RR ", "(95% CI)   ", "Surgery", "D1", "D2", "D3", "D4", "D5", "All"),
+  # rightcols = c("effect", "ci", "surgs", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  # rightlabs = c("RR ", "(95% CI)   ", "Surgery", "D1", "D2", "D3", "D4", "D5", "All"),
+  rightcols = c("effect", "ci", "surgs"),
+  rightlabs = c("RR ", "(95% CI)   ", "Surgery"),
   colgap.right = "4mm",
   just.addcols.right = "left",
   just.addcols.left = "right",
@@ -1466,8 +1671,10 @@ forest(adverse_meta,
   random = TRUE,
   label.e = "Expanded",
   label.c = "Standard",
-  rightcols = c("effect", "ci", "surgs", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "Overall"),
-  rightlabs = c("RR ", "(95% CI)   ", "Surgery", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "All"),
+  # rightcols = c("effect", "ci", "surgs", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "Overall"),
+  # rightlabs = c("RR ", "(95% CI)   ", "Surgery", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "All"),
+  rightcols = c("effect", "ci", "surgs"),
+  rightlabs = c("RR ", "(95% CI)   ", "Surgery"),
   colgap.right = "4mm",
   just.addcols.right = "left",
   just.addcols.left = "right",
@@ -1492,7 +1699,7 @@ forest(adverse_meta,
 
 #### Myocardial Infarction
 
-<font size = 4> `r figure_ref()` Risk ratio for myocardial infarction (expanded versus standard preoperative evaluation; nonrandomized designs. </font>
+<font size = 4> `r figure_ref()` Risk ratio for myocardial infarction (expanded versus standard preoperative evaluation; nonrandomized designs). </font>
 
 ```{r complication_nrsi_mi,  fig.width = 14, fig.height = 3.5, fig.align = "left"}
 adverse_meta <- complication_meta_fun("MI", randomized = "Nonrandomized", use_hakn = FALSE, predictive = FALSE)
@@ -1569,6 +1776,99 @@ complication_forest_nrsi_fun(adverse_meta, use_predictive = FALSE)
 ```
 
 <foot_mg> RR: risk ratio; D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. </foot_mg>
+
+
+## **Patient Satisfaction**
+
+<font size = 4> `r table_ref()` Patient satisfaction according to regional or general anesthesia. </font>
+
+```{r pt_satisfaction}
+satis_dat_gt <- dichot_dat |>
+  select(refid, year, study, study_l, arm_id, arm_n, arm, design_f_lab, matches("satis"), notes_d) |>
+  left_join(surgs |> select(refid, surgs_noabbr_f), by = "refid") |>
+  left_join(study_arm_dat |> select(refid, arm_id, asa_ps_incl), by = c("refid", "arm_id")) |>
+  left_join(table_age_mn_med, by = c("refid", "arm_id")) |> # age_table
+  filter(if_any(satis_n:satis_95high, ~ !is.na(.x))) |>
+  select(!c(d_satisfaction, satis_pval:satis_95high)) |>
+  mutate(
+    arm_n = ifelse(!is.na(satis_update_arm_n), satis_update_arm_n, arm_n),
+    n_percent = n_per_fun(satis_n, arm_n, n_sig_dig = 1),
+    bar = case_when(
+      str_detect(arm, "Std") ~ bar_prop(satis_n / arm_n * 100, "#969696"),
+      str_detect(arm, "Exp") ~ bar_prop(satis_n / arm_n * 100, color_2)
+    )
+  ) |>
+  arrange(year, study, arm_id) 
+
+satis_dat_gt <- satis_dat_gt |>
+  mutate(
+    ref_arm_n = arm_n,
+    ref_n = satis_n
+  ) |>
+  group_by(refid) |>
+  mutate(
+    ref_arm_n = ifelse(row_number() > 1, NA, ref_arm_n),
+    ref_n = ifelse(row_number() > 1, NA, ref_n)
+  ) |>
+  fill(ref_arm_n, ref_n) |>
+  mutate(
+    ref_arm_n = ifelse(row_number() == 1, NA, ref_arm_n),
+    ref_n = ifelse(row_number() == 1, NA, ref_n)
+  ) |>
+  ungroup() |>
+  mutate(
+    rd_ci = ifelse(!is.na(ref_n), rd_per_ci_fun(satis_n, arm_n, ref_n, ref_arm_n, digits = 1), "—")
+  )
+  
+satis_dat_gt |>
+  mutate(
+    study_l = ifelse(row_number() > 1, "", study_l),
+    asa_ps_incl = ifelse(row_number() > 1, "", asa_ps_incl),
+    surgs_noabbr_f = "Various (pelvic floor)",
+    .by = study
+  ) |>
+  group_by(surgs_noabbr_f) |>
+  gt(id = "one") |>
+  cols_hide(c(refid, year, arm_id, study, design_f_lab, satis_update_arm_n, satis_n, satis_per, notes_d, ref_arm_n, ref_n)) |>
+  cols_label(
+    study_l          = "Study",
+    arm_n            = "N",
+    arm              = "Anesth",
+    asa_ps_incl      = "PS",
+    age_table        = "Age",
+    # surgs_noabbr_f   = "Surgery",
+    n_percent        = "N (%)  ",
+    bar              = "0 – 100%",
+    rd_ci            = "RD (95% CI)"
+  ) |>
+  tab_spanner(label = "ASA", columns = c(asa_ps_incl), level = 1) |>
+  fmt_markdown(columns = c(study_l, age_table, bar)) |>
+  sub_missing(columns = everything(), missing_text = "") |>
+  gt_theme_mg() |>
+  cols_width(
+    study_l ~ px(165),
+    arm_n ~ px(45),
+    arm ~ px(80),
+    asa_ps_incl ~ px(60),
+    age_table ~ px(80),
+    # surgs_noabbr_f   ~ px(100),
+    n_percent ~ px(100),
+    bar ~ px(100),
+    rd_ci ~ px(140),
+  ) |>
+  tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
+  tab_style(style = cell_text(align = "left"), locations = cells_column_labels(columns = c(study, arm))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(asa_ps_incl, age_table, rd_ci))) |>
+  tab_style(style = cell_text(align = "right"), locations = cells_column_labels(columns = c(n_percent))) |>
+  tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(arm))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rd_ci))) |>
+  tab_footnote("Mean (SD).", locations = cells_column_labels(columns = c(age_table))) |>
+  tab_footnote("Std: standard evaluation; Exp: expanded evaluation; ASA PS: ASA Physical Status; RD: risk difference.") |>
+  tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:n_percent), rows = str_detect(arm, "Exp"))) |>
+  tab_footnote("High satisfaction.", locations = cells_body(columns = c(n_percent), rows = str_detect(study, c("Richter"))), placement = "right") 
+
+```
+
 
 ## **Length of Stay**
 
@@ -1684,12 +1984,12 @@ los_meta_dat <- contin_dat |>
 los_rct_meta_dat <- los_meta_dat |> 
   filter(str_detect(design_f_lab, "Rand")) |> 
   left_join(rob2_meta_dat, by = "refid") |> 
-  left_join(study_char_dat |> select(refid, surgs), by = "refid")
+  left_join(study_char_dat |> select(refid, surgs, country), by = "refid")
 
 los_nrsi_meta_dat <- los_meta_dat |> 
   filter(!str_detect(design_f_lab, "Rand")) |> 
   left_join(robinsi_meta_dat, by = "refid") |> 
-  left_join(study_char_dat |> select(refid, surgs), by = "refid")
+  left_join(study_char_dat |> select(refid, surgs, country), by = "refid")
 
 ```
 
@@ -1744,8 +2044,8 @@ forest(los_meta,
   # sortvar = -TE,
   # xlim = c(-10, 10),
   # at = c(-80, -60, -40, -20, 0, 20, 40),
-  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
-  rightlabs = c("MD ", "(95% CI)   ", "D1", "D2", "D3", "D4", "D5", "All"),
+  rightcols = c("effect", "ci", "country"),
+  rightlabs = c("MD ", "(95% CI)   ", "Country"),
   xlab = "Favors: Expanded                                      Standard           ",
   smlab = "Mean Difference (days)",
   addrows.below.overall = 4
@@ -1753,7 +2053,7 @@ forest(los_meta,
 
 ```
 
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range with between-group p-value used as a last resort.<br/> Partridge 2017 geometric means reported.<br/> Ommundsen 2018 reported only median and between-group p-value and was excluded. </foot_mg>
+<foot_mg>Partridge 2017 geometric means reported.<br/> Ommundsen 2018 reported only median and between-group p-value and was excluded. </foot_mg>
 
 <br/>
 
@@ -1809,8 +2109,8 @@ forest(los_meta,
   # sortvar = -TE,
   # xlim = c(-10, 10),
   # at = c(-80, -60, -40, -20, 0, 20, 40),
-  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "Overall"),
-  rightlabs = c("MD", "(95% CI)  ", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "All"),
+  rightcols = c("effect", "ci", "country"),
+  rightlabs = c("MD", "(95% CI)  ", "Country"),
   xlab = "Favors: Expanded                                   Standard    ",
   smlab = "Mean Difference (days)",
   addrows.below.overall = 4
@@ -1818,9 +2118,7 @@ forest(los_meta,
 
 ```
 
-<foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. <br/> When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range. </foot_mg>
-
-<br/>
+<foot_mg> When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range. </foot_mg>
 
 ## **Discharge Location**
 
