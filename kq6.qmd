@@ -801,8 +801,7 @@ delirium_meta_dat <- dichot_dat |>
   filter(!(study %in% c("Lee 2018a", "Avidan 2017") & arm_id == 3)) |>
   filter(!(study %in% c("Zhao 2020") & arm_id %in% c(3, 4))) |>
   filter(!(study %in% c("Lee 2018b") & arm_id %in% c(2, 4))) |> # remove pregabalin, pregabaline/dex arms
-  filter(!(study %in% c("Hollinger 2021") & arm_id %in% c(2))) |> # remove haldol arm
-  filter(!study == "Mahrose 2021") # compares different doses
+  filter(!(study %in% c("Hollinger 2021") & arm_id %in% c(2))) # remove haldol arm
 
 ## calculated vs reported percentages; 2023-04-08 ----- (2023-04-24 18:21) @----
 # calculated vs reported percentages; verified 2023-04-08
@@ -821,7 +820,7 @@ delirium_meta_dat <- dichot_dat |>
 ```
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <font size = 4> `r figure_ref()` Delirium incidence by surgical category across all treatment arms in randomized clinical trials. </font>
+#### <font size = 4> `r figure_ref()` Delirium incidence by surgical category across all treatment arms in randomized clinical trials (nb, the "Any" and "Plac/None" box plots are not mutually exclusive) . </font>
 
 ```{r delirium_incidence_fig, out.width = "70%", out.height = "40%", fig.align = "left"}
 #| warning: false
@@ -846,7 +845,7 @@ delirium_meta_dat |>
   # filter(arm == "Plac/None") |>
   filter(design_f_lab == "Randomized Clinical Trial") |>
   mutate(
-    deli_prop = delitotal_n / arm_n
+    deli_prop = delitotal_n / arm_n,
   ) |>
   bind_rows(all_to_boxplot_dat) |>
   bind_rows(plac_none_to_boxplot_dat) |>
@@ -856,16 +855,18 @@ delirium_meta_dat |>
   ggplot(aes(deli_prop, surg_f)) +
   geom_boxplot(width = 0.4, outlier.size = 1.3) +
   # geom_point(aes(color = arm)) +
-  geom_jitter(size = 1.3, aes(color = arm)) +
-  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00", "#D4AC0D", "#a65628", "#946F33", "#273746")) +
+  geom_jitter(width = 0.05, aes(color = arm)) +
+  scale_colour_manual(values = c("#e41a1c", "#8B0000", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00", "#D4AC0D", "#a65628", "#946F33", "#273746")) +
   labs(y = "", x = "Incidence Proportion") +
   scale_x_continuous(limits = c(0, 1), labels = scales::percent) +
   theme(
     axis.text.x = element_text(size = 11),
     axis.text.y = element_text(size = 12),
     axis.title.x = element_text(size = 12),
+    legend.position = "right",
     legend.title = element_blank()
   )
+
 ```
 
 <foot_mg>Dex: dexmedetomidine; Ket: ketamine; Mel: melatonin; Ram: ramelteon; Oxaz: oxazepam; MS: morphine sulfate; Prop: propofol; Plac/None: placebo or no active comparator. </foot_mg>
@@ -893,7 +894,7 @@ refid_max_of_days <- delirium_total_tab |>
 
 ```{r delirium_total_dex_gt}
 delirium_total_gt_fun("Dex") |>
-  tab_footnote("RR: risk ratio;Dex: Dexmedetomidine; Mid: Midazolam; Prop: Propofol; MS: Morphine; Preg: Pregabalin; Plac: placebo; DSM: Diagnostic and Statistical Manual of Mental Disorders; ICDSC: Intensive Care Delirium Screening Checklist; Psych: psychiatrist interview; NS: not specified.") |>
+  tab_footnote("RR: risk ratio; Dex: dexmedetomidine; Mid: midazolam; Prop: propofol; MS: morphine sulfate; Preg: pregabalin; Plac: placebo; DSM: Diagnostic and Statistical Manual of Mental Disorders; ICDSC: Intensive Care Delirium Screening Checklist; Psych: psychiatrist interview; NS: not specified.") |>
   # tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
   tab_footnote("Days over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |>
   tab_footnote("Tool reported in the `Chinese Expert Consensus on the Prevention and Treatment of Postoperative Delirium in Elderly Patients.'", locations = cells_body(columns = scale_delirium, rows = scale_delirium == "Note")) |> 
@@ -948,12 +949,12 @@ refid_max_of_days <- delirium_total_tab |>
 ```
 
 ```{r delirium_total_mel_ram_gt}
-delirium_total_gt_mel_ram <- delirium_total_gt_fun("Mel|Ram") 
+delirium_total_gt_mel_ram <- delirium_total_gt_fun("Mel|Ram|Mel/Dex") 
 
 # tab_info(delirium_total_gt_mel_ram_gt)
 delirium_total_gt_mel_ram |>
   row_group_order(groups = c("Cardiac - Randomized Clinical Trial", "Ortho - Randomized Clinical Trial", "Various - Randomized Clinical Trial", "Thoracic - Randomized Clinical Trial", "GI/Abd - Before-After/Time Series", "Thoracic - Before-After/Time Series")) |> 
-  tab_footnote("RR: risk ratio; MMSE: Mini-Mental State Examination; Mel: melatonin; Ram: ramelteon; AMT: Abbreviated Mental Test; DRS: Delirium Rating Scale; DSM: Diagnostic and Statistical Manual of Mental Disorders; CAM: Confusion Assessment Method; ICDSC: Intensive Care Delirium Screening Checklist.") |>
+  tab_footnote("RR: risk ratio; MMSE: Mini-Mental State Examination; Mel: melatonin; Ram: ramelteon; Dex: dexmedetomidine; Oxaz: oxazepam; Mid: midazolam; AMT: Abbreviated Mental Test; DRS: Delirium Rating Scale; DSM: Diagnostic and Statistical Manual of Mental Disorders; CAM: Confusion Assessment Method; ICDSC: Intensive Care Delirium Screening Checklist.") |>
   # tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
   tab_footnote("Days over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |> 
   tab_footnote("Reported only daily incidence.", locations = cells_body(columns = delitotal_time, rows = delitotal_time == "Note")) |> 
