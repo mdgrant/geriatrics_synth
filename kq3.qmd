@@ -553,7 +553,7 @@ gen_reg_delirium_meta <- metabin(event2, n2, event1, n1,
   subgroup = surg_hip_oth
 )
 
-summary(gen_reg_delirium_meta)
+# summary(gen_reg_delirium_meta)
 
 gen_reg_delirium_meta_nosub <- update(gen_reg_delirium_meta, subgroup = NULL)
 
