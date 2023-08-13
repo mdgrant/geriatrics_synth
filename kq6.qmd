@@ -784,11 +784,12 @@ delirium_meta_dat <- dichot_dat |>
   left_join(postop_only_dat, by = "refid") |> 
   left_join(postop_any_dat, by = "refid") |> 
   rename(arm = drug_recode_abbr, surg_f = surgs_single_f) |> 
-  select(refid, refid_c, arm_id, year, study, design_f_lab, country, surg_f, postop_only, postop_any, arm, delitotal_n, arm_n, delitotal_perc, delirium_inc_prop) |>
+  select(refid, refid_c, arm_id, year, study, design_f_lab, country, surg_f, postop_only, postop_any, arm, delitotal_n, arm_n, deli_update_arm_n, delitotal_perc, delirium_inc_prop) |>
   arrange(refid_c, arm_id) |>
   # collapse arms
   # group_by(refid) |>  filter(n() > 2) |>  ungroup() |> # verify collapsed arms; verified 2023-03-09
   mutate(
+    arm_n = ifelse(!is.na(deli_update_arm_n), deli_update_arm_n, arm_n),
     delirium_inc_prop = ifelse(delirium_inc_prop == TRUE, "Incidence Proportion", "Maximum Daily"),
     arm = fct_collapse(arm, "Plac/None" = c("Plac", "None")),
     across(c(arm, design_f_lab, surg_f), ~ fct_drop(.x)),
@@ -1109,7 +1110,7 @@ dex_meta_dat <- pairwise_dat |>
     postop_only = ifelse(!is.na(postop_only), "Only postop", "Any preop through intraop ± postop"),
     postop_any = ifelse(!is.na(postop_any), "Postop ± preop through intraop", "Any preop through intraop (no postop)"),
     delirium_inc_prop = ifelse(delirium_inc_prop == TRUE, "Incidence Proportion", "Maximum Daily"),
-    study = ifelse(china_vs_other == "China", paste0(study, "*"), paste0(study, " ")),
+    study = ifelse(china_vs_other == "China", paste0(study, "*"), study),
     rob = case_when(
       Overall == "+" ~ "Low",
       Overall == "?" ~ "Some Concerns",
@@ -1201,9 +1202,11 @@ forest(data_meta,
 }
 
 dex_meta_forest_nosub_fun(dex_plac_meta)
+# summary(update(dex_plac_meta, subset = study != c("Turan 2020")))
 ```
 
-<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <a id="figure-4"></a><br/> `r paste0("Harbord test for small study effects P = ", formatC(temp_metabias$pval, digits = 4, format = "f"), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, dex_plac_refid), "; a secondary outcome in ", prim_sec_out_fun(sec_delirium, dex_plac_refid), ".")`<br/> \*Trials conducted in China.</foot_mg><br/>
+<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <a id="figure-4"></a><br/> `r paste0("Harbord test for small study effects P = ", formatC(temp_metabias$pval, digits = 4, format = "f"), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, dex_plac_refid), "; a secondary outcome in ", prim_sec_out_fun(sec_delirium, dex_plac_refid), ".")`<br/> 
+Excluding Turan 2020 reduced heterogeneity substantially --- *I*<sup> 2</sup> = 25%, $\tau$<sup>2</sup> = 0.04 (pooled RR 0.52 (0.41-0.67). <br/>\*Trials conducted in China.</foot_mg><br/>
 
 <font size = 4> `r figure_ref()`Dexmedetomidine compared with placebo or no intervention --- trials from China vs. other countries. </font>
 
@@ -1360,8 +1363,7 @@ rob_summary_fun(cogfunc_refid)
 
 ####  *  Subgroup Summary*
 
-::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <font size = 4> `r figure_ref()` Summary of subgroup results. </font>
+<font size = 4> `r figure_ref()` Summary of subgroup results. </font>
 
 ```{r dex_subgroup_summary}
 # library(extrafont)
@@ -1388,6 +1390,7 @@ with(subgroup_dat,
   estimate_precision = 2,
   add_plot_gap = TRUE,
   null_line_at = 1,
+  # arrows = TRUE,
   # nudge_y = -.3,
   # nudge_width = 1.2,
   # null_line_at = 1.5,
@@ -1402,7 +1405,6 @@ with(subgroup_dat,
 ![](docs/assets/subgroup_summary_crop.png){#subgroup_summary fig-align="center" width="750"}
 
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio. </foot_mg>
-:::
 
 ####  *  Component NMA*
 
