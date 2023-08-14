@@ -73,7 +73,7 @@ grade_foot <- paste0("Very low: ", vlow, "; Low: ", low, "; Moderate: ", mod, ";
 
 ```{r exp_preop_balance}
 #| warning: false
-expanded_dat <- readxl::read_excel("data/balance_tables_2023-05-23_mac_mg.xlsx", sheet = "ExpandedPreop", range = "B4:M17") |>
+expanded_dat <- readxl::read_excel("data/balance_tables_2023-05-23_mac_mg.xlsx", sheet = "ExpandedPreop", range = "B4:M19") |>
   remove_empty(which = "cols") |>
   clean_names() |>
   rename(est = estimate_95_percent_ci) |>
@@ -148,7 +148,7 @@ expanded_dat |>
 
 ```{r exp_preop_complications}
 #| warning: false
-expanded_dat <- readxl::read_excel("data/balance_tables_2023-05-23_mac_mg.xlsx", sheet = "ExpandedPreop", range = "B27:M40") |>
+expanded_dat <- readxl::read_excel("data/balance_tables_2023-05-23_mac_mg.xlsx", sheet = "ExpandedPreop", range = "B29:M40") |>
   remove_empty(which = "cols") |>
   clean_names() |>
   rename(est = estimate_95_percent_ci) |>
