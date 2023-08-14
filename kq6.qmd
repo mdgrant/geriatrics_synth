@@ -1205,6 +1205,11 @@ dex_meta_forest_nosub_fun(dex_plac_meta)
 # summary(update(dex_plac_meta, subset = study != c("Turan 2020")))
 ```
 
+```{r ancred}
+#| eval: false
+# meta_ancred(update(dex_plac_meta, subset = china_vs_other == "China"))
+```
+
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <a id="figure-4"></a><br/> `r paste0("Harbord test for small study effects P = ", formatC(temp_metabias$pval, digits = 4, format = "f"), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, dex_plac_refid), "; a secondary outcome in ", prim_sec_out_fun(sec_delirium, dex_plac_refid), ".")`<br/> 
 Excluding Turan 2020 reduced heterogeneity substantially --- *I*<sup> 2</sup> = 25%, $\tau$<sup>2</sup> = 0.04 (pooled RR 0.52 (0.41-0.67). <br/>\*Trials conducted in China.</foot_mg><br/>
 
@@ -1218,7 +1223,7 @@ temp_metareg <- update(china_meta, tau.common = TRUE, common = FALSE, method.tau
 temp_metareg <- metareg(temp_metareg)
 ```
 
-<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/> `r paste0("Meta-regression (China vs. Other) I² = ", digit0(temp_metareg$I2), "%.")` `r rm(temp_metareg, china_meta)`.<br/> \*Trials conducted in China. </foot_mg>
+<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/>  Meta-regression (China vs. Other), *I*<sup> 2</sup> = `r paste0(digit0(temp_metareg$I2), "%.")` `r rm(temp_metareg, china_meta)`<br/> \*Trials conducted in China. </foot_mg>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention **small study effects**. </font>
