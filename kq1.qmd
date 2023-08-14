@@ -2059,7 +2059,7 @@ forest(los_meta,
 
 <font size = 4> `r figure_ref()` Mean difference in lengths of stay (expanded versus standard preoperative evaluation; nonrandomized designs). </font>
 
-```{r los_nrsi_meta, fig.width = 14, fig.height = 6.5, fig.align = "left"}
+```{r los_nrsi_meta, fig.width = 14, fig.height = 8.0, fig.align = "left"}
 los_meta <- metacont(
   n.e = arm_n_Exp, 
   n.c = arm_n_Std,
