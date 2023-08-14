@@ -62,7 +62,7 @@ domain_footnote <- function(x) {
 ```{r soe_kq1_data}
 #| include: false
 col_types_soe <- c("numeric", rep("text", 5), "numeric", rep("text", 16))
-soe_kq1_dat <- readxl::read_xlsx("data/soe_2023-05-22_local.xlsx", range = "A1:W27", sheet = "soe_kq1", col_types = col_types_soe) |>
+soe_kq1_dat <- readxl::read_xlsx("data/soe_2023-05-22_local.xlsx", range = "A1:W23", sheet = "soe_kq1", col_types = col_types_soe) |>
   filter(outcome != "Atelectasis") |> 
   clean_names() |>
   mutate(
