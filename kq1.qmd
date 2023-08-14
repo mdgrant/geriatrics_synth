@@ -2615,7 +2615,7 @@ mort_rct_meta <- metabin(event2, n2, event1, n1,
   sm = "RR",
   method = "MH",
   method.tau = "REML",
-  hakn = TRUE,
+  hakn = FALSE,
   prediction = FALSE,
   allstudies = FALSE,
 )
