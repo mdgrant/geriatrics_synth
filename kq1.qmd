@@ -1381,7 +1381,7 @@ forest(adl_meta,
 
 
 ```
-<foot_mg> Multilevel model fitted accounting for studies with more than one time point. </foot_mg> 
+<foot_mg> Multilevel model fitted accounting for studies reporting at more than one time point. </foot_mg> 
 
 ## **Complications**
 
@@ -2218,7 +2218,7 @@ dc_loc_rct_meta_dat <- dc_loc_dat |>
   left_join(study_char_dat |> select(refid, surgs), by = "refid") |> 
   rename(disch_n = disch_inst_n) |> 
   pivot_wider(names_from = arm, values_from = c(disch_n, arm_n)) |> 
-  left_join(rob2_meta_dat, by = "refid") |> 
+  # left_join(rob2_meta_dat, by = "refid") |> 
   arrange(surgs)
 
 dc_loc_rct_meta <- metabin(
@@ -2240,8 +2240,10 @@ forest(dc_loc_rct_meta,
   common = TRUE,
   label.e = "Expanded",
   label.c = "Standard",
-  rightcols = c("effect", "ci", "surgs", "D1", "D2", "D3", "D4", "D5", "Overall"),
-  rightlabs = c("RR", "(95% CI)", "Surgery", "D1", "D2", "D3", "D4", "D5", "All"),
+  # rightcols = c("effect", "ci", "surgs", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  # rightlabs = c("RR", "(95% CI)", "Surgery", "D1", "D2", "D3", "D4", "D5", "All"),
+  rightcols = c("effect", "ci"),
+  rightlabs = c("RR", "(95% CI)"),
   just.addcols.right = "right",
   digits = 2,
   digits.tau2 = 1,
@@ -2275,7 +2277,6 @@ dc_loc_nrsi_meta_dat <- dc_loc_dat |>
   left_join(study_char_dat |> select(refid, surgs), by = "refid") |> 
   rename(disch_n = disch_inst_n) |> 
   pivot_wider(names_from = arm, values_from = c(disch_n, arm_n)) |> 
-  left_join(robinsi_meta_dat, by = "refid") |> 
   arrange(surgs)
 
 dc_loc_nrsi_meta <- metabin(
@@ -2296,8 +2297,8 @@ forest(dc_loc_nrsi_meta,
   common = TRUE,
   label.e = "Expanded",
   label.c = "Standard",
-  rightcols = c("effect", "ci", "surgs", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "Overall"),
-  rightlabs = c("RR", "(95% CI)", "Surgery","D1", "D2", "D3", "D4", "D5", "D6", "D7", "All"),
+  rightcols = c("effect", "ci"),
+  rightlabs = c("RR", "(95% CI)"),
   just.addcols.right = "right",
   digits = 2,
   digits.tau2 = 1,
@@ -2603,7 +2604,7 @@ pairwise_nrsi_mort_1yr_dat <- pairwise(
 mort_meta_dat <- pairwise_rct_mort_dat |> 
   mutate(year = str_extract(study, "\\d{4}")) |> 
   left_join(rob2_meta_dat, by = "refid") |> 
-  select(study, year, event2, n2, event1, n1, surgs, D1:Overall, mort_period, refid)
+  select(study, year, event2, n2, event1, n1, surgs, mort_period, refid)
 
 # total_meta(mort_meta_dat)
 # refid_meta_fun(mort_meta_dat)
@@ -2626,8 +2627,8 @@ forest(mort_rct_meta,
   # random = FALSE,
   label.e = "Expanded  ",
   label.c = "Standard  ",
-  rightcols = c("effect", "ci", "surgs", "D1", "D2", "D3", "D4", "D5", "Overall"),
-  rightlabs = c("RR", "(95% CI)", "Surgery", "D1", "D2", "D3", "D4", "D5", "All"),
+  rightcols = c("effect", "ci"),
+  rightlabs = c("RR", "(95% CI)"),
   just.addcols.right = "left",
   digits.TE = 3,
   digits.tau2 = 1,
@@ -2679,8 +2680,8 @@ forest(mort_nrsi_meta,
   # random = FALSE,
   label.e = "Expanded  ",
   label.c = "Standard  ",
-  rightcols = c("effect", "ci", "surgs", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "Overall"),
-  rightlabs = c("RR", "(95% CI)  ", "Procedure", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "All"),
+  rightcols = c("effect", "ci"),
+  rightlabs = c("RR", "(95% CI)"),
   just.addcols.right = "left",
   digits.TE = 3,
   digits.tau2 = 1,
@@ -2732,8 +2733,8 @@ forest(mort_nrsi_1yr_meta,
   # random = FALSE,
   label.e = "Expanded  ",
   label.c = "Standard  ",
-  rightcols = c("effect", "ci", "surgs", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "Overall"),
-  rightlabs = c("RR", "(95% CI)  ", "Surgery", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "All"),
+  rightcols = c("effect", "ci"),
+  rightlabs = c("RR", "(95% CI)"),
   just.addcols.right = "left",
   digits.TE = 3,
   digits.tau2 = 1,

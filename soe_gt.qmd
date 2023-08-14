@@ -72,6 +72,7 @@ soe_kq1_dat <- readxl::read_xlsx("data/soe_2023-05-22_local.xlsx", range = "A1:W
     n_s = ifelse(str_detect(n_s, "NA"), "—", n_s),
     # outcome = tools::toTitleCase(outcome) |>
     # outcome = str_to_sentence(outcome),
+    out_import = firstup(out_import),
     out_import = case_when(
       out_import == "Limited" ~ "+",
       out_import == "Important" ~ "++",
