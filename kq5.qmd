@@ -372,23 +372,24 @@ kq5_by_arm_tab <- study_arm_dat |>
 kq5_by_arm_tab <- kq5_by_arm_tab |> 
   mutate(arm_f = drug_f,
          arm = as.character(drug_f)) |> 
-  select(refid, design_f_lab, agents_up, study_l, arm_id, arm, arm_f, arm_n, drug_f, drug_f_nopim, dose_sched, time_admin)
+  select(refid, design_f_lab, agents_up, study_l, arm_id, arm, arm_f, arm_n, drug_f, drug_f_nopim, dose_sched, time_admin, arm_kq56) |> 
+  rename(class = arm_kq56)
 
-# NOTE: add arm variable in place of drug_f for all outcome types
+# NOTE: add arm variable in place of drug_f and arm class for all outcome types
 study_arm_dat <- study_arm_dat |> 
-  left_join(kq5_by_arm_tab |> select(refid, arm_id, arm, arm_f), by = c("refid", "arm_id")) |> 
+  left_join(kq5_by_arm_tab |> select(refid, arm_id, arm, arm_f, class), by = c("refid", "arm_id")) |> 
   relocate(c(arm, arm_f), .after = arm_id)
 
 dichot_dat <- dichot_dat |> 
-  left_join(kq5_by_arm_tab |> select(refid, arm_id, arm, arm_f), by = c("refid", "arm_id")) |> 
+  left_join(kq5_by_arm_tab |> select(refid, arm_id, arm, arm_f, class), by = c("refid", "arm_id")) |> 
   relocate(c(arm, arm_f), .after = arm_id)
 
 contin_dat <- contin_dat |> 
-  left_join(kq5_by_arm_tab |> select(refid, arm_id, arm, arm_f), by = c("refid", "arm_id")) |> 
+  left_join(kq5_by_arm_tab |> select(refid, arm_id, arm, arm_f, class), by = c("refid", "arm_id")) |> 
   relocate(c(arm, arm_f), .after = arm_id)
 
 likert_dat <- likert_dat |> 
-  left_join(kq5_by_arm_tab |> select(refid, arm_id, arm, arm_f), by = c("refid", "arm_id")) |> 
+  left_join(kq5_by_arm_tab |> select(refid, arm_id, arm, arm_f, class), by = c("refid", "arm_id")) |> 
   relocate(c(arm, arm_f), .after = arm_id)
   
 ```
@@ -401,7 +402,7 @@ likert_dat <- likert_dat |>
 # CODE: drugs by studies function for table
 kq5_char_drugs_tab <- function(drugs, footnote) {
   kq5_by_arm_tab |>
-    select(-arm, -arm_f) |> 
+    select(-arm, -arm_f, -class) |> 
     # for comparator detail
     mutate(
       drug_f = as.character(drug_f),
@@ -518,9 +519,7 @@ kq5_char_drugs_tab("NSAIDs", "Intraop: intraoperative; Preop:preopertive; Postop
 kq5_char_drugs_tab("Multiple", "PIM: potentially inappropriate medication; Preop:preopertive; Postop: postoperative.")
 ```
 
-## Outcomes
-
-### Delirium
+## **Delirium Incidence**
 
 ```{r}
 #| eval: false
@@ -544,8 +543,6 @@ temp <- dichot_dat |>
 
 ```
 
-## **Delirium Incidence**
-
 ```{r delirium_meta_data}
 #| eval: true
 # NOTE: compared and reconciled reported and calculated % # mutate(calc_per = delitotal_n / arm_n * 100, per_diff = calc_per - delitotal_perc) |> filter(per_diff > 0.5)
@@ -558,8 +555,9 @@ delirium_meta_dat <- dichot_dat |>
   filter(!is.na(delitotal_n)) |> 
   left_join(study_char_dat |> select(refid, country), by = "refid") |> 
   left_join(surgs |> select(refid, surgs_single_f), by = c("refid")) |>
+  left_join(kq5_by_arm_tab |> select(refid, arm_id, drug_f_nopim), by = c("refid", "arm_id")) |> 
   rename(surg_f = surgs_single_f) |> 
-  select(refid, study, arm_id, arm, year, design_f_lab, country, surg_f, delitotal_n, arm_n, delirium_inc_prop, delitotal_time:delitotal_95high, deli_cam:deli_scale_otherspec) 
+  select(refid, study, arm_id, arm, class, drug_f_nopim, year, design_f_lab, country, surg_f, delitotal_n, arm_n, delirium_inc_prop, delitotal_time:delitotal_95high, deli_cam:deli_scale_otherspec) 
 
 # NOTE: collapse arms code from kq3
 # delirium_meta_dat <- delirium_meta_dat |>
@@ -628,9 +626,10 @@ pim_delirium_tab <- delirium_meta_dat |>
   unite(scale_delirium, cam:other, remove = TRUE, sep = "/", na.rm = TRUE) |>
   mutate(
     scale_delirium = ifelse(scale_delirium == "unspec", "NR", scale_delirium),
-    scale_delirium = ifelse(scale_delirium == "DELIRIUM INDEX (DI)", "DI", scale_delirium)
+    scale_delirium = ifelse(scale_delirium == "DELIRIUM INDEX (DI)", "DI", scale_delirium),
+    scale_delirium = ifelse(str_detect(scale_delirium, "DOS"), "DOS", scale_delirium)
   ) |>
-  select(year, refid, refid, design_f_lab, study, study_l, arm_id, arm_n, arm, scale_delirium, delitotal_time, n_percent, calc_percent, rr_ci, surg_f) |>
+  select(year, refid, refid, design_f_lab, study, study_l, arm_id, arm_n, arm, drug_f_nopim, scale_delirium, delitotal_time, n_percent, calc_percent, rr_ci, surg_f) |>
   # arrange(year, study, refid, desc(arm)) |>
   left_join(table_mn_med |> select(refid, arm_id, pre_mmse), by = c("refid", "arm_id")) |>
   left_join(table_age_mn_med, by = c("refid", "arm_id")) |>
@@ -662,7 +661,7 @@ pim_delirium_tab |>
     group_by(surg_f) |>
     gt(id = "one") |>
     # row_group_order(groups = c("Ortho", "GI/Abd", "Headneck", "Spine", "Various")) |>
-    cols_hide(c(year, refid, arm_id, study, design_f_lab, age_table, calc_percent)) |>
+    cols_hide(c(year, refid, drug_f_nopim, arm_id, study, design_f_lab, age_table, calc_percent)) |>
     cols_label(
       study_l = "Study",
       arm_n = " N",
@@ -684,6 +683,7 @@ pim_delirium_tab |>
     tab_style(style = cell_text(align = "right"),  locations = cells_body(columns = c(n_percent))) |>
     tab_style(style = cell_text(align = "right"),  locations = cells_column_labels(columns = c(n_percent))) |>
     tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:n_percent), rows = str_detect(arm, "Neur|Block"))) |>
+    tab_style(style = list(cell_text(color = "red")), locations = cells_body(columns = c(arm_n:rr_ci), rows = drug_f_nopim != "No PIM")) |>  
     sub_missing(columns = delitotal_time, missing_text = "Note") |>
     gt_theme_mg() |>
     cols_width(
@@ -699,7 +699,7 @@ pim_delirium_tab |>
       rr_ci ~ px(140)
     ) |> 
   tab_footnote("RR: risk ratio; MMSE: Mini-Mental State Examination; CAM: Confusion Assessment Method; DI: Delirium Index; DRS: Delirium Rating Scale; DSM: Diagnostic and Statistical Manual of Mental Disorders; NEECHAM: Neelon and Champagne confusion scale; NR: not reported.") |>
-    tab_footnote("Gen: general anesthesia; Neur: neuraxial; RR: risk ratio; MMSE: Mini-Mental State Examination; DRS: Delirium Rating Scale; DSM: Diagnostic and Statistical Manual of Mental Disorders; CAM: Confusion Assessment Method; DI: Delirium Index.") |>
+  tab_footnote("Gen: general anesthesia; Neur: neuraxial; RR: risk ratio; MMSE: Mini-Mental State Examination; DRS: Delirium Rating Scale; DSM: Diagnostic and Statistical Manual of Mental Disorders; CAM: Confusion Assessment Method; DI: Delirium Index.") |>
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |>
   tab_footnote("Days over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |>
   tab_footnote("Maximum of reported daily incidence.", locations = cells_body(columns = delitotal_time, rows = delitotal_time == "Note")) |> 
@@ -727,7 +727,7 @@ pim_delirium_tab |>
     group_by(design_f_lab) |>
     gt(id = "one") |>
     # row_group_order(groups = c("Ortho", "GI/Abd", "Headneck", "Spine", "Various")) |>
-    cols_hide(c(year, refid, arm_id, study, design_f_lab, age_table, calc_percent, surg_f)) |>
+    cols_hide(c(year, refid, arm_id, study, drug_f_nopim, design_f_lab, age_table, calc_percent, surg_f)) |>
     cols_label(
       study_l = "Study",
       arm_n = " N",
@@ -749,6 +749,7 @@ pim_delirium_tab |>
     tab_style(style = cell_text(align = "right"),  locations = cells_body(columns = c(n_percent))) |>
     tab_style(style = cell_text(align = "right"),  locations = cells_column_labels(columns = c(n_percent))) |>
     tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:n_percent), rows = str_detect(arm, "Neur|Block"))) |>
+    tab_style(style = list(cell_text(color = "red")), locations = cells_body(columns = c(arm_n:rr_ci), rows = drug_f_nopim != "No PIM")) |>  
     sub_missing(columns = delitotal_time, missing_text = "Note") |>
     gt_theme_mg() |>
     cols_width(
@@ -771,8 +772,6 @@ pim_delirium_tab |>
   tab_footnote("Not included in pooled results owing to size.", locations = cells_body(columns = study_l, rows = str_detect(study_l, "Neuman 2016"))) 
 
 ```
-
-
 
 ## References {#references}
 
