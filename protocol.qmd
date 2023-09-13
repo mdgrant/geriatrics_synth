@@ -28,27 +28,15 @@ Between 2019 and 2060, the number of US adults aged 65 years or older will likel
 
 ## Systematic Review Questions
 
-### Preoperative care
-
 1.  Among older patients anticipating surgery and anesthesia, does expanded preoperative evaluation (e.g., for frailty, cognitive impairment, functional status, or psychosocial issues) lead to improved postoperative outcomes?
 
-2.  Among older patients anticipating surgery and anesthesia, do interventions targeted at improving physical function, cognition, and nutritional status before surgery ("prehabilitation") improve postoperative outcomes?
+2.  Among older patients undergoing surgery, does regional anesthesia as the primary anesthetic technique improve postoperative outcomes compared with general anesthesia?
 
-### Intraoperative care
+3.  Among older patients undergoing surgery with general anesthesia, does the use of intravenous agents for maintenance of anesthesia improve postoperative outcomes compared with inhaled agents?
 
-3.  Among older patients undergoing surgery, does regional anesthesia as the primary anesthetic technique improve postoperative outcomes compared with general anesthesia?
+4.  Among older patients undergoing surgery and anesthesia, do commonly used potentially inappropriate medications administered during the perioperative period increase the risk of postoperative delirium or other adverse outcomes?
 
-4.  Among older patients undergoing surgery with general anesthesia, does the use of intravenous agents for maintenance of anesthesia improve postoperative outcomes compared with inhaled agents?
-
-5.  Among older patients undergoing surgery and anesthesia, do commonly used potentially inappropriate medications administered during the perioperative period increase the risk of postoperative delirium or other adverse outcomes?
-
-6.  Among older patients undergoing surgery and anesthesia, do dexmedetomidine, ketamine, ramelteon, or melatonin administered during the perioperative period decrease the risk of postoperative delirium or other adverse cognitive outcomes?
-
-### Postoperative care
-
-7.  Among older patients undergoing surgery, do postoperative lower limb regional anesthetic techniques, such as continuous epidural anesthesia improve postoperative outcomes?
-
-8.  Does screening older patients for postoperative delirium in the post anesthesia care unit improve postoperative outcomes?
+5.  Among older patients undergoing surgery and anesthesia, do dexmedetomidine, ketamine, ramelteon, or melatonin administered during the perioperative period decrease the risk of postoperative delirium or other adverse cognitive outcomes?
 
 ## PICOTS
 
