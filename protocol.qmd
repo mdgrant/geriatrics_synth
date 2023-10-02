@@ -306,11 +306,16 @@ Relative effects will be pooled as risk ratios for clinical interpretability exc
 
 ### Grading the Strength of Evidence
 
-The strength (certainty) of evidence for important outcomes will be appraised using either GRADE^17^ and ACC/AHA^18^ frameworks.
+The strength (certainty) of evidence for important outcomes will be appraised using either GRADE^17^ and ACCF/AHA^18^ frameworks.
 
+### Registration
+
+TBD
+
+### Modification
 
 ::: {.callout-note collapse="true"}
-# Modification History
+# History
 
 +----------------+--------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------+
 | Date           | Section            | Modification                                                                                                                                             |
