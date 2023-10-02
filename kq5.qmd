@@ -1004,7 +1004,7 @@ delirium_tab |>
 # RESUME study aim
 aim_dat <- study_char_dat |>
   # remove duplicate Memtsoudis 2019
-  filter(!refid %in% c(17130:17139)) |> 
+  filter(!refid %in% c(17130:17139, 17141)) |> 
   mutate(
     study_l = str_replace(study_l, "Memtsoudis 2019a", "Memtsoudis 2019"), 
     study = str_replace(study, "Memtsoudis 2019a", "Memtsoudis 2019")) |> 
@@ -1019,6 +1019,8 @@ aim_dat <- study_char_dat |>
 
 # writexl::write_xlsx(aim_dat, "/Users/mgrant/Desktop/aim_dat.xlsx")
 ```
+
+### Delirium Prevention
 
 <font size = 4> `r table_ref()` Studies examining delirium prevention. </font>
 
@@ -1046,18 +1048,20 @@ aim_dat |>
   cols_align(align = "right", columns = n_enroll) |>
   fmt_markdown(columns = everything()) |>
   fmt_number(columns = c(n_enroll), use_seps = TRUE, drop_trailing_zeros = TRUE) |>
-  tab_style(style = cell_text(size = "12px"), locations = cells_body(columns = everything())) |> 
+  tab_style(style = cell_text(size = "13px"), locations = cells_body(columns = everything())) |> 
   fmt_markdown(columns = c(study_l, prim_aim_desc)) |> 
   tab_style(style = "vertical-align:top", locations = cells_body(columns = everything())) |> 
   gt_theme_mg() |> 
     opt_css(
       css = "
       p {
-      line-height: 1.5;
+      line-height: 1.4;
       }
     "
     )
 ```
+
+### Other Studies
 
 <font size = 4> `r table_ref()` Studies with aim including examining adverse effects of a potentially inappropriate medication outside a delirium prevention trial. </font>
 
@@ -1085,14 +1089,14 @@ aim_dat |>
   cols_align(align = "left", columns = c(study_l, prim_aim_desc)) |>
   cols_align(align = "right", columns = n_enroll) |>
   fmt_number(columns = c(n_enroll), use_seps = TRUE, drop_trailing_zeros = TRUE) |>
-  tab_style(style = cell_text(size = "12px"), locations = cells_body(columns = everything())) |> 
+  tab_style(style = cell_text(size = "13px"), locations = cells_body(columns = everything())) |> 
   fmt_markdown(columns = c(study_l, prim_aim_desc)) |> 
   tab_style(style = "vertical-align:top", locations = cells_body(columns = everything())) |> 
   gt_theme_mg() |> 
     opt_css(
       css = "
       p {
-      line-height: 1.5;
+      line-height: 1.4;
       }
     "
     )
