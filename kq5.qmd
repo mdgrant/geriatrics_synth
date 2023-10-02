@@ -480,55 +480,6 @@ likert_dat <- likert_dat |>
 
 <br/>
 
-## **Study Primary Aim**
-
-```{r study_aim}
-#| eval: false
-# RESUME study aim
-aim_dat <- study_char_dat |>
-  # remove duplicate Memtsoudis 2019
-  filter(!refid %in% c(17130:17139)) |> 
-  mutate(
-    study_l = str_replace(study_l, "Memtsoudis 2019a", "Memtsoudis 2019"), 
-    study = str_replace(study, "Memtsoudis 2019a", "Memtsoudis 2019")) |> 
-  select(refid, starts_with("design"), study, year, n_enroll, n_analyze, starts_with("kq5"), starts_with("prim"), sec_delirium, sec_pocd)
-
-writexl::write_xlsx(aim_dat, "/Users/mgrant/Desktop/aim_dat.xlsx")
-
-
-  # select(refid, study, starts_with("surg")) |> # compile surgeries
-  rename_with(~ gsub("surg_", "", .x, fixed = TRUE)) |>
-  mutate(across(various:other, ~ gsub("surg_", "", .x, fixed = TRUE)),
-    ortho_any = ifelse(if_any(contains("ortho"), ~ !is.na(.x)), "ortho", NA),
-    opth = ifelse(str_detect(other_desc, "[Cc]ataract") | !is.na(opth), "ophtho", opth),
-    gi = ifelse(!is.na(colorectal) | !is.na(gi_other) | !is.na(abdominal), "GI/Abdominal", NA),
-    across(c(various, cardiac, colorectal, gyn, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, thoracic, urol, vasc, other), ~ firstup(.x)),
-  ) |>
-  unite("surgs", various, cardiac, colorectal, gyn, gi, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, thoracic, urol, vasc, other, sep = "|", remove = FALSE, na.rm = TRUE) |>
-  mutate(
-    surgs = ifelse(refid == 7722, "Non-cardiac", surgs) # Duprey 2022
-  ) |>
-  select(-c(various, abdominal, cardiac, colorectal, gyn, gi, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, thoracic, urol, vasc, other, design_other, gi_other, starts_with("ortho"), list, other_desc, starts_with("hip"))) |>
-  select(refid, study_l, design_f_lab, centers, n_enroll, country, non_vh_hdi, surgs) |>
-  left_join(drug_classes_by_study, by = "refid") |>
-  mutate(
-    agents_up = str_replace_all(agents_up, "\\|", "<br/>"),
-    surgs = str_replace_all(surgs, "\\|", "<br/>")
-    # agents_up = ifelse(refid == 7722, md("Anticholinergic|Antipsychotic|<br/> Benzodiazepine|NSAID"), agents_up), # Duprey 2022
-    # agents_up = ifelse(refid == 3727, md("NSAID|Benzodiazepine|<br/> Nonbenzodiazepine hypnotic"), agents_up), # Mangusan 2015
-    # agents_up = ifelse(refid == 246, md("Anticholinergic|H2 Blocker|<br/> Benzodiazepine"), agents_up) # Jeong 2016
-  ) |>
-  relocate(agents_up, .before = surgs) |>
-  arrange(agents_up, design_f_lab, surgs)
-
-included_dat |>
-  # remove duplicate Memtsoudis 2019
-  filter(!refid %in% c(17130:17139)) |> 
-  mutate(study_l = str_replace(study_l, "Memtsoudis 2019a", "Memtsoudis 2019")) |> 
-
-
-```
-
 ## **Drugs by Study**
 
 ```{r, kq5_drugs_tables_function}
@@ -1046,7 +997,106 @@ delirium_tab |>
 
 ```
 
+## **Study Primary Aim**
 
+```{r study_aim}
+#| eval: true
+# RESUME study aim
+aim_dat <- study_char_dat |>
+  # remove duplicate Memtsoudis 2019
+  filter(!refid %in% c(17130:17139)) |> 
+  mutate(
+    study_l = str_replace(study_l, "Memtsoudis 2019a", "Memtsoudis 2019"), 
+    study = str_replace(study, "Memtsoudis 2019a", "Memtsoudis 2019")) |> 
+  select(refid, starts_with("design"), study, study_l, year, n_enroll, n_analyze, starts_with("kq5"), starts_with("prim"), sec_delirium, sec_pocd) |> 
+  arrange(year) |> 
+  rename_with(~ str_replace(.x, "kq5_", "")) |> 
+  left_join(drug_classes_by_study, by = "refid") |> 
+  mutate(
+    agents_up = str_replace_all(agents_up, "\\|", "<br/>"), # easier to see in table
+    agents_up = ifelse(study == "Spence 2020", str_replace(agents_up, "<br/>", ""), agents_up), # both arms short-acting benzo
+  )
+
+# writexl::write_xlsx(aim_dat, "/Users/mgrant/Desktop/aim_dat.xlsx")
+```
+
+<font size = 4> `r table_ref()` Studies examining delirium prevention. </font>
+
+```{r study_aim_delirium_prevent}
+aim_dat |> 
+  filter(del_prevent == "yes") |> 
+  select(year, study_l, n_enroll, agents_up, prim_aim_desc, design_f_lab) |> 
+  arrange(design_f_lab, year) |>
+  group_by(design_f_lab) |>
+  gt(id = "one") |> 
+  cols_hide(c(year)) |>
+  cols_label(
+    study_l = "Study",
+    n_enroll = "N",
+    agents_up = "Drug Class",
+    prim_aim_desc = "Study Aim",
+  ) |> 
+  cols_width(
+    study_l ~ px(125),
+    n_enroll ~ px(75),
+    agents_up ~ px(120),
+    prim_aim_desc ~ px(350),
+  ) |> 
+  cols_align(align = "left", columns = c(study_l, prim_aim_desc)) |>
+  cols_align(align = "right", columns = n_enroll) |>
+  fmt_markdown(columns = everything()) |>
+  fmt_number(columns = c(n_enroll), use_seps = TRUE, drop_trailing_zeros = TRUE) |>
+  tab_style(style = cell_text(size = "12px"), locations = cells_body(columns = everything())) |> 
+  fmt_markdown(columns = c(study_l, prim_aim_desc)) |> 
+  tab_style(style = "vertical-align:top", locations = cells_body(columns = everything())) |> 
+  gt_theme_mg() |> 
+    opt_css(
+      css = "
+      p {
+      line-height: 1.5;
+      }
+    "
+    )
+```
+
+<font size = 4> `r table_ref()` Studies with aim including examining adverse effects of a potentially inappropriate medication outside a delirium prevention trial. </font>
+
+```{r study_aim_pim}
+aim_dat |> 
+  filter(del_prevent != "yes") |> 
+  select(year, study_l, n_enroll, agents_up, prim_aim_desc, design_f_lab) |> 
+  arrange(design_f_lab, year) |>
+  group_by(design_f_lab) |>
+  gt(id = "one") |> 
+  cols_hide(c(year)) |>
+  cols_label(
+    study_l = "Study",
+    n_enroll = "N",
+    agents_up = "Drug Class",
+    prim_aim_desc = "Study Aim",
+  ) |> 
+  cols_width(
+    study_l ~ px(125),
+    n_enroll ~ px(75),
+    agents_up ~ px(120),
+    prim_aim_desc ~ px(350),
+  ) |> 
+  fmt_markdown(columns = everything()) |>
+  cols_align(align = "left", columns = c(study_l, prim_aim_desc)) |>
+  cols_align(align = "right", columns = n_enroll) |>
+  fmt_number(columns = c(n_enroll), use_seps = TRUE, drop_trailing_zeros = TRUE) |>
+  tab_style(style = cell_text(size = "12px"), locations = cells_body(columns = everything())) |> 
+  fmt_markdown(columns = c(study_l, prim_aim_desc)) |> 
+  tab_style(style = "vertical-align:top", locations = cells_body(columns = everything())) |> 
+  gt_theme_mg() |> 
+    opt_css(
+      css = "
+      p {
+      line-height: 1.5;
+      }
+    "
+    )
+```    
 
 
 ## **Risk of Bias**
