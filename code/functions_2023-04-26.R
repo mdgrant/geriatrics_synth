@@ -79,6 +79,12 @@ notna_to_x <- function(variable, symbol = "\U00D7") {
   ifelse(!is.na(variable), symbol, NA)
 }
 
+# replace nonmissing with U00D7
+na_to_x <- function(variable, symbol = "\U00D7") {
+  # ifelse(!is.na(variable), "\U00D7", NA)
+  ifelse(is.na(variable), symbol, NA)
+}
+
 # format to n (percent)
 # n_per_fun(9, 28, 1)
 n_per_fun <- function(events_n, total, n_sig_dig = 1){
@@ -189,6 +195,11 @@ sd_bwgrp_fun <- function(m1, m2, n1, n2, pVal) {
 sd_bwgrp_sdonly_fun <- function(m1, m2, n1, n2, pVal) {
   sd2 <- abs((m2 - m1) / qt(pVal / 2, n1 + n2 - 2)) * sqrt(n2 * n1 / (n2 + n1))
   sd2
+}
+
+# first row by refid only
+first_row <- function(variable){
+  ifelse(row_number() > 1, "", as.character(variable))
 }
 
 ## by_study_xlsx usage -------------------------------- (2023-03-06 22:52) @----

@@ -151,7 +151,16 @@ study_char_dat <- read_csv(path_csv(study_char_file)) |>
   ) |>
   relocate(c(design_f, design_f_lab), .after = design) |>
   select(-ris_code, -level, -study_char_k) |>
-  select(refid, starts_with("design"), study, study_l, year, author:comment, linked_references, labels, title, starts_with("reli"), neuro_threshold) # does not include factorial
+  select(refid, starts_with("design"), study, study_l, year, author:comment, linked_references, labels, title, starts_with("reli"), neuro_threshold, neuro_thresh_ext, starts_with("kq5")) # does not include factorial
+
+## file with refid_ver to check for cloned
+cloned_refid <- read_csv(path_csv(study_char_file)) |>
+  janitor::clean_names() |>
+  filter(refid != 1) |> # refid 1 only for column types
+  select(refid, refid_ver) |>
+  filter(refid != refid_ver) |>
+  filter(refid_ver == 5163) |>
+  select(refid)
 
 ## add surgery classifications ------------------------ (2023-03-04 13:56) @----
 surgs <- study_char_dat |>
@@ -283,11 +292,7 @@ study_arm_dat <- read_csv(path_csv(study_arm_file)) |>
   select(-ris_code, -level, -study_char_k) |>
   rename(author_dist = author, author = author_added) |> # author distiller, author entered
   left_join(study_lettered, by = "refid") |>
-  group_by(refid) |> # add study arm numbering
-  mutate(arm_id = row_number()) |>
-  ungroup() |>
   mutate(
-    arm_id = ifelse(!is.na(arm_id_reorder), arm_id_reorder, arm_id),
     study_l = paste0("[", study, "]", "(", "evidence_tables.html#", refid, ")"),
     study_id = paste0(study, "-", arm_id), # each table row unique for footnote
     refid_c = as.character(refid),
@@ -334,6 +339,18 @@ study_arm_dat <- read_csv(path_csv(study_arm_file)) |>
     sedation_only_tab = ifelse(!is.na(sedation), "✓", NA)
   ) |>
   relocate(anesth_type, volatile_tab:sedation_only_tab, .before = inhalation)
+
+## verify no duplicate arm_id entries; return error message if duplicate arm_id for study
+verify_no_duplicate_arm_id <- study_arm_dat |>
+  select(refid, study, arm_id) |>
+  group_by(refid) |>
+  filter(n_distinct(arm_id) != n()) |>
+  ungroup() |>
+  nrow()
+
+if (verify_no_duplicate_arm_id != 0) {
+  cat(crayon::red("STOP", "DUPLICATE ARM_IDs"))
+}
 
 ## for factorial designs add arm ids
 study_arm_dat <- study_arm_dat |>
@@ -417,11 +434,7 @@ contin_dat <- read_csv(path_csv(contin_out_file)) |>
   select(-ris_code, -level, -study_char_k) |>
   rename(author_dist = author, author = author_added) |> # author distiller, author entered
   left_join(study_lettered, by = "refid") |>
-  group_by(refid) |> # add study arm numbering
-  mutate(arm_id = row_number()) |>
-  ungroup() |>
   mutate(
-    arm_id = ifelse(!is.na(arm_id_reorder), arm_id_reorder, arm_id),
     study_l = paste0("[", study, "]", "(", "evidence_tables.html#", refid, ")"),
     study_id = paste0(study, "-", arm_id)
   ) |>
@@ -446,11 +459,7 @@ dichot_dat <- read_csv(path_csv(dichot_out_file)) |>
   select(-ris_code, -level, -study_char_k) |>
   rename(author_dist = author, author = author_added) |> # author distiller, author entered
   left_join(study_lettered, by = "refid") |>
-  group_by(refid) |> # add study arm numbering
-  mutate(arm_id = row_number()) |>
-  ungroup() |>
   mutate(
-    arm_id = ifelse(!is.na(arm_id_reorder), arm_id_reorder, arm_id),
     study_l = paste0("[", study, "]", "(", "evidence_tables.html#", refid, ")"),
     study_id = paste0(study, "-", arm_id)
   ) |>
@@ -483,11 +492,7 @@ likert_dat <- read_csv(path_csv(likert_out_file)) |>
   select(-ris_code, -level, -study_char_k) |>
   rename(author_dist = author, author = author_added) |> # author distiller, author entered
   left_join(study_lettered, by = "refid") |>
-  group_by(refid) |> # add study arm numbering
-  mutate(arm_id = row_number()) |>
-  ungroup() |>
   mutate(
-    arm_id = ifelse(!is.na(arm_id_reorder), arm_id_reorder, arm_id),
     study_l = paste0("[", study, "]", "(", "evidence_tables.html#", refid, ")"),
     study_id = paste0(study, "-", arm_id)
   ) |>
@@ -730,8 +735,9 @@ study_arm_dat |>
   filter(count != distinct_count)
 
 
-#### save for use ------------------------------------- (2023-03-13 22:53) @----
+## save for use --------------------------------------- (2023-03-13 22:53) @----
 limit_colors <- c("#AAB7B8", "#D5DBDB", "#F4F6F6")
 save.image(paste0("data/geri_data_", str_replace_all(format(Sys.time()), "\\s|:", "-"), ".Rdata"))
 
-
+# rm(list = ls())
+# rmv_yn <- readline("Remove processed file? y, n: ")
