@@ -498,7 +498,7 @@ dex_by_arm |>
   ) |>
   # opt_css(css = "#one .gt_column_spanner {border-bottom-style: hidden;}") |>
   fmt_number(columns = c(postdose), drop_trailing_zeros = TRUE) |>
-  tab_footnote("GI: gastrointestinal; Abd: abdominal (includes hepatic); Ortho: orthopedic; Various: more that one procedure category; Oralmax: oral and maxillofacial; Ophtho; ophthalmologic; Dex: dexmedetomidine; Ulin: ulinastatin; Hal: haloperidol; Mid: midazolam; Mid/Prop: midazolam/propofol; Mid/Seve: midazolam/sevoflurane; Preg: pregabalin; Prop: propofol; Plac; placebo; PS: physical status; Vol: volatile; TIVA: total intravenous anesthesia; Reg: regional; MMSE: Mini-Mental State Exam; Pre: preoperative; Ind: induction; Intr: intraoperative; Post(op): postoperative; —: unspecified.") |>
+  tab_footnote("GI: gastrointestinal; Abd: abdominal (includes hepatic); Ortho: orthopedic; Various: more that one procedure category; Oralmax: oral and maxillofacial; Ophtho; ophthalmologic; Dex: dexmedetomidine; Ulin: ulinastatin; Hal: haloperidol; Mid: midazolam; Mid/Prop: midazolam/propofol; Mid/Seve: midazolam/sevoflurane; Preg: pregabalin; Prop: propofol; Plac; placebo; PS: physical status; Vol: volatile; TIVA: total intravenous anesthesia; Reg: regional; Sed: sedation; MMSE: Mini-Mental State Exam; Pre: preoperative; Ind: induction; Intr: intraoperative; Post(op): postoperative; —: unspecified.") |>
   tab_footnote("Maintenance range if reported in parentheses.", locations = cells_column_labels(columns = maintain_range)) |> 
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |> 
   tab_footnote(md("ASA Physical Status of patients included (proportions can be found here[link to table add])."), locations = cells_column_labels(columns = c(asa_ps_incl))) |> 
@@ -1417,6 +1417,7 @@ with(subgroup_dat,
 #### <font size = 4> Exploratory component network meta-analysis examining timing of dexmedetomidine administration. </font>
 
 ```{r component_nma}
+# RESUME: 2023-10-02 ! Length of argument 'seq' different from number of treatments.
 # NOTE: component meta data
 # VARIABLE: postop_only <lgl> from study arm only post-op administration [postop_only_dat]
 # study arm postop only
@@ -1475,6 +1476,7 @@ delirium_dex_comp_meta_dat <- dichot_dat |>
 ```
 
 ```{r delirium_comp_meta, fig.width = 12, fig.height = 9, fig.align = "center"}
+#| eval: true
 library(netmeta)
 component_nma_dat <- delirium_dex_comp_meta_dat 
 
@@ -1549,6 +1551,7 @@ netgraph(net1,
 ```
 
 ```{r component_nma_forest, fig.width = 12, fig.height = 4.55, fig.align = "left"}
+#| eval: false
 meta::forest(net_comb, xlab = "Odds Ratio", sortvar = trts)
 ```
 
@@ -3573,7 +3576,7 @@ forest(adverse_meta,
   prediction = TRUE,
   fs.xlab = 11,
   # pscale = 100,
-  # pooled.events = TRUE,
+  pooled.events = TRUE,
   digits = 2, 
   print.pval.Q = FALSE,
   # xlim = c(-20, 20),
@@ -3691,27 +3694,27 @@ text(4, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .9)
 
 <font size = 4> `r figure_ref()` Risk ratios for other complications --- cardiac, stroke, pulmonary, and renal (dexmedetomidine versus placebo or no interventions; randomized clinical trials). </font>
 
-```{r complication_meta,  fig.width = 14, fig.height = 16.5, fig.align = "left"}
+```{r complication_meta,  fig.width = 14, fig.height = 14, fig.align = "left"}
 adverse_meta <- metabin(
   n_Dex, arm_n_Dex, n_Plac, arm_n_Plac,
   data = adverse_dex_meta_wide_dat,
   studlab = study,
   sm = "RR",
   subgroup = complication,
-  subset = complication != "Bradycardia" & !grepl("\\*", study),
+  subset = !complication %in%  c("Bradycardia", "Hypotension") & !grepl("\\*", study),
   allstudies = FALSE
 )  
 
 forest(adverse_meta,
   allstudies = TRUE,
-  random = TRUE,
+  random = FALSE,
   label.e = "Dex",
   label.c = "Placebo",
   # rightcols = c("effect", "ci"),
   # rightlabs = c("RD ", "(95% CI)   "),
   just.addcols.right = "center",
-  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
-  rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
+  rightcols = c("effect", "ci"), #"D1", "D2", "D3", "D4", "D5", "Overall"),
+  rightlabs = c("RR", "(95% CI)"), # "D1", "D2", "D3", "D4", "D5", "All"),
   # leftlabs = c("Complication &\nStudy", "Events", "TIVA\n Total", "Events", "Inhaled\n Total"),
   # just.addcols.right = "right",
   colgap.right = "4mm",
@@ -3729,13 +3732,13 @@ forest(adverse_meta,
   digits = 2, 
   print.pval.Q = FALSE,
   # xlim = c(-20, 20),
-  xlab = "Favors: Dexmedetomidine                     Plac/None",
+  xlab = "Favors: Dexmedetomidine                            Plac/None            ",
   addrows.below.overall = 4,
   # text.addline1 = "*Non randomized trial."
 )
 ```
 
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> Similar arms combined in Li 2021b and Zhao 2020. </foot_mg>
+<foot_mg> RR: risk ratio. <br/> Similar arms combined for Zhao 2020. </foot_mg>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()` Summary risk of bias for studies reporting complications (dexmedetomidine versus placebo or no intervention). </font>
