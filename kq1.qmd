@@ -507,9 +507,9 @@ expanded_combined |>
   tab_spanner(label = "General", columns = c(gen_comp:gen_other), level = 1) |>
   tab_spanner(label = "Targeted", columns = c(kq1_frail:kq1_psych), level = 1) |>
   tab_spanner(label = "Assessments", columns = c(gen_comp:kq1_psych), level = 2) |>
-  tab_spanner(label = "Staff", columns = c(staff_comorbid:pacu_screen), level = 1) |>
   tab_spanner(label = "Patient Education", columns = c(pt_nutr:pt_other), level = 1) |>
-  tab_spanner(label = "Interventions", columns = c(pt_nutr:pacu_screen), level = 2) |>
+  tab_spanner(label = "Staff", columns = c(staff_comorbid:pacu_screen), level = 1) |>
+  tab_spanner(label = "Interventions", columns = c(pt_nutr:pacu_screen), level = 2) |>  #pacu_screen
   # tab_style(style = cell_text(align = "right"), locations = cells_column_labels(columns = c(kq1_eras:pacu_screen))) |> 
   tab_style(style = cell_text(align = "right"), locations = cells_body(columns = c(kq1_psych:pacu_screen))) |> 
   tab_style(style = list(cell_text(color = color_1)), locations = cells_column_labels(columns = c(gen_comp:gen_other))) |> 
@@ -528,7 +528,8 @@ expanded_combined |>
   tab_footnote(md("ERAS: enhanced recovery after surgery; CGA: comprehensive geriatric assessment; GI: gastrointestinal; Abd: abdominal; Suppl: supplement;  \U25CF expanded evaluation only; \UFFED in expanded and standard evaluation arms; \U25E6 in standard evaluation arms only")) |> 
   tab_footnote("Selective comprehensive geriatric assessment in standard arm.", locations = cells_body(columns = c("gen_comp"), rows = study == "Giannotti 2022")) |> 
   # tab_footnote("When a comprehensive geriatric assessment was conducted, all components were presumed addressed. ", locations = cells_column_spanners(spanners = c("Assessments"))) |> 
-  tab_footnote("When a comprehensive geriatric assessment was conducted, all components were presumed addressed. ", locations = cells_column_labels(columns = "gen_comp"))
+  tab_footnote("Note if a comprehensive geriatric assessment was conducted, all components were presumed addressed.")
+  # tab_footnote("When a comprehensive geriatric assessment (CGA) was conducted, all components were presumed included. ", locations = cells_column_labels(columns = "gen_comp"))
   
 ```
 
