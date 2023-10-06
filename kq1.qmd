@@ -28,21 +28,21 @@ source("code/load_data.R")
 conflicts_prefer(dplyr::lag)
 
 # delete van der Vlies 2020 882 NRC
-kq1_refid <- kq1_refid[!kq1_refid %in% c(3815, 5094, 3547, 882)]
+# kq1_refid <- kq1_refid[!kq1_refid %in% c(3815, 5094, 3547, 882)]
 # kq8_refid <- kq8_refid[!kq8_refid %in% c(3815, 5094, 3547, 882)]
 # kq8_refid %in% kq1_refid
-
 # to include only studies w/preop per sd
-diener <- sort(c("Hempenius 2013", "Hempenius 2016", "Partridge 2017", "Ommundsen 2018", "Olsson 2014", "Richter 2005", "Romano 2021", "Bakker 2014", "Ernst 2014", "Hall 2017", "Lester 2022", "McDonald 2018", "Giannotti 2022", "Indrakusuma 2015", "Souwer 2018", "Braude 2017", "Adogwa 2017", "Tarazona-Santabalbina 2019"))
-
+# diener <- sort(c("Hempenius 2013", "Hempenius 2016", "Partridge 2017", "Ommundsen 2018", "Olsson 2014", "Richter 2005", "Romano 2021", "Bakker 2014", "Ernst 2014", "Hall 2017", "Lester 2022", "McDonald 2018", "Giannotti 2022", "Indrakusuma 2015", "Souwer 2018", "Braude 2017", "Adogwa 2017", "Tarazona-Santabalbina 2019"))
 # to inlcude per ta
-ta <- sort(c("Vidan 2005", "Watne 2014", "Bjorkelund 2010", "Vochteloo 2011", "Prestmo 2015", "Zhu 2022", "Marcantonio 2001", "Olsson 2014", "Romano 2021"))
+# ta <- sort(c("Vidan 2005", "Watne 2014", "Bjorkelund 2010", "Vochteloo 2011", "Prestmo 2015", "Zhu 2022", "Marcantonio 2001", "Olsson 2014", "Romano 2021"))
 
-kq1_refid <- study_char_dat |> filter(study %in% c(ta, diener, "Jones 2021")) |> select(refid, study) |> arrange(refid) |> pull(refid) 
-rm(diener, ta)
+# kq1_refid <- study_char_dat |> filter(study %in% c(ta, diener, "Jones 2021")) |> select(refid, study) |> arrange(refid) |> pull(refid) 
+# rm(diener, ta)
 
 kq1_refid_hip <- kq1_refid[kq1_refid %in% ortho_hipfx_refid]
 kq1_refid_nonhip <- kq1_refid[!kq1_refid %in% ortho_hipfx_refid]
+
+temp <- study_char_dat |> filter(refid %in% c(kq1_refid)) |> select(refid, study)
 
 # note working file not renamed
 study_char_dat <- study_char_dat |>
@@ -181,7 +181,7 @@ study_char_dat |>
         columns = design_f_lab
       )
     )  |> 
-  tab_footnote("Studies with multiple publications counted only once (applied to 2 studies with 2 publications).")
+  tab_footnote("Studies with multiple publications counted only once (applies to 2 studies with 2 publications).")
 ```
 
 ### Design, centers, country, and surgery
@@ -249,9 +249,11 @@ study_char_dat |>
     label = list(country ~ "Country")
   ) |>
   modify_header(label ~ "") |> 
+  modify_column_alignment(columns = everything(), align = "left") |> 
   as_gt(id = "one") |> 
   gt_theme_mg() |> 
-  tab_footnote("Hempenius 2013 and 2016 considered a single study.",  locations = cells_body(columns = c("stat_0"), rows = label == "Netherlands"))
+  # tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c("label"))) |>
+  tab_footnote("Studies with more that one publications considered once.",  locations = cells_body(columns = c("stat_0"), rows = label %in% c("Netherlands", "USA"))) 
 
 ```
 
@@ -271,10 +273,9 @@ studychar_tab <- study_arm_dat |>
     arm = replace_na(arm, "Scrn"),
     surg_design = paste0(surgs, " — ", design_f_lab),
     surg_design = fct(surg_design,
-      levels = c("HipFx — Randomized Clinical Trial", "HipFx — Before-After/Time Series", "Other Ortho — Before-After/Time Series", "Cardiac — Randomized Clinical Trial", "Cardiac — Before-After/Time Series", "GI/Abd — Randomized Clinical Trial", "GI/Abd — Before-After/Time Series", "GI/Abd — Retrospective Cohort", "Ortho — Randomized Clinical Trial", "Ortho — Before-After/Time Series", "Various — Randomized Clinical Trial", "Various — Nonrandomized Trial", "Various — Before-After/Time Series", "Various — Prospective Cohort", "Neuro — Before-After/Time Series", "Urol — Before-After/Time Series")
+      levels = c("HipFx — Randomized Clinical Trial", "HipFx — Before-After/Time Series", "HipFx — Nonrandomized Trial", "Other Ortho — Before-After/Time Series", "GI/Abd — Randomized Clinical Trial", "GI/Abd — Before-After/Time Series", "GI/Abd — Retrospective Cohort", "Neuro — Before-After/Time Series", "Urol — Before-After/Time Series", "Various — Randomized Clinical Trial", "Various — Before-After/Time Series", "Various — Prospective Cohort")
     ),
     surg_design = fct_drop(surg_design)
-    # surg_design = fct_recode(surg_design, "Cardiac — Fully Paired" = "Cardiac — Other")
   ) |>
   arrange(surg_design, year, study, arm_id)
 
@@ -685,7 +686,7 @@ delirium_tab |>
       rr_ci ~ px(140)
     ) |> 
   tab_style(style = list(cell_text(color = color_2)),   locations = cells_body(columns = c(arm_n:n_percent), rows = str_detect(arm, "Exp"))) |>
-  tab_footnote("RR: risk ratio; MMSE: Mini-Mental State Examination; CAM: Confusion Assessment Method; DI: Delirium Index; DRS: Delirium Rating Scale; DOS: delirium observation screening; DSM: Diagnostic and Statistical Manual of Mental Disorders; NR: not reported.") |>
+  tab_footnote("RR: risk ratio; MMSE: Mini-Mental State Examination; CAM: Confusion Assessment Method; DI: Delirium Index; DRS: Delirium Rating Scale; DOS: delirium observation screening; DSM: Diagnostic and Statistical Manual of Mental Disorders; NR: not reported; HipFx: hip fracture; GI/Abd: gastrointestinal or abdominal.") |>
   tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |>
   tab_footnote("Days over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |> 
   tab_footnote("N = 611 for the 3 years of standard evaluation (2005-2007); outcomes reported by year separately.", locations = cells_body(columns = c(arm_n), rows = study == "Vochteloo 2011" & arm_id %in% c(1:3)), placement = "right") |> 
@@ -825,7 +826,7 @@ forest(delirium_nrsi_meta,
 
 <foot_mg> RR: risk ratio; D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable.<br/> Sensitivity analysis including Vochteloo 2011 assuming effectively equal numbers of participants studied each year, obtained RR 0.68 (95% CI, 0.50--0.92; *I* ^2^ = 64%). </foot_mg>
 
-### *Exploratory Comp NMA*
+### *Exploratory NMA*
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> Exploratory component network meta-analysis including all designs. Assumes that a comprehensive geriatric assessment incorporates all components. </font>
@@ -851,7 +852,7 @@ component_nma_dat <- delirium_meta_dat |>
     across(comp:psych, ~ str_replace(.x, "_std", "")),
     across(comp:psych, ~ str_replace(.x, "_p", "p")),
   ) |>
-  unite(arm, comp:psych, sep = " + ", na.rm = TRUE) |>
+  unite(arm, comp:psych, sep = "+", na.rm = TRUE) |>
   mutate(arm = ifelse(arm == "", "std", arm)) |>
   filter(study != "Wang 2020c")
 
@@ -860,7 +861,6 @@ component_nma_rct_dat <- component_nma_dat |>
 
 trts <- unique(component_nma_dat$arm)
 # trts <- unique(component_nma_rct_dat$arm)
-
 # tabyl(component_nma_dat$arm)
 
 pairwise_comp_dat <- pairwise(
@@ -1351,7 +1351,7 @@ adl_long_dat |>
 
 <font size = 4> `r figure_ref()` Pooled results for physical functional status for expanded versus standard preoperative evaluation (higher is better; randomized clinical trials). </font>
 
-```{r exp_std_rct_forest, fig.width = 14, fig.height = 5.5, fig.align = "left", warning = TRUE}
+```{r exp_std_rct_forest, fig.width = 14, fig.height = 6, fig.align = "left", warning = TRUE}
 adl_meta_lte180_dat <- adl_meta_dat |> 
   filter(time < 365)
 
@@ -1413,7 +1413,7 @@ forest(adl_rct_meta,
 
 <font size = 4> `r figure_ref()` Pooled results for physical functional status for expanded versus standard preoperative evaluation (higher is better; before-after studies). </font>
 
-```{r exp_std_nrsi_forest, fig.width = 14, fig.height = 5, fig.align = "left", warning = TRUE}
+```{r exp_std_nrsi_forest, fig.width = 14, fig.height = 6.2, fig.align = "left", warning = TRUE}
 forest(adl_nrsi_meta,
   common = TRUE,
   label.e = "Expanded",
@@ -1542,22 +1542,22 @@ adverse_events_dat <- adverse_events_dat |>
       study == "Lau 2013" & arm_id == 3 ~ bar_prop(1.1, "#A93226"),
       study == "Lau 2013" & arm_id == 4 ~ bar_prop(0.6, "#A93226"),
       study == "Lau 2013" & arm_id == 5 ~ bar_prop(0.8, "#A93226"),
-      str_detect(arm, "Exp") ~ bar_prop(calc_per, "#969696"),
-      .default = bar_prop(calc_per, "#A93226"))) |>
+      str_detect(arm, "Exp") ~ bar_prop(calc_per, "#A93226"),
+      .default = bar_prop(calc_per, "#969696"))) |>
   select(refid, year, arm_id, study, study_l, study_compl, arm_n, arm, n, age_table, surgs_single, n_per, bar, rd_ci, rr_ci, complication, design_f_lab, effect:high, detail_cardiac)
 
 # for summary table
-# temp <- adverse_events_dat |>
+# adverse_events_dat |>
 #   group_by(refid, arm_id) |>
-#   filter(!str_detect(design_f_lab, "Rand")) |>
+#   filter(!str_detect(design_f_lab, "NRSI")) |>
 #   slice(1) |>
 #   ungroup() |>
+#   group_by(design_f_lab) |>
 #   summarise(total = sum(arm_n, na.rm = TRUE))
-# 
-# length(unique(temp$refid))
-# 
+
+# 2023-10-06 12:27
 # 4 RCTs 1084
-# 7 NRSI 2005
+# 7 NRSI 3089
 
 ```
 
@@ -1767,8 +1767,6 @@ adverse_meta <- complication_meta_fun("MI", randomized = "Nonrandomized", use_ha
 complication_forest_nrsi_fun(adverse_meta, use_predictive = TRUE)
 ```
 
-<foot_mg> RR: risk ratio; MI: myocardial infarction; D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. </foot_mg>
-
 #### Pulmonary
 
 <font size = 4> `r figure_ref()` Risk ratio for complications reported as "pulmonary" (expanded versus standard preoperative evaluation; randomized clinical trials). </font>
@@ -1777,8 +1775,6 @@ complication_forest_nrsi_fun(adverse_meta, use_predictive = TRUE)
 adverse_meta <- complication_meta_fun("Pulmonary", randomized = "Randomized", use_hakn = FALSE, predictive = FALSE)
 complication_forest_rct_fun(adverse_meta, use_predictive = FALSE)
 ```
-
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . </foot_mg>
 
 <br/>
 
@@ -1791,8 +1787,6 @@ adverse_meta <- complication_meta_fun("Pneumonia", randomized = "Randomized", us
 complication_forest_rct_fun(adverse_meta, use_predictive = FALSE)
 ```
 
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . </foot_mg>
-
 <br/>
 
 <font size = 4> `r figure_ref()` Risk ratio for pneumonia (expanded versus standard preoperative evaluation; nonrandomized designs). </font>
@@ -1801,8 +1795,6 @@ complication_forest_rct_fun(adverse_meta, use_predictive = FALSE)
 adverse_meta <- complication_meta_fun("Pneumonia", randomized = "Nonrandomized", use_hakn = FALSE, predictive = FALSE)
 complication_forest_nrsi_fun(adverse_meta, use_predictive = TRUE)
 ```
-
-<foot_mg> RR: risk ratio; D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. </foot_mg>
 
 <br/>
 
@@ -1815,12 +1807,9 @@ adverse_meta <- complication_meta_fun("PE", randomized = "Nonrandomized", use_ha
 complication_forest_nrsi_fun(adverse_meta, use_predictive = FALSE)
 ```
 
-<foot_mg> RR: risk ratio; D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. </foot_mg>
-
 <br/>
 
 #### Renal
-
 
 <font size = 4> `r figure_ref()` Risk ratio for renal complications (expanded versus standard preoperative evaluation; randomized clinical trials). </font>
 
@@ -1835,9 +1824,6 @@ complication_forest_rct_fun(adverse_meta, use_predictive = FALSE)
 adverse_meta <- complication_meta_fun("Renal", randomized = "Nonrandomized", use_hakn = FALSE, predictive = FALSE)
 complication_forest_nrsi_fun(adverse_meta, use_predictive = FALSE)
 ```
-
-<foot_mg> RR: risk ratio; D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. </foot_mg>
-
 
 ## **Patient Satisfaction**
 
@@ -2120,7 +2106,7 @@ forest(los_meta,
 
 <font size = 4> `r figure_ref()` Mean difference in lengths of stay (expanded versus standard preoperative evaluation; nonrandomized designs). </font>
 
-```{r los_nrsi_meta, fig.width = 14, fig.height = 8.0, fig.align = "left"}
+```{r los_nrsi_meta, fig.width = 14, fig.height = 8.5, fig.align = "left"}
 los_meta <- metacont(
   n.e = arm_n_Exp, 
   n.c = arm_n_Std,
@@ -2324,8 +2310,6 @@ forest(dc_loc_rct_meta,
 )
 ```
 
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg>
-
 <br/>
 
 <font size = 4> `r figure_ref()` Pooled comparison of discharge location in studies comparing expanded with standard preoperative assessments (nonrandomized designs). </font>
@@ -2377,8 +2361,6 @@ forest(dc_loc_nrsi_meta,
   # text.addline1 = "Without Hartung-Knapp adjustment (95% CI, 0.40–0.92)."
 )
 ```
-
-<foot_mg> RR: risk ratio; D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. </foot_mg> <br/>
 
 ## **Mortality**
 
