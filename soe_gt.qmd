@@ -17,6 +17,7 @@ tables:
 
 ---
 
+
 ```{r preliminaries}
 #| include: false
 ## preliminaries -------------------------------------- (2022-11-16 11:49) @----
@@ -62,9 +63,10 @@ domain_footnote <- function(x) {
 ```{r soe_kq1_data}
 #| include: false
 col_types_soe <- c("numeric", rep("text", 5), "numeric", rep("text", 16))
-soe_kq1_dat <- readxl::read_xlsx("data/soe_2023-05-22_local.xlsx", range = "A1:W23", sheet = "soe_kq1", col_types = col_types_soe) |>
-  filter(outcome != "Atelectasis") |> 
+soe_kq1_dat <- readxl::read_xlsx("data/soe_2023-05-22_local.xlsx", range = "A1:W29", sheet = "soe_kq1", col_types = col_types_soe) |>
   clean_names() |>
+  filter(outcome != "Atelectasis") |> 
+  filter(!n %in% c(1.011, 1.012)) |>
   mutate(
     n_s = paste0(n_studies, " <br/>(", format(n_pts, big.mark = ","), ")"),
     n = paste0(n, outcome),
@@ -142,6 +144,7 @@ soe_summary |>
   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(n_s, grade, acc, out_import, summary))) |>
   tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(n_s, grade, acc, out_import, summary))) |>
   tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(outcome, summary, result_links))) |>
+  tab_style(style = "vertical-align:top", locations = cells_body(columns = everything())) |> 
   gt_theme_mg() |>
   cols_width(
     outcome ~ px(200),
@@ -924,3 +927,6 @@ kq6_domain |>
 </font>
 
 <font size = 3> RCT: randomized controlled trial; NR: nonrandomized; LD: limited data; EO: expert opinion </font>
+
+
+
