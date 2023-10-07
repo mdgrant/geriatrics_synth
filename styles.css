@@ -97,7 +97,6 @@ vertical-text {
 
 @font-face {
     font-family: "GRADE-quality";
-    src: url();
     src: url('https://gradepro.org/fonts/GRADE-quality.eot');
     src: url('https://gradepro.org/fonts/GRADE-quality.eot?#iefix')
         format('embedded-opentype'),
@@ -114,8 +113,6 @@ vertical-text {
       font-size: 10px;
       vertical-align: text-top;
     }
-
-
 
 ```
 
