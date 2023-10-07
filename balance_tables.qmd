@@ -59,11 +59,10 @@ knitr::opts_chunk$set(echo = FALSE)
 source("code/functions_2023-04-26.R")
 
 # grade footnote
-vlow <-  '<span><span class="quality-sign">⨁</span><span class="quality-sign">◯</span><span class="quality-sign">◯</span><span class="quality-sign">◯</span>'
-low <- '<span><span class="quality-sign">⨁</span><span class="quality-sign">⨁</span><span class="quality-sign">◯</span><span class="quality-sign">◯</span>'
-mod <- '<span><span class="quality-sign">⨁</span><span class="quality-sign">⨁</span><span class="quality-sign">⨁</span><span class="quality-sign">◯</span>'
-high <- '<span><span class="quality-sign">⨁</span><span class="quality-sign">⨁</span><span class="quality-sign">⨁</span><span class="quality-sign">⨁</span>'
-low_very <- paste0(low, "<br/>", vlow)
+high  <- '<span><span class="quality-sign">⨁⨁⨁⨁</span>'
+mod   <- '<span><span class="quality-sign">⨁⨁⨁◯</span>'
+low   <- '<span><span class="quality-sign">⨁⨁◯◯</span>'
+vlow  <- '<span><span class="quality-sign">⨁◯◯◯</span>'
 grade_foot <- paste0("Very low: ", vlow, "; Low: ", low, "; Moderate: ", mod, "; High: ", high, ".")
 ```
 
@@ -73,7 +72,7 @@ grade_foot <- paste0("Very low: ", vlow, "; Low: ", low, "; Moderate: ", mod, ";
 
 ```{r exp_preop_balance}
 #| warning: false
-expanded_dat <- readxl::read_excel("data/balance_tables_2023-05-23_mac_mg.xlsx", sheet = "ExpandedPreop", range = "B4:M19") |>
+expanded_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "ExpandedPreop", range = "B4:M19") |>
   remove_empty(which = "cols") |>
   clean_names() |>
   rename(est = estimate_95_percent_ci) |>
@@ -134,7 +133,7 @@ expanded_dat |>
   # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c(est))) |>
   # tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(est))) |>
   tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(grade, measure, rct, nrsi))) |>
-  tab_footnote(md("RCT: randomized clinical trial; NRSI: nonrandomized studies of interventions;  [GRADE: Grades of Recommendation, Assessment, Development, and Evaluation](soe_gt.html#grade); RR: risk ratio; MD: mean difference.")) |>
+  tab_footnote(md("RCT: randomized clinical trial; NRSI: nonrandomized studies of interventions (includes before-after designs);  [GRADE: Grades of Recommendation, Assessment, Development, and Evaluation](soe_gt.html#grade); RR: risk ratio; MD: mean difference.")) |>
   # tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |> 
   tab_footnote("Cardiovascular, pulmonary, and acute kidney injury.", locations = cells_body(columns = c(outcome), rows = outcome == "Complications")) |> 
   tab_footnote("Studies reported 0 and 2 events.", locations = cells_body(columns = c(est), rows = outcome == "Cardiac arrest"), placement = "right") 
@@ -148,7 +147,7 @@ expanded_dat |>
 
 ```{r exp_preop_complications}
 #| warning: false
-expanded_dat <- readxl::read_excel("data/balance_tables_2023-05-23_mac_mg.xlsx", sheet = "ExpandedPreop", range = "B29:M40") |>
+expanded_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "ExpandedPreop", range = "B29:M40") |>
   remove_empty(which = "cols") |>
   clean_names() |>
   rename(est = estimate_95_percent_ci) |>
@@ -227,7 +226,7 @@ expanded_dat |>
 
 ```{r reg_gen_balance}
 #| warning: false
-reg_gen_dat <- readxl::read_excel("data/balance_tables_2023-05-23_mac_mg.xlsx", sheet = "RegionalGeneral", range = "B4:L12") |>
+reg_gen_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "RegionalGeneral", range = "B4:L12") |>
   remove_empty(which = "cols") |>
   clean_names() |>
   rename(est = estimate_95_percent_ci) |>
@@ -301,7 +300,7 @@ reg_gen_dat |>
 
 ```{r reg_gen_complications}
 #| warning: false
-reg_gen_dat <- readxl::read_excel("data/balance_tables_2023-05-23_mac_mg.xlsx", sheet = "RegionalGeneral", range = "B24:L34") |>
+reg_gen_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "RegionalGeneral", range = "B24:L34") |>
   remove_empty(which = "cols") |>
   clean_names() |>
   rename(est = estimate_95_percent_ci) |>
@@ -378,7 +377,7 @@ reg_gen_dat |>
 
 ```{r}
 #| warning: false
-tiva_inhaled_dat <- readxl::read_excel("data/balance_tables_2023-05-23_mac_mg.xlsx", sheet = "TIVAInhaled", range = "B4:M16") |>
+tiva_inhaled_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "TIVAInhaled", range = "B4:M16") |>
   remove_empty(which = "cols") |>
   clean_names() |>
   rename(est = estimate_95_percent_ci) |>
@@ -455,7 +454,7 @@ tiva_inhaled_dat |>
 
 ```{r tiva_inhaled_preop_complications}
 #| warning: false
-tiva_inhaled_dat <- readxl::read_excel("data/balance_tables_2023-05-23_mac_mg.xlsx", sheet = "TIVAInhaled", range = "B29:M37") |>
+tiva_inhaled_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "TIVAInhaled", range = "B29:M37") |>
   remove_empty(which = "cols") |>
   clean_names() |>
   rename(est = estimate_95_percent_ci) |>
@@ -533,7 +532,7 @@ tiva_inhaled_dat |>
 
 ```{r}
 #| warning: false
-dex_plac_dat <- readxl::read_excel("data/balance_tables_2023-05-23_mac_mg.xlsx", sheet = "DeliriumProph", range = "B4:M10") |>
+dex_plac_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "DeliriumProph", range = "B4:M10") |>
   remove_empty(which = "cols") |>
   clean_names() |>
   rename(est = estimate_95_percent_ci) |>
@@ -610,7 +609,7 @@ dex_plac_dat |>
 
 ```{r dex_plaaled_preop_complications}
 #| warning: false
-dex_plac_dat <- readxl::read_excel("data/balance_tables_2023-05-23_mac_mg.xlsx", sheet = "DeliriumProph", range = "B18:M29") |>
+dex_plac_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "DeliriumProph", range = "B18:M29") |>
   remove_empty(which = "cols") |>
   clean_names() |>
   rename(est = estimate_95_percent_ci) |>
@@ -687,7 +686,7 @@ dex_plac_dat |>
 
 ```{r}
 #| warning: false
-ket_plac_dat <- readxl::read_excel("data/balance_tables_2023-05-23_mac_mg.xlsx", sheet = "DeliriumProph", range = "B41:M49") |>
+ket_plac_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "DeliriumProph", range = "B41:M49") |>
   remove_empty(which = "cols") |>
   clean_names() |>
   rename(est = estimate_95_percent_ci) |>
@@ -763,7 +762,7 @@ ket_plac_dat |>
 
 ```{r}
 #| warning: false
-mel_ram_plac_dat <- readxl::read_excel("data/balance_tables_2023-05-23_mac_mg.xlsx", sheet = "DeliriumProph", range = "B56:M62") |>
+mel_ram_plac_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "DeliriumProph", range = "B56:M62") |>
   remove_empty(which = "cols") |>
   clean_names() |>
   rename(est = estimate_95_percent_ci) |>
@@ -839,7 +838,7 @@ mel_ram_plac_dat |>
 
 ```{r mel_ram_plaaled_preop_complications}
 #| warning: false
-mel_ram_plac_dat <- readxl::read_excel("data/balance_tables_2023-05-23_mac_mg.xlsx", sheet = "DeliriumProph", range = "B68:M79") |>
+mel_ram_plac_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "DeliriumProph", range = "B68:M79") |>
   remove_empty(which = "cols") |>
   clean_names() |>
   rename(est = estimate_95_percent_ci) |>

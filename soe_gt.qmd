@@ -35,10 +35,10 @@ knitr::opts_chunk$set(echo = FALSE)
 source("code/functions_2023-04-26.R")
 
 # grade footnote
-vlow <-  '<span><span class="quality-sign">⨁</span><span class="quality-sign">◯</span><span class="quality-sign">◯</span><span class="quality-sign">◯</span>'
-low <- '<span><span class="quality-sign">⨁</span><span class="quality-sign">⨁</span><span class="quality-sign">◯</span><span class="quality-sign">◯</span>'
-mod <- '<span><span class="quality-sign">⨁</span><span class="quality-sign">⨁</span><span class="quality-sign">⨁</span><span class="quality-sign">◯</span>'
-high <- '<span><span class="quality-sign">⨁</span><span class="quality-sign">⨁</span><span class="quality-sign">⨁</span><span class="quality-sign">⨁</span>'
+high  <- '<span><span class="quality-sign">⨁⨁⨁⨁</span>'
+mod   <- '<span><span class="quality-sign">⨁⨁⨁◯</span>'
+low   <- '<span><span class="quality-sign">⨁⨁◯◯</span>'
+vlow  <- '<span><span class="quality-sign">⨁◯◯◯</span>'
 grade_foot <- paste0("Very low: ", vlow, "; Low: ", low, "; Moderate: ", mod, "; High: ", high, ".")
 
 soe_footnote <- function(x) {
@@ -68,12 +68,12 @@ soe_kq1_dat <- readxl::read_xlsx("data/soe_2023-05-22_local.xlsx", range = "A1:W
   filter(outcome != "Atelectasis") |> 
   filter(!n %in% c(1.011, 1.012)) |>
   mutate(
-    n_s = paste0(n_studies, " <br/>(", format(n_pts, big.mark = ","), ")"),
+    n_s = case_when(
+      !is.na(n_studies) & !is.na(n_pts) ~ paste0(n_studies, " <br/>(", format(n_pts, big.mark = ","), ")"),
+      !is.na(n_studies) & is.na(n_pts) ~ n_studies, 
+      is.na(n_studies) & is.na(n_pts) ~ "—"), 
     n = paste0(n, outcome),
-    n_s = str_remove_all(n_s, "\\s"),
-    n_s = ifelse(str_detect(n_s, "NA"), "—", n_s),
-    # outcome = tools::toTitleCase(outcome) |>
-    # outcome = str_to_sentence(outcome),
+    n_s = replace_na(n_s, "—"),
     out_import = firstup(out_import),
     out_import = case_when(
       out_import == "Limited" ~ "+",
@@ -114,13 +114,11 @@ domain_summary <- soe_kq1_dat |>
 <font size = 4> `r table_ref()` Strength of evidence summaries — expanded versus standard preoperative evaluation. </font>
 
 ```{r kq1_soe_gt}
-#| include: true
 #| echo: false
 
 soe_summary |>
   mutate(across(grade:result_links, ~ replace_na(., "")),
          design = ifelse(design %in% c("Before/after", "Non-randomized"), "NRSI", design),
-         # outcome = str_replace(outcome, "Cognitive dysfunction", "Cognitive dysfunction<br/>"),
          outcome = ifelse(outcome == lag(outcome) & row_number() > 1, "", outcome)
          ) |> 
   # group_by(compare_group) |> 
@@ -249,13 +247,13 @@ kq1_domain |>
   cols_width(
     outcome ~ px(200),
     # n_s ~ px(85),
-    design ~ px(65),
-    space ~ px(50),
-    rob ~ px(120),
-    consist ~ px(120),
-    direct ~ px(120),
-    prec ~ px(120),
-    other ~ px(120)
+    design ~ px(100),
+    space ~ px(20),
+    rob ~ px(110),
+    consist ~ px(110),
+    direct ~ px(110),
+    prec ~ px(110),
+    other ~ px(110)
   ) |> 
   domain_footnote() |> 
   tab_footnote(md(domain_footnotes))

@@ -727,13 +727,25 @@ gray_mg <- "#969696"
 
 ## verify all distinct arms --------------------------- (2023-04-25 12:51) @----
 # should be empty tibble
-study_arm_dat |>
+temp <- study_arm_dat |>
   group_by(refid) |>
   mutate(count = n(),
          distinct_count = n_distinct(arm_id)) |>
   select(refid, count, distinct_count) |>
-  filter(count != distinct_count)
+  filter(count != distinct_count) |>
+  ungroup() |>
+  nrow()
 
+# print warning to console in red to console number of rows is not 0
+if (temp != 0) {
+  cat(crayon::red("STOP", "DUPLICATE ARMs"))
+}
+
+if (temp == 0) {
+  cat(crayon::green("NO", "DUPLICATE ARMs"))
+}
+
+rm(temp)
 
 ## save for use --------------------------------------- (2023-03-13 22:53) @----
 limit_colors <- c("#AAB7B8", "#D5DBDB", "#F4F6F6")

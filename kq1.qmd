@@ -689,7 +689,7 @@ delirium_tab |>
   tab_footnote("RR: risk ratio; MMSE: Mini-Mental State Examination; CAM: Confusion Assessment Method; DI: Delirium Index; DRS: Delirium Rating Scale; DOS: delirium observation screening; DSM: Diagnostic and Statistical Manual of Mental Disorders; NR: not reported; HipFx: hip fracture; GI/Abd: gastrointestinal or abdominal.") |>
   tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |>
   tab_footnote("Days over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |> 
-  tab_footnote("N = 611 for the 3 years of standard evaluation (2005-2007); outcomes reported by year separately.", locations = cells_body(columns = c(arm_n), rows = study == "Vochteloo 2011" & arm_id %in% c(1:3)), placement = "right") |> 
+  tab_footnote("N = 611 for the 3 years of standard evaluation (2005-2007); outcomes reported by year separately.", locations = cells_body(columns = c(arm_n), rows = study == "Vochteloo 2011" & arm_id %in% c(1:3)), placement = "left") |> 
   tab_footnote("2005.", locations = cells_body(columns = c(arm), rows = study == "Vochteloo 2011" & arm_id %in% c(1)), placement = "right") |> 
   tab_footnote("2006.", locations = cells_body(columns = c(arm), rows = study == "Vochteloo 2011" & arm_id %in% c(2)), placement = "right") |> 
   tab_footnote("2007.", locations = cells_body(columns = c(arm), rows = study == "Vochteloo 2011" & arm_id %in% c(3)), placement = "right")
@@ -787,6 +787,7 @@ forest(delirium_rct_meta,
   pooled.events = TRUE,
   print.pval.Q = FALSE,
   print.subgroup.name = FALSE,
+  prediction.subgroup = TRUE,
   xlim = c(0.1, 3),
   xlab = "Favors: Expanded                          Standard",
   addrows.below.overall = 4
@@ -2368,14 +2369,14 @@ forest(dc_loc_nrsi_meta,
 #| eval: true
 mortality_dat <- dichot_dat |>
   filter(study != "Lau 2013") |> # no denominators
-  filter(if_any(starts_with("mort"), ~ !is.na(.x))) |> 
-  # filter(arm_n != mort_update_arm_n) |> 
+  filter(if_any(starts_with("mort"), ~ !is.na(.x))) |>
+  # filter(arm_n != mort_update_arm_n) |>
   # select(refid, arm_n, mort_update_arm_n)
   mutate(
     # arm_n use mort_update_arm_n if different
     arm_n = ifelse(!is.na(mort_update_arm_n), mort_update_arm_n, arm_n)
-  ) |> 
-  select(refid, refid_c, arm_id, arm, year, study, study_l, design_f_lab, arm_n, matches("_n|per") & starts_with("mort"), -mort_update_arm_n) |> 
+  ) |>
+  select(refid, refid_c, arm_id, arm, year, study, study_l, design_f_lab, arm_n, matches("_n|per") & starts_with("mort"), -mort_update_arm_n) |>
   pivot_longer(
     cols = starts_with("mort"),
     names_to = "estimand",
@@ -2396,30 +2397,30 @@ mortality_dat <- dichot_dat |>
       str_detect(mort_period, "mort30") ~ "30-day",
       str_detect(mort_period, "mort90") ~ "90-day",
       str_detect(mort_period, "mort1") ~ "1-year"
-    ), 
-    per = per/100
+    ),
+    per = per / 100
   ) |>
   rename(mort_n = n, mort_per_rep = per) |>
   # for Park 2020 and Dai 2021 reported both in-hospital and 30-day
   # mutate(
   #   refid_c = ifelse(study %in% c("Park 2020", "Dai 2021") & mort_period == "30-day", paste0(refid_c, "-30"), refid_c)
-  # ) |> 
-  arrange(refid_c, arm_id) |>
+  # ) |>
+  arrange(mort_period, refid_c, arm_id) |>
   mutate(
     ref_arm_n = arm_n,
     ref_mort_n = mort_n
   ) |>
-  group_by(refid_c) |>
   mutate(
-    ref_arm_n = ifelse(row_number() > 1, NA, ref_arm_n),
-    ref_mort_n = ifelse(row_number() > 1, NA, ref_mort_n)
-  ) |>
-  fill(ref_arm_n, ref_mort_n) |>
+    ref_arm_n = lag(arm_n),
+    ref_mort_n = lag(mort_n)
+  ) |> 
+  group_by(mort_period, refid_c) |>
   mutate(
     ref_arm_n = ifelse(row_number() == 1, NA, ref_arm_n),
     ref_mort_n = ifelse(row_number() == 1, NA, ref_mort_n)
   ) |>
-  ungroup() |> 
+  ungroup() |>
+  arrange(mort_period, refid_c, arm_id) |> 
   left_join(study_char_dat |> select(refid, surgs), by = "refid") |>
   left_join(table_age_mn_med, by = c("refid", "arm_id")) |>
   left_join(asa_combine |> select(refid, arm_id, asa_ps_incl), by = c("refid", "arm_id")) |> 
