@@ -72,7 +72,7 @@ grade_foot <- paste0("Very low: ", vlow, "; Low: ", low, "; Moderate: ", mod, ";
 
 ```{r exp_preop_balance}
 #| warning: false
-expanded_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "ExpandedPreop", range = "B4:M19") |>
+expanded_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "ExpandedPreop", range = "B4:M21") |>
   remove_empty(which = "cols") |>
   clean_names() |>
   rename(est = estimate_95_percent_ci) |>
@@ -133,6 +133,8 @@ expanded_dat |>
   # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c(est))) |>
   # tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(est))) |>
   tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(grade, measure, rct, nrsi))) |>
+  # indent row labels
+  tab_style(style = cell_text(indent = px(15)),       locations = cells_body(rows = outcome %in% c("Hip fracture", "Other", "Any"), columns = outcome)) |>
   tab_footnote(md("RCT: randomized clinical trial; NRSI: nonrandomized studies of interventions (includes before-after designs);  [GRADE: Grades of Recommendation, Assessment, Development, and Evaluation](soe_gt.html#grade); RR: risk ratio; MD: mean difference.")) |>
   # tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |> 
   tab_footnote("Cardiovascular, pulmonary, and acute kidney injury.", locations = cells_body(columns = c(outcome), rows = outcome == "Complications")) |> 
@@ -147,7 +149,7 @@ expanded_dat |>
 
 ```{r exp_preop_complications}
 #| warning: false
-expanded_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "ExpandedPreop", range = "B29:M40") |>
+expanded_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "ExpandedPreop", range = "B31:M42") |>
   remove_empty(which = "cols") |>
   clean_names() |>
   rename(est = estimate_95_percent_ci) |>
