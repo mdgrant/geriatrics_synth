@@ -2253,7 +2253,7 @@ dc_loc_dat |>
 
 <font size = 4> `r figure_ref()` Pooled comparison of discharge location in studies comparing expanded with standard preoperative assessments (randomized clinical trials). </font>
 
-```{r dc_loc_meta, fig.width = 14, fig.height = 4.5, fig.align = "left", warning = TRUE}
+```{r dc_loc_meta, fig.width = 14, fig.height = 5.5, fig.align = "left", warning = TRUE}
 dc_loc_rct_meta_dat <- dc_loc_dat |> 
   filter(str_detect(design_surg, "Randomized")) |> 
   select(refid, study, arm, disch_inst_n, arm_n) |> 
@@ -2308,7 +2308,7 @@ forest(dc_loc_rct_meta,
 
 <font size = 4> `r figure_ref()` Pooled comparison of discharge location in studies comparing expanded with standard preoperative assessments (nonrandomized designs). </font>
 
-```{r dc_loc_nrsi_meta, fig.width = 14, fig.height = 4.5, warning = TRUE}
+```{r dc_loc_nrsi_meta, fig.width = 14, fig.height = 6, warning = TRUE}
 #| fig-align: "left"
 dc_loc_nrsi_meta_dat <- dc_loc_dat |> 
   filter(!str_detect(design_surg, "Randomized")) |> 
@@ -2637,7 +2637,7 @@ pairwise_nrsi_mort_1yr_dat <- pairwise(
 
 <font size = 4> `r figure_ref()` Risk ratio for hospital or 30-day mortality (expanded preoperative evaluation versus standard; randomized clinical trials). </font>
 
-```{r mort_rct_meta, fig.dim = c(14, 4.5), fig.align = "center"}
+```{r mort_rct_meta, fig.width = 14, fig.height = 4.8, fig.align = "center"}
 # ```{r nma_dat, out.width = 50%, out.height = 100%}
 mort_meta_dat <- pairwise_rct_mort_dat |> 
   mutate(year = str_extract(study, "\\d{4}")) |> 
@@ -2691,7 +2691,7 @@ forest(mort_rct_meta,
 
 <font size = 4> `r figure_ref()` Risk ratio for hospital or 30-day mortality (expanded preoperative evaluation versus standard; nonrandomized designs). </font>
 
-```{r mort_nrsi_meta, fig.dim = c(14, 9.5), fig.align = "center"}
+```{r mort_nrsi_meta, fig.width = 14, fig.height = 9.5, fig.align = "center"}
 mort_meta_dat <- pairwise_nrsi_mort_dat |> 
   mutate(year = str_extract(study, "\\d{4}")) |> 
   left_join(robinsi_meta_dat, by = "refid") |> 
@@ -2745,7 +2745,7 @@ forest(mort_nrsi_meta,
 
 <font size = 4> `r figure_ref()` Risk ratio for 1-year mortality (expanded preoperative evaluation versus standard; nonrandomized designs). </font>
 
-```{r mort_nrsi_1yr_meta, fig.dim = c(14, 3.8), fig.align = "center"}
+```{r mort_nrsi_1yr_meta, fig.width = 14, fig.height = 4, fig.align = "center"}
 mort_meta_dat <- pairwise_nrsi_mort_1yr_dat |> 
   mutate(year = str_extract(study, "\\d{4}")) |> 
   left_join(robinsi_meta_dat, by = "refid") |> 
