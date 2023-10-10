@@ -59,10 +59,10 @@ knitr::opts_chunk$set(echo = FALSE)
 source("code/functions_2023-04-26.R")
 
 # grade footnote
-high  <- '<span><span class="quality-sign">⨁⨁⨁⨁</span>'
-mod   <- '<span><span class="quality-sign">⨁⨁⨁◯</span>'
-low   <- '<span><span class="quality-sign">⨁⨁◯◯</span>'
-vlow  <- '<span><span class="quality-sign">⨁◯◯◯</span>'
+high  <- "<span><span class=quality-sign>⨁⨁⨁⨁</span>"
+mod   <- "<span><span class=quality-sign>⨁⨁⨁◯</span>"
+low   <- "<span><span class=quality-sign>⨁⨁◯◯</span>"
+vlow  <- "<span><span class=quality-sign>⨁◯◯◯</span>"
 grade_foot <- paste0("Very low: ", vlow, "; Low: ", low, "; Moderate: ", mod, "; High: ", high, ".")
 
 soe_footnote <- function(x) {
