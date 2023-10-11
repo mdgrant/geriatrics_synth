@@ -59,10 +59,10 @@ knitr::opts_chunk$set(echo = FALSE)
 source("code/functions_2023-04-26.R")
 
 # grade footnote
-high  <- "<span><span class=quality-sign>⨁⨁⨁⨁</span>"
-mod   <- "<span><span class=quality-sign>⨁⨁⨁◯</span>"
-low   <- "<span><span class=quality-sign>⨁⨁◯◯</span>"
-vlow  <- "<span><span class=quality-sign>⨁◯◯◯</span>"
+high  <- '<span><span class="quality-sign">⨁⨁⨁⨁</span>'
+mod   <- '<span><span class="quality-sign">⨁⨁⨁◯</span>'
+low   <- '<span><span class="quality-sign">⨁⨁◯◯</span>'
+vlow  <- '<span><span class="quality-sign">⨁◯◯◯</span>'
 grade_foot <- paste0("Very low: ", vlow, "; Low: ", low, "; Moderate: ", mod, "; High: ", high, ".")
 
 soe_footnote <- function(x) {
@@ -142,10 +142,9 @@ domain_summary <- soe_kq1_dat |>
 
 soe_summary |>
   mutate(across(grade:result_links, ~ replace_na(., "")),
-         design = ifelse(design %in% c("Before/after", "Non-randomized"), "NRSI", design),
-         outcome = ifelse(outcome == lag(outcome) & row_number() > 1, "", outcome)
-         ) |> 
-  # group_by(compare_group) |> 
+    design = ifelse(design %in% c("Before/after", "Non-randomized"), "NRSI", design),
+    outcome = ifelse(outcome == lag(outcome) & row_number() > 1, "", outcome)
+  ) |>
   gt(id = "one") |>
   cols_hide(c(n, comparison, compare_group)) |>
   cols_label(
@@ -159,14 +158,10 @@ soe_summary |>
     result_links = "Result Detail"
   ) |>
   fmt_markdown(columns = c(outcome, n_s, grade, summary, result_links)) |>
-  # tab_row_group(
-  #   label = "powerful",
-  #   rows = outcome == "Delirium incidence"
-  # ) |>
   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(n_s, grade, acc, out_import, summary))) |>
   tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(n_s, grade, acc, out_import, summary))) |>
   tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(outcome, summary, result_links))) |>
-  tab_style(style = "vertical-align:top", locations = cells_body(columns = everything())) |> 
+  tab_style(style = "vertical-align:top", locations = cells_body(columns = everything())) |>
   gt_theme_mg() |>
   cols_width(
     outcome ~ px(200),
@@ -178,13 +173,13 @@ soe_summary |>
     summary ~ px(325),
     result_links ~ px(125)
   ) |>
-    opt_css(
+  opt_css(
     css = "
     #one p {
     line-height: 1.4;
     }
   "
-  ) |> 
+  ) |>
   opt_footnote_marks(marks = "numbers") |>
   sub_values(values = c("NA <br/>(NA)"), replacement = "—") |>
   soe_footnote()

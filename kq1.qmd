@@ -27,18 +27,6 @@ Among older patients anticipating surgery and anesthesia, does expanded preopera
 source("code/load_data.R")
 conflicts_prefer(dplyr::lag)
 
-# delete van der Vlies 2020 882 NRC
-# kq1_refid <- kq1_refid[!kq1_refid %in% c(3815, 5094, 3547, 882)]
-# kq8_refid <- kq8_refid[!kq8_refid %in% c(3815, 5094, 3547, 882)]
-# kq8_refid %in% kq1_refid
-# to include only studies w/preop per sd
-# diener <- sort(c("Hempenius 2013", "Hempenius 2016", "Partridge 2017", "Ommundsen 2018", "Olsson 2014", "Richter 2005", "Romano 2021", "Bakker 2014", "Ernst 2014", "Hall 2017", "Lester 2022", "McDonald 2018", "Giannotti 2022", "Indrakusuma 2015", "Souwer 2018", "Braude 2017", "Adogwa 2017", "Tarazona-Santabalbina 2019"))
-# to inlcude per ta
-# ta <- sort(c("Vidan 2005", "Watne 2014", "Bjorkelund 2010", "Vochteloo 2011", "Prestmo 2015", "Zhu 2022", "Marcantonio 2001", "Olsson 2014", "Romano 2021"))
-
-# kq1_refid <- study_char_dat |> filter(study %in% c(ta, diener, "Jones 2021")) |> select(refid, study) |> arrange(refid) |> pull(refid) 
-# rm(diener, ta)
-
 kq1_refid_hip <- kq1_refid[kq1_refid %in% ortho_hipfx_refid]
 kq1_refid_nonhip <- kq1_refid[!kq1_refid %in% ortho_hipfx_refid]
 
@@ -733,10 +721,10 @@ delirium_rct_meta <- metabin(event1, n1, event2, n2,
   sm = "RR",
   method = "MH",
   method.tau = "REML",
-  hakn = FALSE,
+  hakn = TRUE,
   prediction = TRUE,
   allstudies = TRUE,
-  subgroup = surg_f
+  # subgroup = surg_f
 )
 
 # temp <- update(delirium_rct_meta, sm = "OR", subgroup = NULL)
@@ -758,39 +746,41 @@ delirium_nrsi_meta <- metabin(event1, n1, event2, n2,
   sm = "RR",
   method = "MH",
   method.tau = "REML",
-  hakn = FALSE,
+  hakn = TRUE,
   prediction = TRUE,
   allstudies = TRUE,
-  subgroup = surg_f
+  # subgroup = surg_f
 )
 
 ```
 
 <font size = 4> `r figure_ref()` Expanded versus standard preoperative evaluation (delirium incidence; randomized clinical trials). </font>
 
-```{r delirium_meta_rct_forest, fig.width = 14, fig.height = 6.5, fig.align = "left", warning = TRUE}
+```{r delirium_meta_rct_forest, fig.width = 14, fig.height = 4.5, fig.align = "left", warning = TRUE}
 forest(delirium_rct_meta,
   allstudies = TRUE,
   common = TRUE,
   label.e = "Expanded",
   label.c = "Standard",
-  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
-  rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
-  just.addcols.right = "right",
+  rightcols = c("effect", "ci", "surg_f", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  rightlabs = c("RR", "(95% CI)", "Surgery", "D1", "D2", "D3", "D4", "D5", "All"),
+  just.addcols.right = "left",
   digits = 2,
   digits.tau2 = 1,
   overall.hetstat = TRUE,
   print.I2.ci = TRUE,
-  # sortvar = year,
+  sortvar = surg_f,
   prediction = TRUE,
   fs.xlab = 11,
   pooled.events = TRUE,
   print.pval.Q = FALSE,
-  print.subgroup.name = FALSE,
-  prediction.subgroup = TRUE,
-  xlim = c(0.1, 3),
+  # print.subgroup.name = FALSE,
+  # prediction.subgroup = TRUE,
+  xlim = c(0.2, 2),
   xlab = "Favors: Expanded                          Standard",
-  addrows.below.overall = 4
+  addrows.below.overall = 4,
+  text.addline1 = "Hip fracture surgery only: RR 0.84 (95% CI, 0.71-0.99; I² = 7%)",
+  text.addline2 =  "Other surgery: RR 0.54 (95% CI, 0.33-0.89; I² = 0%) (without Hartung-Knapp adjustment for either)"
 )
 ```
 
@@ -800,22 +790,22 @@ forest(delirium_rct_meta,
 
 <font size = 4> `r figure_ref()` Expanded versus standard preoperative evaluation (delirium incidence; nonrandomized designs). </font>
 
-```{r delirium_meta_nrsi_forest, fig.width = 14, fig.height = 6.9, fig.align = "left", warning = TRUE}
+```{r delirium_meta_nrsi_forest, fig.width = 14, fig.height = 4.25, fig.align = "left", warning = TRUE}
 forest(delirium_nrsi_meta,
   allstudies = TRUE,
   common = TRUE,
   label.e = "Expanded",
   label.c = "Standard",
-  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "Overall"),
-  rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "All"),
+  rightcols = c("effect", "ci", "surg_f", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  rightlabs = c("RR", "(95% CI)", "Surgery", "D1", "D2", "D3", "D4", "D5", "All"),
   just.addcols.right = "right",
   digits = 2,
   digits.tau2 = 1,
   overall.hetstat = TRUE,
   print.I2.ci = TRUE,
-  # sortvar = year,
+  sortvar = surg_f,
   prediction = TRUE,
-  print.subgroup.name = FALSE,
+  # print.subgroup.name = FALSE,
   fs.xlab = 11,
   pooled.events = TRUE,
   print.pval.Q = FALSE,
