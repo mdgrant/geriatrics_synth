@@ -95,6 +95,21 @@ vertical-text {
    transform: rotate(180deg);
 }
 
+caption, .table-caption, .quarto-float-caption {
+	margin-bottom: 0px;
+}
+
+.quarto-float-tbl figcaption, caption, .table-caption {
+  padding-top: .5rem;
+  padding-bottom: 0px;
+  text-align: left;
+}
+
+panel-caption, .figure-caption, .subfigure-caption, .table-caption, figcaption.quarto-float-caption, caption {
+  font-size: .8rem;
+  color: #000000;
+}
+
 ```
 
 

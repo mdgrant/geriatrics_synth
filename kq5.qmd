@@ -151,9 +151,8 @@ study_char_dat |>
 
 <font size = 4> `r table_ref()` Study design, enrollment, centers, country, and surgery (see [References](#references) for citations). </font>
 
-```{r included}
-## pim drug class by study ---------------------------- (2023-01-10 16:20) @----
-# DATA: arm_up is drug class
+```{r drugs_by_study}
+# DATA: drug_classes_by_study — refid, arm_up is pim drug class
 ## drug_classes_by_study concatenated; by study ------- (2023-09-29 13:12) @----
 drug_classes_by_study <- study_arm_dat |>
   select(refid, design_f, study, arm_id, arm_n, kq5_antichol:kq5_benzo_shortlong) |>
@@ -192,23 +191,13 @@ drug_classes_by_study <- study_arm_dat |>
   ungroup() |>
   select(-c(study, agents))
 
+```
+
+```{r included_studies}
 ## table of included studies -------------------------- (2023-09-29 10:43) @----
 included_dat <- study_char_dat |>
-  select(refid, starts_with("design"), study, study_l, study_l_w_linked, year, n_enroll, n_analyze, centers, country, non_vh_hdi, starts_with("surg"), year) |>
-  # select(refid, study, starts_with("surg")) |> # compile surgeries
-  rename_with(~ gsub("surg_", "", .x, fixed = TRUE)) |>
-  mutate(across(various:other, ~ gsub("surg_", "", .x, fixed = TRUE)),
-    ortho_any = ifelse(if_any(contains("ortho"), ~ !is.na(.x)), "orthopedic", NA),
-    opth = ifelse(str_detect(other_desc, "[Cc]ataract") | !is.na(opth), "ophtho", opth),
-    gi = ifelse(!is.na(colorectal) | !is.na(gi_other) | !is.na(abdominal), "GI/Abdominal", NA),
-    vasc = ifelse(!is.na(vasc), "Vascular", vasc),
-    across(c(various, cardiac, colorectal, gyn, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, thoracic, urol, vasc, other), ~ firstup(.x)),
-  ) |>
-  unite("surgs", various, cardiac, colorectal, gyn, gi, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, thoracic, urol, vasc, other, sep = "|", remove = FALSE, na.rm = TRUE) |>
-  mutate(
-    surgs = ifelse(refid == 7722, "Non-cardiac", surgs) # Duprey 2022
-  ) |>
-  select(-c(various, abdominal, cardiac, colorectal, gyn, gi, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, thoracic, urol, vasc, other, design_other, gi_other, starts_with("ortho"), list, other_desc, starts_with("hip"))) |>
+  select(refid, starts_with("design"), study, study_l, study_l_w_linked, year, n_enroll, n_analyze, centers, country, non_vh_hdi, surgs, year) |>
+  mutate(surgs = ifelse(refid == 7722, "Non-cardiac", surgs)) |> # Duprey 2022
   select(refid, study, study_l, study_l_w_linked, design_f_lab, centers, n_enroll, country, non_vh_hdi, surgs, year) |>
   left_join(drug_classes_by_study, by = "refid") |>
   mutate(
@@ -240,7 +229,7 @@ included_dat |>
   ) |>
   cols_width(
     refid      ~ px(50),
-    study_l    ~ px(180),
+    study_l    ~ px(235),
     n_enroll   ~ px(65),
     centers    ~ px(60),
     country    ~ px(90),
@@ -259,7 +248,7 @@ included_dat |>
     locations = cells_body(columns = country, rows = !is.na(non_vh_hdi))
   ) |>
   tab_footnote(
-    footnote = md("Various indicates more than 4 different types of surgery."),
+    footnote = md("Various indicates 4 or more different types of surgery."),
     locations = cells_column_labels(columns = surgs)
   ) |>
   gt_theme_mg() |>
@@ -426,7 +415,7 @@ kq5_by_arm_tab <- drug_by_arm |>
   left_join(timing, by = c("refid", "arm_id")) |>
   select(refid, year, arm_id, design_f_lab, study_l, arm_n, arm_up, drug_up, asa_ps_incl, volatile_tab, tiva_tab, regional_tab, sedation_only_tab, age_table, pre_mmse, dose_sched, timing_all, surgs_single_f, pre, induct, intra, post, unspec, control_desc)
 
-# get pim arms and arrange so that pims are final
+# get pim arms and arrange so that pims are last
 pim_arm_up <- kq5_by_arm_tab |> 
    select(arm_up) |> 
    distinct() |> 
@@ -450,7 +439,10 @@ kq5_by_arm_tab <- kq5_by_arm_tab |>
 ```{r save_pim_drug}
 #| eval: false
 # save file for use in KQ6
-# write_csv(kq5_by_arm_tab |> filter(refid %in% kq56_refid) |> select(refid, arm_id, agents_up, drug_f, other_spec, control_desc), "data/kq56_drug_by_arm.csv")
+# write_csv(kq5_by_arm_tab |>
+#   filter(refid %in% kq56_refid) |>
+#   rename(agents_up = arm_up, drug_f = drug_up) |>
+#   select(refid, arm_id, agents_up, drug_f, control_desc), "data/kq56_drug_by_arm.csv")
 
 # data for analysis variables 
 kq5_by_arm_tab <- kq5_by_arm_tab |> 
@@ -493,10 +485,10 @@ kq5_by_arm_tab |>
     surgs_single_f = first_row(surgs_single_f)
     ) |> 
   ungroup() |> 
-  select(-c(arm_id, pre:control_desc)) |>
+  select(-c(arm_id, pre:post, control_desc)) |>
   group_by(design_f_lab) |> 
   gt(id = "one") |>
-  cols_hide(c(arm_id_pim, arm_up, year, refid)) |>
+  cols_hide(c(arm_id_pim, arm_up, year, refid, unspec)) |>
   tab_header(title = title) |>
   cols_label(
     study_l = "Study",
@@ -525,7 +517,7 @@ kq5_by_arm_tab |>
     age_table ~ px(80),
     pre_mmse ~ px(80),
     dose_sched ~ px(130),
-    timing_all ~ px(70),
+    timing_all ~ px(85),
     surgs_single_f ~ px(80)
   ) |>
   gt_theme_mg() |> 
@@ -544,7 +536,8 @@ kq5_by_arm_tab |>
   # tab_footnote(footnote) |>
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |> 
   tab_footnote(md("ASA Physical Status of patients included (proportions can be found here[link to table add])."), locations = cells_column_labels(columns = c(asa_ps_incl))) |> 
-  tab_footnote("Bars indicate adminstration times from left to right: preoperative, induction/intraoperative, and postoperative (includes PACU).", locations = cells_column_labels(columns = c(timing_all))) 
+  tab_footnote("Bars indicate adminstration times from left to right: preoperative, induction/intraoperative, and postoperative (includes PACU).", locations = cells_column_labels(columns = c(timing_all))) |> 
+  tab_footnote("Not specified.", locations = cells_body(columns = c(timing_all), rows = !is.na(unspec)), placement = "left")
 }
 
 ```
@@ -558,7 +551,7 @@ kq5_char_drugs_tab("benzo_short", "Benzodiazepines (short-acting)") |>
   row_group_order(c("Randomized Clinical Trial", "Randomized Cluster Crossover Trial", "Prospective Cohort",  "Retrospective Cohort")) |> 
   tab_footnote("PS: physical status; Vol: volatile; TIVA: total intravenous anesthesia; Reg: regional; Sed: sedation; MMSE: Mini-Mental State Exam; THA: total hip arthroplasty; TKA: total knee arthroplasty.") |> 
   tab_footnote("Mean intraoperative dose.", locations = cells_body(columns = c(dose_sched), rows = str_detect(dose_sched, "5.2|4.6|1.99"))) |> 
-  tab_footnote("Liberal or restricted administration relevant to intraoperative period.", locations = cells_body(columns = c(timing_all), rows = str_detect(dose_sched, "5.2|4.6"))) |> 
+  tab_footnote("Liberal or restricted administration relevant to intraoperative period.", locations = cells_body(columns = c(drug_up), rows = str_detect(dose_sched, "5.2|4.6"))) |> 
   tab_footnote("Dose adjusted to maintain light sedation.", locations = cells_body(columns = c(dose_sched), rows = str_detect(refid, "742") & drug_up == "Midazolam")) 
   
 ```
@@ -625,22 +618,23 @@ kq5_char_drugs_tab("nsaid", "NSAIDs") |>
 
 ```{r delirium}
 #| eval: false
+# to verify 
 refid_del_dichot <- dichot_dat |> 
   filter(!is.na(d_delirium)) |> 
   select(refid) |> 
   distinct() |> 
   pull(refid)
 
-temp <- dichot_dat |> 
-  filter(refid %in% refid_del_dichot) |> 
-  rename_with(~ str_replace(.x, "delirium", "deli")) |> 
-  rename_with(~ stringi::stri_replace_all_regex(.x,"deli([a-z])", "deli_$1")) |> 
-  select(refid, design_f_lab, study, study_l, year, arm_id, arm_n, contains("deli"), notes_d) |> 
-  left_join(kq5_by_arm_tab |> select(refid, arm_id, arm_id_pim, drug_up), by = c("refid", "arm_id")) |> 
-  relocate(drug_up, .after = arm_id) |> 
+temp <- dichot_dat |>
+  filter(refid %in% refid_del_dichot) |>
+  rename_with(~ str_replace(.x, "delirium", "deli")) |>
+  rename_with(~ stringi::stri_replace_all_regex(.x,"deli([a-z])", "deli_$1")) |>
+  select(refid, design_f_lab, study, study_l, year, arm_id, arm_n, contains("deli"), notes_d) |>
+  left_join(kq5_by_arm_tab |> select(refid, arm_id, arm_id_pim, drug_up), by = c("refid", "arm_id")) |>
+  relocate(drug_up, .after = arm_id) |>
   remove_empty(which = "cols")
 
-# writexl::write_xlsx(temp, "/Users/mgrant/Desktop/temp.xlsx")
+writexl::write_xlsx(temp, "/Users/mgrant/Desktop/temp.xlsx")
 
 ```
 
@@ -660,6 +654,9 @@ delirium_meta_dat <- dichot_dat |>
   left_join(kq5_by_arm_tab |> select(refid, arm_id, arm_id_pim, arm_up, drug_up), by = c("refid", "arm_id")) |> 
   rename(surg_f = surgs_single_f) |> 
   select(refid, study, arm_id, arm_id_pim, arm_up, drug_up, year, design_f_lab, surg_f, delitotal_n, arm_n, delirium_inc_prop, delitotal_time:delitotal_95high, deli_cam:deli_scale_otherspec) 
+
+# write to csv for nma w/kq5 data
+# write_csv(delirium_meta_dat |> select(refid:arm_n), "data/delirium_meta_kq5_dat.csv")
 
 ## collapse arms code from kq3 ------------------------ (2023-10-02 09:30) @----
 # NOTE: collapse arms code from kq3
@@ -1001,7 +998,7 @@ delirium_tab |>
 
 ```{r study_aim}
 #| eval: true
-# RESUME study aim
+# RESUME: study aim
 aim_dat <- study_char_dat |>
   # remove duplicate Memtsoudis 2019
   filter(!refid %in% c(17130:17139, 17141)) |> 
@@ -1129,7 +1126,7 @@ rob_traffic_light(rob_temp_dat, psize = 4, tool = "ROB2", colour = "colourblind"
 
 ```{r nrsi_summary_overall, fig.height = 3, out.width = "60%"}
 robinsi_temp_dat <- robinsi_dat |>
-  filter(!is.na(Study) & refid %in% kq5_refid) |> 
+  filter(!is.na(Study) & refid %in% kq5_refid & !refid %in% c(17131:17139, 17141, 17142, 17143, 17148)) |> # remove cloned Memtsoudis 2019, Mueller 2020, Weinstein 2018, Fuchita 2019, Slor 2011
   select(-refid)
 
 rob_summary(robinsi_temp_dat, tool = "ROBINS-I", colour = "colourblind", weighted = FALSE)
@@ -1137,7 +1134,7 @@ rob_summary(robinsi_temp_dat, tool = "ROBINS-I", colour = "colourblind", weighte
 
 <font size = 4> `r figure_ref()` Risk of bias assessments for nonrandomized studies. </font>
 
-```{r nrsi_overall_study, out.width = "55%", fig.height = 3}
+```{r nrsi_overall_study, out.width = "55%", fig.height = 5.25}
 rob_traffic_light(robinsi_temp_dat, psize = 4, tool = "ROBINS-I", colour = "colourblind")
 ```
 
