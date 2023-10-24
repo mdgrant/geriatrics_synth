@@ -33,7 +33,7 @@ editor: source
 
 [Draft Protocol](protocol.html)
 
-[Individual study summaries](evidence_tables.html)
+[Study-level evidence tables](evidence_tables.html)
 
 [Outcome Importance Rankings](outcome_rankings.html)
 
