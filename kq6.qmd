@@ -1390,10 +1390,10 @@ with(subgroup_dat,
 
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio. </foot_mg>
 
-#### *Component NMA*
+#### *Timing NMA*
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <font size = 4> Exploratory component network meta-analysis examining timing of dexmedetomidine administration. </font>
+#### <font size = 4> Exploratory network meta-analysis examining timing of dexmedetomidine administration. </font>
 
 ```{r component_nma}
 # VARIABLE: postop_only <lgl> from study arm only post-op administration [postop_only_dat]
@@ -1527,7 +1527,7 @@ netgraph(net1,
 
 ```
 
-```{r component_nma_forest, fig.width = 12, fig.height = 4.55, fig.align = "left"}
+```{r component_nma_forest, fig.width = 12, fig.height = 4, fig.align = "left"}
 #| eval: true
 meta::forest(net_comb, xlab = "Odds Ratio", sortvar = trts)
 ```
@@ -3471,6 +3471,7 @@ adverse_dex_meta_wide_dat <- adverse_dex_meta_dat |>
 
 ```{r complication_brady_meta, fig.width = 14, fig.height = 6, fig.align = "left"}
 #| warning: false
+# RESUME: complications risk difference meta-analysis
 # add bradycardia definition
 brady_meta_dat <- adverse_dex_meta_wide_dat |> 
   left_join(cardiac_compl |> select(refid, brady_defn), by = c("refid"))
@@ -3486,6 +3487,19 @@ adverse_meta <- metabin(
   subset = complication == "Bradycardia",
   allstudies = FALSE
 )  
+
+# TODO: create function for this
+# adverse_meta_rd <- metabin(
+#   n_Dex, arm_n_Dex, n_Plac, arm_n_Plac,
+#   data = brady_meta_dat,
+#   studlab = study,
+#   hakn = TRUE,
+#   sm = "R",
+#   method.tau = "REML",
+#   # subset = !grepl("\\*", study),
+#   subset = complication == "Bradycardia",
+#   allstudies = FALSE
+# )  
 
 # small study effects; here to have result of Harbord test
 temp_meta <- adverse_meta
@@ -3520,7 +3534,7 @@ forest(adverse_meta,
 )
 ```
 
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- ; NR: not reported.<br/> `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> Similar arms combined in Li 2021b and Zhao 2020. </foot_mg>
+<foot_mg> `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> Similar arms combined in Li 2021b and Zhao 2020. </foot_mg>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention small study effects and bradycardia --- funnel plot and limit meta-analysis. </font>
@@ -3600,7 +3614,7 @@ forest(adverse_meta,
 )
 ```
 
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- ; NS: not specified.<br/> `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> Similar arms combined in Li 2021b and Zhao 2020. </foot_mg>
+<foot_mg> `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> Similar arms combined in Li 2021b and Zhao 2020. </foot_mg>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention small study effects and hypotension --- funnel plot. </font>
@@ -3742,8 +3756,6 @@ forest(adverse_ram_meta,
   addrows.below.overall = 4
 )
 ```
-
-<foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. </foot_mg>
 
 ## **Length of Stay**
 
@@ -3939,7 +3951,7 @@ forest(los_dex_meta,
 
 ```
 
-<foot_mg> MD: mean difference; Dex: Dexmedetomidine; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range. </foot_mg>
+<foot_mg> MD: mean difference; Dex: Dexmedetomidine.<br/> When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range. </foot_mg>
 
 #### Melatonin/Ramelteon
 
@@ -4001,7 +4013,7 @@ forest(los_mel_ram_meta,
 
 ```
 
-<foot_mg> MD: mean difference; Mel: melatonin; Ram: ramelteon; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range. </foot_mg>
+<foot_mg> MD: mean difference; Mel: melatonin; Ram: ramelteon.<br/> When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range. </foot_mg>
 
 ## **Mortality**
 
@@ -4394,7 +4406,7 @@ forest(dex_plac_mort_meta,
 
 ```
 
-<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/> `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")` </foot_mg><br/>
+<foot_mg> Dex: dexmedetomidine; Plac: placebo. <br/> `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")` </foot_mg><br/>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <font size = 4> `r figure_ref()` Mortality for dexmedetomidine compared with placebo or no intervention small study effects --- funnel plot. </font>
@@ -4478,7 +4490,7 @@ forest(mel_ram_plac_mort_meta,
 )
 ```
 
-<foot_mg> Mel: melatonin; Ram: ramelteon; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . </foot_mg> <a id="figure-4"></a>
+<foot_mg> Mel: melatonin; Ram: ramelteon; Plac: placebo. </foot_mg> <a id="figure-4"></a>
 
 <!-- ## Study Characteristics -->
 
