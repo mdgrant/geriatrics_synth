@@ -8,6 +8,13 @@ foot_mg {
   padding-bottom: 0px;
 }
 
+caption_mg {
+  font-size: 1rem;
+  color: black;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
 wf-mg {
   font-size: 13px;
   line-height: .4;

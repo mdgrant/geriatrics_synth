@@ -8,11 +8,11 @@ library(janitor)
 suppressPackageStartupMessages(library(meta))
 suppressPackageStartupMessages(library(netmeta))
 suppressPackageStartupMessages(library(metasens))
+suppressPackageStartupMessages(library(gt))
 library(skimr)
 library(htmltools)
 library(reactable)
 library(reactablefmtr)
-library(gt, quietly = TRUE)
 library(gtsummary)
 library(gtExtras)
 library(glue)
@@ -22,6 +22,15 @@ knitr::opts_chunk$set(echo = FALSE)
 set_gtsummary_theme(theme_gtsummary_journal(journal = "jama"))
 settings.meta(CIbracket = "(", CIseparator = ", ")
 conflicts_prefer(dplyr::lag)
+
+theme <- theme_set(theme_minimal())
+theme <- theme_update(
+  legend.position = "none",
+  axis.text = element_text(size = 12),
+  axis.title = element_text(size = 12),
+  axis.line.y = element_line(linewidth = 0, colour = "white", linetype = "solid"),
+  axis.ticks = element_line(colour = "gray72"),
+  panel.grid.major = element_line(colour = "gray80"))
 
 ## data files ----------------------------------------- (2022-11-16 14:19) @----
 data_files <- as_tibble(list.files("data/"))
@@ -157,10 +166,8 @@ study_char_dat <- read_csv(path_csv(study_char_file)) |>
 cloned_refid <- read_csv(path_csv(study_char_file)) |>
   janitor::clean_names() |>
   filter(refid != 1) |> # refid 1 only for column types
-  select(refid, refid_ver) |>
-  filter(refid != refid_ver) |>
-  filter(refid_ver == 5163) |>
-  select(refid)
+  filter(!is.na(clone)) |>
+  pull(refid)
 
 ## add surgery classifications ------------------------ (2023-03-04 13:56) @----
 surgs <- study_char_dat |>
@@ -184,8 +191,9 @@ surgs <- study_char_dat |>
     # surgs_single = ifelse(surgs == "Other", "Various", surgs_single),
     surgs_single_f = factor(surgs_single, levels = rev(c("Various", "Spine", "Vasc", "Ent", "Gyn", "Oralmax", "Other", "Headneck", "Neuro", "Ophtho", "Urol", "Thoracic", "GI/Abd", "Cardiac", "Ortho"))),
     surgs_noabbr_f = factor(surgs_single, levels = rev(c("Various", "Spine", "Vasc", "Ent", "Gyn", "Oralmax", "Other", "Headneck", "Neuro", "Ophtho", "Urol", "Thoracic", "GI/Abd", "Cardiac", "Ortho")), labels = rev(c("Various", "Spine", "Vascular", "Otolaryngological", "Gynecologic", "Oral/Maxillofacial", "Other", "Head & Neck", "Neurosurgical", "Ophthalmologic", "Urologic", "Thoracic", "Gastrointestinal/Abdominal", "Cardiac", "Orthopedic"))),
-    # NOTE: surgs_f_lump minimum 4 studies
-    surgs_single_f_lump = fct_lump_min(surgs_single_f, min = 4, other_level = "Other")
+    # NOTE: surgs_f_lump minimum 4
+    surgs_single_f_lump = fct_lump_min(surgs_single_f, min = 4, other_level = "Other"),
+    across(c(surgs, surgs_single, surgs_single_f), ~ str_replace(.x, "Ent", "ENT"))
   ) |>
   select(refid, surgs, surgs_single, surgs_single_f, surgs_noabbr_f, surgs_single_f_lump)
 
