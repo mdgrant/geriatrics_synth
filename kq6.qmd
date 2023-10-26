@@ -1380,7 +1380,7 @@ with(subgroup_dat,
   # null_line_at = 1.5,
   justify = c(0, 0.5, 0.5, 0.5, 0.5, 0),
   # uncomment to save file
-  # file_path = "docs/assets/subgroup_summary.png",
+  file_path = "docs/assets/subgroup_summary.png",
   font_family = "Fira Sans",
   xlim = c(0.1, 2.0),
   arrows = TRUE,
@@ -1390,7 +1390,7 @@ with(subgroup_dat,
 
 ```
 
-![](docs/assets/subgroup_summary.png){#subgroup_summary fig-align="center" width="750"}
+![](assets/subgroup_summary.png){#subgroup_summary fig-align="center" width="750"}
 
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio. </foot_mg>
 
