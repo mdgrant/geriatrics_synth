@@ -33,6 +33,7 @@ kq1_refid_nonhip <- kq1_refid[!kq1_refid %in% ortho_hipfx_refid]
 temp <- study_char_dat |> filter(refid %in% c(kq1_refid)) |> select(refid, study)
 
 # note working file not renamed
+# temp <-  study_char_dat |> 
 study_char_dat <- study_char_dat |>
   filter(refid %in% c(kq1_refid)) |>
   arrange(design_f) |>
@@ -42,8 +43,9 @@ study_char_dat <- study_char_dat |>
   ) |> 
   mutate(
     surgs = unclass(surgs_single_f), 
-    surgs = ifelse(refid %in% kq1_refid_hip, 2, surgs),
-    surgs = factor(surgs, levels = c(2, 1, 3, 15, 5, 7), labels = c("HipFx", "Other Ortho", "GI/Abd", "Various", "Urol", "Neuro"))
+    surgs = ifelse(refid %in% kq1_refid_hip, "HipFx", surgs),
+    surgs = ifelse(surgs == "Ortho", "Other Ortho", surgs),
+    surgs = factor(surgs, levels = c("HipFx", "Other Ortho", "GI/Abd", "Various", "Urol", "Neuro"))
   ) 
 
 study_arm_dat <- study_arm_dat |>
@@ -260,12 +262,12 @@ studychar_tab <- study_arm_dat |>
   mutate(
     arm = replace_na(arm, "Scrn"),
     surg_design = paste0(surgs, " — ", design_f_lab),
-    surg_design = fct(surg_design,
-      levels = c("HipFx — Randomized Clinical Trial", "HipFx — Before-After/Time Series", "HipFx — Nonrandomized Trial", "Other Ortho — Before-After/Time Series", "GI/Abd — Randomized Clinical Trial", "GI/Abd — Before-After/Time Series", "GI/Abd — Retrospective Cohort", "Neuro — Before-After/Time Series", "Urol — Before-After/Time Series", "Various — Randomized Clinical Trial", "Various — Before-After/Time Series", "Various — Prospective Cohort")
-    ),
-    surg_design = fct_drop(surg_design)
+    # surg_design = fct(surg_design,
+    #   levels = c("HipFx — Randomized Clinical Trial", "HipFx — Before-After/Time Series", "HipFx — Nonrandomized Trial", "Other Ortho — Before-After/Time Series", "GI/Abd — Randomized Clinical Trial", "GI/Abd — Before-After/Time Series", "GI/Abd — Retrospective Cohort", "Neuro — Before-After/Time Series", "Urol — Before-After/Time Series", "Various — Randomized Clinical Trial", "Various — Before-After/Time Series", "Various — Prospective Cohort")
+    # ),
+    # surg_design = fct_drop(surg_design)
   ) |>
-  arrange(surg_design, year, study, arm_id)
+  arrange(surg_design, year, study, arm_id) 
 
 # studychar_tab |> tabyl(surg_design) |> pull(surg_design) |> toString(sep = ", ")
 
@@ -1582,7 +1584,6 @@ adverse_events_gt_dat <- adverse_events_dat |>
   # ) |> 
   unite(complication, complication, design_f_lab, sep = " – ")
 
-
 adverse_meta_wide_dat <- adverse_events_gt_dat |> 
   mutate(arm_n = as.numeric(arm_n)) |> 
   arrange(refid, complication) |> 
@@ -1819,7 +1820,7 @@ complication_forest_nrsi_fun(adverse_meta, use_predictive = FALSE)
 
 ## **Patient Satisfaction**
 
-<font size = 4> `r table_ref()` Patient satisfaction according to regional or general anesthesia. </font>
+<font size = 4> `r table_ref()` Patient satisfaction according to expanded or standard preoperative evaluation. </font>
 
 ```{r pt_satisfaction}
 satis_dat_gt <- dichot_dat |>
@@ -2649,36 +2650,36 @@ mort_rct_meta <- metabin(event2, n2, event1, n1,
   data = mort_meta_dat,
   studlab = study,
   # cluster = refid,
-  sm = "RR",
+  sm = "RD",
   method = "MH",
   method.tau = "REML",
   hakn = FALSE,
   prediction = FALSE,
   allstudies = FALSE,
-  subgroup = surgs
+  # subgroup = surgs
 )
 
 # summary(plac_meta)
 forest(mort_rct_meta,
   allstudies = TRUE,
-  random = FALSE,
+  # random = FALSE,
   label.e = "Expanded  ",
   label.c = "Standard  ",
   rightcols = c("effect", "ci"),
   rightlabs = c("RR", "(95% CI)"),
   just.addcols.right = "left",
-  digits.TE = 3,
+  digits.TE = 3, 
   digits.tau2 = 1,
   overall.hetstat = TRUE,
   print.I2.ci = TRUE,
   prediction = FALSE,
   fs.xlab = 11,
   pooled.events = TRUE,
-  print.subgroup.name = FALSE,
+  # print.subgroup.name = FALSE,
   pscale = 1000,
   digits = 2, 
   print.pval.Q = FALSE,
-  xlim = c(0.1, 10),
+  # xlim = c(0.1, 10),
   xlab = "Favors: Expanded                         Standard        ",
   addrows.below.overall = 4
 )
