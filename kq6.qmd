@@ -750,7 +750,8 @@ delirium_meta_dat <- dichot_dat |>
       .default = arm_n
     )
   ) |>
-  filter(!(study == "He 2018" & arm_id == 2)) |> 
+# TODO: He 2018 midazolam arm; keep for delirium incidence in kq56 file below
+  filter(!(study == "He 2018" & arm_id == 2)) |>
   filter(!(study %in% c("Lee 2018a", "Avidan 2017") & arm_id == 3)) |>
   filter(!(study %in% c("Zhao 2020") & arm_id %in% c(3, 4))) |>
   filter(!(study %in% c("Lee 2018b") & arm_id %in% c(2, 4))) |> # remove pregabalin, pregabaline/dex arms
@@ -769,6 +770,41 @@ delirium_meta_dat <- dichot_dat |>
 #   filter(abs(diff) >= 0.05)
 # 
 # writexl::write_xlsx(temp, "/Users/mgrant/Desktop/temp.xlsx")
+```
+
+```{r delirium_meta_dat_kq56}
+#| eval: false
+# # TODO: Change He 2018 midazolam arm above; keep for delirium incidence in kq56 file
+# combine with kq5 data saved 2023-10-27
+delirium_meta_kq5_dat <- read_csv("data/delirium_meta_kq5_dat.csv") |> 
+  rename(arm = arm_up) |> 
+  select(refid, study, arm_id, arm, drug_up, year, design_f_lab, surg_f, delitotal_n, arm_n)
+
+delirium_meta_kq6_dat <- delirium_meta_dat |> 
+  filter(!refid %in% delirium_meta_kq5_dat$refid) |>
+  mutate(drug_up = NA_character_) |>
+  select(refid, study, arm_id, arm, drug_up, year, design_f_lab, surg_f, delitotal_n, arm_n)
+
+delirium_combined <- bind_rows(delirium_meta_kq5_dat, delirium_meta_kq6_dat) |> 
+  filter(str_detect(design_f_lab, "Randomized Clinical Trial")) |>
+  mutate(
+    drug_up = case_when(
+      arm == "Prop" ~ "Propofol",
+      arm == "Dex" ~ "Dexmedetomidine",
+      arm == "none" ~ "Plac/None",
+      arm == "placebo" ~ "Plac/None",
+      arm == "Plac/None" ~ "Plac/None",
+      arm == "Mel/Dex" ~ "Melatonin/Dexmedetomidine",
+      arm == "Ram" ~ "Ramelteon",
+      arm == "Mel" ~ "Melatonin",
+      arm == "Ket" ~ "Ketamine",
+      arm == "MS" ~ "Morphine Sulfate",
+      .default = drug_up
+    )
+  )
+
+# for appendix nma
+write_csv(delirium_combined, "data/delirium_combined.csv", na = "")
 ```
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
@@ -3731,7 +3767,7 @@ adverse_ram_meta_wide_dat <- adverse_ram_meta_dat |>
 
 ```
 
-<caption_mg> `r figure_ref()` Risk difference in pneumonia (ramelteon versus no interventions; before-after studies). </caption_mg>
+<caption_mg> `r figure_ref()` **Risk difference** in pneumonia (ramelteon versus no interventions; before-after studies). </caption_mg>
 
 ```{r complication_ram_meta,  fig.width = 14, fig.height = 2.5, fig.align = "left"}
 adverse_ram_meta <- metabin(
