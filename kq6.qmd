@@ -21,7 +21,7 @@ nocite: '@*'
 ---
 
 ::: {.callout-note collapse="true"}
-# Recent upates
+## Recent upates
 
 | Date       | Modification                                                                                                                                                                    |
 |:-----------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -1050,6 +1050,7 @@ dex_meta_dat <- pairwise_dat |>
     postop_any = ifelse(!is.na(postop_any), "Postop ± preop through intraop", "Any preop through intraop (no postop)"),
     delirium_inc_prop = ifelse(delirium_inc_prop == TRUE, "Incidence Proportion", "Maximum Daily"),
     study = ifelse(china_vs_other == "China", paste0(study, "*"), study),
+    # total_samp = n1 + n2,
     rob = case_when(
       Overall == "+" ~ "Low",
       Overall == "?" ~ "Some Concerns",
@@ -1057,6 +1058,7 @@ dex_meta_dat <- pairwise_dat |>
     )
   ) 
 
+# length(unique(dex_plac_refid))
 # toString(sort(dex_plac_refid))
 # total_meta(dex_meta_dat)
 
@@ -1069,10 +1071,11 @@ dex_plac_meta <- metabin(event2, n2, event1, n1,
   hakn = TRUE,
   prediction = TRUE,
   allstudies = TRUE
-  )
+)
 
 # for sensitivity analysis
-# dex_sens_dat <- metafor::escalc(measure = "RR", ai = event2, bi = n2 - event2, ci = event1, di = n1 - event1, data = dex_meta_dat, append = TRUE) |> select(study, yi, vi) 
+# dex_sens_dat <- metafor::escalc(measure = "RR", ai = event2, bi = n2 - event2, ci = event1, di = n1 - event1, data = dex_meta_dat, append = TRUE) |> select(study, yi, vi)
+# write_csv(dex_sens_dat, "/Users/mgrant/Desktop/dex_sens_dat.csv")
 
 dex_plac_china_meta <- update(dex_plac_meta, subset = china_vs_other == "China")
 dex_plac_other_meta <- update(dex_plac_meta, subset = china_vs_other != "China")
@@ -1153,7 +1156,7 @@ dex_meta_forest_nosub_fun(dex_plac_meta)
 # meta_ancred(dex_plac_meta)
 ```
 
-<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <a id="figure-4"></a><br/> `r paste0("Harbord test for small study effects P = ", formatC(temp_metabias$pval, digits = 4, format = "f"), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, dex_plac_refid), "; a secondary outcome in ", prim_sec_out_fun(sec_delirium, dex_plac_refid), ".")`<br/> Excluding Turan 2020 reduced heterogeneity substantially --- *I*<sup> 2</sup> = 25%, $\tau$<sup>2</sup> = 0.04 (pooled RR 0.52 (0.41-0.67). <br/>\*Trials conducted in China.</foot_mg><br/>
+<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <a id="figure-4"></a><br/> `r paste0("Harbord test for small study effects P = ", formatC(temp_metabias$pval, digits = 4, format = "f"), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, dex_plac_refid), "; a secondary outcome in ", prim_sec_out_fun(sec_delirium, dex_plac_refid), ".")`<br/> Excluding Turan 2020 reduced heterogeneity substantially --- *I*<sup> 2</sup> = 21%, $\tau$<sup>2</sup> = 0.04, and pooled RR 0.55 (95% CI, 0.48-0.65). <br/>\*Trials conducted in China.</foot_mg><br/>
 
 <caption_mg> `r figure_ref()`Dexmedetomidine compared with placebo or no intervention --- trials from China vs. other countries. </caption_mg>
 
@@ -1212,7 +1215,7 @@ text(1.2, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <caption_mg> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention --- **small study effects int rials conducted outside of China**. </caption_mg>
+#### <caption_mg> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention --- **small study effects in trials conducted outside of China**. </caption_mg>
 
 ```{r dex_plac_other_meta_funnel, fig.dim = c(7, 5.5), out.width = "70%", fig.align = "center"}
 par(mar = c(4, 4, 2, 1))
@@ -1227,45 +1230,9 @@ legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#A
 
 ```
 
-<foot_mg> Estimates (odds ratio and 95% CI) from random effects model. Too few studies for tests of small study effects.</foot_mg>
+<foot_mg> Too few studies for tests of small study effects.</foot_mg>
 :::
 
-::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <caption_mg> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention --- **China versus other countries**. </caption_mg>
-
-```{r delirium_incidence_fig_country, out.width = "70%", out.height = "40%", fig.align = "left"}
-#| warning: false
-par(mar = c(1, 1, 1, 1))
-set.seed(1234)
-# total to add
-dex_country <- delirium_meta_dat |>
-  filter(design_f_lab == "Randomized Clinical Trial" & refid %in% dex_refid) |>
-  filter(any(arm == "Plac/None"), .by = refid_c) |>
-  mutate(
-    deli_prop = delitotal_n / arm_n,
-    china = ifelse(country == "China", "China", "Other"),
-  ) |> 
-  select(refid_c, year, study, country, arm, china, surg_f, deli_prop)
-
-# separate geom_point by arm 
-dex_country |>
-  # filter(china == FALSE) |>
-  ggplot(aes(x = deli_prop, y = china, fill = arm)) +
-  geom_boxplot(width = 0.2, outlier.size = 1.3, position = position_dodge(.5)) +
-  geom_point(position = position_jitterdodge(jitter.width = 1, dodge.width = .5), alpha = .7, aes(color = arm)) +
-  # scale_fill_manual(values = c("#8B0000", "#377eb8")) +
-  scale_fill_brewer(palette="BuPu", breaks = c("Plac/None","Dex"), name = "arm") +
-  # scale_fill_discrete(breaks = c("Plac/None","Dex")) +
-  labs(y = "", x = "Incidence Proportion") +
-  scale_x_continuous(limits = c(0, 1), labels = scales::percent, name = "arm") +
-  guides(fill = guide_legend(reverse = TRUE)) +
-  theme(
-   legend.position = "right",
-   legend.title = element_blank()
-  ) 
-
-```
-:::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <caption_mg> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention --- **postoperative administration only or at other times**. </caption_mg>
