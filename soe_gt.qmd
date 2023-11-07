@@ -63,6 +63,11 @@ high  <- '<span><span class="quality-sign">⨁⨁⨁⨁</span>'
 mod   <- '<span><span class="quality-sign">⨁⨁⨁◯</span>'
 low   <- '<span><span class="quality-sign">⨁⨁◯◯</span>'
 vlow  <- '<span><span class="quality-sign">⨁◯◯◯</span>'
+
+# high  <- "<span><span class='quality-sign'>⨁⨁⨁⨁</span>"
+# mod   <- "<span><span class='quality-sign'>⨁⨁⨁◯</span>"
+# low   <- "<span><span class='quality-sign'>⨁⨁◯◯</span>"
+# vlow  <- "<span><span class='quality-sign'>⨁◯◯◯</span>"
 grade_foot <- paste0("Very low: ", vlow, "; Low: ", low, "; Moderate: ", mod, "; High: ", high, ".")
 
 soe_footnote <- function(x) {
@@ -135,7 +140,7 @@ domain_summary <- soe_kq1_dat |>
 
 ```
 
-<font size = 4> `r table_ref()` Strength of evidence summaries — expanded versus standard preoperative evaluation. </font>
+<caption_mg> `r table_ref()` Strength of evidence summaries — expanded versus standard preoperative evaluation. </caption_mg>
 
 ```{r kq1_soe_gt}
 #| echo: false
@@ -363,8 +368,8 @@ soe_summary |>
   tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(outcome, summary, result_links))) |>
   gt_theme_mg() |>
   cols_width(
-    outcome ~ px(200),
-    design ~ px(80),
+    outcome ~ px(220),
+    design ~ px(60),
     n_s ~ px(85),
     grade ~ px(60),
     acc ~ px(60),
@@ -460,9 +465,9 @@ kq3_domain |>
   tab_spanner(label = "GRADE Domains", columns = c(rob:other)) |>
   gt_theme_mg() |>
   cols_width(
-    outcome ~ px(200),
+    outcome ~ px(220),
     # n_s ~ px(85),
-    design ~ px(65),
+    design ~ px(60),
     space ~ px(50),
     rob ~ px(120),
     consist ~ px(120),
