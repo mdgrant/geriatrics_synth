@@ -2525,7 +2525,7 @@ pairwise_rct_mort_dat <- pairwise(
 
 <caption_mg> `r figure_ref()` **Risk ratio** for 90-day mortality (regional versus general; randomized clinical trials). </caption_mg>
 
-```{r mort_rct_90d_meta, fig.dim = c(14, 3), fig.align = "center"}
+```{r mort_rct_90d_meta, fig.dim = c(14, 3.1), fig.align = "center"}
 # ```{r nma_dat, out.width = 50%, out.height = 100%}
 mort_meta_dat <- pairwise_rct_mort_dat |> 
   mutate(year = str_extract(study, "\\d{4}")) |> 
@@ -2581,7 +2581,7 @@ forest(mort_rct_meta,
 
 <caption_mg> `r figure_ref()` **Risk difference** for 90-day mortality (regional versus general; randomized clinical trials). </caption_mg>
 
-```{r mort_rct_rd_90dmeta, fig.dim = c(14, 3), fig.align = "center"}
+```{r mort_rct_rd_90dmeta, fig.dim = c(14, 3.1), fig.align = "center"}
 mort_rct_meta <- update(mort_rct_meta, sm = "RD")
 forest(mort_rct_meta,
   allstudies = TRUE,
