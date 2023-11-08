@@ -20,6 +20,14 @@ link-citations: false
 nocite: '@*'
 ---
 
+::: {.callout-note collapse="true"}
+## Recent upates
+
+| Date       | Modification                                                                                                                                                                    |
+|:-----------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 2023-11-08 | Updated to most current included studies. Removed risk of bias tallies from forest plots where not pertinent to outcome. Used weighted risk of bias summary for delirium and added for overall. Added risk differences per 1000 to complications and mortality|
+:::
+
 ## Key Question
 
 Among older patients undergoing surgery and anesthesia, does regional anesthesia as the primary anesthetic technique improve postoperative outcomes compared with general anesthesia?
@@ -593,9 +601,8 @@ forest(gen_reg_delirium_meta,
   addrows.below.overall = 4
 )
 ```
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/>
-In hip fracture subgroup not applying the Hartung-Knapp adjustment — RR 1.03 (95% CI, 0.85–1.24); random effects pooled estimate dominated by Neuman 2021 (74.1%) and Li 2022 (13.0%).<br/>
-`r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, delirium_meta_dat$refid), "; a secondary outcome in ", prim_sec_out_fun(sec_delirium, delirium_meta_dat$refid), ".")`</foot_mg>
+
+<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/> In hip fracture subgroup not applying the Hartung-Knapp adjustment --- RR 1.03 (95% CI, 0.85--1.24); random effects pooled estimate dominated by Neuman 2021 (74.1%) and Li 2022 (13.0%).<br/> `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, delirium_meta_dat$refid), "; a secondary outcome in ", prim_sec_out_fun(sec_delirium, delirium_meta_dat$refid), ".")`</foot_mg>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <caption_mg> `r figure_ref()` General versus regional anesthesia cumulative meta-analysis by study size. </caption_mg>
@@ -627,36 +634,63 @@ forest(gen_reg_delirium_cummeta,
 :::
 
 <!-- ::: {.callout-note collapse="true" appearance="minimal" icon="false"} -->
+
 <!-- #### <caption_mg> General versus regional anesthesia pooled with subgroups (randomized clinical trials). </caption_mg> -->
 
 <!-- ```{r delirium_meta_forest_sub, fig.width = 14, fig.height = 8.7, fig.align = "left", warning = TRUE} -->
+
 <!-- forest(gen_reg_delirium_meta, -->
+
 <!--   allstudies = TRUE, -->
+
 <!--   common = TRUE, -->
+
 <!--   label.e = "Regional", -->
+
 <!--   label.c = "General", -->
+
 <!--   rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"), -->
+
 <!--   rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"), -->
+
 <!--   just.addcols.right = "right", -->
+
 <!--   digits = 2, -->
+
 <!--   digits.tau2 = 1, -->
+
 <!--   overall.hetstat = TRUE, -->
+
 <!--   print.I2.ci = TRUE, -->
+
 <!--   # sortvar = year, -->
+
 <!--   prediction = TRUE, -->
+
 <!--   subgroup = TRUE, -->
+
 <!--   prediction.subgroup = FALSE, -->
+
 <!--   print.subgroup.name = FALSE, -->
+
 <!--   fs.xlab = 11, -->
+
 <!--   pooled.events = TRUE, -->
+
 <!--   print.pval.Q = FALSE, -->
+
 <!--   # xlim = c(0.1, 3), -->
+
 <!--   xlab = "Favors: Regional                          General", -->
+
 <!--   addrows.below.overall = 4 -->
+
 <!-- )   -->
+
 <!-- ``` -->
 
 <!-- <foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg><br/> -->
+
 <!-- ::: -->
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
@@ -682,7 +716,6 @@ legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#A
 ```
 
 <foot_mg> Estimates (odds ratio and 95% CI) from random effects models. Limit meta-anlaysis shown in light grey --- unadjusted `r paste0(digit2(exp(temp_limit_meta$TE.random)), " (", digit2(exp(temp_limit_meta$lower.random)), "–", digit2(exp(temp_limit_meta$upper.random)), ")")`; adjusted for small study effects: `r paste0(digit2(exp(temp_limit_meta$TE.adjust)), " (", digit2(exp(temp_limit_meta$lower.adjust)), "–", digit2(exp(temp_limit_meta$upper.adjust)), ")")`.</foot_mg>
-
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
@@ -948,7 +981,8 @@ forest(gen_reg_dncr_meta,
 )
 
 ```
-<foot_mg> Too few studies to examine small study effects. </foot_mg> 
+
+<foot_mg> Too few studies to examine small study effects. </foot_mg>
 
 ## **Postoperative Neurocognitive Disorder**
 
@@ -1322,6 +1356,7 @@ adl_long_dat |>
     smd ~ px(140)
   ) |>
   tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:smd), rows = str_detect(arm, "Neur"))) |>
+  tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(smd))) |>
   tab_footnote("SMD: standardized mean difference; Neur: neuraxial") |>
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, table))) |>
   tab_footnote("For scale reverse to be consistent with other studies.", locations = cells_body(columns = c(smd), rows = str_detect(study, "Bakker 2014") & arm == "Exp")) |>
@@ -1329,6 +1364,8 @@ adl_long_dat |>
 ```
 
 ## **Complications**
+
+<!-- UPDATED: complications 2023-11-08 -->
 
 ```{r complications_check_missing}
 #| eval: false
@@ -1362,15 +1399,13 @@ complication_all <- c("cardiac", "myoinfarct", "cardarr", "stroke", "kidneyinj",
 
 ```
 
-<caption_mg> `r table_ref()` Reported complications for regional versus general anesthesia — cardiac, stroke, renal, pulmonary, and reintubation. </caption_mg>
+<caption_mg> `r table_ref()` Reported complications for regional versus general anesthesia --- cardiac, stroke, renal, pulmonary, and reintubation. </caption_mg>
 
 ```{r complications}
 #| warning: false
 #| eval: true
 # included complications
 complication_incl <- c("cardiac", "myoinfarct", "cardarr", "stroke", "kidneyinj", "asppneum", "atelec", "pulm", "pneum", "pthorax", "airleak", "pulcongest", "pe", "pinfiltrate", "respfail", "intub", "upperair", "vent48")
-
-# complication_all <- c("medical", "surg", "cardiac", "gastro", "neuro", "pulm", "thromb", "infect", "fall", "stroke", "othcomp", "asppneum", "atelec", "bronch", "cardarr", "myoinfarct", "ssi", "sepsis", "uti", "pneum", "pthorax", "airleak", "pulcongest", "pe", "pinfiltrate", "respfail", "intub", "upperair", "vent48", "kidneyinj", "nerveinj", "clavien1", "clavien2", "clavien3", "clavien4", "clavien5")
 
 complication_fun <- function(var_prefix) {
   dichot_dat %>%
@@ -1426,16 +1461,12 @@ adverse_events_dat <- adverse_events_dat |>
       .default = bar_prop(calc_per, "#A93226"))) |>
   select(refid, year, arm_id, study, study_l, study_compl, arm_n, arm, n, age_table, surgs_single, n_per, bar, rd_ci, complication, design_f_lab, detail_cardiac)
 
-
-# adverse_events_dat |> filter(!is.na(detail_cardiac)) |> select(study, detail_cardiac) |> distinct()
-
 # for summary table
 # adverse_events_dat |> 
 #   group_by(refid, arm_id) |> 
 #   slice(1) |> 
 #   ungroup() |> 
 #   summarise(total = sum(arm_n))
-
 ```
 
 ```{r complications_gt}
@@ -1568,17 +1599,16 @@ complication_bin <- metabin(
 )  
 }
 
-complication_forest_fun <- function(adverse_meta){
+complication_forest_fun <- function(adverse_meta, random = TRUE){
 forest(adverse_meta,
   allstudies = TRUE,
-  random = TRUE,
+  random = random,
   label.e = "Regional ",
   label.c = "General ",
   just.addcols.right = "center",
-  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
-  rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
+  rightcols = c("effect", "ci"),
+  rightlabs = c("RR", "(95% CI)"),
   # just.addcols.right = "right",
-
   pool.events = TRUE, 
   digits.TE = 3,
   digits.tau2 = 1,
@@ -1586,7 +1616,7 @@ forest(adverse_meta,
   print.I2.ci = TRUE,
   prediction = TRUE,
   fs.xlab = 11,
-  pscale = 100,
+  # pscale = 100,
   pooled.events = TRUE,
   digits = 2, 
   print.pval.Q = FALSE,
@@ -1596,90 +1626,179 @@ forest(adverse_meta,
 )
 }
 
+complication_meta_riskdiff_fun <- function(compl_label, use_hakn = TRUE, predictive = TRUE){
+meta_dat <- adverse_meta_wide_dat |> 
+    filter(complication %in% compl_label)
+
+complication_bin <- metabin(
+  n_Reg, arm_n_Reg, n_Gen, arm_n_Gen,
+  data = meta_dat,
+  studlab = study,
+  method = "MH",
+  method.tau = "REML",
+  sm = "RD",
+  prediction = predictive,  
+  hakn = use_hakn,
+  allstudies = FALSE,
+)  
+}
+
+complication_forest_riskdiff_fun <- function(adverse_meta, random = TRUE){
+forest(adverse_meta,
+  allstudies = TRUE,
+  random = random,
+  label.e = "Regional ",
+  label.c = "General ",
+  just.addcols.right = "center",
+  rightcols = c("effect", "ci"),
+  rightlabs = c("RD", "(95% CI)"),
+  # just.addcols.right = "right",
+  pool.events = TRUE, 
+  digits.TE = 3,
+  digits.tau2 = 1,
+  overall = TRUE,
+  print.I2.ci = TRUE,
+  prediction = TRUE,
+  fs.xlab = 11,
+  pscale = 1000,
+  pooled.events = TRUE,
+  digits = 1, 
+  print.pval.Q = FALSE,
+  xlim = c(-40, 40),
+  xlab = "Favors: Regional                             General",
+  addrows.below.overall = 4
+)
+}
 ```
-
-<!-- #### Cardiac Composite -->
-
-<!-- <caption_mg> `r figure_ref()` Risk ratio for composite measures of cardiac complications (regional versus general anesthesia; randomized clinical trials). </caption_mg> -->
-
-<!-- ```{r complication_cardiac,  fig.width = 14, fig.height = 4.5, fig.align = "left"} -->
-<!-- temp_meta <- complication_meta_fun("Cardiac") -->
-<!-- complication_forest_fun(temp_meta) -->
-<!-- ``` -->
-<!-- <foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> -->
-<!-- Similar arms combined for Shin 2020 and Bielka 2021. -->
-<!-- </foot_mg>  -->
 
 #### Myocardial Infarction
 
-<caption_mg> `r figure_ref()` Risk ratio for myocardial infarction (regional versus general anesthesia; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` **Risk ratio** for myocardial infarction (regional versus general anesthesia; randomized clinical trials). </caption_mg>
 
-```{r complication_mi,  fig.width = 14, fig.height = 3.5, fig.align = "left"}
+```{r complication_mi, fig.width = 14, fig.height = 3.7}
+#| fig.align = "left"
 temp_meta <- complication_meta_fun("MI")
 complication_forest_fun(temp_meta)
 ```
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
-Similar arms combined for Liang 2017.
-</foot_mg> 
+
+<foot_mg> Similar arms combined for Liang 2017.</foot_mg>
+
+<caption_mg> `r figure_ref()` **Risk difference** for myocardial infarction (regional versus general anesthesia; randomized clinical trials). </caption_mg>
+
+```{r complication_mi_rd, fig.width = 14, fig.height = 3.7, fig.align = "left"}
+temp_meta <- complication_meta_riskdiff_fun("MI")
+complication_forest_riskdiff_fun(temp_meta)
+```
+
+<foot_mg> Similar arms combined for Liang 2017.</foot_mg>
+
+#### Cardiac Arrest
+
+<caption_mg> `r figure_ref()` **Risk difference** for cardiac arrest (regional versus general anesthesia; randomized clinical trials). </caption_mg>
+
+```{r complication_cardarr_rd, fig.width = 14, fig.height = 2.5, fig.align = "left"}
+temp_meta <- complication_meta_riskdiff_fun("Cardiac Arrest", use_hakn = FALSE, predictive = FALSE)
+complication_forest_riskdiff_fun(temp_meta, random = FALSE)
+```
 
 #### Stroke
 
-<caption_mg> `r figure_ref()` Risk ratio for stroke (regional versus general anesthesia; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` **Risk ratio** for stroke (regional versus general anesthesia; randomized clinical trials). </caption_mg>
 
-```{r complication_stroke,  fig.width = 14, fig.height = 3.5, fig.align = "left"}
+```{r complication_stroke, fig.width = 14, fig.height = 3.7, fig.align = "left"}
 temp_meta <- complication_meta_fun("Stroke", use_hakn = FALSE, predictive = FALSE)
 complication_forest_fun(temp_meta)
+
 ```
-<foot_mg> RR: risk ratio; ; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
-</foot_mg> 
+
+<caption_mg> `r figure_ref()` **Risk difference** for stroke (regional versus general anesthesia; randomized clinical trials). </caption_mg>
+
+```{r complication_stroke_rd, fig.width = 14, fig.height = 3.7, fig.align = "left"}
+temp_meta <- complication_meta_riskdiff_fun("Stroke", use_hakn = FALSE, predictive = FALSE)
+complication_forest_riskdiff_fun(temp_meta)
+```
 
 #### Renal
 
-<caption_mg> `r figure_ref()` Risk ratio for renal complications (regional versus general anesthesia; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` **Risk ratio** for renal complications (regional versus general anesthesia; randomized clinical trials). </caption_mg>
 
-```{r complication_aki,  fig.width = 14, fig.height = 3.25, fig.align = "left"}
+```{r complication_aki, fig.width = 14, fig.height = 3.25, fig.align = "left"}
 temp_meta <- complication_meta_fun("Renal", use_hakn = FALSE, predictive = FALSE)
 complication_forest_fun(temp_meta)
 ```
-<foot_mg> RR: risk ratio; ; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
-</foot_mg> 
+
+<caption_mg> `r figure_ref()` **Risk difference** for renal complications (regional versus general anesthesia; randomized clinical trials). </caption_mg>
+
+```{r complication_aki_rd,  fig.width = 14, fig.height = 3.25, fig.align = "left"}
+temp_meta <- complication_meta_riskdiff_fun("Renal", use_hakn = FALSE, predictive = FALSE)
+complication_forest_riskdiff_fun(temp_meta)
+```
 
 #### Pulmonary
 
-<caption_mg> `r figure_ref()` Risk ratio for pulmonary complications (regional versus general anesthesia; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` **Risk ratio** for pulmonary complications (regional versus general anesthesia; randomized clinical trials). </caption_mg>
 
-```{r complication_pulmonary,  fig.width = 14, fig.height = 2.75, fig.align = "left"}
+```{r complication_pulmonary, fig.width = 14, fig.height = 2.75, fig.align = "left"}
 temp_meta <- complication_meta_fun("Pulmonary", use_hakn = FALSE, predictive = FALSE)
-complication_forest_fun(temp_meta)
+complication_forest_fun(temp_meta, random = FALSE)
 ```
-<foot_mg> RR: risk ratio; ; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
-</foot_mg> 
+
+<caption_mg> `r figure_ref()` **Risk difference** for pulmonary complications (regional versus general anesthesia; randomized clinical trials). </caption_mg>
+
+```{r complication_pulmonary_rd, fig.width = 14, fig.height = 2.75, fig.align = "left"}
+temp_meta <- complication_meta_riskdiff_fun("Pulmonary", use_hakn = FALSE, predictive = FALSE)
+complication_forest_riskdiff_fun(temp_meta, random = FALSE)
+```
 
 #### Pneumonia
 
-<caption_mg> `r figure_ref()` Risk ratio for pneumonia (regional versus general anesthesia; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` **Risk ratio** for pneumonia (regional versus general anesthesia; randomized clinical trials). </caption_mg>
 
-```{r complication_pneumonia,  fig.width = 14, fig.height = 4, fig.align = "left"}
+```{r complication_pneumonia, fig.width = 14, fig.height = 4, fig.align = "left"}
 temp_meta <- complication_meta_fun("Pneumonia", use_hakn = TRUE, predictive = FALSE)
 complication_forest_fun(temp_meta)
 ```
-<foot_mg> RR: risk ratio; ; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
-Similar arms combined for Bielka 2021 and Liang 2017.
-</foot_mg> 
+
+<foot_mg> Similar arms combined for Bielka 2021 and Liang 2017. </foot_mg>
+
+<caption_mg> `r figure_ref()` **Risk difference** for pneumonia (regional versus general anesthesia; randomized clinical trials). </caption_mg>
+
+```{r complication_pneumonia_rd, fig.width = 14, fig.height = 4, fig.align = "left"}
+temp_meta <- complication_meta_riskdiff_fun("Pneumonia", use_hakn = TRUE, predictive = FALSE)
+complication_forest_riskdiff_fun(temp_meta)
+```
+
+<foot_mg> Similar arms combined for Bielka 2021 and Liang 2017. </foot_mg>
+
+```{r}
+#| eval: false
+# pulmonary congestion
+complication_meta_riskdiff_fun("Pulmonary Congestion", use_hakn = TRUE, predictive = FALSE)
+# reintubation
+complication_meta_riskdiff_fun("Reintubation", use_hakn = TRUE, predictive = FALSE)
+```
 
 #### Pulmonary Embolism
 
-<caption_mg> `r figure_ref()` Risk ratio for pulmonary embolism (regional versus general anesthesia; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` **Risk ratio** for pulmonary embolism (regional versus general anesthesia; randomized clinical trials). </caption_mg>
 
-```{r complication_pe,  fig.width = 14, fig.height = 4, fig.align = "left"}
+```{r complication_pe, fig.width = 14, fig.height = 4, fig.align = "left"}
 temp_meta <- complication_meta_fun("PE", use_hakn = TRUE, predictive = FALSE)
 complication_forest_fun(temp_meta)
 ```
-<foot_mg> RR: risk ratio; ; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
-Similar arms combined for Liang 2017.
-</foot_mg> 
 
-```{r complication_pulmonary-congestion,  fig.width = 14, fig.height = 2, fig.align = "left"}
+<foot_mg> Similar arms combined for Liang 2017.</foot_mg>
+
+<caption_mg> `r figure_ref()` **Risk difference** for pulmonary embolism (regional versus general anesthesia; randomized clinical trials). </caption_mg>
+
+```{r complication_pe_rd, fig.width = 14, fig.height = 4, fig.align = "left"}
+temp_meta <- complication_meta_riskdiff_fun("PE", use_hakn = TRUE, predictive = FALSE)
+complication_forest_riskdiff_fun(temp_meta)
+```
+
+<foot_mg> Similar arms combined for Liang 2017.</foot_mg>
+
+```{r complication_pulmonary-congestion, fig.width = 14, fig.height = 2, fig.align = "left"}
 #| eval: false
 temp_meta <- complication_meta_fun("Pulmonary Congestion", use_hakn = FALSE, predictive = FALSE)
 complication_forest_fun(temp_meta)
@@ -1689,6 +1808,8 @@ complication_forest_fun(temp_meta)
 ```
 
 ## **Patient Satisfaction**
+
+<!-- UPDATED: patient satisfaction 2023-11-08 -->
 
 <caption_mg> `r table_ref()` Patient satisfaction according to regional or general anesthesia. </caption_mg>
 
@@ -1800,7 +1921,7 @@ satis_dat_gt |>
 
 ### *Pooled*
 
-<caption_mg> `r figure_ref()` Risk difference in patient satisfaction (general versus regional anesthesia; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` Risk ratio in patient satisfaction (general versus regional anesthesia; randomized clinical trials). </caption_mg>
 
 ```{r satis_rct_meta, fig.dim = c(14, 4.5), fig.align = "center"}
 satis_meta_dat <- satis_dat_gt |> 
@@ -1826,8 +1947,8 @@ forest(satis_meta,
   # random = FALSE,
   label.e = "Regional     ",
   label.c = "General     ",
-  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
-  rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
+  rightcols = c("effect", "ci"),
+  rightlabs = c("RR", "(95% CI)"),
   just.addcols.right = "right",
   colgap.right = "4mm",
   colgap.forest = "5mm",
@@ -1835,24 +1956,23 @@ forest(satis_meta,
   digits.tau2 = 1,
   overall.hetstat = TRUE,
   print.I2.ci = TRUE,
-  prediction = FALSE,
   fs.xlab = 11,
   pooled.events = TRUE,
   pscale = 100,
   digits = 2, 
   print.pval.Q = FALSE,
-  xlim = c(0.7, 1.8),
-  at = c(0.7, 0.85, 1, 1.2, 1.5, 1.8),
+  prediction = TRUE,
+  xlim = c(0.8, 1.8),
+  at = c(0.8, 1, 1.3, 1.8),
   xlab = "Favors: General                       Regional       ",
   addrows.below.overall = 4
 )
 
 ```
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg> 
-
-<br/>
 
 ## **Length of Stay**
+
+<!-- UPDATED: length of stay 2023-11-08 -->
 
 <caption_mg> `r table_ref()` Length of stay according to procedure classification and comparator. </caption_mg>
 
@@ -2002,25 +2122,27 @@ forest(los_meta,
   # digits.pval.Q = 2,
   print.I2.ci = TRUE,
   fs.xlab = 10,
-  just.addcols.right = "right",
+  just.addcols.right = "left",
   print.pval.Q = FALSE,
   # sortvar = -TE,
   xlim = c(-10, 10),
   # at = c(-80, -60, -40, -20, 0, 20, 40),
-  rightcols = c("effect", "ci", "surgs_single", "D1", "D2", "D3", "D4", "D5", "Overall"),
-  rightlabs = c("MD ", "(95% CI)   ", "Procedure", "D1", "D2", "D3", "D4", "D5", "All"),
+  rightcols = c("effect", "ci", "surgs_single"),
+  rightlabs = c("MD ", "(95% CI)   ", "Procedure"),
   xlab = "Favors: Reg                                      Inhaled           ",
   smlab = "Mean Difference (days)",
   addrows.below.overall = 4,
 )
 
 ```
-<foot_mg> MD: mean difference; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
-When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, range, or between-arm, p-value.  </foot_mg> 
+
+<foot_mg> When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, range, or between-arm, p-value. </foot_mg>
 
 <br/>
 
 ## **Discharge Location**
+
+<!-- UPDATED: discharge location 2023-11-08 -->
 
 <caption_mg> `r table_ref()` Discharge location in studies comparing expanded with standard preoperative assessments. </caption_mg>
 
@@ -2094,10 +2216,10 @@ dc_loc_dat |>
     rr_ci            ~ px(120)
     ) |> 
   tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(study, age_table, arm))) |>
-  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(rr_ci))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(rr_ci, country))) |>
   tab_style(style = cell_text(align = "right"),  locations = cells_column_labels(columns = c(arm_n, disch_nper))) |>
-  tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study, arm, bar))) |>
-  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rr_ci))) |>
+  tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study, age_table, arm, bar))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rr_ci, country))) |>
   tab_style(style = cell_text(align = "right"),  locations = cells_body(columns = c(disch_nper))) |>
   tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n, arm, age_table, disch_nper), rows = str_detect(arm, "Neur"))) |> 
   tab_footnote("Gen: general; Neur: neuraxial; RR: risk ratio.") |> 
@@ -2105,9 +2227,9 @@ dc_loc_dat |>
 
 ```
 
-
-
 ## **Mortality**
+
+<!-- UPDATED: mortality 2023-11-08 -->
 
 ```{r mortality_data}
 #| eval: true
@@ -2266,7 +2388,7 @@ mortality_rct_meta_dat <- mortality_dat |>
     arm_n = case_when(
       study == "Shin 2020" & arm_id == 2 ~ collapse_dichot(dichot_dat, "Shin 2020", c(1, 2), arm_n),
       .default = arm_n
-    )
+    ),
   ) |>
   filter(!(study %in% c("Shin 2020") & arm_id %in% c(2))) |> 
   select(refid, study, arm, mort_n, arm_n, mort_period) 
@@ -2284,15 +2406,18 @@ pairwise_rct_mort_dat <- pairwise(
 
 ```
 
-<caption_mg> `r figure_ref()` Risk ratio for hospital or 30-day mortality (regional versus general; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` **Risk ratio** for hospital or 30-day mortality (regional versus general; randomized clinical trials). </caption_mg>
 
-```{r mort_rct_meta, fig.dim = c(14, 5), fig.align = "center"}
-# ```{r nma_dat, out.width = 50%, out.height = 100%}
-mort_meta_dat <- pairwise_rct_mort_dat |> 
-  mutate(year = str_extract(study, "\\d{4}")) |> 
-  left_join(rob2_meta_dat, by = "refid") |> 
-  left_join(surgs |> select(refid, surgs_single), by = "refid") |> 
-  select(study, year, event2, n2, event1, n1, surgs_single, D1:Overall, mort_period, refid)
+```{r mort_rct_meta, fig.dim = c(14, 7.7), fig.align = "center"}
+mort_meta_dat <- pairwise_rct_mort_dat |>
+  left_join(rob2_meta_dat, by = "refid") |>
+  left_join(surgs |> select(refid, surgs_single), by = "refid") |>
+  mutate(
+    year = str_extract(study, "\\d{4}"),
+    surg_hip_oth = ifelse(refid %in% ortho_hipfx_only_refid, "Hip fx", "Other"),
+    surgs_single = ifelse(surg_hip_oth == "Hip fx", "Hip fx", surgs_single)
+  ) |>
+  select(study, year, event2, n2, event1, n1, D1:Overall, mort_period, refid, surg_hip_oth, surgs_single) 
 
 # total_meta(mort_meta_dat)
 # refid_meta_fun(mort_meta_dat)
@@ -2300,11 +2425,12 @@ mort_meta_dat <- pairwise_rct_mort_dat |>
 mort_rct_meta <- metabin(event2, n2, event1, n1,
   data = mort_meta_dat,
   studlab = study,
+  subgroup = surg_hip_oth,
   # cluster = refid,
   sm = "RR",
   method = "MH",
   method.tau = "REML",
-  hakn = TRUE,
+  hakn = FALSE,
   prediction = FALSE,
   allstudies = FALSE,
 )
@@ -2315,14 +2441,16 @@ forest(mort_rct_meta,
   # random = FALSE,
   label.e = "Regional",
   label.c = "General",
-  rightcols = c("effect", "ci", "surgs_single", "D1", "D2", "D3", "D4", "D5", "Overall"),
-  rightlabs = c("RR", "(95% CI)", "Procedure", "D1", "D2", "D3", "D4", "D5", "All"),
-  just.addcols.right = "right",
+  rightcols = c("effect", "ci", "surgs_single"),
+  rightlabs = c("RR", "(95% CI)", "Procedure"),
+  just.addcols.right = "left",
   digits.TE = 3,
   digits.tau2 = 1,
   overall.hetstat = TRUE,
   print.I2.ci = TRUE,
   prediction = TRUE,
+  prediction.subgroup = TRUE,
+  print.subgroup.name = FALSE,
   fs.xlab = 11,
   pooled.events = TRUE,
   # pscale = 10000,
@@ -2332,9 +2460,39 @@ forest(mort_rct_meta,
   xlab = "Favors: Regional                      General     ",
   addrows.below.overall = 4
 )
+```
+<foot_mg> Hartung-Knapp adjustment not applied above. Overall random effects estimate with adjustment RR 0.68 (95% CI, 0.43–1.07) </foot_mg> 
+
+<caption_mg> `r figure_ref()` **Risk difference** for hospital or 30-day mortality (regional versus general; randomized clinical trials). </caption_mg>
+
+```{r mort_rct_rd_meta, fig.dim = c(14, 7.7), fig.align = "center"}
+mort_rct_meta <- update(mort_rct_meta, sm = "RD", hakn = TRUE)
+forest(mort_rct_meta,
+  allstudies = TRUE,
+  # random = FALSE,
+  label.e = "Regional",
+  label.c = "General",
+  rightcols = c("effect", "ci", "surgs_single"),
+  rightlabs = c("RD", "(95% CI)", "Procedure"),
+  just.addcols.right = "left",
+  digits.TE = 3,
+  digits.tau2 = 1,
+  overall.hetstat = TRUE,
+  print.I2.ci = TRUE,
+  prediction = TRUE,
+  prediction.subgroup = TRUE,
+  print.subgroup.name = FALSE,
+  fs.xlab = 11,
+  pooled.events = TRUE,
+  pscale = 1000,
+  digits = 1, 
+  print.pval.Q = FALSE,
+  xlim = c(-50, 50),
+  xlab = "Favors: Regional                      General     ",
+  addrows.below.overall = 4
+)
 
 ```
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg> 
 
 ```{r mortality_hosp_90d_meta}
 #| eval: true
@@ -2365,15 +2523,20 @@ pairwise_rct_mort_dat <- pairwise(
 )
 ```
 
-<caption_mg> `r figure_ref()` Risk ratio for 90-day mortality (regional versus general; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` **Risk ratio** for 90-day mortality (regional versus general; randomized clinical trials). </caption_mg>
 
 ```{r mort_rct_90d_meta, fig.dim = c(14, 3), fig.align = "center"}
 # ```{r nma_dat, out.width = 50%, out.height = 100%}
 mort_meta_dat <- pairwise_rct_mort_dat |> 
   mutate(year = str_extract(study, "\\d{4}")) |> 
-  left_join(rob2_meta_dat, by = "refid") |> 
-  left_join(surgs |> select(refid, surgs_single), by = "refid") |> 
-  select(study, year, event2, n2, event1, n1, surgs_single, D1:Overall, mort_period, refid)
+  left_join(rob2_meta_dat, by = "refid") |>
+  left_join(surgs |> select(refid, surgs_single), by = "refid") |>
+  mutate(
+    year = str_extract(study, "\\d{4}"),
+    surg_hip_oth = ifelse(refid %in% ortho_hipfx_only_refid, "Hip fx", "Other"),
+    surgs_single = ifelse(surg_hip_oth == "Hip fx", "Hip fx", surgs_single)
+  ) |>
+  select(study, year, event2, n2, event1, n1, D1:Overall, mort_period, refid, surg_hip_oth, surgs_single) 
 
 # total_meta(mort_meta_dat)
 # refid_meta_fun(mort_meta_dat)
@@ -2396,9 +2559,9 @@ forest(mort_rct_meta,
   # random = FALSE,
   label.e = "Regional",
   label.c = "General",
-  rightcols = c("effect", "ci", "surgs_single", "D1", "D2", "D3", "D4", "D5", "Overall"),
-  rightlabs = c("RR", "(95% CI)", "Procedure", "D1", "D2", "D3", "D4", "D5", "All"),
-  just.addcols.right = "right",
+  rightcols = c("effect", "ci", "surgs_single"),
+  rightlabs = c("RR", "(95% CI)", "Procedure"),
+  just.addcols.right = "left",
   digits.TE = 3,
   digits.tau2 = 1,
   overall.hetstat = TRUE,
@@ -2415,22 +2578,52 @@ forest(mort_rct_meta,
 )
 
 ```
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg> 
+
+<caption_mg> `r figure_ref()` **Risk difference** for 90-day mortality (regional versus general; randomized clinical trials). </caption_mg>
+
+```{r mort_rct_rd_90dmeta, fig.dim = c(14, 5), fig.align = "center"}
+mort_rct_meta <- update(mort_rct_meta, sm = "RD")
+forest(mort_rct_meta,
+  allstudies = TRUE,
+  # random = FALSE,
+  label.e = "Regional",
+  label.c = "General",
+  rightcols = c("effect", "ci", "surgs_single"),
+  rightlabs = c("RD", "(95% CI)", "Procedure"),
+  just.addcols.right = "left",
+  digits.TE = 3,
+  digits.tau2 = 1,
+  overall.hetstat = TRUE,
+  print.I2.ci = TRUE,
+  prediction = TRUE,
+  fs.xlab = 11,
+  pooled.events = TRUE,
+  pscale = 1000,
+  digits = 1, 
+  print.pval.Q = FALSE,
+  xlim = c(-50, 50),
+  xlab = "Favors: Regional                      General     ",
+  addrows.below.overall = 4
+)
+```
 
 ## **Risk of Bias**
 
-### Randomized
+<caption_mg> `r figure_ref()` Summary risk of bias assessments for randomized clinical trials (unweighted). </caption_mg>
 
-<caption_mg> `r figure_ref()` Summary risk of bias assessments for randomized clinical trials. </caption_mg>
-
-```{r rob2_summary_overall, fig.height = 6, out.width = "60%"}
+```{r rob2_summary_overall, fig.height = 3, out.width = "60%"}
 rob_temp_dat <- rob2_dat |>
   filter(!is.na(Study) & refid %in% kq3_refid) |> 
   left_join(study_char_dat |> select(refid, n_analyze), by = "refid") |>
   select(-refid)
 
-rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind", weighted = TRUE, Weight = n_analyze)
 rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind", weighted = FALSE)
+```
+
+<caption_mg> `r figure_ref()` Summary risk of bias assessments for randomized clinical trials (weighted by sample size). </caption_mg>
+
+```{r rob2_summary_overall_weighted, fig.height = 3, out.width = "60%"}
+rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind", weighted = TRUE, Weight = n_analyze)
 ```
 
 <caption_mg> `r figure_ref()` Risk of bias assessments for randomized clinical trials. </caption_mg>

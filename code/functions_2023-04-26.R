@@ -428,10 +428,11 @@ adl_transpose_fun <- function(data, obs_number){
 # calculate relative risk, ci, and format no refid
 rr_ci_fun <- function(event1, n1, event2, n2, digits = 2) {
   a <- meta::metabin(event1, n1, event2, n2, sm = "RR")
-  with(a, paste0(
+  rr_ci <- with(a, paste0(
     sprintf(paste0("%.", digits, "f"), round(exp(TE), digits)), " (",
     sprintf(paste0("%.", digits, "f"), round(exp(lower), digits)), "-",
     sprintf(paste0("%.", digits, "f"), round(exp(upper), digits)), ")"))
+  ifelse(event1 == 0 | event2 == 0, "Not estimated", rr_ci)
 }
 
 ## or_ci_fun ------------------------------------------ (2023-03-06 22:53) @----

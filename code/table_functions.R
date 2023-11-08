@@ -419,6 +419,18 @@ rob_summary_fun <- function(rob_refids) {
   rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind", weighted = FALSE)
 }
 
+# weighted requires refid in meta object
+rob_summary_meta_weighted_fun <- function(meta) {
+  add_weights <- tibble(meta$data$refid, meta$w.random / sum(meta$w.random)) |>
+    set_names("refid", "weight")
+  rob_temp_dat <- rob2_dat |>
+    filter(refid %in% meta$data$refid) |>
+    select(refid, Study, D1:Overall) |>
+    left_join(add_weights, by = "refid") |>
+    select(-refid)
+  rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind", weighted = TRUE, Weight = weight)
+}
+
 robinsi_summary_fun <- function(robinsi_refids) {
   rob_temp_dat <- robinsi_dat |>
     filter(refid %in% {{ robinsi_refids }}) |>

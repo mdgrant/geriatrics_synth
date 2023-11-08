@@ -74,7 +74,6 @@ nr_trial_refid <- study_char_dat |>
   filter(design_f %in% c("nr_trial")) |> 
   pull(refid)
 
-
 # quasi experimental refids
 quasi_refid <- study_char_dat |> 
   filter(design_f %in% c("quasi_exp")) |> 
@@ -84,6 +83,8 @@ quasi_refid <- study_char_dat |>
 obs_refid <- study_char_dat |> 
   filter(!design_f %in% c("rct", "nr_trial", "cluster", "crossover", "quasi_exp")) |> 
   pull(refid)
+
+study_char_dat |> tabyl(design_f)
 
 # later add study arm data
 # study_arm_dat_trial <- study_arm_dat |> 
