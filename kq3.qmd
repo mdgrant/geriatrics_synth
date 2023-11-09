@@ -21,11 +21,12 @@ nocite: '@*'
 ---
 
 ::: {.callout-note collapse="true"}
-## Recent upates
+## Recent upates (last 2023-11-09 13:26)
 
 | Date       | Modification                                                                                                                                                                    |
 |:-----------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 2023-11-08 | Updated to most current included studies. Removed risk of bias tallies from forest plots where not pertinent to outcome. Used weighted risk of bias summary for delirium and added for overall. Added risk differences per 1000 to complications and mortality|
+| 2023-11-08 | Updated to most current included studies. Removed risk of bias tallies from forest plots where not pertinent to outcome. Used weighted risk of bias summary for delirium and added for overall. Added risk differences per 1000 to complications and mortality.|
+| 2023-11-09 | Added balance tables (also appearing in appendix).|
 :::
 
 ## Key Question
@@ -70,7 +71,6 @@ study_arm_dat <- data_kq(study_arm_dat, kq3_refid) |>
   ) |>
   relocate(kq3_anesth_neur:kq3_anesth_gen_type, .before = kq3_gen_type)
 
-    
 contin_dat <- data_kq(contin_dat, kq3_refid) |>
   left_join(study_arm_dat |> select(refid, arm_id, arm), by = c("refid", "arm_id")) |>
   relocate(arm, .after = arm_id)
@@ -99,6 +99,157 @@ likert_dat <- data_kq(likert_dat, kq3_refid) |>
 kq3_refid[kq3_refid %in% delirium_refid]
 kq3_refid[kq3_refid %in% cogfunc_refid]
 kq3_refid[!kq3_refid %in% c(delirium_refid, cogfunc_refid)]
+```
+
+## Balance Tables
+
+<font size = 4> Benefits, harms, and strength of evidence (GRADE) for regional versus general anesthesia. </font>
+
+```{r reg_gen_balance}
+#| warning: false
+reg_gen_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "RegionalGeneral", range = "B4:L21") |>
+  remove_empty(which = "cols") |>
+  clean_names() |>
+  rename(est = estimate_95_percent_ci) |>
+  # filter(!if_all(rct:est, ~ is.na(.x))) |>
+  mutate(
+    # group = ifelse(outcome == "Patient satisfaction", "Patient-reported", "Clinical"),
+    across(everything(), ~ str_remove(.x, "‡|†|\\*")),
+    # grade = case_when(
+    #   grade == "Very low" ~ vlow,
+    #   grade == "Low" ~ low,
+    #   grade == "Moderate" ~ mod,
+    #   grade == "High" ~ high,
+    #   grade == "Low/very low" ~ low_very,
+    #   .default = grade
+    # ),
+    event_e = ifelse(!is.na(n_reg), paste0(events_reg, " (", n_reg, ")"), NA),
+    event_c = ifelse(!is.na(n_gen), paste0(events_gen, " (", n_gen, ")"), NA),
+    across(c(event_e, event_c), ~ str_remove(.x, "NA "))
+  ) |> 
+  relocate(c(event_e, event_c), .after = rct) |> 
+  select(-c(events_reg:n_gen, grade_2))
+
+reg_gen_dat |>
+  gt(id = "one") |>
+  cols_label(
+    outcome  = "Outcome",
+    rct      = "RCT",
+    event_e  = "N (Total)",
+    event_c  = "N (Total)",
+    # n        = "    N",
+    grade    = "GRADE",
+    measure  = "Effect",
+    est      = "Estimate (95% CI)"
+  ) |>
+  fmt_markdown(columns = c(grade)) |>
+  cols_hide(n) |>
+  fmt_integer(use_seps = TRUE, sep_mark = ",") |>
+  gt_theme_mg() |>
+  cols_width(
+    outcome ~ px(210),
+    rct     ~ px(40),
+    # n       ~ px(65),
+    event_e ~ px(100),
+    event_c ~ px(100),
+    grade   ~ px(100),
+    measure ~ px(45),
+    est     ~ px(140)
+  ) |> 
+  sub_missing(columns = everything(), missing_text = "") |>
+  tab_spanner(label = "Regional", columns = c(event_e), level = 1) |>
+  tab_spanner(label = "General", columns = c(event_c), level = 1) |>
+  opt_footnote_marks(marks = "standard") |> 
+  tab_style(style = cell_text(align = "center"),        locations = cells_column_labels(columns = c(event_c, event_e))) |>
+  tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(n, grade, rct))) |>
+  # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c(est))) |>
+  tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(measure))) |>
+  tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(grade, rct))) |>
+  tab_style(style = cell_text(indent = px(10)),       locations = cells_body(columns = c(outcome), rows = outcome %in% c("All procedures", "Hip fracture", "Other"))) |>
+  tab_footnote(md("RCT: randomized clinical trial; [GRADE: Grades of Recommendation, Assessment, Development, and Evaluation](soe_gt.html#grade); RR: risk ratio; RD‰: risk difference per 1000.")) |>
+  # tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |> 
+  # tab_footnote("Complications include bradycardia, tachycardia, arrhythmia, or unspecified.", locations = cells_body(columns = c(outcome), rows = outcome == "Cardiac complications")) |> 
+  tab_footnote("Studies reported 0 and 2 events.", locations = cells_body(columns = c(est), rows = outcome == "Cardiac arrest"), placement = "right") |> 
+  tab_footnote(md("[Comparing higher/highest category or categories compared with lower ones.](kq3.html#patient-satisfaction)"), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |> 
+  # tab_footnote("Cardiovascular, pulmonary, and acute kidney injury.", locations = cells_body(columns = c(outcome), rows = outcome == "Complications")) |> 
+  tab_footnote("Complications reported variously across the 17 trials. ", locations = cells_body(columns = c(outcome), rows = outcome == "Complications"), placement = "right") 
+
+```
+
+<font size = 4> Included complications and strength of evidence (GRADE) for regional versus general anesthesia. </font>
+
+```{r reg_gen_complications}
+#| warning: false
+reg_gen_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "RegionalGeneral", range = "B33:L50") |>
+  remove_empty(which = "cols") |>
+  clean_names() |>
+  rename(est = estimate_95_percent_ci) |>
+  filter(!if_all(rct:est, ~ is.na(.x))) |>
+  mutate(
+    # group = ifelse(outcome == "Patient satisfaction", "Patient-reported", "Clinical"),
+    across(everything(), ~ str_remove(.x, "‡|†|\\*")),
+    # grade = case_when(
+    #   grade == "Very low" ~ vlow,
+    #   grade == "Low" ~ low,
+    #   grade == "Moderate" ~ mod,
+    #   grade == "High" ~ high,
+    #   grade == "Low/very low" ~ low_very,
+    #   .default = grade
+    # ),
+    event_e = ifelse(!is.na(n_reg), paste0(events_reg, " (", n_reg, ")"), NA),
+    event_c = ifelse(!is.na(n_gen), paste0(events_gen, " (", n_gen, ")"), NA),
+    across(c(event_e, event_c), ~ str_remove(.x, "NA "))
+  ) |> 
+  relocate(c(event_e, event_c), .after = rct) |> 
+  select(-c(events_reg:n_gen, grade_2))
+
+reg_gen_dat |>
+  gt(id = "one") |>
+  cols_label(
+    outcome  = "Outcome",
+    rct      = "RCT",
+    event_e  = "N (Total)",
+    event_c  = "N (Total)",
+    # n        = "    N",
+    grade    = "GRADE",
+    measure  = "Effect",
+    est      = "Estimate (95% CI)"
+  ) |>
+  fmt_markdown(columns = c(grade, est)) |>
+  cols_hide(n) |>
+  fmt_integer(use_seps = TRUE, sep_mark = ",") |>
+  gt_theme_mg() |>
+  cols_width(
+    outcome ~ px(210),
+    rct     ~ px(40),
+    # n       ~ px(65),
+    event_e ~ px(100),
+    event_c ~ px(100),
+    grade   ~ px(100),
+    measure ~ px(45),
+    est     ~ px(140)
+  ) |> 
+  sub_missing(columns = everything(), missing_text = "") |>
+  tab_spanner(label = "Regional", columns = c(event_e), level = 1) |>
+  tab_spanner(label = "General", columns = c(event_c), level = 1) |>
+  opt_footnote_marks(marks = "standard") |> 
+  tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(event_c, event_e))) |>
+  tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(n, grade, rct))) |>
+  # tab_style(style = cell_text(align = "right"),       locations = cells_body(columns = c(est))) |>
+  tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(measure, est))) |>
+  tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(grade, rct))) |>
+  tab_footnote(md("RCT: randomized clinical trial; [GRADE: Grades of Recommendation, Assessment, Development, and Evaluation](soe_gt.html#grade); RR: risk ratio; RD‰: risk difference per 1000.")) |>
+  tab_footnote("Fixed/common effects models when 2 studies.", locations = cells_column_labels(columns = measure)) |>
+  # tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |> 
+  # tab_footnote("Complications as reported included bradycardia (4 studies); unspecified (2 studies); tachycardia (1 study); myocardial infarction, heart failure, or new onset arrhythmia (1 study).", locations = cells_body(columns = c(outcome), rows = outcome == "Cardiac complications")) |> 
+  # tab_footnote("Studies reported 0 and 2 events.", locations = cells_body(columns = c(est), rows = outcome == "Cardiac arrest"), placement = "right") |>
+  tab_footnote(md("[Comparing higher/highest category or categories compared with lower ones.](kq3.html#patient-satisfaction)"), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |> 
+  tab_footnote("Cardiovascular, pulmonary, and acute kidney injury.", locations = cells_body(columns = c(outcome), rows = outcome == "Complications")) |> 
+  tab_footnote("Complications reported variously across the 17 trials. ", locations = cells_body(columns = c(rct), rows = outcome == "Complications"), placement = "right") |> 
+  tab_footnote("One study no events; the other two. ", locations = cells_body(columns = c(est), rows = outcome == "cardiac arrest"), placement = "right") |> 
+  tab_footnote("Complications reported included pneumonia, respiratory failure, or unspecified.", locations = cells_body(columns = c(outcome), rows = outcome == "Pulmonary complications")) 
+  
+
 ```
 
 ## Outcome Importance
@@ -1125,7 +1276,7 @@ ncd_dat |>
 
 <!-- UPDATED: physical function 2023-11-07 -->
 
-<caption_mg> `r table_ref()` Physical functional status for expanded versus standard preoperative evaluation. </caption_mg>
+<caption_mg> `r table_ref()` Physical functional status for regional versus general anesthesia. </caption_mg>
 
 ```{r exp_std_adl}
 #| include: true
@@ -2144,7 +2295,7 @@ forest(los_meta,
 
 <!-- UPDATED: discharge location 2023-11-08 -->
 
-<caption_mg> `r table_ref()` Discharge location in studies comparing expanded with standard preoperative assessments. </caption_mg>
+<caption_mg> `r table_ref()` Discharge location in studies comparing regional with general anesthesia. </caption_mg>
 
 ```{r dc_loc}
 #| eval: true
