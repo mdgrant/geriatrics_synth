@@ -1726,7 +1726,12 @@ adverse_meta_wide_dat <- adverse_meta_dat |>
   slice(2) |> 
   ungroup() |> 
   arrange(complication, year, study) |> 
-  left_join(rob2_meta_dat, by = "refid")
+  left_join(rob2_meta_dat, by = "refid") |> 
+  left_join(surgs |> select(refid, surgs_single), by = "refid") |>
+  mutate(
+    surg_hip_oth = ifelse(refid %in% ortho_hipfx_only_refid, "Hip fx", "Other"),
+    surgs_single = ifelse(surg_hip_oth == "Hip fx", "Hip fx", surgs_single)
+  ) 
 
 ```
 
@@ -1760,6 +1765,7 @@ forest(adverse_meta,
   rightcols = c("effect", "ci"),
   rightlabs = c("RR", "(95% CI)"),
   # just.addcols.right = "right",
+  print.subgroup.name = FALSE,
   pool.events = TRUE, 
   digits.TE = 3,
   digits.tau2 = 1,
@@ -1804,6 +1810,7 @@ forest(adverse_meta,
   rightcols = c("effect", "ci"),
   rightlabs = c("RD", "(95% CI)"),
   # just.addcols.right = "right",
+  print.subgroup.name = FALSE,
   pool.events = TRUE, 
   digits.TE = 3,
   digits.tau2 = 1,
@@ -1905,8 +1912,9 @@ complication_forest_riskdiff_fun(temp_meta, random = FALSE)
 
 <caption_mg> `r figure_ref()` **Risk ratio** for pneumonia (regional versus general anesthesia; randomized clinical trials). </caption_mg>
 
-```{r complication_pneumonia, fig.width = 14, fig.height = 4, fig.align = "left"}
+```{r complication_pneumonia, fig.width = 14, fig.height = 5.5, fig.align = "left"}
 temp_meta <- complication_meta_fun("Pneumonia", use_hakn = TRUE, predictive = FALSE)
+temp_meta <- update(temp_meta, subgroup = surg_hip_oth)
 complication_forest_fun(temp_meta)
 ```
 
@@ -1914,8 +1922,9 @@ complication_forest_fun(temp_meta)
 
 <caption_mg> `r figure_ref()` **Risk difference** for pneumonia (regional versus general anesthesia; randomized clinical trials). </caption_mg>
 
-```{r complication_pneumonia_rd, fig.width = 14, fig.height = 4, fig.align = "left"}
+```{r complication_pneumonia_rd, fig.width = 14, fig.height = 5.5, fig.align = "left"}
 temp_meta <- complication_meta_riskdiff_fun("Pneumonia", use_hakn = TRUE, predictive = FALSE)
+temp_meta <- update(temp_meta, subgroup = surg_hip_oth)
 complication_forest_riskdiff_fun(temp_meta)
 ```
 

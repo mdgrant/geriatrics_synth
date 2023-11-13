@@ -1,7 +1,7 @@
 ## preliminaries -------------------------------------- (2022-11-16 11:49) @----
 # in .Rprofile
-# library(conflicted)
-# library(tidyverse)
+library(conflicted)
+library(tidyverse)
 # conflicts_prefer(dplyr::filter)
 rm(list = ls()) # avoid including errant files
 library(janitor)
@@ -22,6 +22,7 @@ knitr::opts_chunk$set(echo = FALSE)
 set_gtsummary_theme(theme_gtsummary_journal(journal = "jama"))
 settings.meta(CIbracket = "(", CIseparator = ", ")
 conflicts_prefer(dplyr::lag)
+conflicts_prefer(dplyr::filter)
 
 theme <- theme_set(theme_minimal())
 theme <- theme_update(
