@@ -1912,7 +1912,7 @@ complication_forest_riskdiff_fun(temp_meta, random = FALSE)
 
 <caption_mg> `r figure_ref()` **Risk ratio** for pneumonia (regional versus general anesthesia; randomized clinical trials). </caption_mg>
 
-```{r complication_pneumonia, fig.width = 14, fig.height = 5.5, fig.align = "left"}
+```{r complication_pneumonia, fig.width = 14, fig.height = 6.5, fig.align = "left"}
 temp_meta <- complication_meta_fun("Pneumonia", use_hakn = TRUE, predictive = FALSE)
 temp_meta <- update(temp_meta, subgroup = surg_hip_oth)
 complication_forest_fun(temp_meta)
@@ -1922,7 +1922,7 @@ complication_forest_fun(temp_meta)
 
 <caption_mg> `r figure_ref()` **Risk difference** for pneumonia (regional versus general anesthesia; randomized clinical trials). </caption_mg>
 
-```{r complication_pneumonia_rd, fig.width = 14, fig.height = 5.5, fig.align = "left"}
+```{r complication_pneumonia_rd, fig.width = 14, fig.height = 6.5, fig.align = "left"}
 temp_meta <- complication_meta_riskdiff_fun("Pneumonia", use_hakn = TRUE, predictive = FALSE)
 temp_meta <- update(temp_meta, subgroup = surg_hip_oth)
 complication_forest_riskdiff_fun(temp_meta)
