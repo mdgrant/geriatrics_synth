@@ -28,7 +28,7 @@ Among older patients undergoing surgery with general anesthesia, does the use of
 #| include: false
 source("code/load_data.R")
 settings.meta(CIbracket = "(")
-kq4_refid <- kq4_refid[!kq4_refid %in% c(290, 17101)]
+# kq4_refid <- kq4_refid[!kq4_refid %in% c(290, 17101)]
 
 study_char_dat <- data_kq(study_char_dat, kq4_refid) |> 
   mutate(
@@ -185,7 +185,7 @@ included_dat |>
   tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(surgs))) |>
   tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(surgs))) |>
   opt_footnote_marks(marks = "letters") |> 
-  tab_footnote(footnote = md("Various indicates either described as various or more than 4 different types of surgery."), locations = cells_column_labels(columns = surgs)) |>
+  tab_footnote(footnote = md("Various indicates either described as various or 4 or more different types of surgery."), locations = cells_column_labels(columns = surgs)) |>
   tab_footnote(footnote = md("Non very-high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."), 
                locations = cells_column_labels(columns = country)) |>
   tab_footnote(footnote = md("Non very-high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."), 
@@ -833,7 +833,8 @@ dncr_dat |>
 #| eval: true
 # NOTE: 2023-04-20 adding ketamine studies to dexmedetomidine dncr would not connect any network; so left distinct
 neurocog_meta_dat <- neurocog_allarms_meta_dat |>
-  filter(dncr_time >= 3) |> 
+  filter(dncr_time >= 3) |> # per Fritz
+  # filter(dncr_time > 3) |> # per Fritz
   # collapse arms
   mutate(
     neurocog_total_n = case_when(
@@ -855,7 +856,7 @@ neurocog_meta_dat <- neurocog_allarms_meta_dat |>
 nma_dncr_dat <- neurocog_meta_dat |>
   mutate(time = ifelse(dncr_time < 3, "at <3 days", "at ≥3 days" )) |> 
   filter(time == "at ≥3 days") |> 
-  select(-dncr_time) |> 
+  # select(-dncr_time) |> 
   filter(design_f_lab == "Randomized Clinical Trial") 
 
 pairs_dat <- pairwise(
@@ -875,7 +876,7 @@ pairs_dat <- pairwise(
 dncr_meta_dat <- pairs_dat |>
   arrange(year, study) |> 
   left_join(rob2_meta_dat, by = "refid") |>
-  select(refid, study, year, event2, n2, event1, n1, D1:Overall, surgs_single_f) |>
+  select(refid, study, year, event2, n2, event1, n1, D1:Overall, surgs_single_f, dncr_time) |>
   mutate(
     rob = case_when(
       Overall == "+" ~ "Low",
@@ -892,11 +893,13 @@ tiva_inhaled_meta <- metabin(event2, n2, event1, n1,
   sm = "RR",
   method = "MH",
   method.tau = "REML",
+  subgroup = dncr_time,
   hakn = TRUE,
   prediction = TRUE,
   allstudies = TRUE,
   # subgroup = country
   )
+
 # summary(plac_meta)
 forest(tiva_inhaled_meta,
   # sortvar = year,
@@ -910,8 +913,8 @@ forest(tiva_inhaled_meta,
   digits = 2,
   digits.tau2 = 1,
   overall.hetstat = TRUE,
-  # subgroup = TRUE,
-  # print.subgroup.labels = TRUE,
+  subgroup = TRUE,
+  print.subgroup.labels = TRUE,
   print.I2.ci = TRUE,
   prediction = TRUE,
   colgap.right = "5mm",
@@ -1139,7 +1142,7 @@ complication_fun <- function(var_prefix) {
     arrange(complication, year, study, arm_id)
 }
 
-# adverse event data includes all reported complications in liss=t
+# adverse event data includes all reported complications in list
 adverse_events_dat <- map_df(complication_incl, complication_fun) |>
   mutate(
     arm_n = ifelse(!is.na(comp_update_arm_n), comp_update_arm_n, arm_n),
@@ -1227,7 +1230,7 @@ propensity_refid <- c(1134, 132, 16890)
 
 adverse_events_gt_dat <- adverse_events_dat |>
   filter(complication %in% complication_incl) |>
-  mutate(complication = factor(complication, levels = c("cardiac", "myoinfarct", "cardarr", "kidneyinj", "pneum", "pulcongest", "pe", "respfail"), labels = c("Other Cardiac", "MI", "Cardiac Arrest", "AKI", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure"))) |>
+  mutate(complication = factor(complication, levels = c("cardiac", "myoinfarct", "cardarr", "stroke", "kidneyinj", "pneum", "pulcongest", "pe", "pthorax", "respfail"), labels = c("Other Cardiac", "MI", "Cardiac Arrest", "Stroke", "AKI", "Pneumonia", "Pulmonary Congestion", "PE", "Pneumothorax", "Respiratory Failure"))) |>
   arrange(year, study, arm) |>
   mutate(
     rd_or = ifelse(refid %in% propensity_refid & row_number() != 1, paste0("<u>", or_ci, "</u>"), rd_ci),
@@ -1255,6 +1258,7 @@ adverse_meta_dat <- adverse_events_gt_dat |>
   filter(!(study %in% c("Luntz 2004") & arm_id  == 2)) 
 
 adverse_meta_wide_dat <- adverse_meta_dat |> 
+  # filter(!is.na(or_ln_te)) |> 
   arrange(refid, complication) |> 
   pivot_wider(names_from = "arm", values_from = arm_n:n) |> 
   group_by(refid, complication) |> 
@@ -1399,14 +1403,11 @@ forest(adverse_meta,
 ```
 
 <!-- #### Cardiac Composite -->
-
 <!-- <font size = 4> Risk ratio for composite measures of cardiac complications (TIVA versus inhaled anesthesia; randomized clinical trials). </font> -->
-
 <!-- ```{r complication_cardiac,  fig.width = 14, fig.height = 3.75, fig.align = "left"} -->
 <!-- temp_meta <- complication_meta_fun("Cardiac", use_hakn = FALSE) -->
 <!-- complication_forest_rct_fun(temp_meta) -->
 <!-- ``` -->
-
 <!-- <foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> Similar/Inhaled arms combined for Luntz 2004.<br/> Hartung-Knapp adjustment not used --- applying yielded a 95% confidence interval of (0.33--4.19). </foot_mg> -->
 
 #### Myocardial Infarction
@@ -1465,6 +1466,7 @@ complication_forest_fun(temp_meta, use_predictive = FALSE)
 #| eval: false
 temp_meta <- complication_meta_fun("Pulmonary Congestion", use_hakn = FALSE, predictive = FALSE)
 complication_forest_fun(temp_meta)
+
 
 ```
 
