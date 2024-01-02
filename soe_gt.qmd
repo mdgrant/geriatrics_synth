@@ -17,6 +17,15 @@ tables:
 
 ---
 
+::: {.callout-note collapse="false"}
+## Recent updates (last 2024-01-02)
+
+| Date               | Modification|
+|:------------------------|:-----------------------------------------------|
+| 2024-01-02 | Updated regional versus general for consistent language, removed *I* <sup>2</sup> (can be found in forest plots), and added prediction intervals where relevant|
+:::
+
+
 ```{=html}
 <style type="text/css">
 @font-face {
@@ -36,7 +45,7 @@ tables:
 .quality-sign {
       font-family: 'GRADE-quality', Cambria, Helvetica, Arial;
       font-size: 10px;
-      vertical-align: text-top;
+      vertical-align: text-bottom;
 }
 </style>
 ```
@@ -72,7 +81,7 @@ grade_foot <- paste0("Very low: ", vlow, "; Low: ", low, "; Moderate: ", mod, ";
 
 soe_footnote <- function(x) {
   x |>
-    tab_footnote("Pts: patients; RCT: randomized clinical trial; NRSI: non-randomized studies of interventions (inlcudes non-randomized trials, before-after/time series, and observational); GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; ACCF/AHA: American College of Cardiology Foundation/American Heart Association; RR: risk ratio; OR: odds ratio; MD: mean difference; RD: risk difference.") |>
+    tab_footnote("Pts: patients; RCT: randomized clinical trial; NRSI: non-randomized studies of interventions (inlcudes non-randomized trials, before-after/time series, and observational); GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; ACCF/AHA: American College of Cardiology Foundation/American Heart Association; RR: risk ratio; OR: odds ratio; MD: mean difference; RD: risk difference; PI: prediction interval.") |>
     tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
     tab_footnote("A: high-quality evidence from more than 1 RCT; B-R: moderate-quality evidence from more than 1 RCT; B-NR: moderate-quality evidence from more than one observational study; C-LD: randomized or non-randomized observational or registry studies with limited data; C-EO: consensus of expert opinion.", locations = cells_column_labels(columns = acc)) |>
     tab_footnote("Limited +; Important ++; Critical +++.", locations = cells_column_labels(columns = out_import))
@@ -195,7 +204,7 @@ soe_summary |>
 
 <font size = 4> `r table_ref()` GRADE domains for strength of evidence ratings — expanded versus standard preoperative evaluation. </font>
 
-```{r kq1_domain, eval = TRUE}
+```{r kq1_domain}
 #| warning: true
 #| include: true
 #| echo: false
@@ -358,14 +367,10 @@ soe_summary |>
     summary = "Summary",
     result_links = "Result Detail"
   ) |>
-  fmt_markdown(columns = c(outcome, n_s, grade, summary, result_links)) |>
   # tab_row_group(
   #   label = "powerful",
   #   rows = outcome == "Delirium incidence"
   # ) |>
-  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(n_s, grade, acc, out_import, summary))) |>
-  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(n_s, grade, acc, out_import, summary))) |>
-  tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(outcome, summary, result_links))) |>
   gt_theme_mg() |>
   cols_width(
     outcome ~ px(220),
@@ -384,9 +389,14 @@ soe_summary |>
     }
   "
   ) |> 
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(n_s, grade, acc, out_import, summary))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(n_s, grade, acc, out_import, summary))) |>
+  tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(outcome, summary, result_links))) |>
+  text_replace("8<br\\/>\\(7,419\\)", "8 RR<br/>(7,419) <br/><br/> 10 RD<br/>(7,577)", locations = cells_body(columns = n_s)) |> 
+  fmt_markdown(columns = c(outcome, n_s, grade, summary, result_links)) |>
   opt_footnote_marks(marks = "numbers") |>
   sub_values(values = c("NA <br/>(NA)"), replacement = "—") |>
-  soe_footnote()
+  soe_footnote() 
 
 ```
 

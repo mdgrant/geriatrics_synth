@@ -647,3 +647,36 @@ meta_ancred <- function(meta_fit) {
   )
 }
 
+## new png -------------------------------------------- (2023-12-27 10:50) @----
+png_fun <- function(name, width, height){
+  png(paste0("assets/", name, ".png"), width = 14, height = 5, units = "in", res = 300)
+  fig_temp()
+  dev.off()
+}
+
+## for baseline risk plot for RR or OR ---------------- (2023-12-27 10:50) @----
+bubble_plot_data <- function(meta_object) {
+  yi_meta <- meta_object$TE
+  vi_meta <- meta_object$seTE
+  control_event_rate <- meta_object$event.c / meta_object$n.c
+  slab <- meta_object$studlab
+  tibble(yi_meta, vi_meta, control_event_rate, slab)
+}
+
+# usage
+# temp <- bubble_plot_data(gen_reg_delirium_meta)
+# fitted_meta <- metafor::rma(yi_meta, vi_meta, mods = ~ control_event_rate, slab = slab, method = "FE", data = temp)
+# metafor::regplot(fitted_meta, xlab = "Baseline risk (event rate)", ylab = "Risk Ratio", refline = 0, atransf = exp, at = log(c(0.2, 0.4, 0.7, 1, 2, 4, 8)), labsize = 0.5, xlim = c(-0.02, 0.3), las = 1, label = TRUE, offset = c(0.4), lwd = 0.5)
+# bubble_plot(gen_reg_delirium_meta)
+
+## calculate figure width ----------------------------- (2023-12-27 10:50) @----
+# greater than 564 measured in plot pane entire RStudio screen
+calc_width_display_gt_564 <- function(width_px_from_rstudio) {
+  width_png_inches <- width_px_from_rstudio / 71.4
+  percent_png <- 0.58 * (width_px_from_rstudio / 564)
+  paste("width: ", round(width_png_inches, 2), " inches; ", 100 * round(percent_png, 2), "%", sep = "")
+}
+
+# calc_width_display_gt_564(696)
+
+

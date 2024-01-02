@@ -3,11 +3,15 @@ title: "Regional versus General Anesthesia"
 editor: source
 toc-title: "**Regional versus General Anesthesia**"
 toc-location: "left"
-toc-depth: 3
+toc-depth: 4
+toc-expand: 4
 toc_float: 
-  collapsed: true
+  collapsed: false
 tbl-cap-location: "top"
 page-layout: full
+knitr: 
+  opts_chunk:
+    fig.align: left
 css: styles.css
 tables:
       style: Table
@@ -20,13 +24,14 @@ link-citations: false
 nocite: '@*'
 ---
 
-::: {.callout-note collapse="true"}
-## Recent upates (last 2023-11-09 13:26)
+::: {.callout-note collapse="false"}
+## Recent updates (last 2024-01-02)
 
-| Date       | Modification                                                                                                                                                                    |
-|:-----------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 2023-11-08 | Updated to most current included studies. Removed risk of bias tallies from forest plots where not pertinent to outcome. Used weighted risk of bias summary for delirium and added for overall. Added risk differences per 1000 to complications and mortality.|
-| 2023-11-09 | Added balance tables (also appearing in appendix).|
+| Date               | Modification|
+|:------------------------|:-----------------------------------------------|
+| 2023-11-08 | Updated to most current included studies. Removed risk of bias tallies from forest plots where not pertinent to outcome. Used weighted risk of bias summary for delirium and added for overall. Added risk differences per 1000 to complications and mortality. |
+| 2023-11-09 | Added balance tables (also appear in appendix).|
+| 2024-01-02 | Added [figure 4](kq3.html#figure-4) to display potential dependence of effects on baseline (control arm event rate) for delirium. Updated balance tables|
 :::
 
 ## Key Question
@@ -39,7 +44,7 @@ source("code/load_data.R")
 settings.meta(CIbracket = "(")
 conflicts_prefer(dplyr::lag)
 
-kq3_refid <- kq3_refid[!kq3_refid %in% c(813, 3434)] # retrospective cohort 
+kq3_refid <- kq3_refid[!kq3_refid %in% c(813, 3434, 16596)] # retrospective cohort and Neuman 2016
 
 study_char_dat <- data_kq(study_char_dat, kq3_refid)
 
@@ -48,7 +53,7 @@ ortho_hipfx_only_refid <- ortho_proc |>
   filter(ortho == "HipFx") |> 
   pull(refid)
 
-## VARIABLE: kq3_anesth_neur, kq3_anesth_reg, kq3_anesth_gen, kq3_anesth_neur_type, kq3_anesth_gen_type  — anesthetic and type, no specifics recorded for regional
+## VARIABLE: kq3_anesth_neur, kq3_anesth_reg, kq3_anesth_gen, kq3_anesth_neur_type, kq3_anesth_gen_type — anesthetic and type, no specifics recorded for regional
 study_arm_dat <- data_kq(study_arm_dat, kq3_refid) |>
   # delete anesthetic variables not relevant (avoid potential confusion)
   select(-c(inhalation:anes_ns)) |>
@@ -57,7 +62,7 @@ study_arm_dat <- data_kq(study_arm_dat, kq3_refid) |>
   # add general, neuraxial, regional
   mutate(
     kq3_anesth_neur = ifelse(if_any(c(kq3_reg_spinal, kq3_reg_epidural, kq3_reg_cse), ~ !is.na(.x)), "Neuraxial", NA),
-    kq3_anesth_reg = ifelse(!is.na(kq3_reg_block), "Regional", NA),
+    kq3_anesth_reg = ifelse(!is.na(kq3_reg_block), "Block", NA),
     kq3_anesth_gen = ifelse(!is.na(kq3_gen_type), "General", NA),
     kq3_anesth_neur_type =
       case_when(
@@ -106,150 +111,14 @@ kq3_refid[!kq3_refid %in% c(delirium_refid, cogfunc_refid)]
 <font size = 4> Benefits, harms, and strength of evidence (GRADE) for regional versus general anesthesia. </font>
 
 ```{r reg_gen_balance}
-#| warning: false
-reg_gen_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "RegionalGeneral", range = "B4:L21") |>
-  remove_empty(which = "cols") |>
-  clean_names() |>
-  rename(est = estimate_95_percent_ci) |>
-  # filter(!if_all(rct:est, ~ is.na(.x))) |>
-  mutate(
-    # group = ifelse(outcome == "Patient satisfaction", "Patient-reported", "Clinical"),
-    across(everything(), ~ str_remove(.x, "‡|†|\\*")),
-    # grade = case_when(
-    #   grade == "Very low" ~ vlow,
-    #   grade == "Low" ~ low,
-    #   grade == "Moderate" ~ mod,
-    #   grade == "High" ~ high,
-    #   grade == "Low/very low" ~ low_very,
-    #   .default = grade
-    # ),
-    event_e = ifelse(!is.na(n_reg), paste0(events_reg, " (", n_reg, ")"), NA),
-    event_c = ifelse(!is.na(n_gen), paste0(events_gen, " (", n_gen, ")"), NA),
-    across(c(event_e, event_c), ~ str_remove(.x, "NA "))
-  ) |> 
-  relocate(c(event_e, event_c), .after = rct) |> 
-  select(-c(events_reg:n_gen, grade_2))
-
-reg_gen_dat |>
-  gt(id = "one") |>
-  cols_label(
-    outcome  = "Outcome",
-    rct      = "RCT",
-    event_e  = "     N (Total)",
-    event_c  = "     N (Total)",
-    # n        = "    N",
-    grade    = "GRADE",
-    measure  = "Effect",
-    est      = "Estimate (95% CI)"
-  ) |>
-  fmt_markdown(columns = c(grade)) |>
-  cols_hide(n) |>
-  fmt_integer(use_seps = TRUE, sep_mark = ",") |>
-  gt_theme_mg() |>
-  cols_width(
-    outcome ~ px(210),
-    rct     ~ px(40),
-    # n       ~ px(65),
-    event_e ~ px(100),
-    event_c ~ px(100),
-    grade   ~ px(100),
-    measure ~ px(45),
-    est     ~ px(140)
-  ) |> 
-  sub_missing(columns = everything(), missing_text = "") |>
-  tab_spanner(label = "     Regional", columns = c(event_e), level = 1) |>
-  tab_spanner(label = "     General", columns = c(event_c), level = 1) |>
-  opt_footnote_marks(marks = "standard") |> 
-  tab_style(style = cell_text(align = "center"),        locations = cells_column_labels(columns = c(event_c, event_e))) |>
-  tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(n, grade, rct))) |>
-  # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c(est))) |>
-  tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(measure))) |>
-  tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(grade, rct))) |>
-  tab_style(style = cell_text(indent = px(10)),       locations = cells_body(columns = c(outcome), rows = outcome %in% c("All procedures", "Hip fracture", "Other"))) |>
-  tab_footnote(md("RCT: randomized clinical trial; [GRADE: Grades of Recommendation, Assessment, Development, and Evaluation](soe_gt.html#grade); RR: risk ratio; RD‰: risk difference per 1000.")) |>
-  # tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |> 
-  # tab_footnote("Complications include bradycardia, tachycardia, arrhythmia, or unspecified.", locations = cells_body(columns = c(outcome), rows = outcome == "Cardiac complications")) |> 
-  tab_footnote("Studies reported 0 and 2 events.", locations = cells_body(columns = c(est), rows = outcome == "Cardiac arrest"), placement = "right") |> 
-  tab_footnote(md("[Comparing higher/highest category or categories compared with lower ones.](kq3.html#patient-satisfaction)"), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |> 
-  # tab_footnote("Cardiovascular, pulmonary, and acute kidney injury.", locations = cells_body(columns = c(outcome), rows = outcome == "Complications")) |> 
-  tab_footnote("Complications reported variously across the 17 trials. ", locations = cells_body(columns = c(outcome), rows = outcome == "Complications"), placement = "right") 
-
+kq3_balance_main() |> 
+  text_replace("See Appendix", "See below", locations = cells_body())
 ```
 
 <font size = 4> Included complications and strength of evidence (GRADE) for regional versus general anesthesia. </font>
 
 ```{r reg_gen_complications}
-#| warning: false
-reg_gen_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "RegionalGeneral", range = "B33:L50") |>
-  remove_empty(which = "cols") |>
-  clean_names() |>
-  rename(est = estimate_95_percent_ci) |>
-  filter(!if_all(rct:est, ~ is.na(.x))) |>
-  mutate(
-    # group = ifelse(outcome == "Patient satisfaction", "Patient-reported", "Clinical"),
-    across(everything(), ~ str_remove(.x, "‡|†|\\*")),
-    # grade = case_when(
-    #   grade == "Very low" ~ vlow,
-    #   grade == "Low" ~ low,
-    #   grade == "Moderate" ~ mod,
-    #   grade == "High" ~ high,
-    #   grade == "Low/very low" ~ low_very,
-    #   .default = grade
-    # ),
-    event_e = ifelse(!is.na(n_reg), paste0(events_reg, " (", n_reg, ")"), NA),
-    event_c = ifelse(!is.na(n_gen), paste0(events_gen, " (", n_gen, ")"), NA),
-    across(c(event_e, event_c), ~ str_remove(.x, "NA "))
-  ) |> 
-  relocate(c(event_e, event_c), .after = rct) |> 
-  select(-c(events_reg:n_gen, grade_2))
-
-reg_gen_dat |>
-  gt(id = "one") |>
-  cols_label(
-    outcome  = "Outcome",
-    rct      = "RCT",
-    event_e  = "     N (Total)",
-    event_c  = "     N (Total)",
-    # n        = "    N",
-    grade    = "GRADE",
-    measure  = "Effect",
-    est      = "Estimate (95% CI)"
-  ) |>
-  fmt_markdown(columns = c(grade, est)) |>
-  cols_hide(n) |>
-  fmt_integer(use_seps = TRUE, sep_mark = ",") |>
-  gt_theme_mg() |>
-  cols_width(
-    outcome ~ px(210),
-    rct     ~ px(40),
-    # n       ~ px(65),
-    event_e ~ px(100),
-    event_c ~ px(100),
-    grade   ~ px(100),
-    measure ~ px(45),
-    est     ~ px(140)
-  ) |> 
-  sub_missing(columns = everything(), missing_text = "") |>
-  tab_spanner(label = "     Regional", columns = c(event_e), level = 1) |>
-  tab_spanner(label = "     General", columns = c(event_c), level = 1) |>
-  opt_footnote_marks(marks = "standard") |> 
-  tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(event_c, event_e))) |>
-  tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(n, grade, rct))) |>
-  # tab_style(style = cell_text(align = "right"),       locations = cells_body(columns = c(est))) |>
-  tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(measure, est))) |>
-  tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(grade, rct))) |>
-  tab_footnote(md("RCT: randomized clinical trial; [GRADE: Grades of Recommendation, Assessment, Development, and Evaluation](soe_gt.html#grade); RR: risk ratio; RD‰: risk difference per 1000.")) |>
-  tab_footnote("Fixed/common effects models when 2 studies.", locations = cells_column_labels(columns = measure)) |>
-  # tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |> 
-  # tab_footnote("Complications as reported included bradycardia (4 studies); unspecified (2 studies); tachycardia (1 study); myocardial infarction, heart failure, or new onset arrhythmia (1 study).", locations = cells_body(columns = c(outcome), rows = outcome == "Cardiac complications")) |> 
-  # tab_footnote("Studies reported 0 and 2 events.", locations = cells_body(columns = c(est), rows = outcome == "Cardiac arrest"), placement = "right") |>
-  tab_footnote(md("[Comparing higher/highest category or categories compared with lower ones.](kq3.html#patient-satisfaction)"), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |> 
-  tab_footnote("Cardiovascular, pulmonary, and acute kidney injury.", locations = cells_body(columns = c(outcome), rows = outcome == "Complications")) |> 
-  tab_footnote("Complications reported variously across the 17 trials. ", locations = cells_body(columns = c(rct), rows = outcome == "Complications"), placement = "right") |> 
-  tab_footnote("One study no events; the other two. ", locations = cells_body(columns = c(est), rows = outcome == "cardiac arrest"), placement = "right") |> 
-  tab_footnote("Complications reported included pneumonia, respiratory failure, or unspecified.", locations = cells_body(columns = c(outcome), rows = outcome == "Pulmonary complications")) 
-  
-
+kq3_complications()
 ```
 
 ## Outcome Importance
@@ -259,7 +128,7 @@ reg_gen_dat |>
 ```{r outcome_priority}
 #| include: true
 #| eval: true
-outcome_dat <- rankings("KQ3")
+outcome_dat <- rankings("KQ3") 
 outcome_tab(outcome_dat, 11)
 ```
 
@@ -268,19 +137,22 @@ outcome_tab(outcome_dat, 11)
 <caption_mg> `r table_ref()` Dichotomous or count outcomes. </caption_mg>
 
 ```{r dichot_outcome_freq}
-dichot_freq_fun(dichot_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
+dichot_freq_fun(dichot_dat, "ADL: activities of daily living; DNCR: delayed neurocognitive recovery; PND: postoperative neurocognitive disorder; QoR: quality of recovery; ") |>
+  tab_footnote("Number or trial publications, not the unique trials (see inlcuded studies below).", locations = cells_column_labels(columns = stat_1))
 ```
 
 <caption_mg> `r table_ref()` Continuous outcomes. </caption_mg>
 
 ```{r cont_outcome_freq}
-contin_freq_fun(contin_dat)
+contin_freq_fun(contin_dat) |>
+  tab_footnote("Number or trial publications, not the unique trials (see inlcuded studies below).", locations = cells_column_labels(columns = stat_1)) 
 ```
 
 <caption_mg> `r table_ref()` Likert or ordinal outcomes. </caption_mg>
 
 ```{r likert_outcome_freq}
-likert_freq_fun(likert_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
+likert_freq_fun(likert_dat, "ADL: activities of daily living; DNCR: delayed neurocognitive recovery; PND: postoperative neurocognitive disorder; QoR: quality of recovery; ") |>
+  tab_footnote("Number or trial publications, not the unique trials (see inlcuded studies below).", locations = cells_column_labels(columns = stat_1))
 ```
 
 ## **Included Studies**
@@ -328,7 +200,7 @@ study_char_dat |>
 
 ### Design, centers, country, and surgery
 
-<caption_mg> `r table_ref()` Study design, enrollment, centers, country, and surgery (see [References](#references) for citations). </caption_mg>
+<caption_mg> `r table_ref()` Enrollment, centers, country, and surgical procedures (see [References](#references) for citations). </caption_mg>
 
 ```{r included_studies_table}
 #| echo: false
@@ -345,6 +217,11 @@ included_dat <- study_char_dat |>
   select(refid, design_f, study_l, centers, n_enroll, country, surgs, non_vh_hdi)
 
 included_dat |>
+  mutate(surgs_new = fct_expand(surgs, "Hip fracture") %>%
+    replace(surgs == "Ortho" & refid %in% ortho_hipfx_only_refid, "Hip fracture"),
+    surgs = fct_infreq(surgs_new)) |> 
+  select(-surgs_new) |> 
+  arrange(surgs) |> 
   gt(id = "one") |>
   cols_label(
     refid = "ID",
@@ -358,32 +235,34 @@ included_dat |>
     fmt_markdown(columns = c(study_l)) |> 
   cols_width(
     refid ~ px(60),
-    study_l ~ px(165),
+    study_l ~ px(185),
     centers ~ px(60),
     n_enroll ~ px(60),
-    country ~ px(100),
+    country ~ px(110),
     surgs ~ px(150)
   ) |> 
   # opt_horizontal_padding(scale = 2) |>
   sub_missing(columns = everything(), missing_text = " — ") |>
   gt_theme_mg() |>
+  tab_style(style = "padding-left:20px;", locations = cells_body(columns = c(country))) |>
+  tab_style(style = "padding-left:20px;", locations = cells_column_labels(columns = c(country))) |>
   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c("refid"))) |> 
   tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(surgs))) |>
   tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(surgs))) |>
   opt_footnote_marks(marks = "letters") |> 
-  tab_footnote(footnote = md("Various indicates 4 or more different types of surgery."), locations = cells_column_labels(columns = surgs)) |>
-  tab_footnote(footnote = md("Non very-high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."), 
-               locations = cells_column_labels(columns = country)) |>
+  tab_footnote(footnote = md("Described as various or more than 4 different types of surgery."), locations = cells_body(columns = surgs, surgs == "Various")) |>
+  # tab_footnote(footnote = md("Non very-high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."), 
+  #              locations = cells_column_labels(columns = country)) |>
   tab_footnote(footnote = md("Non very-high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."), 
                locations = cells_body(columns = country, rows = !is.na(non_vh_hdi))) |>
-  # tab_footnote(footnote = "Studies examining drugs not directly relevant to recommendations but potentially relevant to the evidence space (eg, a connected network) were included.",  locations = cells_row_groups(groups = )) |> 
-  tab_footnote("GI: gastrointestinal; Ortho: orthopedic; Urol: urological; Neuro: neurological; Oralmax: oral maxillofacial; Vasc: vascular.")
+  # tab_footnote(footnote = "Only hip fracture repair.",  locations = cells_body(columns = surgs, rows = refid %in% ortho_hipfx_only_refid)) |>
+  tab_footnote("GI: gastrointestinal; Ortho: orthopedic; Urol: urological; Neuro: neurological; Oralmax: oral maxillofacial; Vasc: vascular; Hip fracture: only hip fracture.")
 
 ```
 
 ### Country Summary
 
-<caption_mg> `r table_ref()` Summary of studies by country where conducted. </caption_mg>
+<caption_mg> `r table_ref()` Summary of trials by country where conducted. </caption_mg>
 
 ```{r country}
 study_char_dat |>
@@ -402,7 +281,7 @@ study_char_dat |>
 
 ## **Comparators**
 
-<caption_mg> `r table_ref()` Selected characteristics of randomized trials comparing general and regional anesthesia. </caption_mg>
+<caption_mg> `r table_ref()` Selected characteristics of randomized clinical trials comparing regional to general anesthesia. </caption_mg>
 
 ```{r reg_gen_tab}
 reg_gen_tab <- study_arm_dat |>
@@ -415,11 +294,9 @@ reg_gen_tab <- study_arm_dat |>
     # volatile_spec = if_any(kq3_gen_desflurane:kq3_gen_inhaleother, ~ !is.na(.x), "\U2713", NA), # verifies kq3_gen_type
     volatile = ifelse(kq3_gen_type %in% c("inhalation", "tiva_inhal"), "\U25CF", NA),
     tiva = ifelse(kq3_gen_type %in% c("tiva", "tiva_inhal"), "\U25CF", NA),
-    # tiva_inhal = ifelse(kq3_gen_type == "tiva_inhal", "\U2713", NA),
-    # tiva_inhal = ifelse(kq3_gen_type == "tiva_inhal", "\U2713", NA),
-    kq3_reg_block = notna_to_x(kq3_reg_block, "\U2714"),
     notrep = ifelse(kq3_gen_type == "notrep", "\U25CF", NA),
-    across(c(kq3_reg_spinal, kq3_reg_epidural, kq3_reg_cse, kq3_reg_ns), ~ ifelse(!is.na(.x), "\U2716", NA)),
+    kq3_reg_block = notna_to_x(kq3_reg_block, "\U25CF"),
+    across(c(kq3_reg_spinal, kq3_reg_epidural, kq3_reg_cse, kq3_reg_ns), ~ ifelse(!is.na(.x), "\U25CF", NA)),
     surgs = str_replace(paste(surgs, ortho), " NA", ""),
     surgs = str_replace(surgs, " Other", ""),
     surgs = str_replace(surgs, "Ortho ", "Ortho — "),
@@ -439,7 +316,7 @@ reg_gen_tab |>
   gt(id = "one") |>
   row_group_order(groups = c("Ortho — HipFx", "Ortho — HipFx|Other", "Ortho — TKA|THA|HipFx|Other", "Ortho — TKA", "Ortho — THA", "Ortho", "Urol", "GI/Abdominal", "Neuro", "Neuro|Vasc", "Cardiac", "Gyn", "Gyn|Ortho|Urol|Vasc", "Headneck", "Other", "Various TKA|THA|Other", "Vasc")) |>
   # "Cardiac", "GI/Abdominal", "Gyn", "Gyn|Ortho|Urol|Vasc", "Headneck", "Neuro", "Neuro|Vasc", "Ortho", "Ortho — HipFx", "Ortho — HipFx|Other", "Ortho —  THA", "Ortho — TKA", "Ortho — TKA|THA|HipFx|Other", "Other", "Urol", "Various TKA|THA|Other", and "Vasc".
-  cols_hide(c(refid, arm_id, study, year, ortho)) |>
+  cols_hide(c(refid, arm_id, study, year, ortho, reg_ns)) |>
   cols_label(
     study_l          = "Study",
     arm_n            = " N",
@@ -453,12 +330,12 @@ reg_gen_tab |>
     reg_spinal       = "Spinal",
     reg_epidural     = "Epid",
     reg_cse          = "CSE",
-    reg_ns           = "NR",
+    # reg_ns           = "NR",
     reg_block        = "Block"
   ) |>
   tab_spanner(label = "General", columns = c(volatile:notrep), level = 1) |>
   tab_spanner(label = "ASA", columns = c(asa_ps_incl), level = 1) |>
-  tab_spanner(label = "Neuraxial", columns = c(reg_spinal:reg_ns), level = 1) |>
+  tab_spanner(label = "Neuraxial", columns = c(reg_spinal:reg_cse), level = 1) |>
   tab_spanner(label = "Regional", columns = c(reg_spinal:reg_block), level = 2) |>
   fmt_markdown(columns = c(study_l, age_table, pre_mmse)) |>
   # fmt_number(VARIABLE, decimals = 0) |>
@@ -480,17 +357,15 @@ reg_gen_tab |>
     reg_ns ~ px(40),
     reg_block ~ px(45)
   ) |>
-  # tab_style(style = cell_text(align = "left"),        locations = cells_column_labels(columns = c())) |>
   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(asa_ps_incl))) |>
-  # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c())) |>
-  tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(arm))) |>
+  tab_style(style = cell_text(align = "right"), locations = cells_column_labels(columns = c(arm_n))) |>
+  tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(arm))) |>
+  tab_style(style = cell_text(align = "right"),  locations = cells_body(columns = c(arm_n))) |>
   tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(volatile:reg_cse))) |>
-  # tab_style(style = cell_text(align = "right"),       locations = cells_body(columns = c())) |>
   tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
-  # tab_style(style = list(cell_text(color = color_1)), locations = cells_body(columns = c(arm_n:reg_cse), rows = str_detect(arm, "Neur"))) |>
   tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:reg_block), rows = str_detect(arm, "Neur"))) |>
   tab_style(style = list(cell_text(color = color_3)), locations = cells_body(columns = c(arm_n:reg_block), rows = str_detect(arm, "Block"))) |>
-  tab_footnote(md("Gen: general; Neur: neuraxial; PS: physical stutus; Vol: volatile; TIVA: total intravenous anesthesia; NR: not reported; Epid: epidural; CSE: combined spinal and regional; Ortho: orthopedic; Urol: urological; GI: gastrointestinal; Neuro: neurologic; Gyn: gynecologic; Vasc: vascular; Ophtho: opthalomogic; Fx: fracture; TKA: total knee arthroplasty; THA: total hip arthroplasty.")) |>
+  tab_footnote(md("Gen: general; Neur: neuraxial; PS: physical stutus; Vol: volatile; TIVA: total intravenous anesthesia; NR: not reported; Epid: epidural; CSE: combined spinal and epidural; Ortho: orthopedic; Urol: urological; GI: gastrointestinal; Neuro: neurologic; Gyn: gynecologic; Vasc: vascular; Ophtho: opthalomogic; Fx: fracture; TKA: total knee arthroplasty; THA: total hip arthroplasty.")) |>
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |> 
   tab_footnote("Not included in pooled results owing to size.", locations = cells_body(columns = study_l, rows = str_detect(study_l, "Neuman 2016"))) |> 
   tab_footnote("Diazepam.", locations = cells_body(columns = arm, rows = study == "Salonia 2006" & arm_id == 2)) |> 
@@ -498,13 +373,10 @@ reg_gen_tab |>
   tab_footnote("Midazolam.", locations = cells_body(columns = arm, rows = study == "Salonia 2006" & arm_id == 4)) |> 
   tab_footnote("Ropivacaine.", locations = cells_body(columns = arm, rows = study == "Sellbrant 2021" & arm_id == 2)) |> 
   tab_footnote("Mepivacaine.", locations = cells_body(columns = arm, rows = study == "Sellbrant 2021" & arm_id == 3)) 
-  # gtsave(filename = "/Users/mgrant/Desktop/table.html", inline_css = TRUE)
-
+  
 ```
 
 ## **Delirium Incidence**
-
-<!-- UPDATED: delirium 2023-11-07  -->
 
 ```{r delirium_meta_data}
 #| eval: true
@@ -548,7 +420,7 @@ delirium_meta_dat <- delirium_meta_dat |>
          arm = factor(arm, levels = c("Gen", "Neur", "Neur/Block", "Block"))
   )
   
-# delirium_meta_dat |> select(refid) |> distinct() # 2023-04-24 n = 14
+# delirium_meta_dat |> select(refid) |> distinct() # 2023-12-01 n = 12
 ```
 
 ```{r reg_gen_delirium_tab}
@@ -558,7 +430,6 @@ delirium_rr_ref <- delirium_meta_dat |>
   filter(!is.na(delitotal_n)) |>
   arrange(refid, arm_id) |>
   rename(ref_deli_n = delitotal_n, ref_arm_n = arm_n) |>
-  # group_by(refid) |>
   mutate(
     ref_arm_n = ifelse(row_number() > 1, NA, ref_arm_n),
     ref_deli_n = ifelse(row_number() > 1, NA, ref_deli_n),
@@ -606,7 +477,7 @@ reg_gen_delirium_tab <- delirium_meta_dat |>
 
 ```
 
-<caption_mg> `r table_ref()` Delirium incidence and ascertainment during hospitalization in trials comparing regional and general anesthesia. </caption_mg>
+<caption_mg> `r table_ref()` Delirium incidence and ascertainment during hospitalization in randomized clinical trials comparing regional to general anesthesia. </caption_mg>
 
 ```{r reg_gen_delirium_gt}
 reg_gen_delirium_tab |>
@@ -633,7 +504,7 @@ reg_gen_delirium_tab |>
       arm = md("Arm"),
       pre_mmse = md("  MMSE<br/>(preop)"),
       scale_delirium = "Scale",
-      delitotal_time = "Days",
+      delitotal_time = "Day(s)",
       n_percent = "N (%)",
       bar = "0 – 100%",
       rr_ci = "RR (95% CI)"
@@ -656,7 +527,7 @@ reg_gen_delirium_tab |>
       arm ~ px(80),
       pre_mmse ~ px(95),
       scale_delirium ~ px(105),
-      delitotal_time ~ px(50),
+      delitotal_time ~ px(55),
       n_percent ~ px(90),
       bar ~ px(100),
       rr_ci ~ px(140)
@@ -664,7 +535,7 @@ reg_gen_delirium_tab |>
   tab_footnote("RR: risk ratio; MMSE: Mini-Mental State Examination; CAM: Confusion Assessment Method; DI: Delirium Index; DRS: Delirium Rating Scale; DSM: Diagnostic and Statistical Manual of Mental Disorders; NR: not reported.") |>
     tab_footnote("Gen: general anesthesia; Neur: neuraxial; RR: risk ratio; MMSE: Mini-Mental State Examination; DRS: Delirium Rating Scale; DSM: Diagnostic and Statistical Manual of Mental Disorders; CAM: Confusion Assessment Method; DI: Delirium Index.") |>
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |>
-  tab_footnote("Days over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |>
+  tab_footnote("Day(s) over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |>
   tab_footnote("Maximum of reported daily incidence.", locations = cells_body(columns = delitotal_time, rows = delitotal_time == "Note")) |> 
   tab_footnote("Not included in pooled results owing to size.", locations = cells_body(columns = study_l, rows = str_detect(study_l, "Neuman 2016"))) 
 ```
@@ -673,8 +544,7 @@ reg_gen_delirium_tab |>
 
 ```{r delirium_meta}
 delirium_meta_dat <- delirium_meta_dat |> 
-  arrange(year, study, arm) |> 
-  filter(study != "Neuman 2016")
+  arrange(year, study, arm) 
 
 pairwise_dat <- pairwise(
   treat = arm,
@@ -714,6 +584,7 @@ gen_reg_delirium_meta <- metabin(event2, n2, event1, n1,
 
 # summary(gen_reg_delirium_meta)
 
+# no subgroup
 gen_reg_delirium_meta_nosub <- update(gen_reg_delirium_meta, subgroup = NULL)
 
 # small study effects; here to have result of Harbord test
@@ -724,9 +595,12 @@ temp_metabias <- metabias(temp_meta, method.bias = "Harbord", k.min = 10)
 gen_reg_delirium_cummeta <- metacum(gen_reg_delirium_meta, pooled = "random", sortvar = n.e + n.c)
 ```
 
-<caption_mg> `r figure_ref()` General versus regional anesthesia (randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` Regional versus general anesthesia (randomized clinical trials). </caption_mg>
 
-```{r delirium_meta_forest, fig.width = 14, fig.height = 7.5, fig.align = "left", warning = TRUE}
+```{r delirium_meta_forest}
+#| echo: false
+#| include: false
+png("assets/kq3_delirium_meta_forest.png", width = 9.7, height = 7.5, units = "in", res = 300)
 forest(gen_reg_delirium_meta,
   allstudies = TRUE,
   common = TRUE,
@@ -734,6 +608,8 @@ forest(gen_reg_delirium_meta,
   label.c = "General",
   rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
   rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
+  # label.right = "General",
+  # label.left = "Favors: Regional",
   just.addcols.right = "right",
   digits = 2,
   digits.tau2 = 1,
@@ -749,16 +625,27 @@ forest(gen_reg_delirium_meta,
   print.pval.Q = FALSE,
   xlim = c(0.1, 10),
   xlab = "Favors: Regional                          General",
-  addrows.below.overall = 4
+  # label.right = "Favors General",
+  # label.left = "Favors Regional",
+  addrows.below.overall = 4,
+  fs.test.subgroup = 10,
+  fs.hetstat = 10
 )
+dev.off()
 ```
 
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/> In hip fracture subgroup not applying the Hartung-Knapp adjustment --- RR 1.03 (95% CI, 0.85--1.24); random effects pooled estimate dominated by Neuman 2021 (74.1%) and Li 2022 (13.0%).<br/> `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, delirium_meta_dat$refid), "; a secondary outcome in ", prim_sec_out_fun(sec_delirium, delirium_meta_dat$refid), ".")`</foot_mg>
+![](assets/kq3_delirium_meta_forest.png){#fig-delirium-main fig.align="left" width="72%"}
+
+<foot_mg>RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/> In hip fracture subgroup not applying the Hartung-Knapp adjustment --- RR 1.03 (95% CI, 0.85--1.24); random effects pooled estimate dominated by Neuman 2021 (74.1%) and Li 2022 (13.0%).<br/> `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> `r paste0("Delirium was designated a primary or secondary outcome in ", prim_sec_out_fun(prim_delirium, delirium_meta_dat$refid), " and ", prim_sec_out_fun(sec_delirium, delirium_meta_dat$refid), ", respectively.")`</foot_mg>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <caption_mg> `r figure_ref()` General versus regional anesthesia cumulative meta-analysis by study size. </caption_mg>
+#### <caption_mg> `r figure_ref()` Regional versus general anesthesia cumulative meta-analysis by study size. </caption_mg>
 
-```{r delirium_meta_forest_cum, fig.width = 14, fig.height = 4.5, fig.align = "left", warning = TRUE}
+```{r delirium_meta_forest_cum}
+#| warning: true
+#| echo: false
+#| include: false
+png("assets/kq3_delirium_cummeta.png", width = 8.38, height = 3.6, units = "in", res = 300, pointsize = 10)
 forest(gen_reg_delirium_cummeta,
   # common = TRUE,
   label.e = "Regional",
@@ -781,96 +668,84 @@ forest(gen_reg_delirium_cummeta,
   xlab = "Favors: Regional                          General",
   addrows.below.overall = 4
 )
+dev.off()
 ```
+
+![](assets/kq3_delirium_cummeta.png){width="61%"}
 :::
 
-<!-- ::: {.callout-note collapse="true" appearance="minimal" icon="false"} -->
-
-<!-- #### <caption_mg> General versus regional anesthesia pooled with subgroups (randomized clinical trials). </caption_mg> -->
-
-<!-- ```{r delirium_meta_forest_sub, fig.width = 14, fig.height = 8.7, fig.align = "left", warning = TRUE} -->
-
-<!-- forest(gen_reg_delirium_meta, -->
-
-<!--   allstudies = TRUE, -->
-
-<!--   common = TRUE, -->
-
-<!--   label.e = "Regional", -->
-
-<!--   label.c = "General", -->
-
-<!--   rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"), -->
-
-<!--   rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"), -->
-
-<!--   just.addcols.right = "right", -->
-
-<!--   digits = 2, -->
-
-<!--   digits.tau2 = 1, -->
-
-<!--   overall.hetstat = TRUE, -->
-
-<!--   print.I2.ci = TRUE, -->
-
-<!--   # sortvar = year, -->
-
-<!--   prediction = TRUE, -->
-
-<!--   subgroup = TRUE, -->
-
-<!--   prediction.subgroup = FALSE, -->
-
-<!--   print.subgroup.name = FALSE, -->
-
-<!--   fs.xlab = 11, -->
-
-<!--   pooled.events = TRUE, -->
-
-<!--   print.pval.Q = FALSE, -->
-
-<!--   # xlim = c(0.1, 3), -->
-
-<!--   xlab = "Favors: Regional                          General", -->
-
-<!--   addrows.below.overall = 4 -->
-
-<!-- )   -->
-
-<!-- ``` -->
-
-<!-- <foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg><br/> -->
-
-<!-- ::: -->
-
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <caption_mg> `r figure_ref()` General versus regional anesthesia small study effects. </caption_mg>
+#### <caption_mg> `r figure_ref()` Regional versus general anesthesia small study effects. </caption_mg>
 
-```{r dex_plac_meta_funnel_limit, fig.dim = c(7, 5.5), out.width = "70%", fig.align = "center"}
-# {r name, fig.dim = c(6, 6), out.width = "60%", fig.align = "center"}
-# {r dex_plac_meta_funnel_limit, out.width = "85%", out.height = "100%", fig.align = "center"}
+```{r delirium_funnel_limit} #, fig.dim = c(7, 5.5), out.width = "70%", fig.align = "center"}
+#| echo: false
+#| include: false
+
 temp_limit_meta <- limitmeta(temp_meta)
 
+png("assets/kq3_delirium_funnel_limit.png", width = 8.5, height = 5.5, units = "in", res = 300)
 par(mar = c(4, 4, 2, 1))
-
 limit_colors <- c("#AAB7B8", "#D5DBDB", "#F4F6F6")
-
 # text(1.2, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .9)
-
 par(bty = "n", xaxt = "s", yaxt = "s")
-
 funnel(temp_limit_meta,  pch = 20, contour = c(0.9, 0.95, 0.99), col.contour = limit_colors, studlab = TRUE, pos.studlab = 4, fs.smlab = 6, ff.smlab = "italic")
-
 legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#AAB7B8", "#D5DBDB", "#F4F6F6"), bty = "n")
+dev.off()
 
 ```
 
-<foot_mg> Estimates (odds ratio and 95% CI) from random effects models. Limit meta-anlaysis shown in light grey --- unadjusted `r paste0(digit2(exp(temp_limit_meta$TE.random)), " (", digit2(exp(temp_limit_meta$lower.random)), "–", digit2(exp(temp_limit_meta$upper.random)), ")")`; adjusted for small study effects: `r paste0(digit2(exp(temp_limit_meta$TE.adjust)), " (", digit2(exp(temp_limit_meta$lower.adjust)), "–", digit2(exp(temp_limit_meta$upper.adjust)), ")")`.</foot_mg>
+![](assets/kq3_delirium_funnel_limit.png){width="75%"}
+
+<foot_mg> Estimates (odds ratios and 95% CIs) from random effects models. Limit meta-analysis shown in light grey --- unadjusted `r paste0(digit2(exp(temp_limit_meta$TE.random)), " (", digit2(exp(temp_limit_meta$lower.random)), "–", digit2(exp(temp_limit_meta$upper.random)), ")")`; adjusted for small study effects: `r paste0(digit2(exp(temp_limit_meta$TE.adjust)), " (", digit2(exp(temp_limit_meta$lower.adjust)), "–", digit2(exp(temp_limit_meta$upper.adjust)), ")")`.</foot_mg>
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <caption_mg> `r figure_ref()` Summary risk of bias from randomized clinical trials comparing regional and general anesthesia (weighted). </caption_mg>
+#### <caption_mg> `r figure_ref()` General anesthesis event rate (control arm/baseline risk) and risk ratios. </caption_mg> <a id="figure-4"></a>
+```{r bubble_plot_delirium}
+#| echo: false
+#| include: false
+
+hipfx_study <- study_char_dat |> 
+  select(refid, study) |> 
+  filter(refid %in% ortho_hipfx_only_refid) |> 
+  pull(study)
+
+temp <- bubble_plot_data(gen_reg_delirium_meta) |> 
+  mutate(slab = ifelse(slab %in% hipfx_study, paste0(slab, "*"), slab))
+
+fitted_meta <- metafor::rma(yi_meta, vi_meta, mods = ~ control_event_rate, slab = slab, data = temp)
+
+png("assets/gen_reg_delirium_meta_bubble.png", width = 8, height = 6, units = "in", res = 300)
+par(bty = "n", xaxt = "s", yaxt = "s", mar = c(4, 4, 2, 1))
+metafor::regplot(fitted_meta,
+  xlab = "General anesthesia event rate (baseline risk)",
+  ylab = "RR (risk ratio)", 
+  xlim = c(-0.015, 0.3),
+  at = log(c(0.2, 0.4, 0.7, 0.97, 2, 4, 8)),
+  predlim = c(0, 0.30),
+  atransf = exp,
+  labsize = 0.7, 
+  las = 1,
+  label = TRUE,
+  offset = c(0.4),
+  lwd = 0.5,
+)
+
+abline(log(0.97), 0, col = "red", lty = 2, lwd = 0.75)
+dev.off()
+
+rm(hipfx_study, temp, fitted_meta)
+
+```
+
+![](assets/gen_reg_delirium_meta_bubble.png){width="75%"}
+
+<foot_mg> No suggestion for RR dependence on baseline risk. Asterisks indicate trials limited to hip fracture repair.</foot_mg> 
+
+:::
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <caption_mg> `r figure_ref()` Summary risk of bias from randomized clinical trials comparing regional to general anesthesia (weighted). </caption_mg>
 
 ```{r rob2_summary_delirium, fig.height = 3, out.width = "60%"}
 rob_summary_meta_weighted_fun(gen_reg_delirium_meta)
@@ -963,7 +838,7 @@ dncr_dat <- dncr_dat |>
 rm(dncr_rr_ref)
 ```
 
-<caption_mg> `r table_ref()` Delayed neurocognitive recovery incidence and ascertainment in randomized clinical trials comparing regional and general anesthesia. </caption_mg>
+<caption_mg> `r table_ref()` Delayed neurocognitive recovery incidence and ascertainment in randomized clinical trials comparing regional to general anesthesia. </caption_mg>
 
 ```{r dncr_gt}
 #| eval: true
@@ -1055,7 +930,6 @@ temp_dat <- likert_dat |>
 
 writexl::write_xlsx(temp_dat, "/Users/mgrant/Desktop/temp_dat.xlsx")
 
-
   # filter(if_any(c(mmse_time1, mmse_time2, mmse_time3, mmse_time1, mmselast_time, mmsetotal_time), ~ !is.na(.x))) |>
   
   filter(if_any(c(mmse_time1, mmse_time2, mmse_time3, mmse_time1, mmselast_time, mmsetotal_time), ~ !is.na(.x))) |> 
@@ -1070,13 +944,14 @@ writexl::write_xlsx(temp_dat, "/Users/mgrant/Desktop/temp_dat.xlsx")
 
 ```
 
-<br/>
-
 ### *Pooled*
 
-<caption_mg> `r figure_ref()` Neurocognitive disorder (regional versus general anesthesia; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` Postoperative neurocognitive disorder (regional versus general anesthesia; randomized clinical trials). </caption_mg>
 
-```{r dncr_meta,  fig.width = 14, fig.height = 3.5, fig.align = "left", warning = TRUE}
+```{r dncr_meta} 
+#| echo: false
+#| include: false
+
 trts <- neurocog_meta_dat$arm_reg
 
 pairs_dat <- pairwise(
@@ -1107,9 +982,10 @@ gen_reg_dncr_meta <- metabin(event2, n2, event1, n1,
   method = "MH",
   method.tau = "REML",
   hakn = FALSE,
-  prediction = FALSE
+  prediction = TRUE
 )
 
+png("assets/kq3_gen_reg_dncr.png", width = 9.65, height = 3.4, units = "in", res = 300)
 forest(gen_reg_dncr_meta,
   allstudies = TRUE,
   common = TRUE,
@@ -1122,24 +998,26 @@ forest(gen_reg_dncr_meta,
   digits.tau2 = 1,
   overall.hetstat = TRUE,
   print.I2.ci = TRUE,
-  prediction = FALSE,
+  prediction = TRUE,
   fs.xlab = 11,
   pooled.events = TRUE,
   print.pval.Q = FALSE,
   xlim = c(0.1, 3),
   xlab = "Favors: Regional               General",
-  addrows.below.overall = 4
+  addrows.below.overall = 4,
+  text.addline1 = "Too few studies to examine small study effects."
 )
+dev.off()
 
 ```
 
-<foot_mg> Too few studies to examine small study effects. </foot_mg>
+![](assets/kq3_gen_reg_dncr.png){width="71%"}
 
 ## **Postoperative Neurocognitive Disorder**
 
 <!-- UPDATED: postoperative neurocognitive disorder 2023-11-07 -->
 
-<caption_mg> `r table_ref()` Postoperative neurocognitive disorder and ascertainment. </caption_mg>
+<caption_mg> `r table_ref()` Postoperative neurocognitive disorder incidence and ascertainment in a randomized clinical trial comparing regional to general anesthesia.</caption_mg>
 
 ```{r ncd_dat}
 ncd_dat <- dichot_dat |>
@@ -1225,7 +1103,7 @@ ncd_dat |>
   cols_label(
     study_l          = "Study",
     arm_n            = " N",
-    arm_reg          = "Drug",
+    arm_reg          = "Arm",
     pre_mmse         = "MMSE",
     scale_mmse       = "MMSE",
     scale_dst        = "DST",
@@ -1258,8 +1136,8 @@ ncd_dat |>
     rr_ci            ~ px(140),
   ) |>
   tab_style(style = cell_text(align = "left"),        locations = cells_column_labels(columns = c(study, arm_reg))) |>
-  tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(starts_with("scale"), pre_mmse, ncd_time, neurocog_nper, rr_ci))) |>
-  # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c(neurocog_nper))) |>
+  tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(starts_with("scale"), pre_mmse, ncd_time, rr_ci))) |>
+  tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c(neurocog_nper))) |>
   tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(study, arm_reg, pre_mmse))) |>
   tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(starts_with("scale"), ncd_time, rr_ci))) |>
   tab_style(style = cell_text(align = "right"),       locations = cells_body(columns = c(neurocog_nper))) |>
@@ -1276,7 +1154,7 @@ ncd_dat |>
 
 <!-- UPDATED: physical function 2023-11-07 -->
 
-<caption_mg> `r table_ref()` Physical functional status for regional versus general anesthesia. </caption_mg>
+<caption_mg> `r table_ref()` Physical functional status in a randomized clinical trial comparing regional to general anesthesia. </caption_mg>
 
 ```{r exp_std_adl}
 #| include: true
@@ -1507,11 +1385,12 @@ adl_long_dat |>
     smd ~ px(140)
   ) |>
   tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:smd), rows = str_detect(arm, "Neur"))) |>
-  tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(smd))) |>
-  tab_footnote("SMD: standardized mean difference; Neur: neuraxial") |>
-  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, table))) |>
-  tab_footnote("For scale reverse to be consistent with other studies.", locations = cells_body(columns = c(smd), rows = str_detect(study, "Bakker 2014") & arm == "Exp")) |>
-  tab_footnote("Study reported only difference scores.", locations = cells_body(columns = c(table), rows = str_detect(study, "Bakker 2014")))
+  tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(smd))) |> 
+  tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(arm))) |> 
+  tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(smd, age_table, scale))) |>
+  tab_style(style = cell_text(align = "left"),        locations = cells_column_labels(columns = c(arm))) |>
+  tab_footnote("SMD: standardized mean difference; Gen: general; Neur: neuraxial.") |>
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, table))) 
 ```
 
 ## **Complications**
@@ -1550,7 +1429,7 @@ complication_all <- c("cardiac", "myoinfarct", "cardarr", "stroke", "kidneyinj",
 
 ```
 
-<caption_mg> `r table_ref()` Reported complications for regional versus general anesthesia --- cardiac, stroke, renal, pulmonary, and reintubation. </caption_mg>
+<caption_mg> `r table_ref()` Reported complications for regional versus general anesthesia --- cardiovascular, stroke, renal, pulmonary, and reintubation. </caption_mg>
 
 ```{r complications}
 #| warning: false
@@ -1668,7 +1547,7 @@ adverse_events_gt_dat |>
   tab_style(style = cell_text(align = "center"),        locations = cells_body(columns = c(rd_ci))) |>
   # tab_style(style = cell_text(align = "right"),       locations = cells_body(columns = c())) |>
   # tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
-  tab_style(style = list(cell_text(color = "#969696")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Gen"))) |>
+  tab_style(style = list(cell_text(color = "black")),   locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Gen"))) |>
   # tab_style(style = list(cell_text(color = "#F39C12")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Ket|Mel|Ram"))) |>
   # tab_style(style = list(cell_text(color = "#969696")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Plac|None"))) |>
   tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = !str_detect(arm, "Gen"))) |> 
@@ -1755,7 +1634,7 @@ complication_bin <- metabin(
 )  
 }
 
-complication_forest_fun <- function(adverse_meta, random = TRUE){
+complication_forest_fun <- function(adverse_meta, addline = "", random = TRUE){
 forest(adverse_meta,
   allstudies = TRUE,
   random = random,
@@ -1773,13 +1652,15 @@ forest(adverse_meta,
   print.I2.ci = TRUE,
   prediction = TRUE,
   fs.xlab = 11,
+  fs.hetstat = 11,
   # pscale = 100,
   pooled.events = TRUE,
   digits = 2, 
   print.pval.Q = FALSE,
   xlim = c(0.1, 10),
   xlab = "Favors: Regional                             General",
-  addrows.below.overall = 4
+  addrows.below.overall = 4,
+  text.addline1 = addline, 
 )
 }
 
@@ -1800,7 +1681,7 @@ complication_bin <- metabin(
 )  
 }
 
-complication_forest_riskdiff_fun <- function(adverse_meta, random = TRUE){
+complication_forest_riskdiff_fun <- function(adverse_meta, addline = "", random = TRUE){
 forest(adverse_meta,
   allstudies = TRUE,
   random = random,
@@ -1818,12 +1699,14 @@ forest(adverse_meta,
   print.I2.ci = TRUE,
   prediction = TRUE,
   fs.xlab = 11,
+  fs.hetstat = 11,
   pscale = 1000,
   pooled.events = TRUE,
   digits = 1, 
   print.pval.Q = FALSE,
   xlim = c(-40, 40),
   xlab = "Favors: Regional                             General",
+  text.addline1 = addline, 
   addrows.below.overall = 4
 )
 }
@@ -1833,105 +1716,178 @@ forest(adverse_meta,
 
 <caption_mg> `r figure_ref()` **Risk ratio** for myocardial infarction (regional versus general anesthesia; randomized clinical trials). </caption_mg>
 
-```{r complication_mi, fig.width = 14, fig.height = 3.7}
-#| fig.align = "left"
+```{r complication_mi}
+#| echo: false
+#| include: false
+
+png("assets/kq3_complication_mi.png", width = 7.9, height = 3.8, units = "in", res = 300)
 temp_meta <- complication_meta_fun("MI")
-complication_forest_fun(temp_meta)
+complication_forest_fun(temp_meta, "Similar arms combined for Liang 2017.")
+dev.off()
 ```
 
-<foot_mg> Similar arms combined for Liang 2017.</foot_mg>
+![](assets/kq3_complication_mi.png){fig.align="left" width="58%"}
+<br/>
 
 <caption_mg> `r figure_ref()` **Risk difference** for myocardial infarction (regional versus general anesthesia; randomized clinical trials). </caption_mg>
 
-```{r complication_mi_rd, fig.width = 14, fig.height = 3.7, fig.align = "left"}
+```{r complication_mi_rd}
+#| echo: false
+#| include: false
+
+png("assets/kq3_complication_mi_rd.png", width = 7.8, height = 3.8, units = "in", res = 300)
 temp_meta <- complication_meta_riskdiff_fun("MI")
-complication_forest_riskdiff_fun(temp_meta)
+complication_forest_riskdiff_fun(temp_meta, "Similar arms combined for Liang 2017.")
+dev.off()
 ```
 
-<foot_mg> Similar arms combined for Liang 2017.</foot_mg>
+![](assets/kq3_complication_mi_rd.png){fig.align="left" width="58%"}
+<br/>
 
 #### Cardiac Arrest
 
 <caption_mg> `r figure_ref()` **Risk difference** for cardiac arrest (regional versus general anesthesia; randomized clinical trials). </caption_mg>
 
-```{r complication_cardarr_rd, fig.width = 14, fig.height = 2.5, fig.align = "left"}
+```{r complication_cardarr_rd}
+#| echo: false
+#| include: false
+
+png("assets/kq3_complication_cardarr_rd.png", width = 7.7, height = 2.5, units = "in", res = 300)
 temp_meta <- complication_meta_riskdiff_fun("Cardiac Arrest", use_hakn = FALSE, predictive = FALSE)
 complication_forest_riskdiff_fun(temp_meta, random = FALSE)
+dev.off()
 ```
+
+![](assets/kq3_complication_cardarr_rd.png){fig.align="left" width="58%"}
 
 #### Stroke
 
 <caption_mg> `r figure_ref()` **Risk ratio** for stroke (regional versus general anesthesia; randomized clinical trials). </caption_mg>
 
-```{r complication_stroke, fig.width = 14, fig.height = 3.7, fig.align = "left"}
-temp_meta <- complication_meta_fun("Stroke", use_hakn = FALSE, predictive = FALSE)
-complication_forest_fun(temp_meta)
+```{r complication_stroke}
+#| echo: false
+#| include: false
+
+png("assets/kq3_complication_stroke.png", width = 7.9, height = 3.8, units = "in", res = 300)
+temp_meta <- complication_meta_fun("Stroke", use_hakn = FALSE)
+complication_forest_fun(temp_meta, "85% of events occurred in the GALA carotid surgery trial (Lewis 2008).")
+dev.off()
 
 ```
+
+![](assets/kq3_complication_stroke.png){fig.align="left" width="58%"}
+<br/>
 
 <caption_mg> `r figure_ref()` **Risk difference** for stroke (regional versus general anesthesia; randomized clinical trials). </caption_mg>
 
-```{r complication_stroke_rd, fig.width = 14, fig.height = 3.7, fig.align = "left"}
-temp_meta <- complication_meta_riskdiff_fun("Stroke", use_hakn = FALSE, predictive = FALSE)
+```{r complication_stroke_rd}
+#| echo: false
+#| include: false
+
+png("assets/complication_stroke_rd.png", width = 7.98, height = 3.8, units = "in", res = 300)
+temp_meta <- complication_meta_riskdiff_fun("Stroke", use_hakn = FALSE)
 complication_forest_riskdiff_fun(temp_meta)
+dev.off()
+
 ```
+![](assets/complication_stroke_rd.png){fig.align="left" width="58%"}
 
 #### Renal
 
 <caption_mg> `r figure_ref()` **Risk ratio** for renal complications (regional versus general anesthesia; randomized clinical trials). </caption_mg>
 
-```{r complication_aki, fig.width = 14, fig.height = 3.25, fig.align = "left"}
+```{r complication_renal}
+#| echo: false
+#| include: false
+ 
+png("assets/complication_renal.png", width = 7.88, height = 3.2, units = "in", res = 300)
 temp_meta <- complication_meta_fun("Renal", use_hakn = FALSE, predictive = FALSE)
 complication_forest_fun(temp_meta)
+dev.off()
+
 ```
+![](assets/complication_renal.png){fig.align="left" width="58%"}
 
 <caption_mg> `r figure_ref()` **Risk difference** for renal complications (regional versus general anesthesia; randomized clinical trials). </caption_mg>
 
-```{r complication_aki_rd,  fig.width = 14, fig.height = 3.25, fig.align = "left"}
+```{r complication_renal_rd}
+#| echo: false
+#| include: false
+
+png("assets/complication_renal_rd.png", width = 7.9, height = 3.2, units = "in", res = 300)
 temp_meta <- complication_meta_riskdiff_fun("Renal", use_hakn = FALSE, predictive = FALSE)
 complication_forest_riskdiff_fun(temp_meta)
+dev.off()
+
 ```
+![](assets/complication_renal_rd.png){fig.align="left" width="58%" }
 
 #### Pulmonary
 
 <caption_mg> `r figure_ref()` **Risk ratio** for pulmonary complications (regional versus general anesthesia; randomized clinical trials). </caption_mg>
 
-```{r complication_pulmonary, fig.width = 14, fig.height = 2.75, fig.align = "left"}
+```{r complication_pulmonary}
+#| echo: false
+#| include: false
+
+png("assets/complication_pulmonary.png", width = 7.76, height = 2.4, units = "in", res = 300)
 temp_meta <- complication_meta_fun("Pulmonary", use_hakn = FALSE, predictive = FALSE)
 complication_forest_fun(temp_meta, random = FALSE)
+dev.off()
+
 ```
+![](assets/complication_pulmonary.png){fig.align="left" width="57%" }
 
 <caption_mg> `r figure_ref()` **Risk difference** for pulmonary complications (regional versus general anesthesia; randomized clinical trials). </caption_mg>
 
-```{r complication_pulmonary_rd, fig.width = 14, fig.height = 2.75, fig.align = "left"}
-temp_meta <- complication_meta_riskdiff_fun("Pulmonary", use_hakn = FALSE, predictive = FALSE)
+```{r complication_pulmonary_rd}
+#| echo: false
+#| include: false
+
+png("assets/complication_pulmonary_rd.png", width = 7.97, height = 2.4, units = "in", res = 300)
+temp_meta <- complication_meta_riskdiff_fun("Pulmonary", use_hakn = TRUE, predictive = FALSE)
 complication_forest_riskdiff_fun(temp_meta, random = FALSE)
+dev.off()
+
 ```
+![](assets/complication_pulmonary_rd.png){fig.align="left" width="59%"}
 
 #### Pneumonia
 
 <caption_mg> `r figure_ref()` **Risk ratio** for pneumonia (regional versus general anesthesia; randomized clinical trials). </caption_mg>
 
-```{r complication_pneumonia, fig.width = 14, fig.height = 6.5, fig.align = "left"}
+```{r complication_pneumonia}
+#| echo: false
+#| include: false
+
+png("assets/complication_pneumonia.png", width = 7.9, height = 6.4, units = "in", res = 300)
 temp_meta <- complication_meta_fun("Pneumonia", use_hakn = TRUE, predictive = FALSE)
 temp_meta <- update(temp_meta, subgroup = surg_hip_oth)
-complication_forest_fun(temp_meta)
-```
+complication_forest_fun(temp_meta, "Similar arms combined for Bielka 2021 and Liang 2017." )
+dev.off()
 
-<foot_mg> Similar arms combined for Bielka 2021 and Liang 2017. </foot_mg>
+```
+![](assets/complication_pneumonia.png){fig.align="left" width="58%"}
 
 <caption_mg> `r figure_ref()` **Risk difference** for pneumonia (regional versus general anesthesia; randomized clinical trials). </caption_mg>
 
-```{r complication_pneumonia_rd, fig.width = 14, fig.height = 6.5, fig.align = "left"}
+```{r complication_pneumonia_rd}
+#| echo: false
+#| include: false
+
+png("assets/complication_pneumonia_rd.png", width = 8.1, height = 6.4, units = "in", res = 300)
 temp_meta <- complication_meta_riskdiff_fun("Pneumonia", use_hakn = TRUE, predictive = FALSE)
 temp_meta <- update(temp_meta, subgroup = surg_hip_oth)
-complication_forest_riskdiff_fun(temp_meta)
-```
+complication_forest_riskdiff_fun(temp_meta, "Similar arms combined for Bielka 2021 and Liang 2017." )
+dev.off()
 
-<foot_mg> Similar arms combined for Bielka 2021 and Liang 2017. </foot_mg>
+```
+![](assets/complication_pneumonia_rd.png){fig.align="left" width="59%"}
+
 
 ```{r}
 #| eval: false
+# only Neuman
 # pulmonary congestion
 complication_meta_riskdiff_fun("Pulmonary Congestion", use_hakn = TRUE, predictive = FALSE)
 # reintubation
@@ -1942,24 +1898,37 @@ complication_meta_riskdiff_fun("Reintubation", use_hakn = TRUE, predictive = FAL
 
 <caption_mg> `r figure_ref()` **Risk ratio** for pulmonary embolism (regional versus general anesthesia; randomized clinical trials). </caption_mg>
 
-```{r complication_pe, fig.width = 14, fig.height = 4, fig.align = "left"}
-temp_meta <- complication_meta_fun("PE", use_hakn = TRUE, predictive = FALSE)
-complication_forest_fun(temp_meta)
-```
+```{r complication_pe}
+#| echo: false
+#| include: false
 
-<foot_mg> Similar arms combined for Liang 2017.</foot_mg>
+png("assets/complication_pe.png", width = 7.9, height = 4.2, units = "in", res = 300)
+temp_meta <- complication_meta_fun("PE", use_hakn = TRUE, predictive = FALSE)
+complication_forest_fun(temp_meta, "Similar arms combined for Liang 2017.")
+dev.off()
+
+```
+![](assets/complication_pe.png){fig.align="left" width="58%"}
 
 <caption_mg> `r figure_ref()` **Risk difference** for pulmonary embolism (regional versus general anesthesia; randomized clinical trials). </caption_mg>
 
-```{r complication_pe_rd, fig.width = 14, fig.height = 4, fig.align = "left"}
+```{r complication_pe_rd}
+#| echo: false
+#| include: false
+
+png("assets/complication_pe_rd.png", width = 7.9, height = 4.2, units = "in", res = 300)
 temp_meta <- complication_meta_riskdiff_fun("PE", use_hakn = TRUE, predictive = FALSE)
-complication_forest_riskdiff_fun(temp_meta)
+complication_forest_riskdiff_fun(temp_meta, "Similar arms combined for Liang 2017.")
+dev.off()
+
 ```
+![](assets/complication_pe_rd.png){fig.align="left" width="58%"}
 
-<foot_mg> Similar arms combined for Liang 2017.</foot_mg>
+<foot_mg> </foot_mg>
 
-```{r complication_pulmonary-congestion, fig.width = 14, fig.height = 2, fig.align = "left"}
+```{r complication_pulmonary-congestion}
 #| eval: false
+# only Neuman
 temp_meta <- complication_meta_fun("Pulmonary Congestion", use_hakn = FALSE, predictive = FALSE)
 complication_forest_fun(temp_meta)
 
@@ -1971,7 +1940,7 @@ complication_forest_fun(temp_meta)
 
 <!-- UPDATED: patient satisfaction 2023-11-08 -->
 
-<caption_mg> `r table_ref()` Patient satisfaction according to regional or general anesthesia. </caption_mg>
+<caption_mg> `r table_ref()` Patient satisfaction comparing higher versus lower categories according to regional or general anesthesia. </caption_mg>
 
 ```{r pt_satisfaction}
 satis_dat_gt <- dichot_dat |>
@@ -2081,9 +2050,12 @@ satis_dat_gt |>
 
 ### *Pooled*
 
-<caption_mg> `r figure_ref()` Risk ratio in patient satisfaction (general versus regional anesthesia; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` Risk ratio comparing higher versus lower categories of patient satisfaction (Regional versus general anesthesia; randomized clinical trials). </caption_mg>
 
-```{r satis_rct_meta, fig.dim = c(14, 4.5), fig.align = "center"}
+```{r satis_rct_meta}
+#| echo: false
+#| include: false
+
 satis_meta_dat <- satis_dat_gt |> 
   select(refid, year, study, arm, satis_n, arm_n) |> 
   pivot_wider(names_from = "arm", values_from = satis_n:arm_n) |> 
@@ -2101,7 +2073,9 @@ satis_meta <- metabin(satis_n_Neur, arm_n_Neur, satis_n_Gen, arm_n_Gen,
   allstudies = TRUE,
 )
 
+
 # summary(plac_meta)
+png("assets/satis_meta.png", width = 8.12, height = 4.4, units = "in", res = 300)
 forest(satis_meta,
   allstudies = TRUE,
   # random = FALSE,
@@ -2125,10 +2099,13 @@ forest(satis_meta,
   xlim = c(0.8, 1.8),
   at = c(0.8, 1, 1.3, 1.8),
   xlab = "Favors: General                       Regional       ",
-  addrows.below.overall = 4
+  addrows.below.overall = 4,
+  # text.addline1 = "Comparing higher versus lower categories (see table)."
 )
-
+dev.off()
 ```
+
+![](assets/satis_meta.png){fig.align="left" width="60%"}
 
 ## **Length of Stay**
 
@@ -2138,6 +2115,57 @@ forest(satis_meta,
 
 ```{r length_of_stay}
 #| eval: true
+contin_neuman_dat <- contin_dat |> 
+  filter(refid == 8117) |> 
+  mutate(
+    refid = 8117001,
+    arm_n = ifelse(arm == "Gen", 593, 585),
+    los_med = ifelse(arm == "Gen", 3, 3),
+    los_iqrl = ifelse(arm == "Gen", 3, 2),
+    los_iqru = ifelse(arm == "Gen", 5, 5),
+    country = "USA",
+    study = "Neuman 2021 (USA)",
+    study_l = "[Neuman 2021 (USA)](evidence_tables.html#8117)",
+    surg_groups = "Orthopedic"
+  ) 
+
+contin_neuman_dat <- contin_dat |> 
+  filter(refid == 8117) |> 
+  mutate(
+    refid = 8117002,
+    arm_n = ifelse(arm == "Gen", 211, 210),
+    los_med = ifelse(arm == "Gen", 6, 6),  
+    los_iqrl = ifelse(arm == "Gen", 5, 4),
+    los_iqru = ifelse(arm == "Gen", 10, 9),
+    country = "Canada",
+    study = "Neuman 2021 (Canada)",
+    study_l = "[Neuman 2021 (Canada)](evidence_tables.html#8117)",
+    surg_groups = "Orthopedic"
+  ) |> 
+  bind_rows(contin_neuman_dat)
+
+los_neuman_tab <- contin_neuman_dat |>
+  mutate(los_for_tables(contin_neuman_dat)) |> 
+  filter(if_any(los_m:los_diff_pval, ~ !is.na(.))) |>
+  left_join(table_age_mn_med, by = c("refid", "arm_id")) |> # age_table
+  left_join(study_arm_dat |> select(refid, arm_id, asa_ps_incl), by = c("refid", "arm_id")) |>
+  left_join(surgs |> select(refid, surgs_noabbr_f), by = c("refid")) |>
+  # left_join(study_char_dat |> select(refid, country), by = "refid" ) |> 
+  mutate(
+    refid_arm_id = paste0(refid, "-", arm_id),
+    mean_med = case_when(
+      !is.na(los_m) ~ los_m,
+      !is.na(los_med) ~ los_med
+    ),
+    calc_prop_20d = 100 * mean_med / 20,
+    bar = case_when(
+      str_detect(arm, "Neur|Block|Reg") ~ bar_prop(calc_prop_20d, "#A93226"),
+      .default = bar_prop(calc_prop_20d, "#969696")
+    )
+  ) |>
+  arrange(surg_groups, year, study, arm_id) |> 
+  select(refid, refid_arm_id, arm_id, study, study_l, arm_n, arm, asa_ps_incl, age_table, los_table, bar, surg_groups, country, year)
+
 los_tab <- contin_dat |>
   mutate(los_for_tables(contin_dat)) |>
   filter(if_any(los_m:los_diff_pval, ~ !is.na(.))) |>
@@ -2158,8 +2186,10 @@ los_tab <- contin_dat |>
       .default = bar_prop(calc_prop_20d, "#969696")
     )
   ) |>
+  select(refid, refid_arm_id, arm_id, study, study_l, arm_n, arm, asa_ps_incl, age_table, los_table, bar, surg_groups, country, year) |> 
+  bind_rows(los_neuman_tab) |> 
   arrange(surg_groups, year, study, arm_id) |> 
-  select(refid, refid_arm_id, study, study_l, arm_n, arm, asa_ps_incl, age_table, los_table, bar, surg_groups, country)
+  select(-year, -arm_id)
 
 los_tab |>
   mutate(study_l = ifelse(row_number() > 1, "", study_l),
@@ -2194,8 +2224,10 @@ los_tab |>
     country ~ px(100)
     )  |> 
   fmt_markdown(columns = c(study_l, bar, age_table, los_table)) |> 
+  sub_missing(columns = everything(), missing_text = "") |>
   tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
-  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, bar))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(bar))) |>
+  tab_style(style = cell_text(align = "right"), locations = cells_column_labels(columns = c(arm_n))) |>
   tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(study_l, age_table, los_table, arm))) |>
   tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study_l, age_table, los_table, bar, arm))) |> 
   tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(arm, "Neur|Block"))) |> 
@@ -2209,10 +2241,16 @@ los_tab |>
 
 <caption_mg> `r figure_ref()` Mean difference in lengths of stay (regional versus general anesthesia; randomized clinical trials). </caption_mg>
 
-```{r los_meta, fig.width = 14, fig.height = 5.3, fig.align = "left"}
+```{r los_meta}
+#| include: false
+#| echo: false
+
 los_meta_dat <- contin_dat |>
+  left_join(study_char_dat |> select(refid, country), by = "refid") |> 
+  filter(refid != 8117) |> 
+  bind_rows(contin_neuman_dat) |>
   filter(refid %in% los_tab$refid) |>
-  select(refid, study, arm_id, arm, arm_n, los_m, los_sd, los_med, los_rl, los_ru, los_iqrl, los_iqru, los_95l, los_95u) |> 
+  select(refid, study, arm_id, arm, arm_n, los_m, los_sd, los_med, los_rl, los_ru, los_iqrl, los_iqru, los_95l, los_95u, country) |> 
   mutate(
     arm = ifelse(arm == "Gen", "Gen", "Reg"),
     los_m = ifelse(study == "Xu 2020" & arm_id == 2, 4.15, los_m),
@@ -2238,7 +2276,11 @@ los_meta_dat <- contin_dat |>
   ungroup() |> 
   arrange(year) |> 
   left_join(rob2_meta_dat, by = "refid") |> 
-  left_join(surgs |> select(refid, surgs_single), by = "refid")  
+  left_join(surgs |> select(refid, surgs_single), by = "refid") |> 
+  mutate(
+    surgs_single = ifelse(str_detect(study, "Neuman"), "Ortho", surgs_single)
+    ) |> 
+  arrange(surgs_single, year)
 
 los_meta <- metacont(
   # cluster = study,
@@ -2267,6 +2309,7 @@ los_meta <- metacont(
   studlab = study
 )
 
+png("assets/kq3_los_meta.png", width = 10.2, height = 5.7, units = "in", res = 300)
 forest(los_meta,
   weight.study = "random",
   common =  FALSE,
@@ -2287,18 +2330,17 @@ forest(los_meta,
   # sortvar = -TE,
   xlim = c(-10, 10),
   # at = c(-80, -60, -40, -20, 0, 20, 40),
-  rightcols = c("effect", "ci", "surgs_single"),
-  rightlabs = c("MD ", "(95% CI)   ", "Procedure"),
-  xlab = "Favors: Reg                                      Inhaled           ",
+  rightcols = c("effect", "ci", "surgs_single", "country"),
+  rightlabs = c("MD ", "(95% CI)   ", "Procedure", "Country"),
+  xlab = "Favors: Regional                                    General          ",
   smlab = "Mean Difference (days)",
   addrows.below.overall = 4,
+  text.addline1 = "When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, range, or between-arm p-value."
 )
-
+dev.off()
 ```
 
-<foot_mg> When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, range, or between-arm, p-value. </foot_mg>
-
-<br/>
+![](assets/kq3_los_meta.png){#fig-los fig.align="left" width="75%"}
 
 ## **Discharge Location**
 
@@ -2566,9 +2608,36 @@ pairwise_rct_mort_dat <- pairwise(
 
 ```
 
+```{r}
+#| eval: false
+temp <- pairwise_rct_mort_dat |> 
+  mutate(
+    rr = exp(TE),
+    baseline = mort_n2/arm_n2,
+    size = arm_n2 + arm_n1
+) |> 
+  select(rr, baseline, size, TE)
+
+# create plot of log(rr) vs baseline risk (logit scale) with symbols proportional to study size
+ggplot(temp, aes(x = baseline, y = log(rr), size = size)) +
+  geom_point(col = "red", pch = 16) +
+  scale_size_area(max_size = 12) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_vline(xintercept = 0.01, linetype = "dashed") +
+  # scale_y_continuous(limits = c(0.1, 5)) +
+  labs(x = "Baseline risk", y = "Log(Risk ratio)") +
+  theme_bw()
+
+
+with(temp, plot(baseline, log(rr), cex = log(size/20), pch = 16, col = "red", xlab = "Baseline Risk", ylab = "Log(Risk ratio)", ylim = c(-1, 2), xlim = c(-0.0, 0.04)))
+```
+
 <caption_mg> `r figure_ref()` **Risk ratio** for hospital or 30-day mortality (regional versus general; randomized clinical trials). </caption_mg>
 
-```{r mort_rct_meta, fig.dim = c(14, 7.7), fig.align = "center"}
+```{r mort_rct_meta}
+#| echo: false
+#| include: false
+
 mort_meta_dat <- pairwise_rct_mort_dat |>
   left_join(rob2_meta_dat, by = "refid") |>
   left_join(surgs |> select(refid, surgs_single), by = "refid") |>
@@ -2596,6 +2665,7 @@ mort_rct_meta <- metabin(event2, n2, event1, n1,
 )
 
 # summary(plac_meta)
+png("assets/mort_rct_meta.png", width = 8.8, height = 7.5, units = "in", res = 300)
 forest(mort_rct_meta,
   allstudies = TRUE,
   # random = FALSE,
@@ -2618,14 +2688,23 @@ forest(mort_rct_meta,
   print.pval.Q = FALSE,
   # xlim = c(0.1, 20),
   xlab = "Favors: Regional                      General     ",
-  addrows.below.overall = 4
+  addrows.below.overall = 4,
+  text.addline1 = "Hartung-Knapp adjustment not applied. Overall random effects estimate with adjustment RR 0.68 (95% CI, 0.43–1.07)."
 )
+dev.off()
+
 ```
-<foot_mg> Hartung-Knapp adjustment not applied above. Overall random effects estimate with adjustment RR 0.68 (95% CI, 0.43–1.07) </foot_mg> 
+![](assets/mort_rct_meta.png){fig.align="left" width="65%"}
+
+<br/>
 
 <caption_mg> `r figure_ref()` **Risk difference** for hospital or 30-day mortality (regional versus general; randomized clinical trials). </caption_mg>
 
-```{r mort_rct_rd_meta, fig.dim = c(14, 7.7), fig.align = "center"}
+```{r mort_rct_rd_meta}
+#| echo: false
+#| include: false 
+
+png("assets/mort_rct_rd_meta.png", width = 8.84, height = 7.3, units = "in", res = 300)
 mort_rct_meta <- update(mort_rct_meta, sm = "RD", hakn = TRUE)
 forest(mort_rct_meta,
   allstudies = TRUE,
@@ -2651,8 +2730,10 @@ forest(mort_rct_meta,
   xlab = "Favors: Regional                      General     ",
   addrows.below.overall = 4
 )
+dev.off()
 
 ```
+![](assets/mort_rct_rd_meta.png){fig.align="left" width="65%"}
 
 ```{r mortality_hosp_90d_meta}
 #| eval: true
@@ -2685,8 +2766,10 @@ pairwise_rct_mort_dat <- pairwise(
 
 <caption_mg> `r figure_ref()` **Risk ratio** for 90-day mortality (regional versus general; randomized clinical trials). </caption_mg>
 
-```{r mort_rct_90d_meta, fig.dim = c(14, 3.1), fig.align = "center"}
-# ```{r nma_dat, out.width = 50%, out.height = 100%}
+```{r mort_rct_90d_meta}
+#| echo: false
+#| include: false
+
 mort_meta_dat <- pairwise_rct_mort_dat |> 
   mutate(year = str_extract(study, "\\d{4}")) |> 
   left_join(rob2_meta_dat, by = "refid") |>
@@ -2709,11 +2792,13 @@ mort_rct_meta <- metabin(event2, n2, event1, n1,
   method = "MH",
   method.tau = "REML",
   hakn = FALSE,
-  prediction = FALSE,
+  prediction = TRUE,
   allstudies = FALSE,
 )
 
 # summary(plac_meta)
+
+png("assets/mort_rct_90d_meta.png", width = 8.84, height = 3.05, units = "in", res = 300)
 forest(mort_rct_meta,
   allstudies = TRUE,
   # random = FALSE,
@@ -2726,7 +2811,7 @@ forest(mort_rct_meta,
   digits.tau2 = 1,
   overall.hetstat = TRUE,
   print.I2.ci = TRUE,
-  prediction = FALSE,
+  prediction = TRUE,
   fs.xlab = 11,
   pooled.events = TRUE,
   # pscale = 10000,
@@ -2736,12 +2821,18 @@ forest(mort_rct_meta,
   xlab = "Favors: Regional                      General     ",
   addrows.below.overall = 4
 )
+dev.off()
 
 ```
+![](assets/mort_rct_90d_meta.png){fig.align="left" width="65%"}
 
 <caption_mg> `r figure_ref()` **Risk difference** for 90-day mortality (regional versus general; randomized clinical trials). </caption_mg>
 
-```{r mort_rct_rd_90dmeta, fig.dim = c(14, 3.1), fig.align = "center"}
+```{r mort_rct_rd_90dmeta}
+#| echo: false
+#| include: false
+
+png("assets/mort_rct_rd_90dmeta.png", width = 8.74, height = 3, units = "in", res = 300)
 mort_rct_meta <- update(mort_rct_meta, sm = "RD")
 forest(mort_rct_meta,
   allstudies = TRUE,
@@ -2765,7 +2856,10 @@ forest(mort_rct_meta,
   xlab = "Favors: Regional                      General     ",
   addrows.below.overall = 4
 )
+dev.off()
+
 ```
+![](assets/mort_rct_rd_90dmeta.png){fig.align="left" width="64%"}
 
 ## **Risk of Bias**
 

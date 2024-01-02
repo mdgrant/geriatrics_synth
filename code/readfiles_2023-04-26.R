@@ -482,12 +482,19 @@ dichot_dat <- read_csv(path_csv(dichot_out_file)) |>
   left_join(study_arm_dat |> select(refid, arm_id, study:study_id, refid_c), by = c("refid", "arm_id")) |>
   relocate(study:study_id, .after = design_f_abbrev)
 
-## cardiac complication defn -------------------------- (2023-06-03 11:05) @----
-cardiac_compl <- readxl::read_xlsx("data/cardiac_complications_2023-05-22.xlsx", range = "A1:E56") |>
+## complication defn ---------------------------------- (2023-06-03 11:05) @----
+cardiac_compl <- readxl::read_xlsx("data/complications_defs_2023-05-22.xlsx", range = "A1:E56", sheet = "cardiac") |>
   clean_names() |>
   mutate(cardiac_complications = firstlower(cardiac_complications),
          complication = "cardiac") |>
   rename(detail_cardiac = cardiac_complications) |>
+  select(-c(study, kq))
+
+pulmonary_compl <- readxl::read_xlsx("data/complications_defs_2023-05-22.xlsx", range = "A1:D16", sheet = "pulmonary") |>
+  clean_names() |>
+  mutate(pulmonary_complications = firstlower(pulmonary_complications),
+         complication = "pulm") |>
+  rename(detail_pulmonary = pulmonary_complications) |>
   select(-c(study, kq))
 
 # type_col(dichot_dat) |> arrange(desc(mode)) |> View()
