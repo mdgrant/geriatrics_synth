@@ -525,8 +525,8 @@ reg_gen_dat |>
   # tab_footnote(md("RCT: randomized clinical trial; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; RD/1000: risk difference per 1000.")) |>
   tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
   tab_footnote("Studies reported 0 and 2 events.", locations = cells_body(columns = c(est), rows = outcome == "Cardiac arrest"), placement = "right") |>
-  tab_footnote(md("[Comparing higher/highest category or categories compared with lower ones.](kq3.html#patient-satisfaction)"), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |>
-  # tab_footnote(md("Comparing higher/highest category or categories compared with lower ones."), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |>
+  # tab_footnote(md("[Comparing higher/highest category or categories with lower ones.](kq3.html#patient-satisfaction)"), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |>
+  tab_footnote(md("Comparing higher/highest category or categories with lower ones."), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |>
   tab_footnote("Complications reported variously across the 17 trials. ", locations = cells_body(columns = c(outcome), rows = outcome == "Complications"), placement = "right") |>
   tab_footnote("Hip fracture trials RR 1.03 (0.77–1.32); others RR 0.90 (0.62–1.29).", locations = cells_body(columns = c(est), rows = outcome == "Delirium"), placement = "right")
 }
