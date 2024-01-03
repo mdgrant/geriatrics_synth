@@ -25,13 +25,14 @@ nocite: '@*'
 ---
 
 ::: {.callout-note collapse="false"}
-## Recent updates (last 2024-01-02)
+## Recent updates (last 2024-01-03)
 
 | Date               | Modification|
 |:------------------------|:-----------------------------------------------|
 | 2023-11-08 | Updated to most current included studies. Removed risk of bias tallies from forest plots where not pertinent to outcome. Used weighted risk of bias summary for delirium and added for overall. Added risk differences per 1000 to complications and mortality. |
 | 2023-11-09 | Added balance tables (also appear in appendix).|
 | 2024-01-02 | Added [figure 4](kq3.html#figure-4) to display potential dependence of effects on baseline (control arm event rate) for delirium. Updated balance tables|
+| 2024-01-03 | Added link under included studies section to updated [appendix](summary_kq3.html) that now includes a [primary outcomes table](summary_kq3.html#primary-outcomes). |
 :::
 
 ## Key Question
@@ -156,6 +157,8 @@ likert_freq_fun(likert_dat, "ADL: activities of daily living; DNCR: delayed neur
 ```
 
 ## **Included Studies**
+
+See [Appendix](summary_kq3.html) for detailed summary study and patient characteristics including primary outcomes.
 
 <caption_mg> `r table_ref()` Number of studies by design. </caption_mg>
 

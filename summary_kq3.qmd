@@ -1,5 +1,5 @@
 ---
-title: "Study/Paient Characteristics Regional vs. General"
+title: "Study/Patient Characteristics Regional versus General Anesthesia"
 date: "`r format(Sys.time(), '%d %B, %Y (%H:%M)')`"
 editor: source
 toc-title: "**Characteristics**"
@@ -19,7 +19,7 @@ tables:
 #| include: false
 source("code/load_data.R")
 
-kq3_refid <- kq3_refid[!kq3_refid %in% c(813, 3434)] # retrospective cohort 
+kq3_refid <- kq3_refid[!kq3_refid %in% c(813, 3434, 16596)] # retrospective cohort and Neuman 2016
 
 study_char_dat <- data_kq(study_char_dat, kq3_refid)
 
@@ -56,7 +56,7 @@ n_per_tf <- function(var_name, n_dig = 1){
 
 ### Trial Characteristics 
 
-<font size = 4> `r table_ref()` Characteristics of randomized controlled trials. </font>
+<font size = 4> `r table_ref()` Characteristics of included randomized clinical trials. </font>
 
 ```{r studyChar}
 study_char_tab <- study_char_dat |> 
@@ -183,35 +183,13 @@ writexl::write_xlsx(table, "/Users/mgrant/Desktop/study_char_tab_kq3.xlsx")
 
 ```
 
-<br/>
-
 ### Patient Charcteristics
 
-<br/>
-
-<font size = 4> `r table_ref()` Patient characteristics in randomized controlled trials. </font>
+<font size = 4> `r table_ref()` Patient characteristics. </font>
 
 ```{r ptCharRev}
 #| warning: false
-## (updated 2021/07/21 08:26) surgery type --------------------------------
-# surg <- study_char.dat |>
-#   filter(
-#     design %in% c("rct", "crossover"),
-#     age == "Adult",
-#     refid %in% rev_refids,
-#   ) |>
-#   mutate(
-#     across(surg_various:surg_other, ~ str_replace(.x, "surg_", "")),
-#     across(surg_various:surg_other, ~ str_c(.x, ", ")),
-#     across(surg_various:surg_other, ~ firstup(.x)),
-#     across(surg_various:surg_other, ~ replace_na(.x, "")),
-#     surg_list = ifelse(grepl("abdom", surg_list), "Abdominal, ", ""),
-#     surgs = str_c(surg_various, surg_car, surg_cr, surg_gyn, surg_gi, surg_gen, surg_headneck, surg_hep, surg_neuro, surg_opth, surg_oralmax, surg_ortho, surg_otolar, surg_plastic, surg_thor, surg_urol, surg_other, surg_list),
-#     surgs = str_replace(surgs, "Otolar", "ENT"),
-#     surgs = str_replace(surgs, "Headneck", "ENT"),
-#     surgs = str_sub(surgs, 1, nchar(surgs) - 2),
-#     surgs = ifelse(str_count(surgs, ",") > 2, "Various", surgs)
-#     ) |>
+
 surg <- surgs |> 
   select(refid, surgs_single) |> 
   rename(surgs = surgs_single) |> 
@@ -317,6 +295,74 @@ pt_char_tab |>
   ) |> 
  gt_theme_mg()
   
-writexl::write_xlsx(pt_char_tab, "/Users/mgrant/Desktop/pt_char_tab.xlsx")
+# writexl::write_xlsx(pt_char_tab, "/Users/mgrant/Desktop/pt_char_tab.xlsx")
 
 ```
+
+
+## Primary Outcomes
+
+<font size = 4> `r table_ref()` Primary outcomes. </font>
+
+```{r outcome_prim_sec}
+
+other_foot <- study_char_dat |> 
+  select(out_other_detail) |> 
+  filter(!is.na(out_other_detail)) |> 
+  mutate(
+    out_other_detail = firstup(out_other_detail),
+    out_other_detail = str_replace_all(out_other_detail, "acceptibility", "[A]cceptibility"),
+    out_other_detail = str_replace_all(out_other_detail, ";$", ""),
+    out_other_detail = str_replace_all(out_other_detail, "$", "\\."),
+    out_other_detail = paste0(out_other_detail, "<br/>TT"),
+    out_other_detail = str_replace_all(out_other_detail, "; B", "; b"),
+    out_other_detail = str_replace_all(out_other_detail, "; H", "; h"),
+    out_other_detail = str_replace_all(out_other_detail, "homo", "hemo"),
+  ) |> 
+  pull(out_other_detail) |> 
+  toString()
+
+other_foot <- gsub("TT,|TT", "", other_foot)
+
+study_char_dat |> 
+  select(design_f_abbrev, starts_with("prim_")) |>
+  remove_empty(which = "cols") |>
+  mutate(across(starts_with("prim"), ~ !is.na(.x))) |>
+  rename(
+    "Postoperative delirium" = prim_delirium,
+    "Delayed neurocognitive recovery" = prim_pocd,
+    # "Stroke" = prim_stroke,
+    # "Intraoperative awareness" = prim_aware,
+    "Quality of recovery" = prim_recovery,
+    "Depression" = prim_depress,
+    "Patient/caregiver satisfaction" = prim_satis,
+    # "Valued life activities" = prim_val_life,
+    "Functional status (ADL, IADL, mobility)" = prim_function,
+    # "HRQoL" = prim_qol,
+    "Pain" = prim_pain,
+    "Opioid use" = prim_opioid,
+    "Complications" = prim_compl,
+    "Length of stay" = prim_los,
+    # "Discharge location" = prim_dc_loc,
+    # "Readmission" = prim_readmit,
+    "Mortality (30-, 180-, 365-day)" = prim_mort,
+    "Other" = prim_oth
+  ) |>
+    arrange(design_f_abbrev) |>
+    mutate(
+      design_f_abbrev = fct_drop(design_f_abbrev)
+    ) |>
+    group_by(design_f_abbrev) |>
+    tbl_summary(
+      by = design_f_abbrev,
+      missing = "no"
+    ) |> 
+    modify_header(label = "**Outcome**") |>
+    # modify_footnote(update = everything() ~ NA) |>
+    as_gt(id = "one") |> 
+    gt_theme_mg() |>
+    sub_values(values = c("0 (0%)"), replacement = "—") |> 
+    tab_footnote(md(other_foot), locations = cells_body(columns = c(stat_1), rows = label == "Other")) 
+
+```
+
