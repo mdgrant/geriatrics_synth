@@ -33,6 +33,9 @@ nocite: '@*'
 </style>
 ```
 
+**Note: Clicking on the author name will open a new window with the publication if the DOI was available.**
+
+<br/><br/>
 
 <!-- setup -------------------------------------------- (2022-12-24 16:56) @ --->
 
@@ -42,12 +45,42 @@ source("code/load_data.R")
 ```
 
 ```{r evidenceTables}
+#| include: false
+#| echo: false
+
+# get DOI
+refs_distiller <- read_csv("data/distillersr-Geriatrics_2023-12-05-22-45-28.csv") |>
+  clean_names() |>
+  mutate(
+    doi = str_remove(doi, "\\s.*")
+  ) |>
+  group_by(refid) |>
+  mutate(
+    date = str_extract(distiller_reference_created_date, "\\d{4}-\\d{2}-\\d{2}"),
+    doi = paste0("https://doi.org/", doi)
+  ) |>
+  slice(1) |>
+  ungroup() |>
+  select(refid, doi) 
+  # remove cloned references
+  # filter(!refid %in% cloned_refid) |> 
+
+# paste0("[", refs_distiller[1,2], "]",  "{.target=_blank}")
+
+# tibble::tibble(
+#   link = r"(<p><a href="https://www.rstudio.com/" target="_blank">RStudio</a></p>)"
+# ) %>% 
+#   gt() %>% 
+#   fmt_markdown("link")
+
 # incl excl enrolled summary
 evidence_tables <- study_char_dat |> 
   select(refid, author, year, study, n_enroll, include, exclude, results, design_f_lab, comment) |> 
+  left_join(refs_distiller, by = "refid") |>
   mutate(
     year = str_extract(study, "\\d{4}\\w?$"),
-    study = glue("{author}<br/>{year}<span><a id='{refid}'></a></span>"),
+    # author = paste0("[", author, "](", doi, ")"),
+    study = glue("<p><a href='{doi}' target='_blank\\'>{author}<br/>{year}<i class='bi bi-box-arrow-in-up-right'></i></a></p><span><a id='{refid}'></a></span>"),
     include = firstup(include),
     exclude = firstup(exclude),
     results = firstup(results),
@@ -84,7 +117,10 @@ obs_refid <- study_char_dat |>
   filter(!design_f %in% c("rct", "nr_trial", "cluster", "crossover", "quasi_exp")) |> 
   pull(refid)
 
-study_char_dat |> tabyl(design_f)
+# study_char_dat |> 
+#   tabyl(design_f) |> 
+#   gt() |> 
+#   gt_theme_mg() 
 
 # later add study arm data
 # study_arm_dat_trial <- study_arm_dat |> 
@@ -112,29 +148,19 @@ evidence_tables |>
   ) |> 
   cols_width(
     study ~ "80px",
-    n_enroll ~ "50px",
+    n_enroll ~ "60px",
     incl_excl ~ "300px",
     results ~ "300px",
     comment ~ "160px"
   ) |> 
-    cols_align(
-    align = "left",
-    columns = study
-  ) |>
-  cols_align(
-    align = "center",
-    columns = n_enroll
-  ) |>
-  tab_style(
-    style = cell_text(size = "12px"),
-    locations = cells_body(columns = everything())) |> 
+  cols_align(align = "left", columns = study) |>
+  cols_align(align = "right", columns = n_enroll) |>
+  tab_style(style = cell_text(size = "12px"), locations = cells_body(columns = everything())) |> 
   fmt_markdown(columns = c(study, incl_excl, results, comment)) |> 
-    tab_style(
-    style = "vertical-align:top",
-    locations = cells_body(columns = everything())
-  ) |> 
+  tab_style(style = "vertical-align:top", locations = cells_body(columns = everything())) |> 
+  fmt_number(columns = c(n_enroll), use_seps = TRUE, drop_trailing_zeros = TRUE) |>
   gt_theme_mg() |> 
-    opt_css(
+  opt_css(
       css = "
       p {
       line-height: 1.5;
@@ -143,8 +169,6 @@ evidence_tables |>
     )
 }
 ```
-
-<br/><br/>
 
 ## Randomized Clinical Trials
 
@@ -177,6 +201,6 @@ evidence_tables_function(quasi_refid)
 evidence_tables_function(obs_refid)
 ```
 
-<br/>
+<br/><br/>
 
 # References {#references}
