@@ -19,20 +19,32 @@ tables:
 #| include: false
 source("code/load_data.R")
 
-kq3_refid <- kq3_refid[!kq3_refid %in% c(813, 3434, 16596)] # retrospective cohort and Neuman 2016
+# exclude trials with blocks Weber 2009, Kasprzak 2006, Lewis 2008, Sellbrant 2021, Sellbrant 2021, Gu 2021, Aasbo 2002, Hestin 2022
+block_refid <- study_arm_dat |> 
+  filter(!(study == "Bielka 2021" & arm_id == 3)) |> 
+  filter(!is.na(kq3_reg_block)) |> 
+  pull(refid)
+
+kq3_refid <- kq3_refid[!kq3_refid %in% c(813, 16596)] # retrospective cohort and Neuman 2016
+kq3_refid <- kq3_refid[!kq3_refid %in% block_refid] # exclude blocks
 
 study_char_dat <- data_kq(study_char_dat, kq3_refid)
 
-## VARIABLE: kq3_anesth_neur, kq3_anesth_reg, kq3_anesth_gen, kq3_anesth_neur_type, kq3_anesth_gen_type  — anesthetic and type, no specifics recorded for regional
+# ortho only hip fx ortho_hipfx_only_refid
+ortho_hipfx_only_refid <- ortho_proc |> 
+  filter(ortho == "HipFx") |> 
+  pull(refid)
+
+## VARIABLE: kq3_anesth_neur, kq3_anesth_reg, kq3_anesth_gen, kq3_anesth_neur_type, kq3_anesth_gen_type — anesthetic and type, no specifics recorded for regional
 study_arm_dat <- data_kq(study_arm_dat, kq3_refid) |>
+  # exclude Bielka 2021 arm 3 (block)
+  filter(!(study == "Bielka 2021" & arm_id == 3)) |> 
   # delete anesthetic variables not relevant (avoid potential confusion)
   select(-c(inhalation:anes_ns)) |>
   mutate(arm = arm_kq3_reg_gen) |>
   relocate(arm, .before = arm_kq3_reg_gen) |>
-  # add general, neuraxial, regional
   mutate(
     kq3_anesth_neur = ifelse(if_any(c(kq3_reg_spinal, kq3_reg_epidural, kq3_reg_cse), ~ !is.na(.x)), "Neuraxial", NA),
-    kq3_anesth_reg = ifelse(!is.na(kq3_reg_block), "Regional", NA),
     kq3_anesth_gen = ifelse(!is.na(kq3_gen_type), "General", NA),
     kq3_anesth_neur_type =
       case_when(
@@ -41,10 +53,16 @@ study_arm_dat <- data_kq(study_arm_dat, kq3_refid) |>
         !is.na(kq3_reg_cse) ~ "CSE"
       ),
     kq3_anesth_gen_type = kq3_gen_type,
-    arm = ifelse(!is.na(kq3_reg_block) & arm != "general", "block", arm),
-    arm = factor(arm, levels = c("general", "block", "regional"), labels = c("Gen", "Block", "Neur"))
+    arm = factor(arm, levels = c("general", "regional"), labels = c("Gen", "Neur"))
   ) |>
   relocate(kq3_anesth_neur:kq3_anesth_gen_type, .before = kq3_gen_type)
+
+# get refids to include so that linked studies are not double counted
+no_linked_refids <- study_char_dat |> 
+  group_by(linked_references_all_refid) |>
+  filter(n_enroll == max(n_enroll)) |>
+  slice(1) |> 
+  pull(refid)
 
 ```
 
@@ -60,6 +78,7 @@ n_per_tf <- function(var_name, n_dig = 1){
 
 ```{r studyChar}
 study_char_tab <- study_char_dat |> 
+  filter(refid %in% no_linked_refids) |>
   mutate(
     dates = str_c(date_start, "-", date_end),
     country = countrycode::countryname(country, destination = "un.name.en"),
@@ -140,8 +159,8 @@ table <- study_char_tab |>
     # "  TIVA" = n_per_tf(tiva),
     # "  Sedation" = n_per_tf(sedation),
     "Country" = " ",
-    "Non-very-high HDI Countryª" = n_per_tf(low_r),
-    # expression(paste("Non-very-high HDI"^"a")) = n_per_tf(low_r),
+    "Non-very-high HDI Country" = n_per_tf(low_r),
+    # expression(paste("Non-very-high HDI")) = n_per_tf(low_r),
     "Funding" = " ",
     "  Industry" = n_per_tf(fund_ind),
     "  Public/Industry" = n_per_tf(fund_pubind),
@@ -173,14 +192,11 @@ table |>
     characteristic ~ px(240),
     n_per ~ px(150)
   ) |> 
- gt_theme_mg()
+ gt_theme_mg() |> 
+ tab_footnote("Studies with multiple publications counted once.") |>
+ tab_footnote(md("Non very-high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."), locations = cells_body(columns = c(characteristic), rows = characteristic == "Non-very-high HDI Country"))
 
-library(kableExtra)
-opt_font <-  c("Source Sans Pro")
-opt_boot <- c("striped", "hover", "condensed")
-
-writexl::write_xlsx(table, "/Users/mgrant/Desktop/study_char_tab_kq3.xlsx")
-
+# writexl::write_xlsx(table, "/Users/mgrant/Desktop/study_char_tab_kq3.xlsx")
 ```
 
 ### Patient Charcteristics
@@ -191,6 +207,7 @@ writexl::write_xlsx(table, "/Users/mgrant/Desktop/study_char_tab_kq3.xlsx")
 #| warning: false
 
 surg <- surgs |> 
+  filter(refid %in% no_linked_refids) |>
   select(refid, surgs_single) |> 
   rename(surgs = surgs_single) |> 
   tabyl(surgs) |> 
@@ -206,16 +223,18 @@ surg <- surgs |>
   mutate(
     characteristic = str_replace(characteristic, "Gi", "GI"),
     characteristic = str_replace(characteristic, "Cr", "CR"),
-    characteristic = ifelse(characteristic == "Various", "Various (>3)", characteristic),
+    characteristic = ifelse(characteristic == "Various", "Various (>4)", characteristic),
     characteristic = paste0("  ", characteristic),
   )
 
 asa_class <- asa_combine |>
+  filter(refid %in% no_linked_refids) |>
   mutate(asa = str_trim(asa_ps_incl)) |>
   select(refid, asa) |> 
   slice(1, .by = "refid")
 
 pt_char_tab <- study_arm_dat |>
+  filter(refid %in% no_linked_refids) |>
   # filter(
   #   design %in% c("rct", "crossover"),
   #   age == "Adult",
@@ -284,6 +303,7 @@ t() |>
   bind_rows(surg)
 
 pt_char_tab |>
+  filter(result != "0") |>
   gt(id = "one") |>
   cols_label(
     characteristic   = "Characteristic",
@@ -293,12 +313,12 @@ pt_char_tab |>
     characteristic ~ px(240),
     result ~ px(150)
   ) |> 
- gt_theme_mg()
+ gt_theme_mg() |> 
+ tab_footnote("Studies with multiple publications counted once.") 
   
 # writexl::write_xlsx(pt_char_tab, "/Users/mgrant/Desktop/pt_char_tab.xlsx")
 
 ```
-
 
 ## Primary Outcomes
 
@@ -325,6 +345,10 @@ other_foot <- study_char_dat |>
 other_foot <- gsub("TT,|TT", "", other_foot)
 
 study_char_dat |> 
+  group_by(linked_references_all_refid) |>
+  filter(n_enroll == max(n_enroll)) |>
+  slice(1) |> 
+  ungroup() |>
   select(design_f_abbrev, starts_with("prim_")) |>
   remove_empty(which = "cols") |>
   mutate(across(starts_with("prim"), ~ !is.na(.x))) |>
@@ -333,7 +357,7 @@ study_char_dat |>
     "Delayed neurocognitive recovery" = prim_pocd,
     # "Stroke" = prim_stroke,
     # "Intraoperative awareness" = prim_aware,
-    "Quality of recovery" = prim_recovery,
+    # "Quality of recovery" = prim_recovery,
     "Depression" = prim_depress,
     "Patient/caregiver satisfaction" = prim_satis,
     # "Valued life activities" = prim_val_life,
@@ -360,6 +384,10 @@ study_char_dat |>
     modify_header(label = "**Outcome**") |>
     # modify_footnote(update = everything() ~ NA) |>
     as_gt(id = "one") |> 
+    cols_width(
+      label          ~ px(270),
+      stat_1         ~ px(90),
+    ) |> 
     gt_theme_mg() |>
     sub_values(values = c("0 (0%)"), replacement = "—") |> 
     tab_footnote(md(other_foot), locations = cells_body(columns = c(stat_1), rows = label == "Other")) 
