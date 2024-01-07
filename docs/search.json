@@ -270,7 +270,7 @@
     "href": "index.html",
     "title": "Geriatrics Evidence Synthesis",
     "section": "",
-    "text": "Key Questions \nExpanded Preoperative Evaluation\nPrehabilitation\nRegional versus General Anesthesia\nTIVA versus Inhaled Anesthesia\nPotentially Inappropriate Medications\nDelirium Prophylaxis\n\n Strength of Evidence and Summary of Findings \nGRADE\nBalance Tables\n\n Other \nDraft Protocol\nStudy-level evidence tables\nBrief summaries by study design of inclusion/exclusion criteria, results, and comment when relevant.\nIncludes links to publications.\nStudy/patient characteristics and primary outcome summaries\nRegional versus General Anesthesia\nOutcome Importance Rankings\n\nDraft materials (not to be cited).\nPlease send corrections, suggestions, or comments to Mark Grant."
+    "text": "Key Questions \nExpanded Preoperative Evaluation\nPrehabilitation\nNeuraxial versus General Anesthesia\nTIVA versus Inhaled Anesthesia\nPotentially Inappropriate Medications\nDelirium Prophylaxis\n\n Strength of Evidence and Summary of Findings \nGRADE\nBalance Tables\n\n Other \nDraft Protocol\nStudy-level evidence tables\nBrief summaries by study design of inclusion/exclusion criteria, results, and comment when relevant.\nIncludes links to publications.\nStudy/patient characteristics and primary outcome summaries\nNeuraxial versus General Anesthesia\nOutcome Importance Rankings\n\nDraft materials (not to be cited).\nPlease send corrections, suggestions, or comments to Mark Grant."
   },
   {
     "objectID": "outcome_rankings.html",
@@ -331,7 +331,7 @@
   {
     "objectID": "summary_kq3.html",
     "href": "summary_kq3.html",
-    "title": "Study/Patient Characteristics Regional versus General Anesthesia",
+    "title": "Study/Patient Characteristics Neuraxial versus General Anesthesia",
     "section": "",
     "text": "Table 1. Characteristics of included randomized clinical trials. \n\n\n\n\n\n\n  \n    \n    \n  \n  \n    \n    \n      Characteristic\n      N (%)\n    \n  \n  \n    Number of Trials\n37\n    Patients Enrolled (N)\n \n      Mean\n179\n      Median\n80\n      Range\n(25-1600)\n    Arms\n \n      Two\n31\n      Multi\n6\n      Mean \n2.2\n      Median \n2\n      Range \n(2-4)\n    Pilot Study\n3 (8.1)\n    Ambulatory\n0 (0.0)\n    Centers\n \n      Single Center\n34 (91.9)\n      Multicenter\n3 (8.1)\n    Volatile Anesthetic\n4 (10.8)\n    Country\n \n      China\n9 (24.3)\n      Italy\n4 (10.8)\n      Turkey\n4 (10.8)\n      United States\n3 (8.1)\n      Croatia\n2 (5.4)\n      Greece\n2 (5.4)\n      Sweden\n2 (5.4)\n      United Kingdom\n2 (5.4)\n      Australia\n1 (2.7)\n      Denmark\n1 (2.7)\n      France\n1 (2.7)\n      India\n1 (2.7)\n      Iran\n1 (2.7)\n      Japan\n1 (2.7)\n      South Korea\n1 (2.7)\n      Thailand\n1 (2.7)\n      Ukraine\n1 (2.7)\n    Non-very-high HDI Countrya\n12 (32.4)\n    Funding\n \n      Industry\n0 (0.0)\n      Public/Industry\n0 (0.0)\n      Public\n14 (37.8)\n      Not Reported\n16 (43.2)\n    Author COI\n3 (8.1)\n    Registered\n13 (35.1)\n  \n  \n  \n    \n       Studies with multiple publications counted once.\n    \n    \n      a Non very-high Human Development Index country."
   },
@@ -779,7 +779,7 @@
   {
     "objectID": "summary_kq3.html#primary-outcomes",
     "href": "summary_kq3.html#primary-outcomes",
-    "title": "Study/Patient Characteristics Regional versus General Anesthesia",
+    "title": "Study/Patient Characteristics Neuraxial versus General Anesthesia",
     "section": "Primary Outcomes",
     "text": "Primary Outcomes\n Table 3. Primary outcomes. \n\n\n\n\n\n\n  \n    \n    \n  \n  \n    \n    \n      Outcome\n      RCT, N = 37a\n    \n  \n  \n    Postoperative delirium\n6 (16%)\n    Delayed neurocognitive recovery\n9 (24%)\n    Depression\n1 (2.7%)\n    Patient/caregiver satisfaction\n4 (11%)\n    Functional status (ADL, IADL, mobility)\n4 (11%)\n    Pain\n13 (35%)\n    Opioid use\n4 (11%)\n    Complications\n6 (16%)\n    Length of stay\n5 (14%)\n    Mortality (30-, 180-, 365-day)\n1 (2.7%)\n    Other\n8 (22%)b\n  \n  \n  \n    \n      a n (%)\n    \n    \n      b “[A]cceptibility, efficacy, and reliability” of general versus spinal anesthesia. Surgery time; blood loss; hemodynamics. Laboratory results. Composite of death or an inability to walk 10ft or across a room independently or with a walker/cane but without the assistance of another person at 60 days postop. Hemodynamic changes; PONV. Hypotension; heart rate; bradycardia; PACU discharge. Perioperative blood loss; time to first meal; time to first ambulation. Analgesic Requirements; length of PACU stay."
   },

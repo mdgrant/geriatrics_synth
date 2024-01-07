@@ -1,5 +1,5 @@
 ---
-title: "Study/Patient Characteristics Regional versus General Anesthesia"
+title: "Study/Patient Characteristics Neuraxial versus General Anesthesia"
 date: "`r format(Sys.time(), '%d %B, %Y (%H:%M)')`"
 editor: source
 toc-title: "**Characteristics**"
