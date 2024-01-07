@@ -463,7 +463,7 @@ kq3_balance_main <- function() {
   low_very  <- paste(low, vlow, sep = "<br/>")
   grade_foot <- paste0("Very low: ", vlow, "; Low: ", low, "; Moderate: ", mod, "; High: ", high, ".")
 
-  reg_gen_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "RegionalGeneral", range = "B4:L21") |>
+  reg_gen_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "RegionalGeneral", range = "B4:L22") |>
   remove_empty(which = "cols") |>
   clean_names() |>
   rename(est = estimate_95_percent_ci) |>
@@ -512,7 +512,7 @@ reg_gen_dat |>
     est     ~ px(160)
   ) |>
   sub_missing(columns = everything(), missing_text = "") |>
-  tab_spanner(label = "Regional", columns = c(event_e), level = 1) |>
+  tab_spanner(label = "Neuraxial", columns = c(event_e), level = 1) |>
   tab_spanner(label = "General", columns = c(event_c), level = 1) |>
   opt_footnote_marks(marks = "standard") |>
   tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(event_c, event_e, grade))) |>
@@ -521,14 +521,16 @@ reg_gen_dat |>
   tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(measure, est))) |>
   tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(grade))) |>
   tab_style(style = cell_text(indent = px(10)),       locations = cells_body(columns = c(outcome), rows = outcome %in% c("All procedures", "Hip fracture", "Other"))) |>
-  tab_footnote(md("RCT: randomized clinical trial; [GRADE: Grades of Recommendation, Assessment, Development, and Evaluation](soe_gt.html#grade); RR: risk ratio; RD/1000: risk difference per 1000.")) |>
+  tab_footnote(md("RCT: randomized clinical trial; [GRADE: Grades of Recommendation, Assessment, Development, and Evaluation](soe_gt.html#grade); RR: risk ratio; RD/100: risk difference per 100; RD/1000: risk difference per 1000; NR: not rated.")) |>
   # tab_footnote(md("RCT: randomized clinical trial; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; RD/1000: risk difference per 1000.")) |>
   tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
   tab_footnote("Studies reported 0 and 2 events.", locations = cells_body(columns = c(est), rows = outcome == "Cardiac arrest"), placement = "right") |>
   # tab_footnote(md("[Comparing higher/highest category or categories with lower ones.](kq3.html#patient-satisfaction)"), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |>
   tab_footnote(md("Comparing higher/highest category or categories with lower ones."), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |>
-  tab_footnote("Complications reported variously across the 17 trials. ", locations = cells_body(columns = c(outcome), rows = outcome == "Complications"), placement = "right") |>
-  tab_footnote("Hip fracture trials RR 1.03 (0.77–1.32); others RR 0.90 (0.62–1.29).", locations = cells_body(columns = c(est), rows = outcome == "Delirium"), placement = "right")
+  tab_footnote("Complications reported variously across the 13 trials. ", locations = cells_body(columns = c(outcome), rows = outcome == "Complications"), placement = "right") |>
+  tab_footnote("Hip fracture trials RR 1.05 (0.76–1.43); others RR 0.74 (0.35–1.60; no Hartung-Knapp adjustment).", locations = cells_body(columns = c(est), rows = outcome == "Delirium"), placement = "right") |>
+  tab_footnote("Hip fracture trials RD/100 1.3 (-1.3 to 3.9); others -2.2 (-9.2 to 4.8; no Hartung-Knapp adjustment).", locations = cells_body(columns = c(est), rows = est == "0.1 (-1.8 to 2.2)"), placement = "right") |>
+  tab_footnote("Fixed effects model given only 2 trials.", locations = cells_body(columns = c(est), rows = outcome == "Other"), placement = "right")
 }
 
 kq3_complications <- function(){
@@ -589,7 +591,7 @@ reg_gen_dat |>
     est     ~ px(160)
   ) |>
   sub_missing(columns = everything(), missing_text = "") |>
-  tab_spanner(label = "Regional", columns = c(event_e), level = 1) |>
+  tab_spanner(label = "Neuraxial", columns = c(event_e), level = 1) |>
   tab_spanner(label = "General", columns = c(event_c), level = 1) |>
   opt_footnote_marks(marks = "standard") |>
   tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(event_c, event_e, grade))) |>
@@ -606,7 +608,7 @@ reg_gen_dat |>
   tab_footnote(md("[Comparing higher/highest category or categories compared with lower ones.](kq3.html#patient-satisfaction)"), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |>
   # tab_footnote(md("Comparing higher/highest category or categories compared with lower ones."), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |>
   tab_footnote("Cardiovascular, pulmonary, and acute kidney injury.", locations = cells_body(columns = c(outcome), rows = outcome == "Complications")) |>
-  tab_footnote("Complications reported variously across the 17 trials. ", locations = cells_body(columns = c(rct), rows = outcome == "Complications"), placement = "right") |>
+  tab_footnote("Complications reported variously across the 13 trials. ", locations = cells_body(columns = c(rct), rows = outcome == "Complications"), placement = "right") |>
   tab_footnote("One study no events; the other two. ", locations = cells_body(columns = c(est), rows = outcome == "cardiac arrest"), placement = "right") |>
   tab_footnote("Complications reported included pneumonia, respiratory failure, or unspecified.", locations = cells_body(columns = c(outcome), rows = outcome == "Pulmonary complications"))
 }

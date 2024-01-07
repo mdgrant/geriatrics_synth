@@ -23,6 +23,7 @@ tables:
 | Date               | Modification|
 |:------------------------|:-----------------------------------------------|
 | 2024-01-02 | Updated regional versus general for consistent language, removed *I* <sup>2</sup> (can be found in forest plots), and added prediction intervals where relevant|
+| 2024-01-06 | Regional now only neuraxial. Updated summaries to be consistent with revised analyses.|
 :::
 
 
@@ -293,7 +294,7 @@ kq1_domain |>
 
 ```
 
-## **Regional versus General**
+## **Neuraxial versus General Anesthesia**
 
 ```{r soe_kq3_data}
 #| include: false
@@ -343,7 +344,7 @@ domain_summary <- soe_kq3_dat |>
 
 ```
 
-<font size = 4> `r table_ref()` Strength of evidence summaries — regional versus general anesthesia. </font>
+<font size = 4> `r table_ref()` Strength of evidence summaries — neuraxial versus general anesthesia. </font>
 
 ```{r kq3_soe_gt}
 #| include: true
@@ -402,7 +403,7 @@ soe_summary |>
 
 ### GRADE Domains
 
-<font size = 4> `r table_ref()` GRADE domains for strength of evidence ratings — regional versus general anesthesia. </font>
+<font size = 4> `r table_ref()` GRADE domains for strength of evidence ratings — neuraxial versus general anesthesia. </font>
 
 ```{r kq3_domain, eval = TRUE}
 #| warning: true

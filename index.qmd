@@ -3,6 +3,16 @@
 editor: source
 ---
 
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZKMEBHKBYM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-ZKMEBHKBYM');
+</script>
+
 <br/>
 
 <font size = 5> Key Questions </font>
@@ -11,7 +21,7 @@ editor: source
 
 [Prehabilitation](kq2.html)
 
-[Regional versus General Anesthesia](kq3.html)
+[Regional versus General Anesthesia](kq3.html)  
 
 [TIVA versus Inhaled Anesthesia](kq4.html)
 
@@ -33,7 +43,12 @@ editor: source
 
 [Draft Protocol](protocol.html)
 
-[Study-level evidence tables](evidence_tables.html)
+[Study-level evidence tables](evidence_tables.html)  
+Brief summaries by study design of inclusion/exclusion criteria, results, and comment when relevant.   
+Includes links to publications. 
+
+Study/patient characteristics and primary outcome summaries  
+[Regional versus General Anesthesia](summary_kq3.html)
 
 [Outcome Importance Rankings](outcome_rankings.html)
 

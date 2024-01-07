@@ -26,7 +26,7 @@ tables:
 | Date               | Modification|
 |:------------------------|:-----------------------------------------------|
 | 2024-01-03 | Updated melatonin/ramelteon delirium as new studies added (note GRADE has not been updated) <br/> Edits to correct inconsistencies in usage and removed links from footnotes. |
-:::
+| 2024-01-06 | Updated regional to neuraxial only with subsequent changes to just over half of the comparisons. |
 
 
 ```{r preliminaries}
@@ -208,13 +208,13 @@ expanded_dat |>
   # tab_footnote(md("[Comparing higher/highest category or categories with lower ones.](kq3.html#patient-satisfaction)"), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |> 
   tab_footnote(md("Comparing higher/highest category or categories with lower ones."), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |> 
   tab_footnote("Cardiovascular, pulmonary, and acute kidney injury.", locations = cells_body(columns = c(outcome), rows = outcome == "Complications")) |> 
-  tab_footnote("Complications reported variously across the 17 trials. ", locations = cells_body(columns = c(rct), rows = outcome == "Complications"), placement = "right") |> 
+  tab_footnote("Complications reported variously across the 13 trials. ", locations = cells_body(columns = c(rct), rows = outcome == "Complications"), placement = "right") |> 
   tab_footnote("One study no events; the other two. ", locations = cells_body(columns = c(est), rows = outcome == "cardiac arrest"), placement = "right") |> 
   tab_footnote("Unspecified in 2 studies and COPD exacerabation or pneumonia in the other.", locations = cells_body(columns = c(outcome), rows = outcome == "Pulmonary complications"), placement = "right") 
   
 ```
 
-## Regional versus General Anesthesia
+## Neuraxial versus General Anesthesia
 
 <font size = 4> `r table_ref()` Benefits, harms, and strength of evidence (GRADE) for regional versus general anesthesia. </font>
 
@@ -380,7 +380,7 @@ tiva_inhaled_dat |>
   # tab_footnote(md("[Comparing higher/highest category or categories with lower ones.](kq3.html#patient-satisfaction)"), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |> 
   tab_footnote(md("Comparing higher/highest category or categories with lower ones."), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |> 
   tab_footnote("Cardiovascular, pulmonary, and acute kidney injury.", locations = cells_body(columns = c(outcome), rows = outcome == "Complications")) |> 
-  tab_footnote("Complications reported variously across the 17 trials. ", locations = cells_body(columns = c(rct), rows = outcome == "Complications"), placement = "right") |> 
+  tab_footnote("Complications reported variously across the 13 trials. ", locations = cells_body(columns = c(rct), rows = outcome == "Complications"), placement = "right") |> 
   tab_footnote("One study no events; the other two. ", locations = cells_body(columns = c(est), rows = outcome == "cardiac arrest"), placement = "right") 
   
 ```
@@ -536,7 +536,7 @@ dex_plac_dat |>
   tab_footnote(md("[Comparing higher/highest category or categories with lower ones.](kq3.html#patient-satisfaction)"), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |> 
   tab_footnote("Comparing higher/highest category or categories with lower ones", locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |> 
   tab_footnote("Cardiovascular, pulmonary, and acute kidney injury.", locations = cells_body(columns = c(outcome), rows = outcome == "Complications")) |> 
-  tab_footnote("Complications reported variously across the 17 trials. ", locations = cells_body(columns = c(rct), rows = outcome == "Complications"), placement = "right") |> 
+  tab_footnote("Complications reported variously across the 13 trials. ", locations = cells_body(columns = c(rct), rows = outcome == "Complications"), placement = "right") |> 
   tab_footnote("One study no events; the other two. ", locations = cells_body(columns = c(est), rows = outcome == "cardiac arrest"), placement = "right") |> 
   tab_footnote("Complications reported as heart failure (1 study), arrhythmia (1 study), or bradycardia (17 studies).", locations = cells_body(columns = c(outcome), rows = outcome == "Cardiac complications"))
   
@@ -765,7 +765,7 @@ mel_ram_plac_dat |>
   # tab_footnote("Complications bradycardia (3 studies); atrial fibrillation (1 study); cardiac dysfunction (1 study).", locations = cells_body(columns = c(outcome), rows = outcome == "Cardiac complications")) |>
   tab_footnote(md("[Comparing higher/highest category or categories with lower ones.](kq3.html#patient-satisfaction)"), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |> 
   tab_footnote("Comparing higher/highest category or categories with lower ones", locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |>  
-  tab_footnote("Complications reported variously across the 17 trials. ", locations = cells_body(columns = c(rct), rows = outcome == "Complications"), placement = "right") |> 
+  tab_footnote("Complications reported variously across the 13 trials. ", locations = cells_body(columns = c(rct), rows = outcome == "Complications"), placement = "right") |> 
   tab_footnote("One study no events; the other two. ", locations = cells_body(columns = c(est), rows = outcome == "cardiac arrest"), placement = "right") 
   
 ```
