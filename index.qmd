@@ -21,7 +21,7 @@ editor: source
 
 [Prehabilitation](kq2.html)
 
-[Regional versus General Anesthesia](kq3.html)  
+[Neuraxial versus General Anesthesia](kq3.html)  
 
 [TIVA versus Inhaled Anesthesia](kq4.html)
 
@@ -48,7 +48,7 @@ Brief summaries by study design of inclusion/exclusion criteria, results, and co
 Includes links to publications. 
 
 Study/patient characteristics and primary outcome summaries  
-[Regional versus General Anesthesia](summary_kq3.html)
+[Neuraxial versus General Anesthesia](summary_kq3.html)
 
 [Outcome Importance Rankings](outcome_rankings.html)
 
