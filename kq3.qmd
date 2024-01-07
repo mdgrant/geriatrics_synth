@@ -30,7 +30,7 @@ nocite: '@*'
 | Date               | Modification|
 |:------------------------|:-----------------------------------------------|
 | 2023-11-08 | Updated to most current included studies. Removed risk of bias tallies from forest plots where not pertinent to outcome. Used weighted risk of bias summary for delirium and added for overall. Added risk differences per 1000 to complications and mortality. |
-| 2023-11-09 | Added balance tables (also appear in appendix).|
+| 2023-11-09 | Added balance tables (same as in the balance tables tab).|
 | 2024-01-02 | Added [Figure 5](kq3.html#bubble-plot) to display potential dependence of effects on baseline (control arm event rate) for delirium. Updated balance tables.|
 | 2024-01-03 | Added link under included studies section to updated [appendix](summary_kq3.html) that now includes a [primary outcomes table](summary_kq3.html#primary-outcomes). |
 | 2024-01-05 | Limited results to neuraxial versus general anesthesia (37 RCTs, 38 publications). |
