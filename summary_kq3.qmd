@@ -320,11 +320,14 @@ pt_char_tab |>
 
 ```
 
-## Primary Outcomes
+## Outcomes
+
+### Primary
 
 <font size = 4> `r table_ref()` Primary outcomes. </font>
 
 ```{r outcome_prim_sec}
+#| echo: false
 
 other_foot <- study_char_dat |> 
   select(out_other_detail) |> 
@@ -385,12 +388,163 @@ study_char_dat |>
     # modify_footnote(update = everything() ~ NA) |>
     as_gt(id = "one") |> 
     cols_width(
-      label          ~ px(270),
+      label          ~ px(350),
       stat_1         ~ px(90),
     ) |> 
     gt_theme_mg() |>
     sub_values(values = c("0 (0%)"), replacement = "—") |> 
     tab_footnote(md(other_foot), locations = cells_body(columns = c(stat_1), rows = label == "Other")) 
+
+```
+
+### Secondary
+
+<font size = 4> `r table_ref()` Secondary outcomes. </font>
+
+```{r outcome_sec}
+#| echo: false
+
+other_foot <- study_char_dat |> 
+  select(sec_oth_specify) |> 
+  filter(!is.na(sec_oth_specify)) |> 
+  mutate(
+    sec_oth_specify = firstup(sec_oth_specify),
+    sec_oth_specify = str_replace_all(sec_oth_specify, "acceptibility", "[A]cceptibility"),
+    sec_oth_specify = str_replace_all(sec_oth_specify, ";$", ""),
+    sec_oth_specify = str_replace_all(sec_oth_specify, "$", "\\."),
+    sec_oth_specify = paste0(sec_oth_specify, "<br/>TT"),
+    sec_oth_specify = str_replace_all(sec_oth_specify, "; B", "; b"),
+    sec_oth_specify = str_replace_all(sec_oth_specify, "; H", "; h"),
+    sec_oth_specify = str_replace_all(sec_oth_specify, "homo", "hemo"),
+  ) |> 
+  pull(sec_oth_specify) |> 
+  toString()
+
+other_foot <- gsub("TT,|TT", "", other_foot)
+
+study_char_dat |> 
+  group_by(linked_references_all_refid) |>
+  filter(n_enroll == max(n_enroll)) |>
+  slice(1) |> 
+  ungroup() |>
+  select(design_f_abbrev, starts_with("sec_")) |>
+  select(!starts_with("sec_oth_")) |> 
+  remove_empty(which = "cols") |>
+  mutate(across(starts_with("sec"), ~ !is.na(.x))) |> # names() -> temp
+  rename(
+    "Postoperative delirium" = sec_delirium,
+    "Delayed neurocognitive recovery" = sec_pocd,
+    # "Stroke" = sec_stroke,
+    # "Intraoperative awareness" = sec_aware,
+    # "Quality of recovery" = sec_recovery,
+    # "Depression" = sec_depress,
+    "Patient/caregiver satisfaction" = sec_satisfac,
+    # "Valued life activities" = sec_val_life,
+    "Functional status (ADL, IADL, mobility)" = sec_function,
+    "HRQoL" = sec_qol,
+    "Pain" = sec_pain,
+    "Opioid use" = sec_opioid,
+    "Complications" = sec_compl,
+    "Length of stay" = sec_los,
+    # "Discharge location" = sec_dc_loc,
+    "Readmission" = sec_readmit,
+    "Mortality (30-, 180-, 365-day)" = sec_mort,
+    "Other" = sec_other
+  ) |>
+    arrange(design_f_abbrev) |>
+    mutate(
+      design_f_abbrev = fct_drop(design_f_abbrev)
+    ) |>
+    group_by(design_f_abbrev) |>
+    tbl_summary(
+      by = design_f_abbrev,
+      missing = "no"
+    ) |> 
+    modify_header(label = "**Outcome**") |>
+    # modify_footnote(update = everything() ~ NA) |>
+    as_gt(id = "one") |> 
+    cols_width(
+      label          ~ px(350),
+      stat_1         ~ px(90),
+    ) |> 
+    gt_theme_mg() |>
+    sub_values(values = c("0 (0%)"), replacement = "—") |> 
+    tab_footnote(md(other_foot), locations = cells_body(columns = c(stat_1), rows = label == "Other")) 
+
+```
+
+### Other
+
+<font size = 4> `r table_ref()` Outcomes not specified as primary or secondary. </font>
+
+```{r outcome_other}
+#| echo: false
+
+# other_foot <- study_char_dat |> 
+#   select(sec_oth_other) |> 
+#   filter(!is.na(sec_oth_other)) |> 
+#   mutate(
+#     oth_out_specify = firstup(sec_oth_other),
+#     sec_oth_other = str_replace_all(sec_oth_other, "acceptibility", "[A]cceptibility"),
+#     sec_oth_other = str_replace_all(sec_oth_other, ";$", ""),
+#     sec_oth_other = str_replace_all(sec_oth_other, "$", "\\."),
+#     sec_oth_other = paste0(sec_oth_other, "<br/>TT"),
+#     sec_oth_other = str_replace_all(sec_oth_other, "; B", "; b"),
+#     sec_oth_other = str_replace_all(sec_oth_other, "; H", "; h"),
+#     sec_oth_other = str_replace_all(sec_oth_other, "homo", "hemo"),
+#   ) |> 
+#   pull(sec_oth_other) |> 
+#   toString()
+# 
+# other_foot <- gsub("TT,|TT", "", other_foot)
+
+study_char_dat |> 
+  group_by(linked_references_all_refid) |>
+  filter(n_enroll == max(n_enroll)) |>
+  slice(1) |> 
+  ungroup() |>
+  select(design_f_abbrev, starts_with("sec_oth_"), -sec_oth_specify) |> # sec_oth_specify is for secondaty
+  remove_empty(which = "cols") |>
+  mutate(across(starts_with("sec_oth_"), ~ !is.na(.x))) |> # names() -> temp
+  rename(
+    "Postoperative delirium" = sec_oth_delirium,
+    "Delayed neurocognitive recovery" = sec_oth_pocd,
+    # "Stroke" = sec_oth_stroke,
+    # "Intraoperative awareness" = sec_oth_aware,
+    # "Quality of recovery" = sec_oth_recovery,
+    "Depression" = sec_oth_depress,
+    "Patient/caregiver satisfaction" = sec_oth_satisfac,
+    # "Valued life activities" = sec_oth_val_life,
+    # "Functional status (ADL, IADL, mobility)" = sec_oth_function,
+    # "HRQoL" = sec_oth_qol,
+    "Pain" = sec_oth_pain,
+    "Opioid use" = sec_oth_opioid,
+    "Complications" = sec_oth_compl,
+    "Length of stay" = sec_oth_los,
+    # "Discharge location" = sec_oth_dc_loc,
+    # "Readmission" = sec_oth_readmit,
+    # "Mortality (30-, 180-, 365-day)" = sec_oth_mort,
+    # "Other" = sec_oth_other
+  ) |>
+    arrange(design_f_abbrev) |>
+    mutate(
+      design_f_abbrev = fct_drop(design_f_abbrev)
+    ) |>
+    group_by(design_f_abbrev) |>
+    tbl_summary(
+      by = design_f_abbrev,
+      missing = "no"
+    ) |> 
+    modify_header(label = "**Outcome**") |>
+    # modify_footnote(update = everything() ~ NA) |>
+    as_gt(id = "one") |> 
+    cols_width(
+      label          ~ px(350),
+      stat_1         ~ px(90),
+    ) |> 
+    gt_theme_mg() 
+    # sub_values(values = c("0 (0%)"), replacement = "—") |> 
+    # tab_footnote(md(other_foot), locations = cells_body(columns = c(stat_1), rows = label == "Other"))
 
 ```
 
