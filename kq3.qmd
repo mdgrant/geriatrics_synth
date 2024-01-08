@@ -657,7 +657,7 @@ dev.off()
 <foot_mg>RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/> Risk ratios not applying the Hartung-Knapp adjustment --- hip fracture 1.05 (95% CI, 0.86--1.27), others 0.74 (95% CI: 0.35--1.60); random effects pooled estimate weights — Neuman 2021 (25.2%), Brown 2021 (17.3%), Li 2022 (16.8%), and Shin 2020 (11.7%).<br/> `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> `r paste0("Delirium was designated a primary or secondary outcome in ", prim_sec_out_fun(prim_delirium, delirium_meta_dat$refid), " and ", prim_sec_out_fun(sec_delirium, delirium_meta_dat$refid), ", respectively.")`</foot_mg>  
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-####    <caption_mg> `r figure_ref()` Neuraxial versus general anesthesia (risk difference). </caption_mg> <a id="risk-diff"></a>
+####    <caption_mg> `r figure_ref()` Neuraxial versus general anesthesia (risk difference per 100). </caption_mg> <a id="risk-diff"></a>
 
 ```{r delirium_meta_forest_rd}
 #| echo: false
@@ -1795,7 +1795,7 @@ dev.off()
 ![](assets/kq3_complication_mi.png){fig.align="left" width="58%"}
 <br/>
 
-<caption_mg> `r figure_ref()` **Risk difference** for myocardial infarction (neuraxial versus general anesthesia; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` **Risk difference (per 1000)** for myocardial infarction (neuraxial versus general anesthesia; randomized clinical trials). </caption_mg>
 
 ```{r complication_mi_rd}
 #| echo: false
@@ -1812,7 +1812,7 @@ dev.off()
 
 <!-- #### Cardiac Arrest -->
 
-<!-- <caption_mg> `r figure_ref()` **Risk difference** for cardiac arrest (neuraxial versus general anesthesia; randomized clinical trials). </caption_mg> -->
+<!-- <caption_mg> `r figure_ref()` **Risk difference (per 1000)** for cardiac arrest (neuraxial versus general anesthesia; randomized clinical trials). </caption_mg> -->
 
 ```{r complication_cardarr_rd}
 #| eval: false
@@ -1846,7 +1846,7 @@ dev.off()
 ![](assets/kq3_complication_stroke.png){fig.align="left" width="58%"}
 <br/>
 
-<caption_mg> `r figure_ref()` **Risk difference** for stroke (neuraxial versus general anesthesia; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` **Risk difference (per 1000)** for stroke (neuraxial versus general anesthesia; randomized clinical trials). </caption_mg>
 
 ```{r complication_stroke_rd}
 #| echo: false
@@ -1876,7 +1876,7 @@ dev.off()
 ```
 ![](assets/complication_renal.png){fig.align="left" width="58%"}
 
-<caption_mg> `r figure_ref()` **Risk difference** for renal complications (neuraxial versus general anesthesia; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` **Risk difference (per 1000)** for renal complications (neuraxial versus general anesthesia; randomized clinical trials). </caption_mg>
 
 ```{r complication_renal_rd}
 #| echo: false
@@ -1907,7 +1907,7 @@ dev.off()
 ```
 <!-- ![](assets/complication_pulmonary.png){fig.align="left" width="57%" } -->
 
-<!-- <caption_mg> `r figure_ref()` **Risk difference** for pulmonary complications (neuraxial versus general anesthesia; randomized clinical trials). </caption_mg> -->
+<!-- <caption_mg> `r figure_ref()` **Risk difference (per 1000)** for pulmonary complications (neuraxial versus general anesthesia; randomized clinical trials). </caption_mg> -->
 
 ```{r complication_pulmonary_rd}
 #| eval: false
@@ -1939,7 +1939,7 @@ dev.off()
 ```
 ![](assets/complication_pneumonia.png){fig.align="left" width="58%"}
 
-<caption_mg> `r figure_ref()` **Risk difference** for pneumonia (neuraxial versus general anesthesia; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` **Risk difference (per 1000)** for pneumonia (neuraxial versus general anesthesia; randomized clinical trials). </caption_mg>
 
 ```{r complication_pneumonia_rd}
 #| echo: false
@@ -1980,7 +1980,7 @@ dev.off()
 ```
 ![](assets/complication_pe.png){fig.align="left" width="58%"}
 
-<caption_mg> `r figure_ref()` **Risk difference** for pulmonary embolism (neuraxial versus general anesthesia; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` **Risk difference (per 1000)** for pulmonary embolism (neuraxial versus general anesthesia; randomized clinical trials). </caption_mg>
 
 ```{r complication_pe_rd}
 #| echo: false
@@ -2798,7 +2798,7 @@ dev.off()
 
 <br/>
 
-<caption_mg> `r figure_ref()` **Risk difference** for hospital or 30-day mortality (neuraxial versus general; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` **Risk difference (per 1000)** for hospital or 30-day mortality (neuraxial versus general; randomized clinical trials). </caption_mg>
 
 ```{r mort_rct_rd_meta}
 #| echo: false
@@ -2926,7 +2926,7 @@ dev.off()
 ```
 ![](assets/mort_rct_90d_meta.png){fig.align="left" width="65%"}
 
-<caption_mg> `r figure_ref()` **Risk difference** for 90-day mortality (neuraxial versus general; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` **Risk difference (per 1000)** for 90-day mortality (neuraxial versus general; randomized clinical trials). </caption_mg>
 
 ```{r mort_rct_rd_90dmeta}
 #| echo: false
