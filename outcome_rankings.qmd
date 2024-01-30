@@ -96,7 +96,7 @@ rankings_all <- function(priority) {
 rankings_dat <- bind_rows(rankings_all(1), rankings_all(2), rankings_all(3), rankings_all(4), rankings_all(5)) |>
   select(-.names)
 
-rankings_dat <- tblhelpr::transpose_tibble(rankings_dat, col_names = rank, id_col = "outcomes") |>
+rankings_dat <- transpose_tibble(rankings_dat, col_names = rank, id_col = "outcomes") |>
   rename_with(.fn = ~ paste0("rank", .)) |>
   rename(outcome = rankoutcomes) |>
   mutate(across(rank1:rank5, as.numeric),

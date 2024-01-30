@@ -549,7 +549,7 @@ refid_meta_fun <- function(data_meta){
 ## gt style file --------------------------------------- (2023-04-10 10:03) @----
 gt_theme_mg <- function(data) {
   data %>%
-    opt_row_striping() |>
+    # opt_row_striping() |>
     opt_table_lines(extent = "none") |>
     # opt_table_font(
     #   font = list(
@@ -575,6 +575,9 @@ gt_theme_mg <- function(data) {
       column_labels.border.bottom.width = px(1.3),
       column_labels.font.weight = "bold",
       column_labels.padding = px(3),
+      # row.striping.background_color = NULL,
+      # row.striping.include_stub = NULL,
+      row.striping.include_table_body = TRUE,
       heading.align = "left",
       footnotes.padding = px(0),
       footnotes.font.size = px(12),
@@ -669,6 +672,43 @@ bubble_plot_data <- function(meta_object) {
 # metafor::regplot(fitted_meta, xlab = "Baseline risk (event rate)", ylab = "Risk Ratio", refline = 0, atransf = exp, at = log(c(0.2, 0.4, 0.7, 1, 2, 4, 8)), labsize = 0.5, xlim = c(-0.02, 0.3), las = 1, label = TRUE, offset = c(0.4), lwd = 0.5)
 # bubble_plot(gen_reg_delirium_meta)
 
+## risk difference from meta with or ------------------ (2024-01-22 16:52) @----
+# riskdiff_ci_from_meta_or(temp_meta, pscale = 100)
+riskdiff_ci_from_meta_or <- function(meta_object, pscale = 1, digits = 2) {
+  temp <- metaprop(meta_object$data[[9]], meta_object$data[[7]])
+  control_arm <- boot::inv.logit(temp$TE.common)
+  odds_ratios <- exp(c(meta_object$TE.random, meta_object$lower.random, meta_object$upper.random))
+  temp <- effectsize::oddsratio_to_arr(odds_ratios, control_arm) * pscale
+  temp <- formatC(temp, digits = digits, format = "f")
+  paste0(temp[1], " per ", pscale, " (95% CI, ", temp[2], " to ", temp[3], ")")
+}
+
+## risk difference from meta with rr ------------------ (2024-01-22 16:53) @----
+riskdiff_ci_from_meta_rr <- function(meta_object, pscale = 100, digits = 2) {
+  meta_object <- update(meta_object, sm = "RD")
+  temp <- c(meta_object$TE.random, meta_object$lower.random, meta_object$upper.random) * pscale
+  temp <- formatC(temp, digits = digits, format = "f")
+  paste0(temp[1], " per ", pscale, " (95% CI, ", temp[2], " to ", temp[3], ")")
+}
+
+## text for risk difference from rr meta -------------- (2024-01-22 16:53) @----
+risk_diff_meta_rr <- function(digits = 1) {paste0("Pooled risk difference ", riskdiff_ci_from_meta_rr(temp_meta, pscale = 1000, digits = digits), ".")}
+
+## text for risk difference from or meta -------------- (2024-01-22 16:53) @----
+risk_diff_meta_or <- function(digits = 1) {paste0("Approximate pooled risk difference ", riskdiff_ci_from_meta_or(temp_meta, pscale = 1000, digits = digits), ".")}
+
+## soe result from meta to clipboard ------------------ (2024-01-22 16:53) @----
+# example "0.86 (95% CI, 0.44–1.66; PI 0.24–3.10)"
+soe_meta_result <- function(meta_object, digits = 2) {
+  temp_rr <- exp(c(meta_object$TE.random, meta_object$lower.random, meta_object$upper.random))
+  temp_rr <- formatC(temp_rr, digits = digits, format = "f")
+  temp_rr <- paste0(temp_rr[1], " (95% CI, ", temp_rr[2], "–", temp_rr[3], ";")
+  temp_pi <- exp(c(meta_object$lower.predict, meta_object$upper.predict))
+  temp_pi <- formatC(temp_pi, digits = digits, format = "f")
+  temp_pi <- paste0(" PI ", temp_pi[1], "–", temp_pi[2], ")")
+  (clipr::write_clip(paste0(temp_rr, temp_pi)))
+}
+
 ## calculate figure width ----------------------------- (2023-12-27 10:50) @----
 # greater than 564 measured in plot pane entire RStudio screen
 calc_width_display_gt_564 <- function(width_px_from_rstudio) {
@@ -679,4 +719,57 @@ calc_width_display_gt_564 <- function(width_px_from_rstudio) {
 
 # calc_width_display_gt_564(696)
 
+## from tblhelper ------------------------------------- (2023-12-27 10:50) @----
+tibble_to_matrix <- function(tbl, ..., row_names=NULL){
+  cols <- rlang::enquos(...)
 
+  mat <- as.matrix(dplyr::select(tbl, !!! cols))
+
+  if (!is.null(row_names)){
+    if (length(row_names) == 1 & row_names[1] %in% colnames(tbl)){
+      row_names <- tbl[[row_names]]
+    }
+    rownames(mat) <- row_names
+  }
+
+  return(mat)
+}
+
+transpose_tibble <- function(tbl, col_names, id_col = "columns"){
+  col_names <- rlang::enquo(col_names)
+
+  tibble_to_matrix(tbl, -!!col_names,
+                   row_names = dplyr::pull(tbl, !!col_names)) %>%
+    t() %>%
+    dplyr::as_tibble(rownames = id_col) %>%
+    return()
+}
+
+## from skim all files for overview ------------------- (2023-12-27 10:50) @----
+all_skimmed <- function() {
+  skim_report <- function(data_dat){
+    name_txt <- paste0(as.character(substitute(data_dat)), "_skim.txt")
+    path <- file.path(getwd(), "dictionaries", name_txt)
+    temp <- data_dat |> remove_empty(which = "cols")
+    temp <- skim(temp)
+    sink(path)
+    print(temp)
+    sink()
+  }
+
+  skim_report(study_char_dat)
+  skim_report(study_arm_dat)
+  skim_report(dichot_dat)
+  skim_report(contin_dat)
+  skim_report(likert_dat)
+
+}
+
+## grade levels --------------------------------------- (2023-05-31 11:39) @----
+# not a function but need for other functions
+high  <- "<span><span class='quality-sign'>⨁⨁⨁⨁</span>"
+mod   <- "<span><span class='quality-sign'>⨁⨁⨁◯</span>"
+low   <- "<span><span class='quality-sign'>⨁⨁◯◯</span>"
+vlow  <- "<span><span class='quality-sign'>⨁◯◯◯</span>"
+low_very  <- paste(low, vlow, sep = "<br/>")
+grade_foot <- paste0("Very low: ", vlow, "; Low: ", low, "; Moderate: ", mod, "; High: ", high, ".")

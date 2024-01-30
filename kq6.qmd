@@ -39,7 +39,7 @@ source("code/load_data.R")
 settings.meta(CIbracket = "(")
 conflicts_prefer(dplyr::lag)
 # NOTE: keeping Gao 2021 until verifying a duplicate of 1819
-kq6_refid <- kq6_refid[!kq6_refid %in% c(13734, 13630, 2314, 17151)] # Fan 2017b rhythim, Gao 2021 5269 ? duplicate of Gao 2020 1819, Xuan 2016 "Eligible patients were more than 60 years old with joint replacement surgery in ICU."; Sun 2019 2314 retracted; Xu 2022 17151 case control study no informative data.
+kq6_refid <- kq6_refid[!kq6_refid %in% c(13734, 13630, 2314, 17151, 16753)] # Fan 2017b rhythim, Gao 2021 5269 ? duplicate of Gao 2020 1819, Xuan 2016 "Eligible patients were more than 60 years old with joint replacement surgery in ICU."; Sun 2019 2314 retracted; Ding 2022 16753 retracted; Xu 2022 17151 case control study no informative data.
 
 study_char_dat <- data_kq(study_char_dat, kq6_refid)
 study_arm_dat <- data_kq(study_arm_dat, kq6_refid) 
@@ -298,7 +298,7 @@ included_dat |>
   gt_theme_mg() |>
   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c("refid"))) |> 
   opt_footnote_marks(marks = "letters") |> 
-  tab_footnote(footnote = md("Various indicates 4 or more different types of surgery."), locations = cells_column_labels(columns = surgs)) |>
+  tab_footnote(footnote = md("Described as various or more than 4 different types of surgery."), locations = cells_body(columns = surgs, surgs == "Various")) |>
   tab_footnote(footnote = md("Non very-high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."), locations = cells_column_labels(columns = country)) |>
   tab_footnote(footnote = md("Non very-high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."), locations = cells_body(columns = country, rows = !is.na(non_vh_hdi))) |>
   tab_footnote(footnote = "Studies examining drugs not directly relevant to recommendations but potentially to the evidence space (eg, a connected network including indirect evidence) are included here.", locations = cells_column_labels(columns = c(study_l))) |> 
@@ -881,7 +881,7 @@ refid_max_of_days <- delirium_total_tab |>
 delirium_total_gt_fun("Dex") |>
   tab_footnote("RR: risk ratio; Dex: dexmedetomidine; Mid: midazolam; Prop: propofol; MS: morphine sulfate; Preg: pregabalin; Plac: placebo; DSM: Diagnostic and Statistical Manual of Mental Disorders; ICDSC: Intensive Care Delirium Screening Checklist; Psych: psychiatrist interview; NS: not specified.") |>
   # tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
-  tab_footnote("Days over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |>
+  tab_footnote("Day(s) over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |>
   tab_footnote("Tool reported in the `Chinese Expert Consensus on the Prevention and Treatment of Postoperative Delirium in Elderly Patients.'", locations = cells_body(columns = scale_delirium, rows = scale_delirium == "Note")) |> 
   tab_footnote("Postoperative dexmedetomidine only.", locations = cells_body(columns = rr_ci, rows = refid %in% postop_only_dat$refid & rr_ci != "—")) |> 
   tab_footnote("Reported only daily incidence.", locations = cells_body(columns = delitotal_time, rows = delitotal_time == "Note")) |> 
@@ -940,7 +940,7 @@ delirium_total_gt_mel_ram |>
   row_group_order(groups = c("Cardiac - Randomized Clinical Trial", "Ortho - Randomized Clinical Trial", "Various - Randomized Clinical Trial", "Thoracic - Randomized Clinical Trial", "GI/Abd - Before-After/Time Series", "Thoracic - Before-After/Time Series")) |> 
   tab_footnote("RR: risk ratio; MMSE: Mini-Mental State Examination; Mel: melatonin; Ram: ramelteon; Dex: dexmedetomidine; Oxaz: oxazepam; Mid: midazolam; AMT: Abbreviated Mental Test; DRS: Delirium Rating Scale; DSM: Diagnostic and Statistical Manual of Mental Disorders; CAM: Confusion Assessment Method; ICDSC: Intensive Care Delirium Screening Checklist.") |>
   # tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
-  tab_footnote("Days over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |> 
+  tab_footnote("Day(s) over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |> 
   tab_footnote("Reported only daily incidence.", locations = cells_body(columns = delitotal_time, rows = delitotal_time == "Note")) |> 
   tab_footnote("Maximum of reported daily incidence.", locations = cells_body(columns = n_percent, rows = refid %in% refid_max_of_days), placement = "right")
 
@@ -1600,7 +1600,7 @@ forest(ket_plac_meta,
 <caption_mg> `r figure_ref()` Melatonin and ramelteon compared with placebo or no intervention. </caption_mg>
 
 ```{r nma_mel_ram_dat, fig.width = 14, fig.height = 7.2, fig.align = "left"}
-# ```{r nma_dat, out.width = 50%, out.height = 100%}
+#| crop: true
 # risk of bias
 mel_ram_plac_refid <- pairwise_dat |> 
   filter(treat2 %in% c("Mel", "Ram")) |> 
@@ -1636,6 +1636,9 @@ temp_meta <- mel_ram_plac_meta
 temp_meta <- update(mel_ram_plac_meta, subgroup = NULL, sm = "OR")
 temp_metabias <- metabias(temp_meta, method.bias = "Harbord", k.min = 10)
 
+# par(oma = rep(0, 4), mar = c(2.5, .01, 0, .01))
+# par(oma = rep(0, 4), mar = c(2.5, .01, 0, .01), mgp = c(1.5, .3, 0), xpd = NA)  
+
 # summary(mel_ram_plac_meta)
 forest(mel_ram_plac_meta,
   allstudies = TRUE,
@@ -1663,7 +1666,18 @@ forest(mel_ram_plac_meta,
 )
 ```
 
-<foot_mg> Mel: melatonin; Ram: ramelteon; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, mel_ram_plac_refid), ".")`</foot_mg><br/> <a id="figure-13.-ramelteon-compared-with-placebo-before-after-studies."></a>
+<!-- <foot_mg> Mel: melatonin; Ram: ramelteon; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, mel_ram_plac_refid), ".")`</foot_mg><br/> <a id="figure-13.-ramelteon-compared-with-placebo-before-after-studies."></a> -->
+
+<foot_mg>Mel: melatonin; Ram: ramelteon; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.</foot_mg>
+
+<foot_mg>Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg>
+
+<foot_mg>`r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`</foot_mg>
+
+<foot_mg>`r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, mel_ram_plac_refid), ".")`</foot_mg>
+
+<a id="figure-13.-ramelteon-compared-with-placebo-before-after-studies."></a>
+
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <caption_mg> `r figure_ref()` Melatonin or ramelteon compared with placebo or no intervention --- small study effects. </caption_mg>
@@ -2578,7 +2592,7 @@ netsplit(netmeta_dncr_nma, order = trts) %>%
 
 <br/>
 
-## **Neurocognitive Disorder**
+## **Postoperative Neurocognitive Disorder**
 
 ### Dexmedetomidine or Melatonin
 
@@ -4496,7 +4510,7 @@ legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#A
 
 <caption_mg> `r figure_ref()` Risk difference for hospital and 30-day mortality -- melatonin or ramelteon compared with placebo or no intervention. </caption_mg>
 
-```{r mel_ram_mort_meta, fig.dim = c(14, .5), fig.align = "center"}
+```{r mel_ram_mort_meta, fig.dim = c(14, 5.5), fig.align = "center"}
 # ```{r nma_dat, out.width = 50%, out.height = 100%}
 mel_ram_mort_meta_dat <- pairwise_mort_mel_ram_dat |> 
   mutate(year = str_extract(study, "\\d{4}")) |> 
@@ -4510,7 +4524,7 @@ mel_ram_mort_meta_dat <- pairwise_mort_mel_ram_dat |>
 mel_ram_plac_mort_meta <- metabin(event2, n2, event1, n1,
   data = mel_ram_mort_meta_dat,
   studlab = study,
-  sm = "RD",
+  sm = "RR",
   method = "MH",
   method.tau = "REML",
   hakn = FALSE,

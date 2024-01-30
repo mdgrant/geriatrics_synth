@@ -20,7 +20,6 @@ library(robvis)
 # knitr::opts_chunk$set(echo = FALSE, out.format = "html")
 knitr::opts_chunk$set(echo = FALSE)
 set_gtsummary_theme(theme_gtsummary_journal(journal = "jama"))
-settings.meta(CIbracket = "(", CIseparator = ", ")
 conflicts_prefer(dplyr::lag)
 conflicts_prefer(dplyr::filter)
 
@@ -483,7 +482,7 @@ dichot_dat <- read_csv(path_csv(dichot_out_file)) |>
   relocate(study:study_id, .after = design_f_abbrev)
 
 ## complication defn ---------------------------------- (2023-06-03 11:05) @----
-cardiac_compl <- readxl::read_xlsx("data/complications_defs_2023-05-22.xlsx", range = "A1:E56", sheet = "cardiac") |>
+cardiac_compl <- readxl::read_xlsx("data/complications_defs_2023-05-22.xlsx", range = "A1:E58", sheet = "cardiac") |>
   clean_names() |>
   mutate(cardiac_complications = firstlower(cardiac_complications),
          complication = "cardiac") |>
@@ -495,6 +494,12 @@ pulmonary_compl <- readxl::read_xlsx("data/complications_defs_2023-05-22.xlsx", 
   mutate(pulmonary_complications = firstlower(pulmonary_complications),
          complication = "pulm") |>
   rename(detail_pulmonary = pulmonary_complications) |>
+  select(-c(study, kq))
+
+renal_compl <- readxl::read_xlsx("data/complications_defs_2023-05-22.xlsx", range = "A1:D9", sheet = "renal") |>
+  clean_names() |>
+  mutate(complication = "kidneyinj") |>
+  rename(detail_renal = renal_complications) |>
   select(-c(study, kq))
 
 # type_col(dichot_dat) |> arrange(desc(mode)) |> View()
@@ -762,6 +767,7 @@ if (temp == 0) {
 }
 
 rm(temp)
+
 
 ## save for use --------------------------------------- (2023-03-13 22:53) @----
 limit_colors <- c("#AAB7B8", "#D5DBDB", "#F4F6F6")

@@ -17,6 +17,7 @@ library(tidyverse)
 conflicts_prefer(dplyr::filter)
 knitr::opts_chunk$set(echo = FALSE)
 conflicts_prefer(gt::google_font)
+settings.meta(CIbracket = "(", CIseparator = ", ", fs.hetstat = 10)
 
 # most recent file
 read_file_mg <- function(filename){

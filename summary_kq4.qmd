@@ -18,7 +18,6 @@ tables:
 ```{r read_data}
 #| include: false
 source("code/load_data.R")
-kq4_refid <- kq4_refid[!kq4_refid %in% c(290, 17101)]
 
 study_char_dat <- data_kq(study_char_dat, kq4_refid) |> 
   mutate(

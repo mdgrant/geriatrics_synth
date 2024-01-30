@@ -28,6 +28,8 @@ tables:
 | 2024-01-03 | Updated melatonin/ramelteon delirium as new studies added (note GRADE has not been updated) <br/> Edits to correct inconsistencies in usage and removed links from footnotes. |
 | 2024-01-06 | Updated regional to neuraxial only with subsequent changes to just over half of the comparisons. |
 
+:::
+
 
 ```{r preliminaries}
 #| include: false
@@ -45,10 +47,10 @@ knitr::opts_chunk$set(echo = FALSE)
 source("code/functions_2023-04-26.R")
 
 # grade footnote
-high  <- '<span><span class="quality-sign">⨁⨁⨁⨁</span>'
-mod   <- '<span><span class="quality-sign">⨁⨁⨁◯</span>'
-low   <- '<span><span class="quality-sign">⨁⨁◯◯</span>'
-vlow  <- '<span><span class="quality-sign">⨁◯◯◯</span>'
+high  <- "<span><span class='quality-sign'>⨁⨁⨁⨁</span>"
+mod   <- "<span><span class='quality-sign'>⨁⨁⨁◯</span>"
+low   <- "<span><span class='quality-sign'>⨁⨁◯◯</span>"
+vlow  <- "<span><span class='quality-sign'>⨁◯◯◯</span>"
 low_very  <- paste(low, vlow, sep = "<br/>")
 grade_foot <- paste0("Very low: ", vlow, "; Low: ", low, "; Moderate: ", mod, "; High: ", high, ".")
 
@@ -122,10 +124,7 @@ expanded_dat |>
   opt_footnote_marks(marks = "standard") |> 
   tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(event_c, event_e))) |>
   tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(n, grade, rct, nrsi))) |>
-  # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c(est))) |>
-  # tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(est))) |>
   tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(grade, measure, rct, nrsi))) |>
-  # indent row labels
   tab_style(style = cell_text(indent = px(15)),       locations = cells_body(rows = outcome %in% c("Hip fracture", "Other", "Any procedure"), columns = outcome)) |>
   tab_footnote(md("RCT: randomized clinical trial; NRSI: nonrandomized studies of interventions (includes before-after designs);  GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; MD: mean difference.")) |>
   tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
@@ -235,84 +234,21 @@ kq3_complications()
 
 <font size = 4> `r table_ref()` Benefits, harms, and strength of evidence (GRADE) for TIVA versus inhaled anesthesia. </font>
 
-```{r}
-#| warning: false
-tiva_inhaled_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "TIVAInhaled", range = "B4:M16") |>
-  remove_empty(which = "cols") |>
-  clean_names() |>
-  rename(est = estimate_95_percent_ci) |>
-  filter(!if_all(rct:est, ~ is.na(.x))) |>
-  mutate(
-    # group = ifelse(outcome == "Patient satisfaction", "Patient-reported", "Clinical"),
-    across(everything(), ~ str_remove(.x, "‡|†|\\*")),
-    grade = case_when(
-      grade == "Very low" ~ vlow,
-      grade == "Low" ~ low,
-      grade == "Moderate" ~ mod,
-      grade == "High" ~ high,
-      grade == "Low/very low" ~ low_very,
-      .default = grade
-    ),
-    event_e = ifelse(!is.na(n_tiva), paste0(formattable::comma(events_tiva), " (", formattable::comma(n_tiva), ")"), NA),  
-    event_c = ifelse(!is.na(n_inh), paste0(formattable::comma(events_inh), " (", formattable::comma(n_inh), ")"), NA),
-    across(c(event_e, event_c), ~ str_remove(.x, "NA "))
-  ) |> 
-  relocate(c(event_e, event_c), .after = nrsi) |> 
-  select(-c(events_tiva:n_inh, grade_2))
-
-tiva_inhaled_dat |>
-  gt(id = "one") |>
-  cols_label(
-    outcome  = "Outcome",
-    rct      = "RCT",
-    nrsi     = "NRSI",
-    event_e  = "N (Total)",
-    event_c  = "N (Total)",
-    # n        = "    N",
-    grade    = "GRADE",
-    measure  = "Effect",
-    est      = "Estimate (95% CI)"
-  ) |>
-  fmt_markdown(columns = c(grade)) |>
-  cols_hide(n) |>
-  fmt_integer(use_seps = TRUE, sep_mark = ",") |>
-  gt_theme_mg() |>
-  cols_width(
-    outcome ~ px(240),
-    rct     ~ px(40),
-    nrsi    ~ px(45),
-    # n       ~ px(65),
-    event_e ~ px(100),
-    event_c ~ px(100),
-    grade   ~ px(100),
-    measure ~ px(45),
-    est     ~ px(140)
-  ) |> 
-  sub_missing(columns = everything(), missing_text = "") |>
-  tab_spanner(label = "Regional", columns = c(event_e), level = 1) |>
-  tab_spanner(label = "General", columns = c(event_c), level = 1) |>
-  opt_footnote_marks(marks = "standard") |> 
-  tab_style(style = cell_text(align = "center"),        locations = cells_column_labels(columns = c(event_c, event_e))) |>
-  tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(n, grade, rct, nrsi))) |>
-  # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c(est))) |>
-  # tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(est))) |>
-  tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(grade, measure, rct, nrsi))) |>
-  tab_footnote("RCT: randomized clinical trial; NRSI: nonrandomized studies of interventions; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; OR: odds ratio; MD: mean difference.") |>
-  tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
-  tab_footnote("Neither study detected a difference.", locations = cells_body(columns = c(est), rows = outcome == "Neurocognitive disorders")) |> 
-  tab_footnote("0 events in one study; second did not detect a difference.", locations = cells_body(columns = c(est), rows = outcome == "Pulmonary congestion/edema")) |> 
-  tab_footnote("2 versus 0 events.", locations = cells_body(columns = c(est), rows = outcome == "Cardiac arrest")) |> 
-  # tab_footnote(md("[Comparing higher/highest category or categories with lower ones.](kq4.html#patient-satisfaction)"), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |>
-  tab_footnote(md("Comparing higher/highest category or categories with lower ones."), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |>
-  tab_footnote("Pending formal inclusion of Cao 2023.", locations = cells_body(columns = c(grade), rows = outcome == "Delirium" & measure == "RR"))
-
+```{r tiva_inh_balance}
+kq4_balance_main() |> 
+  text_replace(replace_text, paste0("See Table ", table_n + 1), locations = cells_body())
 ```
 
 <br/>
 
 <font size = 4> `r table_ref()` Included complications and strength of evidence (GRADE) for TIVA versus inhaled anesthesia. </font>
 
+```{r tiva_inha_complications}
+kq4_complications()
+```
+
 ```{r tiva_inhaled_preop_complications}
+#| eval: false
 #| warning: false
 tiva_inhaled_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "TIVAInhaled", range = "B29:M37") |>
   remove_empty(which = "cols") |>
@@ -769,3 +705,4 @@ mel_ram_plac_dat |>
   tab_footnote("One study no events; the other two. ", locations = cells_body(columns = c(est), rows = outcome == "cardiac arrest"), placement = "right") 
   
 ```
+

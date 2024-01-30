@@ -243,14 +243,8 @@ included_dat |>
     footnote = md("Non very-high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."),
     locations = cells_column_labels(columns = country)
   ) |>
-  tab_footnote(
-    footnote = md("Non very-high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."),
-    locations = cells_body(columns = country, rows = !is.na(non_vh_hdi))
-  ) |>
-  tab_footnote(
-    footnote = md("Various indicates 4 or more different types of surgery."),
-    locations = cells_column_labels(columns = surgs)
-  ) |>
+  tab_footnote(footnote = md("Non very-high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."), locations = cells_body(columns = country, rows = !is.na(non_vh_hdi)))  |>
+  tab_footnote(footnote = md("Described as various or more than 4 different types of surgery."), locations = cells_body(columns = surgs, surgs == "Various")) |>
   gt_theme_mg() |>
   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c("refid"))) |>
   tab_style(style = cell_text(v_align = "top"), locations = cells_body(columns = c(everything()))) |>
@@ -405,7 +399,8 @@ timing <- study_arm_dat |>
     # across(pre:post, ~ na_to_x(.x, "\U2581")),
     timing_all = paste0(pre_temp, intra_temp, post_temp),
     timing_all = ifelse(timing_all == "▁▁▁", NA, timing_all),
-    timing_all = ifelse(refid == 9464 & arm_n == 41, paste0("\U2581", "\U2586", "\U2586"), timing_all)
+    timing_all = ifelse(refid == 9464 & arm_n == 41, paste0("\U2581", "\U2586", "\U2586"), timing_all),
+    timing_all = ifelse(!is.na(unspec), "Unspecified", timing_all)
     ) |> 
   relocate(timing_all, .after = unspec) |> 
   select(-c(postprev, posttreat, pre_temp:post_temp, arm_n))
@@ -782,7 +777,7 @@ delirium_tab |>
       # pre_mmse = md("  MMSE<br/>(preop)"),
       surg_f = "Surgery",
       scale_delirium = "Scale",
-      delitotal_time = "Days",
+      delitotal_time = "Day(s)",
       n_percent = "N (%)",
       bar = "0 – 100%",
       rr_ci = md(rr_format),
@@ -795,7 +790,7 @@ delirium_tab |>
       # pre_mmse ~ px(95),
       surg_f ~ px(80),
       scale_delirium ~ px(105),
-      delitotal_time ~ px(50),
+      delitotal_time ~ px(55),
       n_percent ~ px(90),
       bar ~ px(100),
       rr_ci ~ px(140)
@@ -812,7 +807,7 @@ delirium_tab |>
     tab_style(style = cell_text(align = "right"),  locations = cells_column_labels(columns = c(n_percent))) |>
     tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:rr_ci), rows = arm_up %in% pim_arm_up)) |>  
     sub_missing(columns = delitotal_time, missing_text = "Note") |> 
-    tab_footnote("Days over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |>
+    tab_footnote("Day(s) over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |>
     tab_footnote("Maximum of reported daily incidence.", locations = cells_body(columns = delitotal_time, rows = delitotal_time == "Note"))
 }  
 
@@ -953,7 +948,7 @@ delirium_tab |>
       # pre_mmse = md("  MMSE<br/>(preop)"),
       surg_f = "Surgery",
       scale_delirium = "Scale",
-      delitotal_time = "Days",
+      delitotal_time = "Day(s)",
       n_percent = "N (%)",
       bar = "0 – 100%",
       rr_ci = md("RR <u>aOR</u> (95% CI)"),
@@ -966,7 +961,7 @@ delirium_tab |>
       # pre_mmse ~ px(95),
       surg_f ~ px(80),
       scale_delirium ~ px(105),
-      delitotal_time ~ px(50),
+      delitotal_time ~ px(55),
       n_percent ~ px(90),
       bar ~ px(100),
       rr_ci ~ px(140)
@@ -988,7 +983,7 @@ delirium_tab |>
     sub_values(values = "0.86 (0.84-0.88)", replacement = "<u>0.83 (0.79-0.88)</u>", escape = FALSE) |>
     sub_missing(columns = delitotal_time, missing_text = "Note") |> 
     tab_footnote("RR: relative risk; aOR: adjusted odds ratio; CAM: Confusion Assessment Method; DOS: delirium observation screening; THA: total hip arthroplasty; TKA: total knee arthroplasty.") |> 
-    tab_footnote("Days over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |>
+    tab_footnote("Day(s) over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |>
     tab_footnote("Maximum of reported daily incidence.", locations = cells_body(columns = delitotal_time, rows = delitotal_time == "Note")) |> 
     tab_footnote(md("[Claims-based algorithm.](https://pubmed.ncbi.nlm.nih.gov/28485014/)"), locations = cells_body(columns = scale_delirium, rows = scale_delirium == "Other" & str_detect(study, "Memtsoudis 2019")))
 

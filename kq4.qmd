@@ -1,9 +1,9 @@
 ---
 title: "TIVA versus Inhaled Anesthesia"
 editor: source
-toc-title: "**TIVA versus Inhaled**"
+toc-title: "**TIVA versus Inhaled Anesthesia**"
 toc-location: "left"
-toc-depth: 3
+toc-depth: 4
 toc_float: 
   collapsed: false
 tbl-cap-location: "top"
@@ -27,7 +27,6 @@ Among older patients undergoing surgery with general anesthesia, does the use of
 ```{r read_data}
 #| include: false
 source("code/load_data.R")
-settings.meta(CIbracket = "(")
 # kq4_refid <- kq4_refid[!kq4_refid %in% c(290, 17101)]
 
 study_char_dat <- data_kq(study_char_dat, kq4_refid) |> 
@@ -61,6 +60,22 @@ dichot_dat <- data_kq(dichot_dat, kq4_refid) |>
   relocate(arm, .after = arm_id)
   
 # rob_dat <- data_kq(rob_dat, kq4_refid) 
+```
+
+## Balance Tables
+
+<font size = 4> Benefits, harms, and strength of evidence (GRADE) for TIVA versus inhaled anesthesia. </font>
+
+```{r reg_gen_balance}
+kq4_balance_main() |> 
+  text_replace("See Appendix", "See below", locations = cells_body()) 
+  # text_replace("See Appendix", "See Appendix", locations = cells_body())
+```
+
+<font size = 4> Included complications and strength of evidence (GRADE) for TIVA versus inhaled anesthesia. </font>
+
+```{r reg_gen_complications}
+kq4_complications()
 ```
 
 ## Outcome Importance
@@ -151,7 +166,7 @@ included_dat <- study_char_dat |>
   left_join(surgs |> select(refid, surgs), by = "refid") |>
   mutate(
     design_f_lab = as.character(design_f_lab),
-    surgs = factor(surgs, levels = c("GI/Abdominal", "Cardiac", "Ortho", "Ent", "Ophtho", "Thoracic", "GI/Abdominal|Ortho|Ent", "General|Spine|Thoracic|Urol", "General|Thoracic|Urol", "Headneck", "Spine", "Urol", "Various"))
+    # surgs = factor(surgs, levels = c("GI/Abdominal", "Cardiac", "Ortho", "Ent", "Ophtho", "Thoracic", "GI/Abdominal|Ortho|Ent", "General|Spine|Thoracic|Urol", "General|Thoracic|Urol", "Headneck", "Spine", "Urol", "Vasc", "Various"))
   ) |>
   arrange(design_f, surgs, study_l) |>
   select(refid, design_f_lab, study_l, centers, n_enroll, country, surgs, non_vh_hdi)
@@ -185,7 +200,7 @@ included_dat |>
   tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(surgs))) |>
   tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(surgs))) |>
   opt_footnote_marks(marks = "letters") |> 
-  tab_footnote(footnote = md("Various indicates either described as various or 4 or more different types of surgery."), locations = cells_column_labels(columns = surgs)) |>
+  tab_footnote(footnote = md("Described as various or more than 4 different types of surgery."), locations = cells_body(columns = surgs, surgs == "Various")) |>
   tab_footnote(footnote = md("Non very-high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."), 
                locations = cells_column_labels(columns = country)) |>
   tab_footnote(footnote = md("Non very-high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."), 
@@ -315,7 +330,7 @@ tiva_inh_tab |>
 
 #### Nonrandomized
 
-<font size = 4> `r table_ref()` Selected characteristics of nonrandomized studies comparing TIVA with inhaled maintenance anesthesia. </font>
+<font size = 4> `r table_ref()` Selected characteristics of nonrandomized studies comparing TIVA with inhaled maintenance anesthesia. </font> 
 
 ```{r tiva_inh_nrsi_gt}
 #| eval: true
@@ -474,7 +489,7 @@ delirium_meta_dat |>
     arm = "Arm",
     # pre_mmse = md("  MMSE<br/>  (preop)"),
     scale_delirium = "Scale",
-    delitotal_time = "Days",
+    delitotal_time = "Day(s)",
     n_percent = "N (%)",
     bar = "0 – 100%",
     effect = md("RR <u>OR</U> (95% CI)")
@@ -491,7 +506,7 @@ delirium_meta_dat |>
     arm ~ px(70),
     # pre_mmse ~ px(95),
     scale_delirium ~ px(105),
-    delitotal_time ~ px(50),
+    delitotal_time ~ px(55),
     n_percent ~ px(90),
     bar ~ px(100),
     effect ~ px(140)
@@ -505,7 +520,7 @@ delirium_meta_dat |>
   tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:n_percent), rows = str_detect(arm, "TIVA"))) |>
   tab_footnote("RR: risk ratio; OR: odds ratio; DRS: Delirium Rating Scale; CAM: Confusion Assessment Method; NS: not specified.") |>
   # tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
-  tab_footnote("Days over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |> 
+  tab_footnote("Day(s) over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |> 
   tab_footnote("Adjusted from multivariable model.", locations = cells_body(columns = effect, rows = study ==  "Goins 2018" & arm_id == 2)) |> 
   tab_footnote("Propensity score matched.", locations = cells_body(columns = effect, rows = study == "Yoshimura 2022" & arm_id == 2)) 
 
@@ -513,7 +528,9 @@ delirium_meta_dat |>
 
 ### *Pooled*
 
-<font size = 4> `r figure_ref()` Delirium incidence (TIVA versus inhaled; randomized clinical trials). </font>
+#### Randomized
+
+<font size = 4> `r figure_ref()` Delirium incidence (TIVA versus inhaled anesthesia; randomized clinical trials). </font> 
 
 ```{r delirium_meta_rct_nrsi_dat}
 delirium_all_meta_dat <- delirium_meta_dat |> 
@@ -561,9 +578,6 @@ delirium_nsri_meta_dat <- pairwise_dat |>
 
 rm(delirium_all_meta_dat)
 
-```
-
-```{r delirium_meta_rct, warning = TRUE, fig.width = 14, fig.height = 4.0, fig.align = "left"}
 delirium_meta_rct <- metabin(event2, n2, event1, n1,
   data = delirium_rct_meta_dat,
   studlab = study,
@@ -576,14 +590,18 @@ delirium_meta_rct <- metabin(event2, n2, event1, n1,
   # subset = study %in% c("Cao 2023", "Dai 2021")
 )
 
-# forest(delirium_meta_rct)
+delirium_meta_rct_rd <- update(delirium_meta_rct, sm = "RD")
 
-# too few studies to exam small study effects
+```
 
+```{r delirium_meta_rct}
+#| include: false
+
+png("assets/kq4_delirium_meta_rct.png", width = 9.72, height = 3.6, units = "in", res = 300)
 forest(delirium_meta_rct,
   allstudies = TRUE,
-  label.c = "Inhaled   ",
   label.e = "TIVA   ",
+  label.c = "Inhaled   ",
   rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
   rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
   just.addcols.right = "right",
@@ -598,23 +616,103 @@ forest(delirium_meta_rct,
   print.pval.Q = FALSE,
   # xlim = c(0.05, 20),
   xlab = "Favors: TIVA                             Inhaled",
-  addrows.below.overall = 4
+  addrows.below.overall = 4,
+  fs.hetstat = 10
 )
+dev.off()
+
 ```
+![](assets/kq4_delirium_meta_rct.png){fig.align="left" width="71%"}
 
 <foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/> Hartung-Knapp adjustment not applied. Continuity correction of 0.5 added to studies arms with no events. Too few studies to examine small study effects. </foot_mg><br/>
 
-<br/>
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <caption_mg> `r figure_ref()` Delirium incidence (TIVA versus inhaled anesthesia; randomized clinical trials; risk difference per 100). </caption_mg> <a id="kq4_delirium_risk-diff"></a>
 
-<font size = 4> `r figure_ref()` TIVA compared with inhaled anesthetic (nonrandomized designs). </font>
+```{r kq4_delirium_meta_forest_rd}
+#| echo: false
+#| include: false
+png("assets/kq4_delirium_meta_forest_rd.png", width = 9.72, height = 3.6, units = "in", res = 300)
+forest(delirium_meta_rct_rd,
+  allstudies = TRUE,
+  common = TRUE,
+  label.e = "TIVA   ",
+  label.c = "Inhaled   ",
+  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  rightlabs = c("RD", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
+  just.addcols.right = "right",
+  digits = 1,
+  digits.tau2 = 1,
+  overall.hetstat = TRUE,
+  print.I2.ci = TRUE,
+  # sortvar = year,
+  prediction = TRUE,
+  fs.xlab = 11,
+  pooled.events = TRUE,
+  print.pval.Q = FALSE,
+  xlim = c(-20, 20),
+  pscal = 100,
+  xlab = "Favors: TIVA                          Inhaled",
+  addrows.below.overall = 4,
+  fs.test.subgroup = 10,
+  fs.hetstat = 10
+)
+dev.off()
+```
+![](assets/kq4_delirium_meta_forest_rd.png){fig.align="left" width="75%"}
+:::
 
-```{r delirium_meta_nrsi, fig.width = 14, fig.height = 3.5, fig.align = "left"}
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <caption_mg> `r figure_ref()` Delirium incidence (TIVA versus inhaled anesthesia; small study effects). </caption_mg>
+
+```{r kq4_delirium_funnel_limit} 
+#| echo: false
+#| include: false
+
+delirium_meta_or <- update(delirium_meta_rct, sm = "OR")
+
+png("assets/kq4_delirium_or_funnel.png", width = 8.5, height = 5.5, units = "in", res = 300)
+par(mar = c(4, 4, 2, 1))
+limit_colors <- c("#AAB7B8", "#D5DBDB", "#F4F6F6")
+# text(1.2, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .9)
+par(bty = "n", xaxt = "s", yaxt = "s")
+funnel(delirium_meta_or,  pch = 20, contour = c(0.9, 0.95, 0.99), col.contour = limit_colors, studlab = TRUE, pos.studlab = 4, fs.smlab = 6, ff.smlab = "italic")
+legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#AAB7B8", "#D5DBDB", "#F4F6F6"), bty = "n")
+dev.off()
+
+```
+
+![](assets/kq4_delirium_funnel.png){width="75%"}
+:::
+
+<a id="delirium_meta_rct_nrsi"></a>
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <caption_mg> `r figure_ref()` Delirium incidence summary risk of bias from randomized clinical trials comparing TIVA to inhaled anesthesia (weighted). </caption_mg>
+
+```{r rob2_summary_delirium, fig.height = 3, out.width = "60%"}
+rob_summary_meta_weighted_fun(delirium_meta_rct)
+# rob_summary_fun(delirium_meta_dat$refid)
+```
+:::
+
+#### Nonrandomized 
+
+<caption_mg> `r figure_ref()` Delirium incidence (TIVA verus anesthetic; nonrandomized designs). </caption_mg> 
+
+```{r delirium_meta_nrsi}
 delirium_meta_nrsi <- metagen(ln_or, ln_se_or,
   data = delirium_nsri_meta_dat,
   sm = "OR",
   backtransf = TRUE
 )
+```
 
+```{r delirium_meta_nrsi_forest}
+#| echo: false
+#| include: false
+
+png("assets/kq4_delirium_meta_nrsi.png", width = 10.53, height = 2.8, units = "in", res = 300)
 forest(delirium_meta_nrsi,
   allstudies = TRUE,
   rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "Overall"),
@@ -631,12 +729,17 @@ forest(delirium_meta_nrsi,
   fs.xlab = 11,
   pooled.events = TRUE,
   digits = 2, 
+  big.mark = ",",
   print.pval.Q = FALSE,
   xlim = c(0.1, 2),
   xlab = "Favors: TIVA                             Inhaled",
-  addrows.below.overall = 4
+  addrows.below.overall = 4,
+  fs.hetstat = 10,
 )
+dev.off()
+
 ```
+![](assets/kq4_delirium_meta_nrsi.png){fig.align="left" width="75%"}
 
 <foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. <br/> Note: pooling of adjusted odds ratios from Yoshimura 2022 (propensity matching) and Goins 2018 (multivariable adjustment). </foot_mg>
 
@@ -690,12 +793,13 @@ dncr_dat <- dichot_dat |>
     across(c(arm, design_f_lab, surg_f), ~ fct_drop(.x)),
     scale_mmse = ifelse(!is.na(neurocog_mmse), "\U2713", NA),
     scale_dst = ifelse(!is.na(neurocog_dst) | str_detect(neurocog_scale_otherspec, "[Dd]igit"), "\U2713", NA),
-    scale_moca = ifelse(str_detect(neurocog_scale_otherspec, "MoCA|Montreal"), "\U2713", NA),
+    scale_moca = ifelse(!is.na(neurocog_scale_moca), "\U2713", NA),
     scale_other = neurocog_scale_otherspec,
     scale_other = str_to_title(str_replace(scale_other, "Digit [Ss]ymbol [Tt]est; |Digit symbol substitution test; |Montreal Cognitive Assessment \\(MoCA\\)|MoCA", "")),
     scale_other = ifelse(scale_other == "", NA, scale_other),
     scale_other = str_replace_all(scale_other, "Pocd", "POCD"),
-    scale_other_tf = ifelse(!is.na(scale_other), "\U2713", NA)
+    neurocog_scale_other = ifelse(study == "Lindholm 2013", "neurocog_scale_other", neurocog_scale_other),
+    scale_other_tf = ifelse(!is.na(neurocog_scale_other), "\U2713", NA)
   ) |> 
   select(refid, refid_c, year, arm_id, study, study_l, design_f_lab, pre_mmse, country, surg_f, surgs_noabbr_f, arm, pre_mmse, dncr_time, neurocog_total_n, arm_n, arm, neurocog_nper, neurocog_prop, bar, scale_mmse:scale_other_tf, neuro_threshold)
 
@@ -728,7 +832,7 @@ dncr_dat <- dncr_dat |>
 rm(dncr_rr_ref)
 ```
 
-<font size = 4> `r table_ref()` Delayed neurocognitive recovery incidence and ascertainment (TIVA versus inhaled; randomized and nonrandomized designs). </font>
+<caption_mg> `r table_ref()` Delayed neurocognitive recovery incidence and ascertainment (TIVA versus inhaled; randomized and nonrandomized designs). </caption_mg>
 
 ```{r dncr_gt}
 #| eval: true
@@ -813,7 +917,6 @@ dncr_dat |>
   tab_footnote("Day of assessment.", locations = cells_column_labels(columns = c(dncr_time))) |>
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(pre_mmse))) |>
   tab_footnote("Included Digit Symbol Substitution Test; Cumulative Test; Trail Making Test; Rey Auditory Verbal Learning Test; Grooved Pegboard Test.", locations = cells_body(columns = c(scale_other_tf), rows = study == "Geng 2017" & arm_id == 1)) |>
-  tab_footnote("Trail Making Test Part A, Trail Making Test Part B, Digit Span Forward, Digit Span Backward, Pegboard (dominant hand), Pegboard (non-dominant hand).", locations = cells_body(columns = c(scale_other_tf), rows = study == "Egawa 2016")) |>
   tab_footnote("Z ≥1.96.", locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == "Zhang 2018a")) |>
   tab_footnote("Difference from baseline >20%.", locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == "Egawa 2016")) |>
   tab_footnote("Difference from baseline >20%.", locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == "Geng 2017")) |>
@@ -821,17 +924,19 @@ dncr_dat |>
   tab_footnote("Difference from baseline >2 pts.", locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == "Qiao 2023")) |>
   tab_footnote("Z ≥1.96.", locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == "Li 2021a")) |>
   tab_footnote("Z ≥1.96.", locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == "Konishi 2018")) |>
-  tab_footnote("Z ≥1.96.", locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == "Rohan 2005"))
+  tab_footnote("Z ≥1.96.", locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == "Rohan 2005")) |> 
+  tab_footnote("Cognitive dysfunction without specified evaluation.", locations = cells_body(columns = c(scale_other_tf), rows = study == "Lindholm 2013" & arm_id == 1)) 
 
 ```
 
+<a id="kq4_dncr_meta"></a> 
+
 ### *Pooled*
 
-<font size = 4> `r figure_ref()` Delayed neurocognitive recovery assessed postoperative day 3 or later (TIVA versus inhaled; randomized clinical trials). </font>
+<caption_mg> `r figure_ref()` Delayed neurocognitive recovery assessed at postoperative day 5 or later (TIVA versus inhaled; randomized clinical trials).  </caption_mg>
 
 ```{r dncr_meta_dat}
 #| eval: true
-# NOTE: 2023-04-20 adding ketamine studies to dexmedetomidine dncr would not connect any network; so left distinct
 neurocog_meta_dat <- neurocog_allarms_meta_dat |>
   filter(dncr_time >= 3) |> # per Fritz
   # filter(dncr_time > 3) |> # per Fritz
@@ -848,11 +953,7 @@ neurocog_meta_dat <- neurocog_allarms_meta_dat |>
   ) |>
   filter(!(study %in% c("Geng 2017") & arm_id %in% c(2))) |>
   left_join(surgs |> select(refid, surgs_single_f), by = c("refid")) 
-```
 
-```{r dncr_meta}
-#| eval: true
-# CODE: dncr meta data, pairwise and network (netmeta)
 nma_dncr_dat <- neurocog_meta_dat |>
   mutate(time = ifelse(dncr_time < 3, "at <3 days", "at ≥3 days" )) |> 
   filter(time == "at ≥3 days") |> 
@@ -871,8 +972,9 @@ pairs_dat <- pairwise(
 
 ```
 
-```{r dncr__meta, fig.width = 14, fig.height = 4, fig.align = "left", warning = TRUE}
+```{r dncr_meta}
 #| eval: true
+#| include: false
 dncr_meta_dat <- pairs_dat |>
   arrange(year, study) |> 
   left_join(rob2_meta_dat, by = "refid") |>
@@ -885,28 +987,34 @@ dncr_meta_dat <- pairs_dat |>
     )
   ) |>
   left_join(study_char_dat |> select(refid, country), by = "refid") |> 
-  arrange(study)
+  arrange(dncr_time, study) |>
+  mutate(dncr_time = paste0("At day ", dncr_time)) 
 
-tiva_inhaled_meta <- metabin(event2, n2, event1, n1,
+dncr_tiva_inhaled_meta <- metabin(event2, n2, event1, n1,
   data = dncr_meta_dat,
   studlab = study,
   sm = "RR",
   method = "MH",
   method.tau = "REML",
   subgroup = dncr_time,
+  print.subgroup.name = FALSE,
   hakn = TRUE,
   prediction = TRUE,
   allstudies = TRUE,
+  subset = study != "Geng 2017",
   # subgroup = country
   )
 
+dncr_tiva_inhaled_meta_rct_rd <- update(dncr_tiva_inhaled_meta, sm = "RD", method = "Inverse", method.tau = "REML")
+
 # summary(plac_meta)
-forest(tiva_inhaled_meta,
-  # sortvar = year,
+
+png("assets/kq4_dncr_meta.png", width = 11.4, height = 5.25, units = "in", res = 300) 
+forest(dncr_tiva_inhaled_meta,
   allstudies = TRUE,
   common = TRUE,
-  label.e = "TIVA     ",
-  label.c = "Inhaled  ",
+  label.e = "TIVA   ",
+  label.c = "Inhaled   ",
   rightcols = c("effect", "ci", "surgs_single_f", "D1", "D2", "D3", "D4", "D5", "Overall"),
   rightlabs = c("RR ", "(95% CI)   ", "Procedure", "D1", "D2", "D3", "D4", "D5", "All"),
   just.addcols.right = "left",
@@ -914,27 +1022,111 @@ forest(tiva_inhaled_meta,
   digits.tau2 = 1,
   overall.hetstat = TRUE,
   subgroup = TRUE,
-  print.subgroup.labels = TRUE,
+  # print.subgroup.labels = FALSE,
+  test.subgroup.common = FALSE,
+  test.subgroup.random = FALSE,
   print.I2.ci = TRUE,
   prediction = TRUE,
   colgap.right = "5mm",
   fs.xlab = 11,
   pooled.events = TRUE,
   print.pval.Q = FALSE,
-  xlim = c(0.1, 3),
+  xlim = c(0.2, 2),
   xlab = "Favors: TIVA                    Inhaled",
-  addrows.below.overall = 4
-  # text.addline1 = "Hartung-Knapp adjustment not applied owing to subgroups — overall RR 0.55 (95% CI, 0.37–0.79) when used.",
-  # text.addline2 = "Excluding studies with assessments at less than 3 days (95% prediction interval, 0.24–0.92)."
+  addrows.below.overall = 4,
+  fs.hetstat = 10
 )  
+dev.off()
+
+```
+![](assets/kq4_dncr_meta.png){fig.align="left" width="84%"}
+
+<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> 
+Four trials conducted in China and one each in Norway (Lindholm 2013) and Japan (Egawa 2016).<br/>
+Including Geng 2017 assessments at day 3 — RR 0.66 (95% CI, 0.54–0.81; prediction interval, 0.54–0.91)</foot_mg><br/>
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <caption_mg> `r figure_ref()` Delayed neurocognitive recovery assessed at postoperative day 5 or later (TIVA versus inhaled; randomized clinical trials; risk difference per 100). </caption_mg> <a id="kq4_delirium_risk-diff"></a>
+
+```{r kq4_dncr_meta_forest_rd}
+#| echo: false
+#| include: false
+png("assets/kq4_dncr_meta_forest_rd.png", width = 9.72, height = 5.65, units = "in", res = 300)
+forest(dncr_tiva_inhaled_meta_rct_rd,
+  allstudies = TRUE,
+  common = TRUE,
+  label.e = "TIVA   ",
+  label.c = "Inhaled   ",
+  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  rightlabs = c("RD", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
+  just.addcols.right = "right",
+  digits = 1,
+  digits.tau2 = 1,
+  overall.hetstat = TRUE,
+  print.I2.ci = TRUE,
+  # sortvar = year,
+  prediction = TRUE,
+  fs.xlab = 11,
+  pooled.events = TRUE,
+  print.pval.Q = FALSE,
+  # xlim = c(-20, 20),
+  pscal = 100,
+  xlab = "Favors: TIVA                          Inhaled",
+  addrows.below.overall = 4,
+  fs.test.subgroup = 10,
+  fs.hetstat = 10
+)
+dev.off()
+```
+![](assets/kq4_dncr_meta_forest_rd.png){fig.align="left" width="75%"}
+:::
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <caption_mg> `r figure_ref()` Delayed neurocognitive recovery assessed at postoperative day 5 or later (TIVA versus inhaled anesthesia; small study effects). </caption_mg>
+
+```{r kq4_dncr_funnel_limit} 
+#| echo: false
+#| include: false
+
+dncr_tiva_inhaled_meta_or <- update(dncr_tiva_inhaled_meta , sm = "OR")
+
+png("assets/kq4_dncr_or_funnel.png", width = 8.5, height = 5.5, units = "in", res = 300)
+par(mar = c(4, 4, 2, 1))
+limit_colors <- c("#AAB7B8", "#D5DBDB", "#F4F6F6")
+# text(1.2, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .9)
+par(bty = "n", xaxt = "s", yaxt = "s")
+funnel(dncr_tiva_inhaled_meta_or,  pch = 20, contour = c(0.9, 0.95, 0.99), col.contour = limit_colors, studlab = TRUE, pos.studlab = 4, fs.smlab = 6, ff.smlab = "italic")
+legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#AAB7B8", "#D5DBDB", "#F4F6F6"), bty = "n")
+dev.off()
 
 ```
 
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> Five trials conducted in China and 1 each in Norway and Japan.</foot_mg><br/>
+![](assets/kq4_dncr_or_funnel.png){width="75%"}
+:::
 
-## **Neurocognitive Disorder**
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <caption_mg> `r figure_ref()` Delayed neurocognitive recovery summary risk of bias from randomized clinical trials comparing TIVA to inhaled anesthesia (weighted). </caption_mg>
 
-<font size = 4> `r table_ref()` Cognitive dysfunction \> 30 days and ascertainment (TIVA versus inhaled; prospective cohort studies). </font>
+```{r rob2_summary_dncr, fig.height = 3, out.width = "60%"}
+temp <- update(dncr_tiva_inhaled_meta, subgroup = NULL)
+
+add_weights <- tibble(temp$data$refid[temp$data$refid != 16559], temp$w.random / sum(temp$w.random)) |> # exclude Geng 2017
+  set_names("refid", "weight")
+
+rob_temp_dat <- rob2_dat |>
+  filter(refid %in% temp$data$refid[temp$data$refid != 16559]) |>
+  select(refid, Study, D1:Overall) |>
+  left_join(add_weights, by = "refid") |>
+  rename(Weight = weight) |> 
+  select(-refid)
+rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind", weighted = TRUE)
+
+```
+:::
+
+## **Postoperative Neurocognitive Disorder**
+
+<font size = 4> `r table_ref()` Cognitive dysfunction > 30 days and ascertainment (TIVA versus inhaled; prospective cohort studies). </font>
 
 ```{r ncd_dat}
 ncd_dat <- dichot_dat |>
@@ -1051,7 +1243,8 @@ ncd_dat |>
     rr_ci            = "RR (95% CI)"
   ) |>
   gt_theme_mg() |>
-  fmt_markdown(columns = c(study_l, bar, pre_mmse, scale_mmse:scale_other_tf)) |>
+  # fmt_markdown(columns = c(study_l, bar, pre_mmse, scale_mmse:scale_other_tf)) |>
+  fmt_markdown(columns = c(study_l, bar, pre_mmse)) |>
   fmt_number(ncd_time, decimals = 0) |>
   sub_missing(columns = everything(), missing_text = "") |>
   tab_spanner(label = "Instrument", columns = c(scale_mmse:scale_other_tf), level = 1) |>
@@ -1089,19 +1282,20 @@ ncd_dat |>
 ## **Physical Function**
 
 No studies
-
-
+    
 ## **Complications**
 
-```{r complications_check}
+```{r complications_check_notrun}
 #| eval: false
-# create excel file to inspect
+
+# create excel file to inspect complications
 complication_fun <- function(var_prefix) {
   dichot_dat %>%
     filter(if_any(!!paste0(var_prefix, "_per"):!!paste0(var_prefix, "_95high"), ~ !is.na(.x))) |>
     select(refid, study, arm_id, arm, arm_n, comp_update_arm_n, !!paste0(var_prefix, "_n"):!!paste0(var_prefix, "_95high"))
 }
 
+# the complications included to be reported
 complication_incl <- c("cardiac", "myoinfarct", "cardarr", "stroke", "kidneyinj", "asppneum", "atelec", "pulm", "pneum", "pthorax", "airleak", "pulcongest", "pe", "pinfiltrate", "respfail", "intub", "upperair", "vent48")
 
 # complication <- c("medical", "surg", "cardiac", "gastro", "neuro", "pulm", "thromb", "infect", "fall", "stroke", "othcomp", "asppneum", "atelec", "bronch", "cardarr", "myoinfarct", "ssi", "sepsis", "uti", "pneum", "pthorax", "airleak", "pulcongest", "pe", "pinfiltrate", "respfail", "intub", "upperair", "vent48", "kidneyinj", "nerveinj", "clavien1", "clavien2", "clavien3", "clavien4", "clavien5")
@@ -1121,13 +1315,13 @@ path <- glue::glue("/Users/mgrant/Desktop/temp.xlsx")
 saveWorkbook(wb, "/Users/mgrant/Desktop/kq4.xlsx", overwrite = TRUE)
 ```
 
-<font size = 4> `r table_ref()` Reported complications in TIVA versus inhaled anesthesia --- cardiac, pulmonary, and renal (TIVA versus inhaled; randomized and nonrandomized designs). </font>
+<font size = 4> `r table_ref()` Complications following TIVA versus inhaled anesthesia --- cardiac, pulmonary, and renal (randomized and nonrandomized designs). </font>
 
 ```{r complications}
 #| warning: false
 #| eval: true
 
-# included complications
+# included complications; note add bradycardia from cardiac subsequently
 complication_incl <- c("cardiac", "myoinfarct", "cardarr", "stroke", "kidneyinj", "asppneum", "atelec", "pulm", "pneum", "pthorax", "airleak", "pulcongest", "pe", "pinfiltrate", "respfail", "intub", "upperair", "vent48")
 
 # complication_all <- c("medical", "surg", "cardiac", "gastro", "neuro", "pulm", "thromb", "infect", "fall", "stroke", "othcomp", "asppneum", "atelec", "bronch", "cardarr", "myoinfarct", "ssi", "sepsis", "uti", "pneum", "pthorax", "airleak", "pulcongest", "pe", "pinfiltrate", "respfail", "intub", "upperair", "vent48", "kidneyinj", "nerveinj", "clavien1", "clavien2", "clavien3", "clavien4", "clavien5")
@@ -1154,13 +1348,13 @@ adverse_events_dat <- map_df(complication_incl, complication_fun) |>
 # if RR convert to OR get ln_te ln_se
 # if reported OR use ests to get ln_te ln_se
 # if neither use estimate
-
 adverse_events_dat <- adverse_events_dat |>
   left_join(cardiac_compl, by = c("refid", "complication")) |>
   left_join(study_char_dat |> select(refid, study_l, surgs_single, design_f_lab), by = "refid") |>
   left_join(table_age_mn_med, by = c("refid", "arm_id")) |>
-  arrange(complication, surgs_single, year, study, arm_id) |>
+  arrange(complication, surgs_single, year, study, arm_id) |> 
   mutate(
+    complication = if_else(detail_cardiac == "bradycardia", "bradycardia", complication, missing = complication),
     study_compl = paste0(study, complication),
     ref_arm_n = arm_n,
     ref_n = n
@@ -1175,25 +1369,23 @@ adverse_events_dat <- adverse_events_dat |>
     ref_arm_n = ifelse(row_number() == 1, NA, ref_arm_n),
     ref_n = ifelse(row_number() == 1, NA, ref_n)
   ) |>
-  ungroup() |>
   mutate(
     # Luntz 2004 combine inhalation arms; differed in induction
     ref_arm_n = ifelse(study == "Luntz 2004" & arm_id == 3, 64, ref_arm_n),
     ref_n = ifelse(study == "Luntz 2004" & arm_id == 3, 5, ref_n),
     ref_arm_n = ifelse(study == "Luntz 2004" & arm_id == 2, NA, ref_arm_n),
     ref_n = ifelse(study == "Luntz 2004" & arm_id == 2, NA, ref_n),
-    rd_ci = ifelse(!is.na(ref_n), rd_per_ci_fun(n, arm_n, ref_n, ref_arm_n, digits = 1), "—"),
+    rd_ci = ifelse(!is.na(ref_n), rd_per_ci_fun(n, arm_n, ref_n, ref_arm_n, digits = 2), "—"),
     or_ci = ifelse(!is.na(ref_n) & n != 0 & ref_arm_n != 0, or_ci_fun(n, arm_n, ref_n, ref_arm_n, digits = 2), "—"), # not if any Os
     rr_ci = ifelse(!is.na(ref_n) & n != 0 & ref_arm_n != 0, rr_ci_fun(n, arm_n, ref_n, ref_arm_n, digits = 2), "—"), # not if any Os
     # or_ci = ifelse(!is.na(ref_n), or_ci_fun(n, arm_n, ref_n, ref_arm_n, digits = 2), "—"),
     or_ln_te = ifelse(!is.na(ref_n), or_ln_te_fun(n, arm_n, ref_n, ref_arm_n), NA),
     or_ln_se_te = ifelse(!is.na(ref_n), or_ln_se_fun(n, arm_n, ref_n, ref_arm_n), NA),
     bar = case_when(
-      # str_detect(arm, "Dex") ~ bar_prop(calc_per, "#A93226"),
-      # str_detect(arm, "Ket|Mel|Ram") ~ bar_prop(calc_per, "#A93226"),
       str_detect(arm, "Inhaled") ~ bar_prop(calc_per, "#969696"),
       .default = bar_prop(calc_per, "#A93226"))) |>
-  select(refid, year, arm_id, study, study_l, study_compl, arm_n, arm, n, age_table, surgs_single, n_per, bar, rd_ci, rr_ci, or_ci, or_ln_te, or_ln_se_te, complication, design_f_lab, effect:high, detail_cardiac)
+  ungroup() |>
+  select(refid, year, arm_id, study, study_l, study_compl, arm_n, arm, n, age_table, surgs_single, n_per, bar, rd_ci, rr_ci, or_ci, or_ln_te, or_ln_se_te, complication, design_f_lab, effect:high, detail_cardiac) 
 
 # adverse_events_dat |> filter(!is.na(detail_cardiac)) |> select(study, detail_cardiac) |> distinct()
 
@@ -1224,13 +1416,28 @@ adverse_events_dat <- adverse_events_dat |>
 
 ```{r complications_gt}
 #| eval: true
-# propensity matched
+# propensity matched for footnotes
 # Park 2020 (refid: 1134), Oh 2019 (refid: 132), Yoshimura 2022 (refid: 16890)
 propensity_refid <- c(1134, 132, 16890)
 
 adverse_events_gt_dat <- adverse_events_dat |>
-  filter(complication %in% complication_incl) |>
-  mutate(complication = factor(complication, levels = c("cardiac", "myoinfarct", "cardarr", "stroke", "kidneyinj", "pneum", "pulcongest", "pe", "pthorax", "respfail"), labels = c("Other Cardiac", "MI", "Cardiac Arrest", "Stroke", "AKI", "Pneumonia", "Pulmonary Congestion", "PE", "Pneumothorax", "Respiratory Failure"))) |>
+  filter(complication %in% c(complication_incl, "bradycardia")) |>
+  mutate(
+    complication = fct(complication),
+    complication = fct_recode(complication,
+      "Other Cardiac" = "cardiac",
+      "MI" = "myoinfarct",
+      "Cardiac Arrest" = "cardarr",
+      "Bradycardia" = "bradycardia",
+      "Stroke" = "stroke",
+      "Acute Kidney Injury" = "kidneyinj",
+      "Pneumonia" = "pneum",
+      "Pulmonary Congestion" = "pulcongest",
+      "Pulmonary Embolism" = "pe",
+      "Pneumothorax" = "pthorax",
+      "Respiratory Failure" = "respfail"
+    )
+  ) |> 
   arrange(year, study, arm) |>
   mutate(
     rd_or = ifelse(refid %in% propensity_refid & row_number() != 1, paste0("<u>", or_ci, "</u>"), rd_ci),
@@ -1239,6 +1446,7 @@ adverse_events_gt_dat <- adverse_events_dat |>
     study_l = ifelse(row_number() > 1, "", study_l),
     surgs_single = ifelse(row_number() > 1, "", surgs_single),
     complication = fct_drop(complication),
+    complication_nodesign = complication,
     .by = study_compl
   ) |>
   unite(complication, complication, design_f_lab, sep = " – ") 
@@ -1257,26 +1465,27 @@ adverse_meta_dat <- adverse_events_gt_dat |>
   ) |>
   filter(!(study %in% c("Luntz 2004") & arm_id  == 2)) 
 
-adverse_meta_wide_dat <- adverse_meta_dat |> 
-  # filter(!is.na(or_ln_te)) |> 
-  arrange(refid, complication) |> 
-  pivot_wider(names_from = "arm", values_from = arm_n:n) |> 
-  group_by(refid, complication) |> 
-  fill(or_ln_te:n_TIVA) |> 
-  slice(2) |> 
-  ungroup() |> 
+adverse_meta_wide_dat <- adverse_meta_dat |>
+  # filter(!is.na(or_ln_te)) |>
+  arrange(refid, complication) |>
+  pivot_wider(names_from = "arm", values_from = arm_n:n) |>
+  group_by(refid, complication) |>
+  fill(or_ln_te:n_TIVA) |>
+  slice(2) |>
+  ungroup() |>
   mutate(
-    complication_nodesign = str_remove(complication, " – .*$"),
-    study_design = ifelse(str_detect(complication, "Rand"), paste0(study, "*"), study),
-    complication_nodesign = factor(complication_nodesign, levels = c("Cardiac", "MI", "Cardiac Arrest", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "AKI"), labels = c("Cardiac", "MI", "Cardiac Arrest", "Pneumonia", "Pulmonary Congestion", "Pulmonary Embolism", "Respiratory Failure", "Renal"))
+    complication_nodesign = str_remove(complication, "\\s–.*"),
+    study_design = ifelse(str_detect(complication, "Rand"), paste0(study, "*"), study)
   )
 
 adverse_events_gt_dat |> 
   # tabyl(complication) |> arrange(desc(percent)) |> pull(complication) |> toString()
   group_by(complication) |>
-  gt(id = "one") |>
-  row_group_order(groups = c("MI – Randomized Clinical Trial", "MI – Retrospective Cohort", "Cardiac Arrest – Retrospective Cohort", "Other Cardiac – Randomized Clinical Trial", "Pneumonia – Randomized Clinical Trial", "Respiratory Failure – Randomized Clinical Trial", "Respiratory Failure – Retrospective Cohort", "PE – Randomized Clinical Trial", "PE – Retrospective Cohort", "Pulmonary Congestion – Retrospective Cohort", "AKI – Retrospective Cohort")) |>
-  cols_hide(c(refid, year, study, arm_id, n, study, study_compl, rd_ci, rr_ci, or_ci, or_ln_te, or_ln_se_te, effect, adjcrude, est, low, high, detail_cardiac )) |>
+  gt() |> 
+  # gt(id = "one") |>
+  row_group_order(groups = c("MI – Randomized Clinical Trial", "MI – Retrospective Cohort", "Cardiac Arrest – Randomized Clinical Trial", "Cardiac Arrest – Retrospective Cohort", "Bradycardia – Randomized Clinical Trial", "Bradycardia – Nonrandomized Trial", "Other Cardiac – Randomized Clinical Trial", "Stroke – Randomized Clinical Trial", "Acute Kidney Injury – Retrospective Cohort", "Acute Kidney Injury – Randomized Clinical Trial", "Pneumonia – Randomized Clinical Trial", "Pneumothorax – Randomized Clinical Trial", "Pulmonary Embolism – Randomized Clinical Trial", "Pulmonary Embolism – Retrospective Cohort", "Pulmonary Congestion – Retrospective Cohort", "Respiratory Failure – Randomized Clinical Trial", "Respiratory Failure – Retrospective Cohort")
+) |>
+  cols_hide(c(refid, year, study, arm_id, n, study, study_compl, rd_ci, rr_ci, or_ci, or_ln_te, or_ln_se_te, effect, adjcrude, est, low, high, detail_cardiac, complication_nodesign)) |>
   cols_label(
     study_l          = "Study",
     arm_n            = " N",
@@ -1287,7 +1496,6 @@ adverse_events_gt_dat |>
     bar              = "0 – 100%",
     rd_or            = md("RD <u>OR</u> (95% CI)")
   ) |>
-  # tab_spanner(label = "", columns = c(VARIABLES), level = 1) |>
   fmt_markdown(columns = c(study_l, bar, age_table, rd_or)) |>
   fmt_integer(use_seps = TRUE, sep_mark = ",") |> 
   sub_missing(columns = everything(), missing_text = "") |>
@@ -1308,20 +1516,23 @@ adverse_events_gt_dat |>
   tab_style(style = cell_text(align = "left"),          locations = cells_body(columns = c(arm, age_table, rd_or, surgs_single))) |>
   tab_style(style = cell_text(align = "center"),        locations = cells_body(columns = c(rd_or))) |>
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table))) |> 
-  tab_footnote("Odds ratios reported for propensity-matched studies (risk difference with 95% CI reported accounting for matching were not reported).", locations = cells_column_labels(columns = c(rd_or))) |> 
+  tab_footnote("Odds ratios for propensity-matched studies (risk differences accounting for matching were not reported).", locations = cells_column_labels(columns = c(rd_or))) |> 
   tab_footnote("RD: risk difference; OR: odds ratio; Ophtho: ophthalmologic; GI: gastointestinal; Abd: abdominal.") |> 
-  tab_footnote("Compared with combined inhalation arms — differed only in induction agents.", locations = cells_body(columns = c(rd_or), rows = study == "Luntz 2004" & arm_id == 3)) |>
+  tab_footnote("Compared with combined inhalation arms (differed only in induction agents).", locations = cells_body(columns = c(rd_or), rows = study == "Luntz 2004" & arm_id == 3)) |>
   tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "TIVA"))) |> 
-  tab_footnote("Bradycardia.",                          locations = cells_body(columns = c(study_l), rows = detail_cardiac == "bradycardia" & arm_id == 1)) |> 
-  tab_footnote("Atrial fibrillation.",                  locations = cells_body(columns = c(study_l), rows = detail_cardiac == "atrial fibrillation" & arm_id == 1)) |> 
-  tab_footnote("Cardiac dysfunction.",                  locations = cells_body(columns = c(study_l), rows = detail_cardiac == "cardiac dysfunction" & arm_id == 1))
+  tab_footnote("Atrial fibrillation.",                  locations = cells_body(columns = c(study_l), rows = detail_cardiac == "atrial fibrillation" & arm_id == 1), placement = c("right")) |> 
+  tab_footnote("Cardiac dysfunction.",                  locations = cells_body(columns = c(study_l), rows = detail_cardiac == "cardiac dysfunction" & arm_id == 1), placement = c("right"))
 
 ```
 
 ### *Pooled*
 
-```{r complication_meta,  fig.width = 14, fig.height = 12.5, fig.align = "left"}
-complication_meta_fun <- function(compl_label, use_hakn = TRUE, predictive = TRUE){
+Note: given the limited number of randomized studies and absence of convincing evidence for any complication, we pooled all designs without detriment to any strength of evidence rating. When odds ratios were pooled, approximate risk differences were calculated based on the event rate across inhaled anesthetic arms and the corresponding risk ratio derived from the odds ratio.
+
+
+```{r complication_meta}
+
+complication_meta_or <- function(compl_label, use_hakn = TRUE, predictive = TRUE, study_label = "study_design"){
 meta_dat <- adverse_meta_wide_dat |>
   filter(!str_detect(complication, "Other Cardiac")) |> 
   select(-complication) |>
@@ -1332,22 +1543,44 @@ meta_dat <- adverse_meta_wide_dat |>
 complication_bin <- metagen(
   or_ln_te, or_ln_se_te,
   data = meta_dat,
-  studlab = study,
+  studlab = study_design,
   sm = "OR",
-  prediction = predictive,  
+  prediction = predictive,
   hakn = use_hakn,
   allstudies = FALSE,
 )  
 }
 
-complication_forest_fun <- function(adverse_meta, use_predictive = TRUE){
+complication_meta_rr <- function(compl_label, use_hakn = TRUE, predictive = TRUE, study_label = "study_design", ...){
+meta_dat <- adverse_meta_wide_dat |>
+  filter(!str_detect(complication, "Other Cardiac")) |> 
+  select(-complication) |>
+  rename(complication = complication_nodesign) |>
+  filter(complication %in% compl_label) 
+
+complication_bin <- metabin(
+  event.e = n_TIVA,
+  n.e = arm_n_TIVA,
+  event.c = n_Inhaled,
+  n.c = arm_n_Inhaled,
+  data = meta_dat,
+  studlab = study_design,
+  sm = "RR",
+  prediction = predictive,
+  hakn = use_hakn,
+  allstudies = FALSE,
+  method = "MH",
+  ...)  
+}
+
+complication_forest_or <- function(adverse_meta, use_predictive = TRUE, ...){
 forest(adverse_meta,
   allstudies = TRUE,
   random = TRUE,
   rightcols = c("effect", "ci"),
   rightlabs = c("OR ", "(95% CI)   "),
   leftcols = c("study_design", "n_TIVA", "arm_n_TIVA", "n_Inhaled", "arm_n_Inhaled"), 
-  leftlabs = c("Complication &\nStudy", "Events", "TIVA\n Total", "Events", "Inhaled\n Total"),
+  leftlabs = c("Study", "TIVA\n Events", "Total", "Inhaled\nEvents", " Total"),
   colgap.right = "4mm",
   just.addcols.right = "center",
   just.addcols.left = "right",
@@ -1365,23 +1598,22 @@ forest(adverse_meta,
   xlim = c(0.1, 10),
   xlab = "Favors: TIVA                             Inhaled",
   addrows.below.overall = 4,
-  text.addline1 = "*Randomized clinical trial."
+  text.addline1 = "*Randomized clinical trial",
+  fs.hetstat = 10,
+  ...
 )
 }
 
-complication_forest_rct_fun <- function(adverse_meta, use_predictive = TRUE){
+complication_forest_rr <- function(adverse_meta, random = TRUE, use_predictive = TRUE, ...){
 forest(adverse_meta,
   allstudies = TRUE,
-  random = TRUE,
-  # rightcols = c("effect", "ci"),
-  # rightlabs = c("OR ", "(95% CI)   "),
-  leftcols = c("study_design", "n_TIVA", "arm_n_TIVA", "n_Inhaled", "arm_n_Inhaled"), 
-  leftlabs = c("Complication &\nStudy", "Events", "TIVA\n Total", "Events", "Inhaled\n Total"),
-  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
-  rightlabs = c("OR ", "(95% CI)   ", "D1", "D2", "D3", "D4", "D5", "All"),
+  random = random,
+  # leftcols = c("study_design", "n_TIVA", "arm_n_TIVA", "n_Inhaled", "arm_n_Inhaled"), 
+  label.e = "TIVA           ",
+  label.c = "Inhaled          ",
+  rightcols = c("effect", "ci"),
+  rightlabs = c("RR", "(95% CI)"),
   colgap.right = "4mm",
-  just.addcols.right = "center",
-  just.addcols.left = "right",
   digits.TE = 3,
   digits.tau2 = 1,
   overall.hetstat = TRUE,
@@ -1392,83 +1624,130 @@ forest(adverse_meta,
   fs.xlab = 11,
   # pooled.events = TRUE,
   digits = 2, 
+  pooled.events = TRUE,
   print.pval.Q = FALSE,
   xlim = c(0.1, 10),
   xlab = "Favors: TIVA                             Inhaled",
   addrows.below.overall = 4,
-  text.addline1 = "*Randomized clinical trial."
+  text.addline1 = "*Randomized clinical trial",
+  fs.hetstat = 10,
+  ...
 )
 }
 
 ```
-
-<!-- #### Cardiac Composite -->
-<!-- <font size = 4> Risk ratio for composite measures of cardiac complications (TIVA versus inhaled anesthesia; randomized clinical trials). </font> -->
-<!-- ```{r complication_cardiac,  fig.width = 14, fig.height = 3.75, fig.align = "left"} -->
-<!-- temp_meta <- complication_meta_fun("Cardiac", use_hakn = FALSE) -->
-<!-- complication_forest_rct_fun(temp_meta) -->
-<!-- ``` -->
-<!-- <foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> Similar/Inhaled arms combined for Luntz 2004.<br/> Hartung-Knapp adjustment not used --- applying yielded a 95% confidence interval of (0.33--4.19). </foot_mg> -->
 
 #### Myocardial Infarction
 
-<font size = 4> `r figure_ref()` Risk ratio for myocardial infarction (TIVA versus inhaled anesthesia; randomized and nonrandomized studies). </font>
+<font size = 4> `r figure_ref()` Odds ratio for myocardial infarction (TIVA versus inhaled anesthesia; randomized and nonrandomized studies). </font>
 
-```{r complication_mi,  fig.width = 14, fig.height = 3.75, fig.align = "left"}
-temp_meta <- complication_meta_fun("MI", use_hakn = FALSE)
-complication_forest_fun(temp_meta)
+```{r complication_mi}
+#| echo: false
+#| include: false
+
+png("assets/kq4_complication_mi.png", width = 8.35, height = 3.8, units = "in", res = 300)
+temp_meta <- complication_meta_or("MI", use_hakn = FALSE, study_label = "study_design")
+complication_forest_or(temp_meta, big.mark = ",", text.addline2 = risk_diff_meta_or())
+dev.off()
 ```
 
-<foot_mg> RR: risk ratio.<br/> Similar arms combined for Liang 2017. </foot_mg>
+![](assets/kq4_complication_mi.png){fig.align="left" width="61%"}
 
-#### Stroke
+#### Cardiac Arrest
 
-Not reported in included studies.
+<font size = 4> `r figure_ref()` Risk ratio for cardiac arrest (TIVA versus inhaled anesthesia; randomized and nonrandomized studies). </font>
 
-#### Renal
+```{r complication_cardiac_arrest}
+#| echo: false
+#| include: false
+png("assets/kq4_complication_cardiac_arrest.png", width = 7.95, height = 2.8, units = "in", res = 300)
+temp_meta <- complication_meta_rr("Cardiac Arrest", random = FALSE, use_hakn = FALSE)
+complication_forest_rr(temp_meta, random = FALSE, big.mark = ",", text.addline2 = risk_diff_meta_rr())
+dev.off()
 
-<font size = 4> `r figure_ref()` Risk ratio for renal complications (TIVA versus inhaled anesthesia; nonrandomized studies). </font>
-
-```{r complication_aki,  fig.width = 14, fig.height = 3.35, fig.align = "left"}
-temp_meta <- complication_meta_fun("Renal", use_hakn = FALSE, predictive = FALSE)
-complication_forest_fun(temp_meta)
 ```
 
-<foot_mg> RR: risk ratio.<br/> </foot_mg>
+![](assets/kq4_complication_cardiac_arrest.png){fig.align="left" width="58%"}
 
-#### Pulmonary
+#### Bradycardia
 
-Complications categorized as "pulmonary" not reported in included studies.
+<font size = 4> `r figure_ref()` Risk ratio for bradycardia (TIVA versus inhaled anesthesia; randomized and nonrandomized studies). </font>
+
+```{r complication_brady}
+#| echo: false
+#| include: false
+png("assets/kq4_complication_brady.png", width = 7.95, height = 3.6, units = "in", res = 300)
+temp_meta <- complication_meta_rr("Bradycardia", use_hakn = FALSE)
+complication_forest_rr(temp_meta, big.mark = ",", text.addline2 = risk_diff_meta_rr())
+dev.off()
+
+```
+
+![](assets/kq4_complication_brady.png){fig.align="left" width="58%"}
+
+#### Acute Kidney Injury
+
+<font size = 4> `r figure_ref()` Odds ratio for acute kidney injury complications (TIVA versus inhaled anesthesia; randomized and nonrandomized studies). </font>
+
+```{r complication_renal}
+#| echo: false
+#| include: false
+
+png("assets/kq4_complication_renal.png", width = 8.35, height = 3.6, units = "in", res = 300)
+temp_meta <- complication_meta_or("Acute Kidney Injury", use_hakn = FALSE)
+complication_forest_or(temp_meta, big.mark = ",", text.addline2 = risk_diff_meta_or(digits = 2))
+dev.off()
+```
+
+![](assets/kq4_complication_renal.png){fig.align="left" width="61%"}
 
 #### Pneumonia
 
-<font size = 4> `r figure_ref()` Risk ratio for pneumonia (regional versus general anesthesia; randomized clinical trials). </font>
+<font size = 4> `r figure_ref()` Risk ratio for pneumonia (TIVA versus general anesthesia; randomized clinical trials). </font>
 
-```{r complication_pneumonia,  fig.width = 14, fig.height = 3.35, fig.align = "left"}
-temp_meta <- complication_meta_fun("Pneumonia", use_hakn = FALSE, predictive = FALSE)
-complication_forest_rct_fun(temp_meta, use_predictive = FALSE)
+```{r complication_pneumonia}
+#| echo: false
+#| include: false
+
+png("assets/kq4_complication_pneumonia.png", width = 7.95, height = 3.4, units = "in", res = 300)
+temp_meta <- complication_meta_rr("Pneumonia", use_hakn = FALSE, predictive = TRUE)
+complication_forest_rr(temp_meta, use_predictive = TRUE, text.addline2 = risk_diff_meta_rr())
+dev.off()
 ```
 
-<foot_mg> RR: risk ratio; ; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> </foot_mg>
+![](assets/kq4_complication_pneumonia.png){fig.align="left" width="58%"}
 
 #### Pulmonary Embolism
 
-<font size = 4> `r figure_ref()` Risk ratio for pulmonary embolism (regional versus general anesthesia; randomized clinical trials). </font>
+<font size = 4> `r figure_ref()` Odds ratio for pulmonary embolism (TIVA versus general anesthesia; randomized and nonrandomized studies). </font>
 
-```{r complication_pe,  fig.width = 14, fig.height = 3.35, fig.align = "left"}
-temp_meta <- complication_meta_fun("Pulmonary Embolism", use_hakn = FALSE, predictive = FALSE)
-complication_forest_fun(temp_meta, use_predictive = FALSE)
+```{r complication_pe}
+#| echo: false
+#| include: false
+
+png("assets/kq4_complication_pe.png", width = 8.55, height = 3.6, units = "in", res = 300)
+temp_meta <- complication_meta_or("Pulmonary Embolism", use_hakn = FALSE, predictive = FALSE)
+complication_forest_or(temp_meta, use_predictive = TRUE, big.mark = ",", text.addline2 = risk_diff_meta_or(digits = 2))
+dev.off()
 ```
 
-<foot_mg> RR: risk ratio.<br/> Similar arms combined for Liang 2017. </foot_mg>
+![](assets/kq4_complication_pe.png){fig.align="left" width="61%"}
 
-```{r complication_pulmonary-congestion,  fig.width = 14, fig.height = 2, fig.align = "left"}
-#| eval: false
-temp_meta <- complication_meta_fun("Pulmonary Congestion", use_hakn = FALSE, predictive = FALSE)
-complication_forest_fun(temp_meta)
+#### Respiratory Failure 
 
+<font size = 4> `r figure_ref()` Odds ratio for respiratory failure (TIVA versus general anesthesia; randomized and nonrandomized studies). </font>
 
+```{r respiratory_failure}
+#| echo: false
+#| include: false
+
+png("assets/kq4_respiratory_failure.png", width = 8.35, height = 3.4, units = "in", res = 300)
+temp_meta <- complication_meta_or("Respiratory Failure", use_hakn = FALSE, predictive = FALSE)
+complication_forest_or(temp_meta, use_predictive = TRUE, big.mark = ",", text.addline2 = risk_diff_meta_or(digits = 2))
+dev.off()
 ```
+
+![](assets/kq4_respiratory_failure.png){fig.align="left" width="61%"}
 
 ## **Patient Satisfaction**
 
@@ -1564,16 +1843,19 @@ satis_dat_gt |>
   tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:n_percent), rows = str_detect(arm, "TIVA"))) |> 
   tab_footnote("Completely satisfied.",               locations = cells_body(columns = c(n_percent), rows = study == "Epple 2001"), placement = "right") |>  
   tab_footnote("Highly satisfied.",                   locations = cells_body(columns = c(n_percent), rows = study == "Luntz 2004"), placement = "right") |>  
-  tab_footnote("Inhaled arms combined.",              locations = cells_body(columns = c(arm_n), rows = study == "Luntz 2004" & arm == "Inhaled"), placement = "right") |>  
+  tab_footnote("Inhaled arms combined.",              locations = cells_body(columns = c(arm), rows = study == "Luntz 2004" & arm == "Inhaled"), placement = "right") |>  
   tab_footnote("Very satisfied.",                     locations = cells_body(columns = c(n_percent), rows = study == "Nishikawa 2007a"), placement = "right") 
 
 ```
 
 ### *Pooled*
 
-<font size = 4> `r figure_ref()` Risk ratio in patient satisfaction (TIVA versus inhaled; randomized clinical trials). </font>
+<font size = 4> `r figure_ref()` Risk ratio for patient satisfaction (TIVA versus inhaled; randomized clinical trials). </font>
 
-```{r satis_rct_meta, fig.dim = c(14, 3), fig.align = "center"}
+```{r satis_rct_meta}
+#| echo: false
+#| include: false
+
 satis_meta_dat <- satis_dat_gt |> 
   select(refid, year, study, arm, satis_n, arm_n) |> 
   pivot_wider(names_from = "arm", values_from = satis_n:arm_n) |> 
@@ -1592,49 +1874,53 @@ satis_meta <- metabin(satis_n_TIVA, arm_n_TIVA, satis_n_Inhaled, arm_n_Inhaled,
 )
 
 # summary(plac_meta)
+
+png("assets/kq4_satis_rct.png", width = 7.85, height = 3.4, units = "in", res = 300)
 forest(satis_meta,
   allstudies = TRUE,
   # random = FALSE,
-  label.e = "TIVA     ",
-  label.c = "Inhaled     ",
-  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
-  rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
+  label.e = "TIVA   ",
+  label.c = "Inhaled   ",
+  rightcols = c("effect", "ci"),
+  rightlabs = c("RR", "(95% CI)"),
   just.addcols.right = "right",
   colgap.right = "4mm",
   digits.TE = 3,
   digits.tau2 = 1,
   overall.hetstat = TRUE,
   print.I2.ci = TRUE,
-  prediction = FALSE,
+  prediction = TRUE,
   fs.xlab = 11,
   pooled.events = TRUE,
-  pscale = 100,
   digits = 2, 
   print.pval.Q = FALSE,
   # xlim = c(0.1, 20),
   xlab = "Favors: Inhaled                       TIVA       ",
-  addrows.below.overall = 4
+  addrows.below.overall = 4,
+  fs.hetstat = 10,
+  text.addline1 = "Similar inhaled arms combined for Luntz 2004.",
+  text.addline2 = "Comparing higher versus lower levels of satisfaction (see preceding table).",
 )
+dev.off()
 
 ```
 
-<foot_mg> RD: risk difference; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> Similar/Inhaled arms combined for Luntz 2004.</foot_mg>
+![](assets/kq4_satis_rct.png){fig.align="left" width="58%"}
 
-<br/>
 
 ## **Length of Stay**
 
 <font size = 4> `r table_ref()` Length of stay according to procedure classification and comparator. </font>
 
 ```{r length_of_stay}
-#| eval: true
+#| echo: false
 los_tab <- contin_dat |>
   mutate(los_for_tables(contin_dat)) |>
   filter(if_any(los_m:los_diff_pval, ~ !is.na(.))) |>
   left_join(table_age_mn_med, by = c("refid", "arm_id")) |> # age_table
   left_join(study_arm_dat |> select(refid, arm_id, asa_ps_incl), by = c("refid", "arm_id")) |>
   left_join(surgs |> select(refid, surgs_noabbr_f), by = c("refid")) |>
-  left_join(study_char_dat |> select(refid, country), by = "refid" ) |> 
+  left_join(study_char_dat |> select(refid, country), by = "refid") |>
   mutate(
     refid_arm_id = paste0(refid, "-", arm_id),
     surg_groups = paste0(design_f_lab, " - ", surgs_noabbr_f),
@@ -1648,17 +1934,26 @@ los_tab <- contin_dat |>
       .default = bar_prop(calc_prop_35d, "#969696")
     )
   ) |>
-  arrange(surg_groups, year, study, arm_id) |> 
+  arrange(surg_groups, year, study, arm_id) |>
   select(refid, refid_arm_id, study, study_l, arm_n, arm, asa_ps_incl, age_table, los_table, bar, surg_groups, country)
 
 los_tab |>
-  mutate(study_l = ifelse(row_number() > 1, "", study_l),
-         country = ifelse(row_number() > 1, "", country),
-         .by = refid) |> 
+  mutate(
+    study_l = ifelse(row_number() > 1, "", study_l),
+    country = ifelse(row_number() > 1, "", country),
+    .by = refid
+  ) |>
   # tabyl(surg_groups) |> pull(surg_groups) |> toString()
   group_by(surg_groups) |>
   gt(id = "one") |>
-  row_group_order(groups = c("Randomized Clinical Trial - Gastrointestinal/Abdominal", "Randomized Clinical Trial - Thoracic", "Randomized Clinical Trial - Various", "Retrospective Cohort - Cardiac", "Retrospective Cohort - Orthopedic", "Retrospective Cohort - Various")) |> 
+  row_group_order(groups = c(
+    "Randomized Clinical Trial - Gastrointestinal/Abdominal",
+    "Randomized Clinical Trial - Thoracic",
+    "Randomized Clinical Trial - Various",
+    "Retrospective Cohort - Cardiac",
+    "Retrospective Cohort - Orthopedic",
+    "Retrospective Cohort - Various"
+  )) |>
   cols_hide(c(refid, refid_arm_id, study)) |>
   cols_label(
     study_l = "Study",
@@ -1671,7 +1966,7 @@ los_tab |>
     country = "Country"
   ) |>
   fmt_integer(use_seps = TRUE, sep_mark = ",") |>
-  gt_theme_mg() |> 
+  gt_theme_mg() |>
   cols_width(
     study_l ~ px(165),
     arm_n ~ px(60),
@@ -1681,24 +1976,27 @@ los_tab |>
     los_table ~ px(100),
     bar ~ px(120),
     country ~ px(80)
-    )  |> 
-  fmt_markdown(columns = c(study_l, bar, age_table, los_table)) |> 
+  ) |>
+  fmt_markdown(columns = c(study_l, bar, age_table, los_table)) |>
   tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
-  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, arm,  bar))) |>
-  tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(study_l, age_table, los_table))) |>
-  tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(study_l, age_table, los_table, bar, arm))) |> 
-  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(arm, "TIVA"))) |> 
-  tab_footnote(md("NR: not reported")) |> 
-  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, los_table))) |> 
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, arm, bar))) |>
+  tab_style(style = cell_text(align = "left"), locations = cells_column_labels(columns = c(study_l, age_table, los_table))) |>
+  tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(study_l, age_table, los_table, bar, arm))) |>
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:los_table), rows = str_detect(arm, "TIVA"))) |>
+  tab_footnote(md("NR: not reported")) |>
+  tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, los_table))) |>
   tab_footnote(md("ASA Physical Status."), locations = cells_column_labels(columns = c(asa_ps_incl)))
-  
+
 ```
 
 ### *Pooled*
 
-<font size = 4> `r figure_ref()` Mean difference in lengths of stay (TIVA versus inhaled; randomized clinical trials). </font>
+<font size = 4> `r figure_ref()` Mean difference in length of stay (TIVA versus inhaled; randomized clinical trials). </font>
 
-```{r los_meta, fig.width = 14, fig.height = 3, fig.align = "left"}
+```{r los_meta}
+#| echo: false
+#| include: false 
+
 los_meta_dat <- contin_dat |>
   filter(refid %in% los_tab$refid) |> 
   select(refid, study, design_f_lab, arm, arm_n, los_m, los_sd, los_med, los_rl, los_ru, los_iqrl, los_iqru, los_95l, los_95u) |> 
@@ -1744,10 +2042,11 @@ los_meta <- metacont(
   studlab = study
 )
 
+png("assets/kq4_los_rct.png", width = 9.08, height = 3.4, units = "in", res = 300)
 forest(los_meta,
   weight.study = "random",
-  common =  FALSE,
-  label.e = "TIVA     ",
+  common =  TRUE,
+  label.e = "TIVA   ",
   label.c = "Inhaled   ",
   print.tau2 = FALSE,
   print.tau = TRUE,
@@ -1764,20 +2063,27 @@ forest(los_meta,
   # sortvar = -TE,
   xlim = c(-10, 10),
   # at = c(-80, -60, -40, -20, 0, 20, 40),
-  rightcols = c("effect", "ci", "surgs_single", "D1", "D2", "D3", "D4", "D5", "Overall"),
-  rightlabs = c("MD ", "(95% CI)   ", "Procedure", "D1", "D2", "D3", "D4", "D5", "All"),
+  rightcols = c("effect", "ci", "surgs_single"),
+  rightlabs = c("MD ", "(95% CI)   ", "Procedure"),
   xlab = "Favors: TIVA                                      Inhaled           ",
   smlab = "Mean Difference (days)",
-  addrows.below.overall = 4
+  addrows.below.overall = 4,
+  fs.hetstat = 10
 )
+dev.off()
 
 ```
 
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range. </foot_mg>
+![](assets/kq4_los_rct.png){fig.align="left" width="65%"}
 
-<font size = 4> `r figure_ref()` Mean difference in lengths of stay (TIVA versus inhaled; nonrandomized designs). </font>
+<br/>
 
-```{r los_nrsi_meta, fig.width = 14, fig.height = 3, fig.align = "left"}
+<font size = 4> `r figure_ref()` Mean difference in length of stay (TIVA versus inhaled; nonrandomized designs). </font>
+
+```{r los_nrsi_meta}
+#| echo: false
+#| include: false
+
 los_meta <- metacont(
   n.e = arm_n_TIVA, 
   n.c = arm_n_Inhaled,
@@ -1804,10 +2110,11 @@ los_meta <- metacont(
   studlab = study
 )
 
+png("assets/kq4_los_nrsi.png", width = 9.68, height = 3.0, units = "in", res = 300)
 forest(los_meta,
   weight.study = "random",
   common =  FALSE,
-  label.e = "TIVA     ",
+  label.e = "TIVA   ",
   label.c = "Inhaled   ",
   print.tau2 = FALSE,
   print.tau = TRUE,
@@ -1823,16 +2130,20 @@ forest(los_meta,
   # sortvar = -TE,
   xlim = c(-10, 10),
   # at = c(-80, -60, -40, -20, 0, 20, 40),
-  rightcols = c("effect", "ci", "surgs_single", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "Overall"),
-  rightlabs = c("MD", "(95% CI)  ", "Procedure", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "All"),
+  rightcols = c("effect", "ci", "surgs_single"),
+  rightlabs = c("MD", "(95% CI)  ", "Procedure"),
   xlab = "Favors: TIVA                                      Inhaled           ",
   smlab = "Mean Difference (days)",
-  addrows.below.overall = 4
+  addrows.below.overall = 4,
+  fs.hetstat = 10,
+  big.mark = ",",
+  text.addline1 = "If mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range."
 )
+dev.off()
 
 ```
 
-<foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable. <br/> When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range. </foot_mg>
+![](assets/kq4_los_nrsi.png){fig.align="left" width="65%"}
 
 ## **Discharge Location**
 
@@ -1976,7 +2287,7 @@ mortality_dat |>
     rd_ci ~ px(145)
   ) |> 
   # opt_css(css = "#one .gt_column_spanner {border-bottom-style: hidden;}") |>
-  tab_footnote("ASA PS: American Society of Anesthesiologists Physical Status; RD: risk difference; NR: not reported.") |> 
+  tab_footnote("ASA PS: American Society of Anesthesiologists Physical Status; Vasc: vascular; GI/Abd: gastrointestinal/abdominal; RD: risk difference; NR: not reported.") |> 
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table)))  
   # tab_footnote("Different lengths of follow-up from the same trial.", locations = cells_body(columns = study_l, rows = study %in% c("Su 2016", "Zhang 2019b"))) 
 
@@ -2104,8 +2415,10 @@ pairwise_nrsi_mort_dat <- pairwise(
 
 <font size = 4> `r figure_ref()` Risk ratio for hospital or 30-day mortality (TIVA versus inhaled; randomized clinical trials). </font>
 
-```{r mort_rct_meta, fig.dim = c(14, 4), fig.align = "center"}
-# ```{r nma_dat, out.width = 50%, out.height = 100%}
+```{r mort_rct_meta}
+#| echo: false
+#| include: false
+
 mort_meta_dat <- pairwise_rct_mort_dat |> 
   mutate(year = str_extract(study, "\\d{4}")) |> 
   left_join(rob2_meta_dat, by = "refid") |> 
@@ -2124,17 +2437,18 @@ mort_rct_meta <- metabin(event2, n2, event1, n1,
   method.tau = "REML",
   hakn = TRUE,
   prediction = FALSE,
-  allstudies = TRUE,
+  allstudies = FALSE,
 )
 
 # summary(plac_meta)
+
+png("assets/kq4_mort_rct.png", width = 8.875, height = 3.4, units = "in", res = 300)
 forest(mort_rct_meta,
   allstudies = TRUE,
-  # random = FALSE,
-  label.e = "TIVA     ",
-  label.c = "Inhaled     ",
-  rightcols = c("effect", "ci", "surgs_single", "D1", "D2", "D3", "D4", "D5", "Overall"),
-  rightlabs = c("RR", "(95% CI)", "Procedure", "D1", "D2", "D3", "D4", "D5", "All"),
+  label.e = "TIVA   ",
+  label.c = "Inhaled   ",
+  rightcols = c("effect", "ci", "surgs_single"),
+  rightlabs = c("RR", "(95% CI)", "Procedure"),
   just.addcols.right = "right",
   digits.TE = 3,
   digits.tau2 = 1,
@@ -2143,23 +2457,28 @@ forest(mort_rct_meta,
   prediction = TRUE,
   fs.xlab = 11,
   pooled.events = TRUE,
-  pscale = 1000,
   digits = 2, 
   print.pval.Q = FALSE,
   xlim = c(0.1, 20),
   xlab = "Favors: TIVA                       Inhaled       ",
-  addrows.below.overall = 4
+  addrows.below.overall = 4,
+  fs.hetstat = 10,
+  big.mark = ",",
 )
+dev.off()
 
 ```
 
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg>
+![](assets/kq4_mort_rct.png){fig.align="left" width="66%"}
 
-<br/>
+<br/>   
 
 <font size = 4> `r figure_ref()` Risk ratio for hospital or 30-day mortality (TIVA versus inhaled; nonrandomized designs). </font>
 
-```{r mort_nrsi_meta, fig.dim = c(14, 4), fig.align = "center"}
+```{r mort_nrsi_meta}
+#| echo: false
+#| include: false
+
 mort_meta_dat <- pairwise_nrsi_mort_dat |> 
   mutate(year = str_extract(study, "\\d{4}")) |> 
   left_join(robinsi_meta_dat, by = "refid") |> 
@@ -2177,18 +2496,19 @@ mort_nrsi_meta <- metabin(event2, n2, event1, n1,
   method = "MH",
   method.tau = "REML",
   hakn = TRUE,
-  prediction = FALSE,
-  allstudies = TRUE,
+  prediction = TRUE,
+  allstudies = FALSE,
 )
 
 # summary(plac_meta)
+
+png("assets/kq4_mort_nrsi.png", width = 9.1, height = 3.6, units = "in", res = 300)
 forest(mort_nrsi_meta,
   allstudies = TRUE,
-  # random = FALSE,
-  label.e = "TIVA     ",
-  label.c = "Inhaled     ",
-  rightcols = c("effect", "ci", "surgs_single", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "Overall"),
-  rightlabs = c("RR", "(95% CI)  ", "Procedure", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "All"),
+  label.e = "TIVA   ",
+  label.c = "Inhaled   ",
+  rightcols = c("effect", "ci", "surgs_single"),
+  rightlabs = c("RR", "(95% CI)  ", "Procedure"),
   just.addcols.right = "right",
   digits.TE = 3,
   digits.tau2 = 1,
@@ -2197,16 +2517,20 @@ forest(mort_nrsi_meta,
   prediction = TRUE,
   fs.xlab = 11,
   pooled.events = TRUE,
-  pscale = 1000,
   digits = 2, 
   print.pval.Q = FALSE,
   xlim = c(0.1, 10),
   xlab = "Favors: TIVA                                     Inhaled       ",
-  addrows.below.overall = 4
+  addrows.below.overall = 4,
+  fs.hetstat = 10,
+  big.mark = ",",
+  text.addline1 = "Yoshimura 2022 naïve risk ratio, but identical to odds ratio reported respecting propensity matching."
 )
+dev.off()
+
 ```
 
-<foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable.<br/> Note for Yoshimura 2022 naïve risk ratio, but identical to odds ratio reported respecting propensity matching.</foot_mg>
+![](assets/kq4_mort_nrsi.png){fig.align="left" width="66%"}
 
 ## **Risk of Bias**
 

@@ -22,34 +22,9 @@ tables:
 
 | Date               | Modification|
 |:------------------------|:-----------------------------------------------|
-| 2024-01-02 | Updated regional versus general for consistent language, removed *I* <sup>2</sup> (can be found in forest plots), and added prediction intervals where relevant|
+| 2024-01-02 | Updated regional versus general for consistent language, removed *I* <sup>2</sup> (can be found in forest plots), and added prediction intervals where relevant.|
 | 2024-01-06 | Regional now only neuraxial. Updated summaries to be consistent with revised analyses.|
 :::
-
-
-```{=html}
-<style type="text/css">
-@font-face {
-    font-family: "GRADE-quality";
-    src: url();
-    src: url('https://gradepro.org/fonts/GRADE-quality.eot');
-    src: url('https://gradepro.org/fonts/GRADE-quality.eot?#iefix')
-        format('embedded-opentype'),
-      url('https://gradepro.org/fonts/GRADE-quality.woff') format('woff'),
-      url('https://gradepro.org/fonts/GRADE-quality.ttf') format('truetype'),
-      url('https://gradepro.org/fonts/GRADE-quality.svg#GRADE-quality')
-        format('svg');
-    font-weight: normal;
-    font-style: normal;
-}
-
-.quality-sign {
-      font-family: 'GRADE-quality', Cambria, Helvetica, Arial;
-      font-size: 10px;
-      vertical-align: text-bottom;
-}
-</style>
-```
 
 
 ```{r preliminaries}
@@ -67,18 +42,6 @@ conflicts_prefer(dplyr::filter)
 conflicts_prefer(dplyr::lag)
 knitr::opts_chunk$set(echo = FALSE)
 source("code/functions_2023-04-26.R")
-
-# grade footnote
-high  <- '<span><span class="quality-sign">⨁⨁⨁⨁</span>'
-mod   <- '<span><span class="quality-sign">⨁⨁⨁◯</span>'
-low   <- '<span><span class="quality-sign">⨁⨁◯◯</span>'
-vlow  <- '<span><span class="quality-sign">⨁◯◯◯</span>'
-
-# high  <- "<span><span class='quality-sign'>⨁⨁⨁⨁</span>"
-# mod   <- "<span><span class='quality-sign'>⨁⨁⨁◯</span>"
-# low   <- "<span><span class='quality-sign'>⨁⨁◯◯</span>"
-# vlow  <- "<span><span class='quality-sign'>⨁◯◯◯</span>"
-grade_foot <- paste0("Very low: ", vlow, "; Low: ", low, "; Moderate: ", mod, "; High: ", high, ".")
 
 soe_footnote <- function(x) {
   x |>
@@ -497,7 +460,7 @@ kq3_domain |>
 #| include: false
 col_types_soe <- c("numeric", rep("text", 5), "numeric", rep("text", 16))
 soe_kq4_dat <- readxl::read_xlsx("data/soe_2023-05-22_local.xlsx", range = "A1:W22", sheet = "soe_kq4", col_types = col_types_soe) |>
-  filter(!n %in% c(4.52)) |>
+  filter(!n %in% c(4.52, 4.41)) |> # cardiac composite, nrsi mi combined with rct
   clean_names() |>
   mutate(
     n_s = paste0(n_studies, " <br/>(", format(n_pts, big.mark = ","), ")"),
@@ -899,9 +862,6 @@ kq6_domain |>
 
 <hr style="height:2px;border-width:0;color:gray;background-color:gray">
 
-<br/>
-
-<br/>
 
 # **Rating Systems Reference**
 
@@ -940,8 +900,6 @@ kq6_domain |>
 *Plausible Residual Confounding* --- When unaccounted residual confounding would increase the effect magnitude.
 
 </font>
-
-<br/><br/>
 
 ## ACCF/AHA
 

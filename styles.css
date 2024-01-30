@@ -41,6 +41,7 @@ p:has(> foot_mg) {
 
 #one tr:hover {
     background-color: #D5D8DC;
+    margin-bottom: -40px;
 }
 
 .navbar-dark, span.menu-text {
