@@ -604,7 +604,7 @@ kq3_complications <- function() {
 }
 
 kq4_balance_main <- function() {
-  tiva_inhaled_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "TIVAInhaled", range = "A4:M16") |>
+  tiva_inhaled_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "TIVAInhaled", range = "A4:M17") |>
     remove_empty(which = "cols") |>
     clean_names() |>
     filter(is.na(exclude)) |> # remove NRSI only; keep for complications
@@ -677,7 +677,7 @@ kq4_balance_main <- function() {
 }
 
 kq4_complications <- function(){
-  tiva_inhaled_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "TIVAInhaled", range = "B29:M40") |>
+  tiva_inhaled_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "TIVAInhaled", range = "B24:M39") |>
     remove_empty(which = "cols") |>
     clean_names() |>
     rename(est = estimate_95_percent_ci) |>
@@ -742,7 +742,7 @@ kq4_complications <- function(){
     tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(est, measure), rows = str_detect(measure, "RD"))) |>
     tab_footnote(md("RCT: randomized clinical trial; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; MD: mean difference.")) |>
     tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
-    tab_footnote("Approximate based on the event rate in the inhaled anesthetic arms and the risk ratio calculated from the odds ratio.", locations = cells_body(columns = c(est), rows = est %in% c("-1.9 (-2.7 to -1.2)"))) |>
+    tab_footnote("Approximate based on the event rate in the inhaled anesthetic arms and the risk ratio calculated from the odds ratio.", locations = cells_body(columns = c(est), rows = est %in% c("-1.9 (-2.7 to -1.2)", "-0.02 (-0.43 to 0.42)", "0.30 (0.09 to 0.54)", "-0.53 (-0.83 to -0.19)"))) |>
     # tab_footnote(md("[Comparing higher/highest category or categories with lower ones.](kq3.html#patient-satisfaction)"), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |>
     tab_footnote(md("Comparing higher/highest category or categories with lower ones."), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |>
     tab_footnote("Cardiovascular, pulmonary, and acute kidney injury.", locations = cells_body(columns = c(outcome), rows = outcome == "Complications")) |>

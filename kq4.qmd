@@ -7,6 +7,9 @@ toc-depth: 4
 toc_float: 
   collapsed: false
 tbl-cap-location: "top"
+format: html
+execute: 
+  cache: false
 page-layout: full
 css: styles.css
 tables:
@@ -190,8 +193,9 @@ included_dat |>
     centers ~ px(60),
     n_enroll ~ px(60),
     country ~ px(100),
-    surgs ~ px(150)
+    surgs ~ px(175)
   ) |> 
+  fmt_number(columns = c(n_enroll, centers), use_seps = TRUE, drop_trailing_zeros = TRUE) |>
   # opt_horizontal_padding(scale = 2) |>
   # row_group_order(groups = c("GI/Abdominal", "Cardiac", "Ortho", "Ent", "Ophtho", "Thoracic", "GI/Abdominal|Ortho|Ent", "General|Spine|Thoracic|Urol", "General|Thoracic|Urol", "Headneck", "Spine", "Urol", "Various")) |>
   sub_missing(columns = everything(), missing_text = " — ") |>
@@ -394,6 +398,8 @@ tiva_inh_tab |>
   tab_footnote("Agent used not specified.", locations = cells_body(columns = c(desflurane, sevoflurane, isoflurane) , rows = study == "Park 2020" & arm_id == 1))
 
 ```
+
+<a id="delirium-incidence_alt"></a>
 
 ## **Delirium Incidence**
 
@@ -1635,6 +1641,44 @@ forest(adverse_meta,
 )
 }
 
+# to add to tables will place in clipboard
+complication_summary_rr_or <- function(compl_label){
+  temp <- adverse_meta_wide_dat |> 
+    filter(complication_nodesign == compl_label) |>
+    filter(n_TIVA + n_Inhaled != 0) |>
+    summarize(
+      n_studies = n_distinct(refid),
+      n_TIVA_events = sum(n_TIVA),
+      n_Inhaled_events = sum(n_Inhaled),
+      n_TIVA = sum(arm_n_TIVA),
+      n_Inhaled = sum(arm_n_Inhaled),
+      n_patients = sum(arm_n_TIVA) + sum(arm_n_Inhaled),
+    ) |> 
+    unlist() |> 
+    toString()
+  
+    clipr::write_clip(temp)
+    temp
+}
+
+complication_summary_rd <- function(compl_label){
+  temp <- adverse_meta_wide_dat |> 
+    filter(complication_nodesign == compl_label) |>
+    summarize(
+      n_studies = n_distinct(refid),
+      n_TIVA_events = sum(n_TIVA),
+      n_Inhaled_events = sum(n_Inhaled),
+      n_TIVA = sum(arm_n_TIVA),
+      n_Inhaled = sum(arm_n_Inhaled),
+      n_patients = sum(arm_n_TIVA) + sum(arm_n_Inhaled),
+    ) |> 
+    unlist() |> 
+    toString()
+  
+    clipr::write_clip(temp)
+    temp
+}
+
 ```
 
 #### Myocardial Infarction
@@ -2186,9 +2230,9 @@ mortality_dat <- dichot_dat |>
     per = per/100
   ) |>
   rename(mort_n = n, mort_per_rep = per) |>
-  # for Park 2020 and Dai 2021 reported both in-hospital and 30-day
+  # for Park 2020 and Dai 2021 reported both in-hospital and 30-day; Zangrillo 2011 1-year and 30-day (use 30-day) to distinguish
   mutate(
-    refid_c = ifelse(study %in% c("Park 2020", "Dai 2021") & mort_period == "30-day", paste0(refid_c, "-30"), refid_c)
+    refid_c = ifelse(study %in% c("Park 2020", "Dai 2021", "Zangrillo 2011") & mort_period == "30-day", paste0(refid_c, "-30"), refid_c),
   ) |> 
   arrange(refid_c, arm_id) |>
   mutate(
@@ -2440,9 +2484,11 @@ mort_rct_meta <- metabin(event2, n2, event1, n1,
   allstudies = FALSE,
 )
 
+temp_meta <- mort_rct_meta
+
 # summary(plac_meta)
 
-png("assets/kq4_mort_rct.png", width = 8.875, height = 3.4, units = "in", res = 300)
+png("assets/kq4_mort_rct.png", width = 8.875, height = 3.6, units = "in", res = 300)
 forest(mort_rct_meta,
   allstudies = TRUE,
   label.e = "TIVA   ",
@@ -2464,8 +2510,13 @@ forest(mort_rct_meta,
   addrows.below.overall = 4,
   fs.hetstat = 10,
   big.mark = ",",
+  text.addline1 = risk_diff_meta_rr()
 )
 dev.off()
+
+#                    RR            95%-CI    z p-value
+# Zangrillo 2011 2.0000 (0.1881, 21.2627) 0.57  0.5655
+
 
 ```
 
@@ -2502,7 +2553,9 @@ mort_nrsi_meta <- metabin(event2, n2, event1, n1,
 
 # summary(plac_meta)
 
-png("assets/kq4_mort_nrsi.png", width = 9.1, height = 3.6, units = "in", res = 300)
+temp_meta <- mort_nrsi_meta
+
+png("assets/kq4_mort_nrsi.png", width = 9.1, height = 3.8, units = "in", res = 300)
 forest(mort_nrsi_meta,
   allstudies = TRUE,
   label.e = "TIVA   ",
@@ -2524,7 +2577,8 @@ forest(mort_nrsi_meta,
   addrows.below.overall = 4,
   fs.hetstat = 10,
   big.mark = ",",
-  text.addline1 = "Yoshimura 2022 naïve risk ratio, but identical to odds ratio reported respecting propensity matching."
+  text.addline1 = "Yoshimura 2022 naïve risk ratio, but identical to odds ratio reported respecting propensity matching.",
+  text.addline2 = risk_diff_meta_rr()
 )
 dev.off()
 

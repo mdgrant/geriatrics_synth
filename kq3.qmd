@@ -2598,9 +2598,7 @@ ggplot(temp, aes(x = baseline, y = log(rr), size = size)) +
   labs(x = "Baseline risk", y = "Log(Risk ratio)") +
   theme_bw()
 
-
 with(temp, plot(baseline, log(rr), cex = log(size/20), pch = 16, col = "red", xlab = "Baseline Risk", ylab = "Log(Risk ratio)", ylim = c(-1, 2), xlim = c(-0.0, 0.04)))
-
 
 hipfx_study <- study_char_dat |> 
   select(refid, study) |> 
@@ -2834,7 +2832,7 @@ dev.off()
 #| echo: false
 #| include: false
 
-png("assets/mort_rct_rd_90dmeta.png", width = 8.74, height = 3, units = "in", res = 300)
+png("assets/kq3_mort_rct_rd_90dmeta.png", width = 8.74, height = 3, units = "in", res = 300)
 mort_rct_meta <- update(mort_rct_meta, sm = "RD")
 forest(mort_rct_meta,
   allstudies = TRUE,
@@ -2861,7 +2859,7 @@ forest(mort_rct_meta,
 dev.off()
 
 ```
-![](assets/mort_rct_rd_90dmeta.png){fig.align="left" width="64%"}
+![](assets/kq3_mort_rct_rd_90dmeta.png){fig.align="left" width="64%"}
 
 <br/>
 

@@ -459,7 +459,7 @@ kq3_domain |>
 ```{r soe_kq4_data}
 #| include: false
 col_types_soe <- c("numeric", rep("text", 5), "numeric", rep("text", 16))
-soe_kq4_dat <- readxl::read_xlsx("data/soe_2023-05-22_local.xlsx", range = "A1:W22", sheet = "soe_kq4", col_types = col_types_soe) |>
+soe_kq4_dat <- readxl::read_xlsx("data/soe_2023-05-22_local.xlsx", range = "A1:W23", sheet = "soe_kq4", col_types = col_types_soe) |>
   filter(!n %in% c(4.52, 4.41)) |> # cardiac composite, nrsi mi combined with rct
   clean_names() |>
   mutate(
@@ -505,7 +505,7 @@ domain_summary <- soe_kq4_dat |>
 
 ```
 
-<font size = 4> `r table_ref()` Strength of evidence summaries --- TIVA versus inhaled anesthesia. </font>
+<font size = 4> `r table_ref()` Strength of evidence summaries — TIVA versus inhaled anesthesia. </font>
 
 ```{r kq4_soe_gt}
 #| include: true
@@ -546,7 +546,7 @@ soe_summary |>
     acc ~ px(60),
     out_import ~ px(90),
     summary ~ px(325),
-    result_links ~ px(125)
+    result_links ~ px(120)
   ) |>
   opt_css(
     css = "
