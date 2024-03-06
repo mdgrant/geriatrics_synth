@@ -25,6 +25,14 @@ wf-mg {
   padding-bottom: 0px;
 }
 
+a {
+    text-decoration: none; /* Remove underline */
+}
+
+a:hover {
+  background-color:  #aaecf1;
+}
+
 p {
   line-height: 1.2;
 }

@@ -5,10 +5,10 @@ library(tidyverse)
 # conflicts_prefer(dplyr::filter)
 rm(list = ls()) # avoid including errant files
 library(janitor)
-suppressPackageStartupMessages(library(meta))
-suppressPackageStartupMessages(library(netmeta))
-suppressPackageStartupMessages(library(metasens))
-suppressPackageStartupMessages(library(gt))
+suppressMessages(library(meta))
+suppressMessages(library(netmeta))
+suppressMessages(library(metasens))
+suppressMessages(library(gt))
 library(skimr)
 library(htmltools)
 library(reactable)
@@ -31,6 +31,9 @@ theme <- theme_update(
   axis.line.y = element_line(linewidth = 0, colour = "white", linetype = "solid"),
   axis.ticks = element_line(colour = "gray72"),
   panel.grid.major = element_line(colour = "gray80"))
+
+# refids to exclude
+exclude_refids <- c(1)
 
 ## data files ----------------------------------------- (2022-11-16 14:19) @----
 data_files <- as_tibble(list.files("data/"))
@@ -122,7 +125,7 @@ design_labels_abbrev <- c(
 ## append letter same author/year --------------------- (2023-02-18 16:39) @----
 study_lettered <- read_csv(path_csv(study_char_file)) |>
   janitor::clean_names() |>
-  filter(refid != 1) |> # refid 1 only for column types
+  filter(!refid %in% exclude_refids) |> # refid 1 only for column types
   rename(author_dist = author, author = author_added) |>
   mutate(study = paste(author, year)) |>
   select(study, refid) |>
@@ -131,14 +134,14 @@ study_lettered <- read_csv(path_csv(study_char_file)) |>
   mutate(
     n_studies = row_number(),
     n_group = n(),
-    study_r = ifelse(n_group > 1, paste0(study, letters[n_studies]), study)) |>
+    study_r = if_else(n_group > 1, paste0(study, letters[n_studies]), study)) |>
   ungroup() |>
   select(refid, study_r) |>
   rename(study = study_r)
 
 study_char_dat <- read_csv(path_csv(study_char_file)) |>
   janitor::clean_names() |>
-  filter(refid != 1) |> # refid 1 only for column types
+  filter(!refid %in% exclude_refids) |> # refid 1 only for column types
   rename(author_dist = author, author = author_added) |> # author distiller, author entered
   left_join(study_lettered, by = "refid") |>
   mutate(across(where(is.logical), as.character),
@@ -149,10 +152,10 @@ study_char_dat <- read_csv(path_csv(study_char_file)) |>
     design_f_lab = fct_collapse(design_f_lab, Other = c("Other", "Fully Paired")),
     design_f_abbrev = factor(design, levels = design_levels, labels = design_labels_abbrev),
     design_f_abbrev = fct_collapse(design_f_abbrev, Other = c("Other", "Paired")),
-    country = ifelse(grepl("USA", country), "USA", country),
-    country = ifelse(grepl("UK", country), "UK", country),
+    country = if_else(grepl("USA", country), "USA", country),
+    country = if_else(grepl("UK", country), "UK", country),
     study_l = paste0("[", study, "]", "(", "evidence_tables.html#", refid, ")"), # , " [@", refid, "]")
-    linked_study = ifelse(!is.na(linked_references), "Yes", "No"),
+    linked_study = if_else(!is.na(linked_references), "Yes", "No"),
     neuro_threshold = factor(neuro_threshold,
       levels = c("mmselt24", "mmselt26", "mmselt27", "spmsqgt2", "diffge1sd", "diffge2sd", "diffgt20per", "diffgt2pts", "zleneg196", "zlt196", "zge196", "zgt2", "lowscore", "custom", "notspec", "diff075sd", "mincogle2", "mocale25"),
       labels = c("MMSE <24", "MMSE <26", "MMSE <27", "SPMSQ >2", "Difference from baseline ≥1 SD", "Difference from baseline ≥2 SD", "Difference from baseline >20%", "Difference from baseline >2 pts", "Z ≤-1.96", "Z <1.96", "Z ≥1.96", "Z >2", "Threshold not specified", "Custom scoring", "Threshold not specified", "Difference from baseline 0.75 SD", "MiniCog ≤2", "MoCA ≤25")
@@ -165,7 +168,7 @@ study_char_dat <- read_csv(path_csv(study_char_file)) |>
 ## file with refid_ver to check for cloned
 cloned_refid <- read_csv(path_csv(study_char_file)) |>
   janitor::clean_names() |>
-  filter(refid != 1) |> # refid 1 only for column types
+  filter(!refid %in% exclude_refids) |> # refid 1 only for column types
   filter(!is.na(clone)) |>
   pull(refid)
 
@@ -174,21 +177,21 @@ surgs <- study_char_dat |>
   select(refid, starts_with("design"), study_l, year, n_enroll, n_analyze, centers, country, non_vh_hdi, starts_with("surg")) |>
   rename_with(~ gsub("surg_", "", .x, fixed = TRUE)) |>
   mutate(across(various:other, ~ gsub("surg_", "", .x, fixed = TRUE)),
-         ortho_any = ifelse(if_any(contains("ortho"), ~ !is.na(.x)), "ortho", NA),
-         opth = ifelse(str_detect(other_desc, "[Cc]ataract") | !is.na(opth), "ophtho", opth),
-         gi = ifelse(!is.na(colorectal) | !is.na(gi_other) | !is.na(abdominal), "GI/Abdominal", NA),
+         ortho_any = if_else(if_any(contains("ortho"), ~ !is.na(.x)), "ortho", NA),
+         opth = if_else(str_detect(other_desc, "[Cc]ataract") | !is.na(opth), "ophtho", opth),
+         gi =   if_else(!is.na(colorectal) | !is.na(gi_other) | !is.na(abdominal), "GI/Abdominal", NA),
          across(c(various, cardiac, gyn, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, spine, thoracic, urol, vasc, other), ~ firstup(.x)),
   ) |>
   unite("surgs", various, cardiac, gyn, gi, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, spine, thoracic, urol, vasc, other, sep = "|", remove = FALSE, na.rm = TRUE) |>
   select(-c(various, abdominal, cardiac, colorectal, gyn, gi, general, headneck, hepatic, neuro, opth, oralmax, ortho_any, ent, plastic, spine, thoracic, urol, vasc, other, design_other, gi_other, starts_with("ortho"), list, other_desc, starts_with("hip"))) |>
   mutate(
-    surgs = ifelse(str_count(surgs, "\\|") > 3, "Various", surgs),
-    surgs_single = ifelse(str_detect(surgs, "\\|"), "Various", surgs),
-    surgs_single = ifelse(surgs == "GI/Abdominal", "GI/Abd", surgs_single),
-    surgs_single = ifelse(surgs == "GI/Abdominal|Hepatic", "GI/Abd", surgs_single),
-    surgs_single = ifelse(surgs == "Hepatic", "GI/Abd", surgs_single),
-    surgs_single = ifelse(surgs == "Various", "Various", surgs_single),
-    # surgs_single = ifelse(surgs == "Other", "Various", surgs_single),
+    surgs          = if_else(str_count(surgs, "\\|") > 3, "Various", surgs),
+    surgs_single   = if_else(str_detect(surgs, "\\|"), "Various", surgs),
+    surgs_single   = if_else(surgs == "GI/Abdominal", "GI/Abd", surgs_single),
+    surgs_single   = if_else(surgs == "GI/Abdominal|Hepatic", "GI/Abd", surgs_single),
+    surgs_single   = if_else(surgs == "Hepatic", "GI/Abd", surgs_single),
+    surgs_single   = if_else(surgs == "Various", "Various", surgs_single),
+    # surgs_single = if_else(surgs == "Other", "Various", surgs_single),
     surgs_single_f = factor(surgs_single, levels = rev(c("Various", "Spine", "Vasc", "Ent", "Gyn", "Oralmax", "Other", "Headneck", "Neuro", "Ophtho", "Urol", "Thoracic", "GI/Abd", "Cardiac", "Ortho"))),
     surgs_noabbr_f = factor(surgs_single, levels = rev(c("Various", "Spine", "Vasc", "Ent", "Gyn", "Oralmax", "Other", "Headneck", "Neuro", "Ophtho", "Urol", "Thoracic", "GI/Abd", "Cardiac", "Ortho")), labels = rev(c("Various", "Spine", "Vascular", "Otolaryngological", "Gynecologic", "Oral/Maxillofacial", "Other", "Head & Neck", "Neurosurgical", "Ophthalmologic", "Urologic", "Thoracic", "Gastrointestinal/Abdominal", "Cardiac", "Orthopedic"))),
     # NOTE: surgs_f_lump minimum 4
@@ -213,7 +216,7 @@ ortho_proc <- study_char_dat |>
     ortho = str_replace(ortho, "tha", "THA"),
     ortho = str_replace(ortho, "hipfx", "HipFx"),
     ortho = str_replace(ortho, "other", "Other"),
-    ortho = ifelse(ortho == "", NA, ortho),
+    ortho = if_else(ortho == "", NA, ortho),
     surg_list = firstup(surg_list),
     surg_list = str_replace(surg_list, "\\.$", ""),
     ortho_hip_knee = case_when(
@@ -266,11 +269,11 @@ targets_linked_refids <- linked_refids |>
 study_char_dat <- study_char_dat |>
   left_join(targets_linked_refids, by = "refid") |>
   mutate(
-    study_w_linked = ifelse(is.na(study_w_linked), study, study_w_linked),
-    study_l_w_linked = ifelse(is.na(study_l_w_linked), study_l, study_l_w_linked),
-    study_l_w_linked_date = ifelse(is.na(study_l_w_linked_date), study_l, study_l_w_linked_date),
-    study_w_linked_date = ifelse(is.na(study_w_linked_date), study, study_w_linked_date),
-    linked_references_all_refid = ifelse(!is.na(linked_references), linked_references, refid)
+    study_w_linked = if_else(is.na(study_w_linked), study, study_w_linked),
+    study_l_w_linked = if_else(is.na(study_l_w_linked), study_l, study_l_w_linked),
+    study_l_w_linked_date = if_else(is.na(study_l_w_linked_date), study_l, study_l_w_linked_date),
+    study_w_linked_date = if_else(is.na(study_w_linked_date), study, study_w_linked_date),
+    linked_references_all_refid = if_else(!is.na(linked_references), linked_references, as.character(refid))
   ) |>
   relocate(study_w_linked, study_w_linked_date, study_l_w_linked, study_l_w_linked_date, refid_linked, study_linked, linked_references_all_refid, .after = study_l)
 
@@ -288,12 +291,12 @@ rm(targets_linked_refids)
 # type_col(study_char_dat) |> arrange(desc(mode)) |> View()
 
 # check for duplicated refids
-# glue("Note: ", ifelse(sum(duplicated(study_char_dat$refid)) > 0, "1 +", "No"), " duplicate refids identified in study_char_dat.")
+# glue("Note: ", if_else(sum(duplicated(study_char_dat$refid)) > 0, "1 +", "No"), " duplicate refids identified in study_char_dat.")
 
 ## study arm ------------------------------------------ (2022-12-23 14:50) @----
 study_arm_dat <- read_csv(path_csv(study_arm_file)) |>
   janitor::clean_names() |>
-  filter(refid != 1) |> # refid 1 only for column types
+  filter(!refid %in% exclude_refids) |> # refid 1 only for column types
   mutate(
     across(where(is.logical), as.character)
   ) |>
@@ -303,15 +306,18 @@ study_arm_dat <- read_csv(path_csv(study_arm_file)) |>
   mutate(
     study_l = paste0("[", study, "]", "(", "evidence_tables.html#", refid, ")"),
     study_id = paste0(study, "-", arm_id), # each table row unique for footnote
+    # refid_c = case_when( # append refid_c for factorial or subgroups designs to indicate comparison groups
     refid_c = as.character(refid),
     refid_c = case_when(
       refid == 1419 & arm_id  %in% c(4, 3) ~ "1419-1",
       refid == 1419 & arm_id  %in% c(1, 2) ~ "1419-2",
+      refid == 18678 & arm_id  %in% c(1, 2) ~ "18678-1",
+      refid == 18678 & arm_id  %in% c(3, 4) ~ "18678-2",
       refid == 328 & arm_id  %in% c(2, 4) ~ "328-2",
       refid == 328 & arm_id  %in% c(1, 3) ~ "328-1",
       .default = refid_c
     )
-    # refid_c = case_when( # append refid_c for factorial designs to indicate comparison
+    # not used
     #   arm_id == factorial_1_1 ~ paste0(refid_c, "-1"),
     #   arm_id == factorial_1_2 ~ paste0(refid_c, "-1"),
     #   arm_id == factorial_2_1 ~ paste0(refid_c, "-2"),
@@ -341,10 +347,10 @@ study_arm_dat <- read_csv(path_csv(study_arm_file)) |>
     anesth_type = str_replace(anesth_type, "sedation", "Only sedation"),
     anesth_type = str_replace(anesth_type, "anes_ns", "NS"),
     anesth_type = str_replace_all(anesth_type, "-", "/"),
-    volatile_tab = ifelse(!is.na(inhalation), "✓", NA),
-    tiva_tab = ifelse(!is.na(tiva), "✓", NA),
-    regional_tab = ifelse(if_any(spinal:regional_oth, ~ !is.na(.x)), "✓", NA),
-    sedation_only_tab = ifelse(!is.na(sedation), "✓", NA)
+    volatile_tab = if_else(!is.na(inhalation), "✓", NA),
+    tiva_tab = if_else(!is.na(tiva), "✓", NA),
+    regional_tab = if_else(if_any(spinal:regional_oth, ~ !is.na(.x)), "✓", NA),
+    sedation_only_tab = if_else(!is.na(sedation), "✓", NA)
   ) |>
   relocate(anesth_type, volatile_tab:sedation_only_tab, .before = inhalation)
 
@@ -363,15 +369,22 @@ if (verify_no_duplicate_arm_id != 0) {
 ## for factorial designs add arm ids
 study_arm_dat <- study_arm_dat |>
   mutate(
-    study = ifelse(study == "Liu 2016" & str_detect(notes_studyarm, "^aMCI"), paste0(study, " (MCI)"), study),
-    study = ifelse(study == "Liu 2016" & str_detect(notes_studyarm, "^non-aMCI"), paste0(study, " (no MCI)"), study),
-    study_l = ifelse(study == "Liu 2016 (no MCI)", "[Liu 2016 (no MCI)](evidence_tables.html#1419)", study_l),
-    study_l = ifelse(study == "Liu 2016 (MCI)" , "[Liu 2016 (MCI)](evidence_tables.html#1419)", study_l),
-    study_l_w_linked = ifelse(study == "Liu 2016 (no MCI)" , "[Liu 2016 (no MCI)](evidence_tables.html#1419)", study_l_w_linked),
-    study_l_w_linked = ifelse(study == "Liu 2016 (MCI)" , "[Liu 2016 (MCI)](evidence_tables.html#1419)", study_l_w_linked),
-    study = ifelse(study == "Zhang 2018b" & str_detect(refid_c, "-1"), paste0(study, " (prop)"), study),
-    study = ifelse(study == "Zhang 2018b" & str_detect(refid_c, "-2"), paste0(study, " (sevo)"), study),
-    kq6_other_spec = ifelse(study_id == "Lee 2018b-4", "pregabalin", kq6_other_spec))
+    study = if_else(study == "Liu 2016" & str_detect(notes_studyarm, "^aMCI"), paste0(study, " (MCI)"), study),
+    study = if_else(study == "Liu 2016" & str_detect(notes_studyarm, "^non-aMCI"), paste0(study, " (no MCI)"), study),
+    study_l = if_else(study == "Liu 2016 (no MCI)", "[Liu 2016 (no MCI)](evidence_tables.html#1419)", study_l),
+    study_l = if_else(study == "Liu 2016 (MCI)" , "[Liu 2016 (MCI)](evidence_tables.html#1419)", study_l),
+    study_l_w_linked = if_else(study == "Liu 2016 (no MCI)" , "[Liu 2016 (no MCI)](evidence_tables.html#1419)", study_l_w_linked),
+    study_l_w_linked = if_else(study == "Liu 2016 (MCI)" , "[Liu 2016 (MCI)](evidence_tables.html#1419)", study_l_w_linked),
+    study = if_else(study == "O'Brien 2023" & subgroup == "dementia", paste0(study, " (dementia)"), study),
+    study = if_else(study == "O'Brien 2023" & subgroup == "none", paste0(study, " (no dementia)"), study),
+    study_l = if_else(study == "O'Brien 2023 (no dementia)", "[O'Brien 2023 (no dementia)](evidence_tables.html#18678)", study_l),
+    study_l = if_else(study == "O'Brien 2023 (dementia)", "[O'Brien 2023 (dementia)](evidence_tables.html#18678)", study_l),
+    study_l_w_linked = if_else(study == "O'Brien 2023 (no dementia)", "[O'Brien 2023 (no dementia)](evidence_tables.html#18678)", study_l_w_linked),
+    study_l_w_linked = if_else(study == "O'Brien 2023 (dementia)", "[O'Brien 2023 (dementia)](evidence_tables.html#18678)", study_l_w_linked),
+    study = if_else(study == "Zhang 2018b" & str_detect(refid_c, "-1"), paste0(study, " (prop)"), study),
+    study = if_else(study == "Zhang 2018b" & str_detect(refid_c, "-2"), paste0(study, " (sevo)"), study),
+    kq6_other_spec = if_else(study_id == "Lee 2018b-4", "pregabalin", kq6_other_spec)
+    )
 
 # type_col(study_arm_dat) |> arrange(desc(mode)) |> View()
 
@@ -399,6 +412,7 @@ asa_combine <- study_arm_dat |>
       asa_all == "1_1_1_1_0_0_0_0" ~ paste0(asa_1, "|", asa_2, "|", asa_3, "|", asa_4),
       asa_all == "0_1_1_0_0_0_0_0" ~ paste0("  |", asa_2, "|", asa_3, "|  "),
       asa_all == "1_1_1_0_0_0_0_0" ~ paste0(asa_1, "|", asa_2, "|", asa_3, "|  "),
+      asa_all == "0_0_0_1_0_0_0_0" ~ paste0("  |  |  |", asa_4),
       asa_all == "0_0_0_0_0_0_0_0" ~ "NR",
       .default = NA
     ),
@@ -417,6 +431,7 @@ asa_combine <- study_arm_dat |>
       asa_all == "1_1_1_1_0_0_0_0" ~ "1234",
       asa_all == "0_1_1_0_0_0_0_0" ~ " 23 ",
       asa_all == "1_1_1_0_0_0_0_0" ~ "123 ",
+      asa_all == "0_0_0_1_0_0_0_0" ~ "   4",
       asa_all == "0_0_0_0_0_0_0_0" ~ "NR",
       .default = NA
     ),
@@ -448,7 +463,7 @@ contin_dat <- read_csv(path_csv(contin_out_file)) |>
   ) |>
   select(refid, study, study_l, study_id, year, arm_id, everything()) |>
   select(-c(author, author_dist, title, doi, user)) |>
-  filter(refid != 1) |> # refid 1 only for column types
+  filter(!refid %in% exclude_refids) |> # refid 1 only for column types
   relocate(linked_references, labels, .after = last_col()) |>
   left_join(study_char_dat |> select(refid, design_f, design_f_lab, design_f_abbrev), by = "refid") |> # add design_f
   relocate(c(design_f, design_f_lab, design_f_abbrev), .after = refid) |>
@@ -473,7 +488,7 @@ dichot_dat <- read_csv(path_csv(dichot_out_file)) |>
   ) |>
   select(refid, study, study_l, study_id, year, arm_id, everything()) |>
   select(-c(author, author_dist, title, doi, user)) |>
-  filter(refid != 1) |> # refid 1 only for column types
+  filter(!refid %in% exclude_refids) |> # refid 1 only for column types
   relocate(linked_references, labels, .after = last_col()) |>
   left_join(study_char_dat |> select(refid, design_f, design_f_lab, design_f_abbrev), by = "refid") |> # add design_f
   relocate(c(design_f, design_f_lab), design_f_abbrev, .after = refid) |>
@@ -481,12 +496,119 @@ dichot_dat <- read_csv(path_csv(dichot_out_file)) |>
   left_join(study_arm_dat |> select(refid, arm_id, study:study_id, refid_c), by = c("refid", "arm_id")) |>
   relocate(study:study_id, .after = design_f_abbrev)
 
+## delirium tools dichot ------------------------------ (2022-12-23 14:50) @----
+delirium_scale_dichot <- dichot_dat |>
+  select(refid, study, arm_id, starts_with("deli_scale")) |>
+  remove_empty(which = "rows") |>
+  mutate(
+    across(starts_with("deli_"), ~ str_remove_all(.x, "scale_")),
+    across(starts_with("deli_"), ~ str_remove_all(.x, "deli_")),
+    across(deli_scale_cam:deli_scale_unspecified, ~ toupper(.x)),
+    deli_scale_4at       = ifelse(str_detect(deli_scale_otherspec, "4AT"), "4AT", NA_character_),
+    deli_scale_amt       = ifelse(str_detect(deli_scale_otherspec, "AMT"), "AMT", NA_character_), # Abbreviated Mental Test
+    deli_scale_chart_del = ifelse(str_detect(deli_scale_otherspec, "CHART-DEL"), "CHART-DEL", NA_character_),
+    deli_scale_chinese   = ifelse(str_detect(deli_scale_otherspec, "Chinese Expert Consensus"), "CEC", NA_character_),
+    deli_scale_clinical  = ifelse(str_detect(deli_scale_otherspec, "[Cc]linical|consultation"), "Clinical", NA_character_),
+    deli_scale_icd9      = ifelse(str_detect(deli_scale_otherspec, "ICD-9"), "ICD-9", NA_character_),
+    deli_scale_icd10     = ifelse(str_detect(deli_scale_otherspec, "ICD-10"), "ICD-10", NA_character_),
+    deli_scale_nudesc    = ifelse(str_detect(deli_scale_otherspec, "DESC"), "Nu-DESC", NA_character_),
+    deli_scale_dos       = ifelse(str_detect(deli_scale_otherspec, "DOS"), "DOS", deli_scale_dos),
+    deli_scale_dsm       = ifelse(str_detect(deli_scale_otherspec, "DSM"), "DSM", deli_scale_dsm),
+    deli_scale_chart     = ifelse(str_detect(deli_scale_otherspec, "chart"), "Chart review", NA_character_),
+    deli_scale_korean    = ifelse(str_detect(deli_scale_otherspec, "Korean"), "KNDSS", NA_character_),
+    deli_scale_clinical  = ifelse(deli_scale_otherspec == "Disturbance of consciousness assessment", "Clinical", deli_scale_clinical),
+  ) |>
+  relocate(deli_scale_other:deli_scale_otherspec, .after = deli_scale_korean) |>
+  unite(delirium_scale, deli_scale_cam:deli_scale_korean, remove = FALSE, sep = "|", na.rm = TRUE) |>
+  mutate(
+    delirium_scale = ifelse(delirium_scale == "UNSPECIFIED", "NS", delirium_scale),
+    delirium_scale_primary = ifelse(!str_detect(delirium_scale, "\\|"), delirium_scale, NA_character_),
+    delirium_scale_primary = ifelse(refid %in% c(149), "DOS", delirium_scale_primary),
+    delirium_scale_primary = ifelse(refid %in% c(1937, 18945, 335, 9616), delirium_scale, delirium_scale_primary), # 1937 Hollinger 2021 any; 18945 Zarour 2023 any CAM|4AT|CHART-DEL; Barreto Chang… 2021 any/and
+    delirium_scale_primary = ifelse(refid %in% c(3841), "DSM", delirium_scale_primary), # 3841 Oh 2021 DRS and CAM but used DSM diagnostic criteria
+  ) |>
+  select(refid, study, arm_id, delirium_scale, delirium_scale_primary)
+
+## neurocognitive tools dichot ------------------------ (2022-12-23 14:50) @----
+neurocog_labels <- c(
+  "cerad_avlt" =   "Consortium to Establish a Registry for Alzheimer’s Disease Auditory Verbal Learning Test",
+  "apa_pocd" =     "American Psychiatric Association postoperative cognitive dysfunction criteria",
+  "almt" =         "Associative Learning and Memory Test",
+  "avlt" =         "Auditory Verbal Learning Test",
+  "block9" =       "Block Test 9 tests",
+  "charlson" =     "Charlson comorbidity index (dementia)",
+  "cdrs" =         "Clinical Dementia Rating Scale",
+  "cst" =          "Concept Shifting Test",
+  "cowa" =         "Controlled oral word association",
+  "cbt" =          "Corsi Block Tapping",
+  "dsm" =          "Diagnostic and Statistical Manual of Mental Disorders",
+  "dst" =          "Digit Span Test",
+  "dsymt" =        "Digit Symbol Test",
+  "tapping" =      "Finger Tapping Test",
+  "pegboard" =     "Grooved Pegboard Test",
+  "hopkins_vlt" =  "Hopkins Verbal Learning Test ",
+  "iqcd" =         "Informant Questionnaire on Cognitive Decline",
+  "ldct" =         "Letter Digit Coding Test",
+  "minicog" =      "Mini-Cog",
+  "mmse" =         "Mini-Mental State Examination",
+  "moca" =         "Montreal Cognitive Assessment",
+  "pf" =           "Phonemic Fluency",
+  "postop_qrs" =   "Postoperative Quality of Recovery Scale (cognitive)",
+  "psyche" =       "PsychE",
+  "ravl" =         "Rey Auditory Verbal Learning",
+  "sft" =          "Semantic Fluency test",
+  "spmsq" =        "Short Portable Mental Status Questionnaire",
+  "smt" =          "Story Memory Test",
+  "stroop" =       "Stroop Color Word Test",
+  "sdmt" =         "Symbol Digit Modalities Test",
+  "traila" =       "Trail Marking Test A",
+  "trailb" =       "Trail Making Test B",
+  "ticsm" =        "Telephone Interview for Cognitive Status-Modified",
+  "uds_adc" =      "Uniform Data Set of the Alzheimer’s Disease Centers",
+  "vft" =          "Verbal Fluency Test",
+  "vvlt" =         "Visual Verbal Learning Tests",
+  "wms" =          "Weschler Memory Scale",
+  "wrt" =          "Words Recall Test",
+  "unspec" =       "Not specified"
+)
+neurocog_scale_dichot <- dichot_dat |>
+  select(refid, study, arm_id, starts_with("neurocog_scale")) |>
+  remove_empty(which = "rows") |>
+  mutate(
+    across(starts_with("neurocog_"), ~ str_remove_all(.x, "scale_")),
+    across(starts_with("neurocog_"), ~ str_remove_all(.x, "neurocog_"))
+  ) |>
+  unite(neurocog_scale, neurocog_scale_apa_pocd:neurocog_scale_unspec, remove = FALSE, sep = "|", na.rm = TRUE) |>
+  filter(neurocog_scale != "") |>
+  relocate(neurocog_scale, .after = study) |>
+  filter(arm_id == "1") |>
+  mutate(
+    neurocog_footnote = str_remove(neurocog_scale, "\\|fail.*$"),
+    neurocog_footnote = str_replace_all(neurocog_footnote, pattern = neurocog_labels),
+    neurocog_footnote = str_replace_all(neurocog_footnote, pattern = "\\|", replacement = "; "),
+    neurocog_footnote = paste0(neurocog_footnote, "."),
+    neurocog_scale = case_match(
+      neurocog_scale,
+      "apa_pocd"    ~ "APA-POCD",
+      "mmse"        ~ "MMSE",
+      "postop_qrs"  ~ "PostopQRS",
+      "moca"        ~ "MoCA",
+      "spmsq"       ~ "SPMSQ",
+      "ticsm"       ~ "TICS-M",
+      "unspec"      ~ "NS",
+      .default      = neurocog_scale
+    ),
+    neurocog_scale = if_else(str_detect(neurocog_scale, "fail1"), "Failed 1", neurocog_scale),
+    neurocog_scale = if_else(str_detect(neurocog_scale, "fail2"), "Failed 2", neurocog_scale),
+  ) |>
+  select(refid, study, neurocog_scale, neurocog_footnote)
+
 ## complication defn ---------------------------------- (2023-06-03 11:05) @----
-cardiac_compl <- readxl::read_xlsx("data/complications_defs_2023-05-22.xlsx", range = "A1:E58", sheet = "cardiac") |>
+cardiac_compl <- readxl::read_xlsx("data/complications_defs_2023-05-22.xlsx", range = "A1:G64", sheet = "cardiac") |>
   clean_names() |>
-  mutate(cardiac_complications = firstlower(cardiac_complications),
-         complication = "cardiac") |>
+  mutate(cardiac_complications = firstlower(cardiac_complications)) |>
   rename(detail_cardiac = cardiac_complications) |>
+  relocate(detail_cardiac, .after = complication) |>
   select(-c(study, kq))
 
 pulmonary_compl <- readxl::read_xlsx("data/complications_defs_2023-05-22.xlsx", range = "A1:D16", sheet = "pulmonary") |>
@@ -519,7 +641,7 @@ likert_dat <- read_csv(path_csv(likert_out_file)) |>
   ) |>
   select(refid, study, study_l, study_id, year, arm_id, everything()) |>
   select(-c(author, author_dist, title, doi, user)) |>
-  filter(refid != 1) |> # refid 1 only for column types
+  filter(!refid %in% exclude_refids) |> # refid 1 only for column types
   relocate(linked_references, labels, .after = last_col()) |>
   left_join(study_char_dat |> select(refid, design_f, design_f_lab, design_f_abbrev), by = "refid") |> # add design_f
   relocate(c(design_f, design_f_lab, design_f_abbrev), .after = refid) |>
@@ -648,7 +770,7 @@ robinsi_dat <- robinsi_all_dat |>
   slice(1) |>
   ungroup() |>
   select(refid, Study, D1:Overall) |>
-  mutate(across(D1:D7, ~ ifelse(.x == "No information", "No Information", .x)))
+  mutate(across(D1:D7, ~ if_else(.x == "No information", "No Information", .x)))
 # FIXME: 2023-04-03 select 1st assessment robinsi needs updating
 
 robinsi_meta_dat <- robinsi_all_dat |>
@@ -750,8 +872,10 @@ gray_mg <- "#969696"
 # should be empty tibble
 temp <- study_arm_dat |>
   group_by(refid) |>
-  mutate(count = n(),
-         distinct_count = n_distinct(arm_id)) |>
+  mutate(
+    count = n(),
+    distinct_count = n_distinct(arm_id)
+  ) |>
   select(refid, count, distinct_count) |>
   filter(count != distinct_count) |>
   ungroup() |>

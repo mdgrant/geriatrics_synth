@@ -327,7 +327,7 @@ delirium_total_tab_fun <- function(refids){
     select(-refid)
 
   dichot_dat |>
-    select(refid, refid_c, year, arm_id, design_f_lab, study, study_l, arm_n, delitotal_time:delitotal_95high, deli_cam:deli_scale_otherspec) |>
+    select(refid, refid_c, year, arm_id, design_f_lab, study, study_l, arm_n, delitotal_time:delitotal_95high, deli_scale_cam:deli_scale_otherspec) |>
     filter(!is.na(delitotal_n)) |>
     filter(refid %in% refids) |>
     remove_empty(which = "cols") |>
@@ -336,7 +336,7 @@ delirium_total_tab_fun <- function(refids){
     mutate(
       across(starts_with("deli_"), ~ str_remove_all(.x, "scale_")),
       across(starts_with("deli_"), ~ str_remove_all(.x, "deli_")),
-      across(deli_cam:deli_scale_icdsc, ~ toupper(.x)),
+      across(deli_scale_cam:deli_scale_icdsc, ~ toupper(.x)),
     ) |>
     rename_with(~ gsub("scale_", "", .x, fixed = TRUE)) |>
     rename_with(~ gsub("deli_", "", .x, fixed = TRUE)) |>
@@ -603,14 +603,19 @@ kq3_complications <- function() {
     tab_footnote("Complications reported included pneumonia, respiratory failure, or unspecified.", locations = cells_body(columns = c(outcome), rows = outcome == "Pulmonary complications"))
 }
 
-kq4_balance_main <- function() {
-  tiva_inhaled_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "TIVAInhaled", range = "A4:M17") |>
+kq4_balance_main <- function(inc_exclude = "exclude") {
+  tiva_inhaled_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "TIVAInhaled", range = "A4:M21") |>
     remove_empty(which = "cols") |>
     clean_names() |>
-    filter(is.na(exclude)) |> # remove NRSI only; keep for complications
+    filter(exclude %notin% inc_exclude) |> # remove NRSI only; keep for complications
     rename(est = estimate_95_percent_ci) |>
     filter(!if_all(rct:est, ~ is.na(.x))) |>
     mutate(
+      high     = paste0("[", vlow, "]",     "(soe_gt.html#tiva-grade)"),
+      mod      = paste0("[", mod, "]",      "(soe_gt.html#tiva-grade)"),
+      low      = paste0("[", low, "]",      "(soe_gt.html#tiva-grade)"),
+      vlow     = paste0("[", vlow, "]",     "(soe_gt.html#tiva-grade)"),
+      low_very = paste0("[", low_very, "]", "(soe_gt.html#tiva-grade)"),
       # group = ifelse(outcome == "Patient satisfaction", "Patient-reported", "Clinical"),
       across(everything(), ~ str_remove(.x, "‡|†|\\*")),
       grade = case_when(
@@ -626,7 +631,7 @@ kq4_balance_main <- function() {
       across(c(event_e, event_c), ~ str_remove(.x, "NA "))
     ) |>
     relocate(c(event_e, event_c), .after = nrsi) |>
-    select(-c(events_tiva:n_inh, grade_2, exclude))
+    select(-c(events_tiva:n_inh, grade_2, exclude, high, mod, low, vlow, low_very))
 
   tiva_inhaled_dat |>
     gt(id = "one") |>
@@ -666,23 +671,30 @@ kq4_balance_main <- function() {
     tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(est, measure))) |>
     tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(grade, rct, nrsi))) |>
     tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(est, measure), rows = str_detect(measure, "RD"))) |>
-    tab_footnote("RCT: randomized clinical trial; NRSI: nonrandomized studies of interventions; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; RD: risk difference; OR: odds ratio; MD: mean difference.") |>
+    tab_style(style = cell_text(size = px(12)),               locations = cells_body(columns = c(measure), rows = measure == "RD/1000")) |>
+    tab_footnote("RCT: randomized clinical trial; NRSI: nonrandomized studies of interventions; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; MD: mean difference; RD: risk difference.") |>
     tab_footnote("Results from nonrandomized designed shown only when evidence not available from randomized trials.", locations = cells_column_labels(columns = nrsi), placement = "right") |>
     tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
     tab_footnote("Neither study detected a difference.", locations = cells_body(columns = c(est), rows = outcome == "Neurocognitive disorders")) |>
     tab_footnote("0 events in one study; second did not detect a difference.", locations = cells_body(columns = c(est), rows = outcome == "Pulmonary congestion/edema")) |>
     tab_footnote("2 versus 0 events.", locations = cells_body(columns = c(est), rows = outcome == "Cardiac arrest")) |>
+    tab_footnote("Approximate based on the event rate in the inhaled anesthetic arms and the risk ratio calculated from the odds ratio.", locations = cells_body(columns = c(est), rows = est %in% c("-0.8 (-6.5 to 10.2)"))) |>
     # tab_footnote(md("[Comparing higher/highest category or categories with lower ones.](kq4.html#patient-satisfaction)"), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |>
     tab_footnote(md("Comparing higher/highest category or categories with lower ones."), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right")
 }
 
 kq4_complications <- function(){
-  tiva_inhaled_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "TIVAInhaled", range = "B24:M39") |>
+  tiva_inhaled_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "TIVAInhaled", range = "B24:M43") |>
     remove_empty(which = "cols") |>
     clean_names() |>
     rename(est = estimate_95_percent_ci) |>
     filter(!if_all(rct:est, ~ is.na(.x))) |>
     mutate(
+      high     = paste0("[", vlow, "]",     "(soe_gt.html#tiva-grade)"),
+      mod      = paste0("[", mod, "]",      "(soe_gt.html#tiva-grade)"),
+      low      = paste0("[", low, "]",      "(soe_gt.html#tiva-grade)"),
+      vlow     = paste0("[", vlow, "]",     "(soe_gt.html#tiva-grade)"),
+      low_very = paste0("[", low_very, "]", "(soe_gt.html#tiva-grade)"),
       # group = ifelse(outcome == "Patient satisfaction", "Patient-reported", "Clinical"),
       across(everything(), ~ str_remove(.x, "‡|†|\\*")),
       grade = case_when(
@@ -698,7 +710,8 @@ kq4_complications <- function(){
       across(c(event_e, event_c), ~ str_remove(.x, "NA "))
     ) |>
     relocate(c(event_e, event_c), .after = nrsi) |>
-    select(-c(events_tiva:n_inh, grade_2))
+    select(-c(events_tiva:n_inh, grade_2, high, mod, low, vlow, low_very))
+
 
   tiva_inhaled_dat |>
     gt(id = "one") |>
@@ -739,14 +752,16 @@ kq4_complications <- function(){
     tab_style(style = cell_text(align = "center"),       locations = cells_body(columns = c(grade, rct, nrsi))) |>
     tab_style(style = cell_text(align = "left"),         locations = cells_body(columns = c(est, measure))) |>
     tab_style(style = cell_text(size = px(12)),               locations = cells_body(columns = c(measure), rows = measure == "RD/1000")) |>
-    tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(est, measure), rows = str_detect(measure, "RD"))) |>
-    tab_footnote(md("RCT: randomized clinical trial; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; MD: mean difference.")) |>
+    tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(rct:measure), rows = str_detect(measure, "RD"))) |>
+    tab_footnote(md("RCT: randomized clinical trial; NRSI: nonrandomized studies of interventions; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; OR: odds ratio; RD: risk difference.")) |>
     tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
-    tab_footnote("Approximate based on the event rate in the inhaled anesthetic arms and the risk ratio calculated from the odds ratio.", locations = cells_body(columns = c(est), rows = est %in% c("-1.9 (-2.7 to -1.2)", "-0.02 (-0.43 to 0.42)", "0.30 (0.09 to 0.54)", "-0.53 (-0.83 to -0.19)"))) |>
+    tab_footnote("Approximate based on the event rate in the inhaled anesthetic arms and the risk ratio calculated from the odds ratio.", locations = cells_body(columns = c(est), rows = dplyr::lag(measure) == "OR" & !is.na(est))) |>
     # tab_footnote(md("[Comparing higher/highest category or categories with lower ones.](kq3.html#patient-satisfaction)"), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |>
     tab_footnote(md("Comparing higher/highest category or categories with lower ones."), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |>
     tab_footnote("Cardiovascular, pulmonary, and acute kidney injury.", locations = cells_body(columns = c(outcome), rows = outcome == "Complications")) |>
     tab_footnote("Complications reported variously across the 13 trials. ", locations = cells_body(columns = c(rct), rows = outcome == "Complications"), placement = "right") |>
-    tab_footnote("One study no events; the other two. ", locations = cells_body(columns = c(est), rows = outcome == "cardiac arrest"), placement = "right")
+    tab_footnote("One study no events; the other two. ", locations = cells_body(columns = c(est), rows = outcome == "cardiac arrest"), placement = "right") |>
+    tab_footnote("Common/fixed effects model.", locations = cells_body(columns = c(est), rows = est %in% c("3.47 (0.57–21.2)", "1.7 (-0.7 to 4.1)")), placement = "right") |>
+    tab_footnote("No events in 1 study; 3 in the other.", locations = cells_body(columns = c(est), rows = str_detect(est, "—")), placement = "right")
 }
 

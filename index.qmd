@@ -19,8 +19,6 @@ editor: source
 
 [Expanded Preoperative Evaluation](kq1.html)
 
-[Prehabilitation](kq2.html)
-
 [Neuraxial versus General Anesthesia](kq3.html)  
 
 [TIVA versus Inhaled Anesthesia](kq4.html)
@@ -33,9 +31,10 @@ editor: source
 
 <font size = 5> Strength of Evidence and Summary of Findings </font>
 
+[Balance Tables](balance_tables.html)
+
 [GRADE](soe_gt.html)
 
-[Balance Tables](balance_tables.html)
 
 <br/>
 

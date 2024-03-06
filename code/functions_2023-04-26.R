@@ -73,6 +73,10 @@ view_all <- function(refid){
   view_rec(likert_dat, refid)
 }
 
+
+# %notin% operator
+`%notin%` <- Negate(`%in%`)
+
 # replace nonmissing with U00D7
 notna_to_x <- function(variable, symbol = "\U00D7") {
   # ifelse(!is.na(variable), "\U00D7", NA)
@@ -89,6 +93,11 @@ na_to_x <- function(variable, symbol = "\U00D7") {
 # n_per_fun(9, 28, 1)
 n_per_fun <- function(events_n, total, n_sig_dig = 1){
   str_c(format(events_n, big.mark = ",")," (", formatC(events_n/total * 100, digits = n_sig_dig, format = "f"), ")")
+}
+
+# for summary tables
+n_per_tf <- function(var_name, n_dig = 1){
+  paste0(sum(var_name == TRUE), " (", format(round(100*(mean(var_name)), n_dig), nsmall = 1), ")")
 }
 
 # capitalize 1st letter
@@ -427,7 +436,7 @@ adl_transpose_fun <- function(data, obs_number){
 ## rr_ci_fun ------------------------------------------ (2023-03-06 22:53) @----
 # calculate relative risk, ci, and format no refid
 rr_ci_fun <- function(event1, n1, event2, n2, digits = 2) {
-  a <- meta::metabin(event1, n1, event2, n2, sm = "RR")
+  a <- meta::metabin(event1, n1, event2, n2, sm = "RR", method = "MH", method.random.ci = "classic")
   rr_ci <- with(a, paste0(
     sprintf(paste0("%.", digits, "f"), round(exp(TE), digits)), " (",
     sprintf(paste0("%.", digits, "f"), round(exp(lower), digits)), "-",
@@ -438,7 +447,7 @@ rr_ci_fun <- function(event1, n1, event2, n2, digits = 2) {
 ## or_ci_fun ------------------------------------------ (2023-03-06 22:53) @----
 # calculate relative risk, ci, and format no refid
 or_ci_fun <- function(event1, n1, event2, n2, digits = 2) {
-  a <- meta::metabin(event1, n1, event2, n2, sm = "OR")
+  a <- meta::metabin(event1, n1, event2, n2, sm = "OR", method = "MH", method.random.ci = "classic")
   with(a, paste0(
     sprintf(paste0("%.", digits, "f"), round(exp(TE), digits)), " (",
     sprintf(paste0("%.", digits, "f"), round(exp(lower), digits)), "-",
@@ -446,11 +455,11 @@ or_ci_fun <- function(event1, n1, event2, n2, digits = 2) {
 }
 
 or_ln_te_fun <- function(event1, n1, event2, n2) {
-  meta::metabin(event1, n1, event2, n2, sm = "OR")$TE
+  meta::metabin(event1, n1, event2, n2, sm = "OR", method = "MH", method.random.ci = "classic")$TE
 }
 
 or_ln_se_fun <- function(event1, n1, event2, n2, digits = 2) {
-  meta::metabin(event1, n1, event2, n2, sm = "OR")$seTE
+  meta::metabin(event1, n1, event2, n2, sm = "OR", method = "MH", method.random.ci = "classic")$seTE
 }
 
 ## se from confint of est
@@ -489,7 +498,7 @@ format_est_ci_fun <- function(est, low, high, digits = 2) {
 ## rd_ci_fun ------------------------------------------ (2023-03-06 22:53) @----
 # calculate risk difference, ci, and format no refid
 rd_per_ci_fun <- function(event1, n1, event2, n2, digits = 2) {
-  a <- meta::metabin(event1, n1 , event2, n2, sm = "RD")
+  a <- meta::metabin(event1, n1 , event2, n2, sm = "RD", method = "MH", method.random.ci = "classic")
   with(a, paste0(
     sprintf(paste0("%.", digits, "f"), round(TE * 100, digits)), "% (",
     sprintf(paste0("%.", digits, "f"), round(lower * 100, digits)), ", ",
@@ -692,21 +701,45 @@ riskdiff_ci_from_meta_rr <- function(meta_object, pscale = 100, digits = 2) {
 }
 
 ## text for risk difference from rr meta -------------- (2024-01-22 16:53) @----
-risk_diff_meta_rr <- function(digits = 1) {paste0("Pooled risk difference ", riskdiff_ci_from_meta_rr(temp_meta, pscale = 1000, digits = digits), ".")}
+# risk_diff_meta_rr <- function(digits = 1) {paste0("Pooled risk difference ", riskdiff_ci_from_meta_rr(temp_meta, pscale = 1000, digits = digits), ".")}
+
+risk_diff_meta_rr <- function(meta_select = temp_meta, scale = 1000, digits = 1) {
+  paste0("Pooled risk difference ", riskdiff_ci_from_meta_rr(meta_select, pscale = scale, digits = digits))
+  }
+
+## clip risk difference from rr meta ------------------ (2024-01-22 16:53) @----
+risk_diff_meta_rr_clip <- function(meta_select = temp_meta, scale = 1000, digits = 1) {
+  (clipr::write_clip(paste0("Pooled risk difference ", riskdiff_ci_from_meta_rr(meta_select, pscale = scale, digits = digits))))
+}
 
 ## text for risk difference from or meta -------------- (2024-01-22 16:53) @----
-risk_diff_meta_or <- function(digits = 1) {paste0("Approximate pooled risk difference ", riskdiff_ci_from_meta_or(temp_meta, pscale = 1000, digits = digits), ".")}
+risk_diff_meta_or <- function(meta_object = temp_meta, digits = 1, scale = 1000) {
+  paste0("Approximate pooled risk difference ", riskdiff_ci_from_meta_or(meta_object, pscale = scale, digits = digits))
+  }
+
+## clip risk difference from or meta ------------------ (2024-01-22 16:53) @----
+risk_diff_meta_or_clip <- function(meta_object = temp_meta, digits = 1, scale = 1000) {
+  (clipr::write_clip(paste0("Approximate pooled risk difference ", riskdiff_ci_from_meta_or(meta_object, pscale = scale, digits = digits))))
+}
 
 ## soe result from meta to clipboard ------------------ (2024-01-22 16:53) @----
 # example "0.86 (95% CI, 0.44–1.66; PI 0.24–3.10)"
-soe_meta_result <- function(meta_object, digits = 2) {
+soe_meta_result_rr_or <- function(meta_object, effect = "RR", digits = 2) {
   temp_rr <- exp(c(meta_object$TE.random, meta_object$lower.random, meta_object$upper.random))
   temp_rr <- formatC(temp_rr, digits = digits, format = "f")
-  temp_rr <- paste0(temp_rr[1], " (95% CI, ", temp_rr[2], "–", temp_rr[3], ";")
+  temp_rr <- paste0(effect, " ", temp_rr[1], " (95% CI, ", temp_rr[2], "–", temp_rr[3], ";")
   temp_pi <- exp(c(meta_object$lower.predict, meta_object$upper.predict))
   temp_pi <- formatC(temp_pi, digits = digits, format = "f")
   temp_pi <- paste0(" PI ", temp_pi[1], "–", temp_pi[2], ")")
   (clipr::write_clip(paste0(temp_rr, temp_pi)))
+}
+
+soe_meta_rd_or <- function(meta_object = temp_meta, digits = 1, scale = 1000) {
+  (clipr::write_clip(paste0("RD ≈ ", riskdiff_ci_from_meta_or(meta_object, pscale = scale, digits = digits))))
+}
+
+soe_meta_rd_rr <- function(meta_object = temp_meta, digits = 1, scale = 1000) {
+  (clipr::write_clip(paste0("RD ", riskdiff_ci_from_meta_rr(meta_object, pscale = scale, digits = digits))))
 }
 
 ## calculate figure width ----------------------------- (2023-12-27 10:50) @----
@@ -720,34 +753,30 @@ calc_width_display_gt_564 <- function(width_px_from_rstudio) {
 # calc_width_display_gt_564(696)
 
 ## from tblhelper ------------------------------------- (2023-12-27 10:50) @----
-tibble_to_matrix <- function(tbl, ..., row_names=NULL){
+tibble_to_matrix <- function(tbl, ..., row_names = NULL) {
   cols <- rlang::enquos(...)
-
-  mat <- as.matrix(dplyr::select(tbl, !!! cols))
-
-  if (!is.null(row_names)){
-    if (length(row_names) == 1 & row_names[1] %in% colnames(tbl)){
+  mat <- as.matrix(dplyr::select(tbl, !!!cols))
+  if (!is.null(row_names)) {
+    if (length(row_names) == 1 & row_names[1] %in% colnames(tbl)) {
       row_names <- tbl[[row_names]]
     }
     rownames(mat) <- row_names
   }
-
   return(mat)
 }
 
-transpose_tibble <- function(tbl, col_names, id_col = "columns"){
+transpose_tibble <- function(tbl, col_names, id_col = "columns") {
   col_names <- rlang::enquo(col_names)
-
   tibble_to_matrix(tbl, -!!col_names,
-                   row_names = dplyr::pull(tbl, !!col_names)) %>%
+    row_names = dplyr::pull(tbl, !!col_names)
+  ) %>%
     t() %>%
     dplyr::as_tibble(rownames = id_col) %>%
     return()
 }
 
 ## from skim all files for overview ------------------- (2023-12-27 10:50) @----
-all_skimmed <- function() {
-  skim_report <- function(data_dat){
+skim_report <- function(data_dat){
     name_txt <- paste0(as.character(substitute(data_dat)), "_skim.txt")
     path <- file.path(getwd(), "dictionaries", name_txt)
     temp <- data_dat |> remove_empty(which = "cols")
@@ -757,12 +786,12 @@ all_skimmed <- function() {
     sink()
   }
 
+all_skimmed <- function() {
   skim_report(study_char_dat)
   skim_report(study_arm_dat)
   skim_report(dichot_dat)
   skim_report(contin_dat)
   skim_report(likert_dat)
-
 }
 
 ## grade levels --------------------------------------- (2023-05-31 11:39) @----
@@ -772,4 +801,34 @@ mod   <- "<span><span class='quality-sign'>⨁⨁⨁◯</span>"
 low   <- "<span><span class='quality-sign'>⨁⨁◯◯</span>"
 vlow  <- "<span><span class='quality-sign'>⨁◯◯◯</span>"
 low_very  <- paste(low, vlow, sep = "<br/>")
-grade_foot <- paste0("Very low: ", vlow, "; Low: ", low, "; Moderate: ", mod, "; High: ", high, ".")
+# grade_foot <- paste0("Very low: ", vlow, "; Low: ", low, "; Moderate: ", mod, "; High: ", high, ".")
+grade_foot <- paste0("[", "Very low: ", vlow, "; Low: ", low, "; Moderate: ", mod, "; High: ", high, ".", "]", "(", "soe_gt.html#grade", ")")
+
+## footnote convenience ------------------------------- (2023-05-31 11:39) @----
+footnote_study <- function(data, study_select, footnote) {
+  data |> filter(study == study_select) |> pull(footnote)
+}
+
+## traffic light plots by refid
+rob2_traffic_light_refid <- function(refid_select) {
+  rob_temp_dat <- rob2_dat |>
+    filter(!is.na(Study) & refid %in% refid_select) |>
+    select(-refid)
+
+  rob_traffic_light(rob_temp_dat, psize = 4, tool = "ROB2", colour = "colourblind")
+}
+
+robinsi_traffic_light_refid <- function(refid_select) {
+  robinsi_temp_dat <- robinsi_dat |>
+    filter(!is.na(Study) & refid %in% refid_select) |>
+    select(-refid)
+
+  rob_traffic_light(robinsi_temp_dat, psize = 4, tool = "ROBINS-I", colour = "colourblind")
+}
+
+## traffic light plots by refid rct/nrsi from meta ---- (2024-02-22 08:43) @----
+meta_rob_traffic_light_refid <- function(refid_select) {
+  rob2 <- rob2_traffic_light_refid(temp_meta$data$refid)
+  robinsi <- robinsi_traffic_light_refid(temp_meta$data$refid)
+  return(list(rob2, robinsi))
+}

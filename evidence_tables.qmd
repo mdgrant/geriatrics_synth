@@ -49,7 +49,7 @@ source("code/load_data.R")
 #| echo: false
 
 # get DOI
-refs_distiller <- read_csv("data/distillersr-Geriatrics_2023-12-05-22-45-28.csv") |>
+refs_distiller <- read_csv("data/distillersr-Geriatrics_2024-02-23-12-37-22.csv") |>
   clean_names() |>
   mutate(
     doi = str_remove(doi, "\\s.*")
@@ -96,6 +96,8 @@ evidence_tables <- study_char_dat |>
   ) |> 
   relocate(study, .after = refid) |> 
   replace_na(list(comment = "")) 
+
+# missing_doi <- evidence_tables |> filter(str_detect(doi, "doi.org\\/NA"))
 
 # trial refids
 rand_trial_refid <- study_char_dat |> 

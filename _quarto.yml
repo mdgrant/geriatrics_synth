@@ -2,6 +2,9 @@ project:
   type: website
   output-dir: docs
 
+execute:
+  echo: false
+
 website:
   title: "Geriatrics Evidence Synthesis"
   search:
@@ -15,10 +18,10 @@ website:
     left:
       - href: index.html
         text: Home
-      - href: soe_gt.html
-        text: GRADE
       - href: balance_tables.html
         text: "Balance Tables"
+      - href: soe_gt.html
+        text: GRADE
       - text: Key Question
         menu:
           - href: kq1.html

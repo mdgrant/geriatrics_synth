@@ -15,9 +15,10 @@ library(gtExtras)
 library(glue)
 library(tidyverse)
 conflicts_prefer(dplyr::filter)
-knitr::opts_chunk$set(echo = FALSE)
+conflicts_prefer(dplyr::lag)
 conflicts_prefer(gt::google_font)
-settings.meta(CIbracket = "(", CIseparator = ", ", fs.hetstat = 10)
+knitr::opts_chunk$set(echo = FALSE)
+settings.meta(CIbracket = "(", CIseparator = ", ", fs.hetstat = 10, colgap.forest = "5mm")
 
 # most recent file
 read_file_mg <- function(filename){

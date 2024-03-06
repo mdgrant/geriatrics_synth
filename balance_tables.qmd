@@ -1,5 +1,5 @@
 ---
-title: "[DRAFT]{.underline} Balance Tables"
+title: "Balance Tables"
 editor: source
 toc-title: "**Balance Tables**"
 toc-location: "left"
@@ -20,7 +20,7 @@ tables:
 # nocite: '@*'
 ---
 
-::: {.callout-note collapse="false"}
+::: {.callout-note collapse=""}
 ## Recent updates (last 2024-01-03)
 
 | Date               | Modification|
@@ -52,7 +52,8 @@ mod   <- "<span><span class='quality-sign'>⨁⨁⨁◯</span>"
 low   <- "<span><span class='quality-sign'>⨁⨁◯◯</span>"
 vlow  <- "<span><span class='quality-sign'>⨁◯◯◯</span>"
 low_very  <- paste(low, vlow, sep = "<br/>")
-grade_foot <- paste0("Very low: ", vlow, "; Low: ", low, "; Moderate: ", mod, "; High: ", high, ".")
+# grade_foot <- paste0("Very low: ", vlow, "; Low: ", low, "; Moderate: ", mod, "; High: ", high, ".")
+grade_foot <- paste0("[", "Very low: ", vlow, "; Low: ", low, "; Moderate: ", mod, "; High: ", high, ".", "]", "(", "soe_gt.html#grade", ")")
 
 # replace in balance table
 replace_text <- "See Appendix"
@@ -230,12 +231,12 @@ kq3_balance_main() |>
 kq3_complications()
 ```
 
-## TIVA versus Inhaled Anesthesia
+## TIVA versus Inhalation Anesthesia
 
 <font size = 4> `r table_ref()` Benefits, harms, and strength of evidence (GRADE) for TIVA versus inhaled anesthesia. </font>
 
 ```{r tiva_inh_balance}
-kq4_balance_main() |> 
+kq4_balance_main("exclude") |> 
   text_replace(replace_text, paste0("See Table ", table_n + 1), locations = cells_body())
 ```
 
