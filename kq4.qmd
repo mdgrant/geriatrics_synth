@@ -70,6 +70,8 @@ dichot_dat <- data_kq(dichot_dat, kq4_refid) |>
 |            | Revised complications meta-analyses and corrected error when adjusted odds ratios from non-randomized studies were incorporated (propensity, multivariable). Resulted in some small numerical differences, but are now consistent with published results from individual studies.|
 |            | Hypotension and bradycardia separated from other cardiac complications. |
 |            | Included additional detail pertaining to meta-analysis methods where appropriate.|
+|2024-03-07  | Added [summaries of study and patient characteristics](summary_kq4.html) to appendix.| 
+
 
 ```{r}
 #| tbl-cap: Overview of changes to primary outcomes following search update.
