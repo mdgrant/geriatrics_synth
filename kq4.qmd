@@ -26,7 +26,6 @@ nocite: '@*'
 ```{r read_data}
 #| include: false
 source("code/load_data.R")
-kq4_refid <- kq4_refid[!kq4_refid %in% c(18304)]
 
 study_char_dat <- data_kq(study_char_dat, kq4_refid) |> 
   mutate(
@@ -1281,7 +1280,7 @@ temp <- print(dncr_tiva_inhaled_meta,) |>
 ```{r kq4_dncr_meta_forest_rd}
 #| echo: false
 #| include: false
-png("assets/kq4_dncr_meta_forest_rd.png", width = 9.72, height = 5.65, units = "in", res = 300)
+png("assets/kq4_dncr_meta_forest_rd.png", width = 9.85, height = 5.65, units = "in", res = 300)
 forest(dncr_tiva_inhaled_meta_rct_rd,
   allstudies = TRUE,
   common = TRUE,
