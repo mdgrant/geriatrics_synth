@@ -47,7 +47,10 @@ Brief summaries by study design of inclusion/exclusion criteria, results, and co
 Includes links to publications. 
 
 Study/patient characteristics and primary outcome summaries  
-[Neuraxial versus General Anesthesia](summary_kq3.html)
+
+[   Neuraxial versus General Anesthesia](summary_kq3.html)
+
+[   TIVA versus Inhaled Anesthesia](summary_kq4.html)
 
 [Outcome Importance Rankings](outcome_rankings.html)
 

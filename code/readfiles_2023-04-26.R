@@ -847,9 +847,10 @@ cogfunc_likert_refid <- c(refid_reported_outcome(likert_dat, l_cogfunc)) |>
 # any dncr outcome
 cogfunc_refid <- sort(unique(c(cogfunc_dichot_refid, cogfunc_likert_refid)))
 
-# formatted means and medians for tables
+## formatted means and medians for tables ------------- (2024-03-06 12:55) @----
 source("code/summary_mn_med_2023-02-27.R")
 
+## colors --------------------------------------------- (2024-03-06 12:56) @----
 # color palate
 # color palate
 color_1 <- "#0E6655"

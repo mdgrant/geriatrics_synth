@@ -832,3 +832,7 @@ meta_rob_traffic_light_refid <- function(refid_select) {
   robinsi <- robinsi_traffic_light_refid(temp_meta$data$refid)
   return(list(rob2, robinsi))
 }
+
+
+## summary weighted for pt characteristics ------------ (2023-12-27 10:50) @----
+pt_sum <- function(variable, wgt){sum(variable * wgt, na.rm = FALSE)}

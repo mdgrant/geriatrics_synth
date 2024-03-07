@@ -43,7 +43,9 @@ website:
           - href: outcome_rankings.html
             text: "Outcome rankings"
           - href: summary_kq3.html
-            text: "Summary: Neuraxial versus General Anesthesia"
+            text: "Summary of study and patient characteristics: Neuraxial versus General Anesthesia"
+          - href: summary_kq4.html
+            text: "Summary of study and patient characteristics: TIVA versus Inhaled Anesthesia"
           - href: protocol.html
             text: "Draft protocol"
       - about.qmd

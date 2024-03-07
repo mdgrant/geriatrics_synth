@@ -222,6 +222,8 @@ likert_freq_fun(likert_dat, "ADL: activities of daily living; NCR: neurocognitiv
 
 ## **Included Studies**
 
+See [Appendix](summary_kq4.html) for detailed summary study and patient characteristics including primary outcomes.
+
 <font size = 4> `r table_ref()` Number of studies by design. </font>
 
 ```{r studies_design}
