@@ -98,21 +98,23 @@ tiva_inhaled_dat |>
     grade_change = "GRADE Δ"
   ) |>
   cols_width(
-    outcome ~ px(225),
+    outcome ~ px(215),
     rct ~ px(50),
     nrsi ~ px(50),
-    grade ~ px(100),
+    grade ~ px(95),
     measure ~ px(75),
     estimate_95_percent_ci ~ px(120),
     rct_new ~ px(45),
     nrsi_new ~ px(50),
-    prior_est ~ px(110),
-    grade_change ~ px(100),
+    prior_est ~ px(120),
+    grade_change ~ px(105),
   ) |>
   gt_theme_mg() |>
   tab_style(style = cell_text(size = "12px"), locations = cells_body(columns = everything())) |> 
   tab_style(style = cell_text(size = "11px"), locations = cells_column_labels(columns = everything())) |> 
-  tab_footnote("RCT: randomized controlled trial; NRSI: non-randomized study of intervention; GRADE: Grading of Recommendations Assessment, Development and Evaluation; Est: effect estimate; CI: confidence interval.") |>
+  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rct, nrsi, rct_new, nrsi_new))) |>
+  tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(estimate_95_percent_ci , measure, prior_est), rows = str_detect(measure, "RD"))) |>
+  tab_footnote("RCT: randomized controlled trial; NRSI: non-randomized study of intervention; GRADE: Grading of Recommendations Assessment, Development and Evaluation; Est: effect estimate; CI: confidence interval; RR: risk ratio; MD: mean difference; RD: risk difference.") |>
   tab_footnote("Corrected model fitting parameter.", locations = cells_body(columns = prior_est, rows = outcome == "Mortality (in-hospital and 30-day)")) |>
   tab_footnote("Risk ratio.", locations = cells_body(columns = prior_est, rows = nrsi == 7))
 
@@ -144,21 +146,23 @@ tiva_inhaled_dat |>
     grade_change = "GRADE Δ"
   ) |>
   cols_width(
-    outcome ~ px(225),
+    outcome ~ px(215),
     rct ~ px(50),
     nrsi ~ px(50),
-    grade ~ px(100),
+    grade ~ px(95),
     measure ~ px(75),
     estimate_95_percent_ci ~ px(120),
     rct_new ~ px(45),
     nrsi_new ~ px(50),
-    prior_est ~ px(110),
-    grade_change ~ px(100),
+    prior_est ~ px(120),
+    grade_change ~ px(105),
   ) |>
   gt_theme_mg() |>
   tab_style(style = cell_text(size = "12px"), locations = cells_body(columns = everything())) |> 
   tab_style(style = cell_text(size = "11px"), locations = cells_column_labels(columns = everything())) |> 
-  tab_footnote("RCT: randomized controlled trial; NRSI: non-randomized study of intervention; GRADE: Grading of Recommendations Assessment, Development and Evaluation; Est: effect estimate; CI: confidence interval.")
+  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rct, nrsi, rct_new, nrsi_new))) |>
+  tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(estimate_95_percent_ci, measure, prior_est), rows = str_detect(measure, "RD"))) |>
+  tab_footnote("RCT: randomized controlled trial; NRSI: non-randomized study of intervention; GRADE: Grading of Recommendations Assessment, Development and Evaluation; Est: effect estimate; CI: confidence interval; RR: risk ratio; OR: odds ratio; RD: risk difference.")
 
 ```
 
