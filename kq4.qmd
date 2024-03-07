@@ -98,10 +98,10 @@ tiva_inhaled_dat |>
     grade_change = "GRADE Δ"
   ) |>
   cols_width(
-    outcome ~ px(110),
+    outcome ~ px(225),
     rct ~ px(50),
     nrsi ~ px(50),
-    grade ~ px(75),
+    grade ~ px(100),
     measure ~ px(75),
     estimate_95_percent_ci ~ px(120),
     rct_new ~ px(45),
@@ -144,10 +144,10 @@ tiva_inhaled_dat |>
     grade_change = "GRADE Δ"
   ) |>
   cols_width(
-    outcome ~ px(110),
+    outcome ~ px(225),
     rct ~ px(50),
     nrsi ~ px(50),
-    grade ~ px(75),
+    grade ~ px(100),
     measure ~ px(75),
     estimate_95_percent_ci ~ px(120),
     rct_new ~ px(45),
