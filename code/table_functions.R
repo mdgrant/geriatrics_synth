@@ -463,22 +463,28 @@ kq3_balance_main <- function() {
   clean_names() |>
   rename(est = estimate_95_percent_ci) |>
   # filter(!if_all(rct:est, ~ is.na(.x))) |>
-  mutate(
-    across(everything(), ~ str_remove(.x, "‡|†|\\*")),
-    grade = case_when(
-      grade == "Very low" ~ vlow,
-      grade == "Low" ~ low,
-      grade == "Moderate" ~ mod,
-      grade == "High" ~ high,
-      grade == "Low/very low" ~ low_very,
-      .default = grade
-    ),
+    mutate(
+      high     = paste0("[", vlow, "]",     "(soe_gt.html#reg-gen-grade)"),
+      mod      = paste0("[", mod, "]",      "(soe_gt.html#reg-gen-grade)"),
+      low      = paste0("[", low, "]",      "(soe_gt.html#reg-gen-grade)"),
+      vlow     = paste0("[", vlow, "]",     "(soe_gt.html#reg-gen-grade)"),
+      low_very = paste0("[", low_very, "]", "(soe_gt.html#reg-gen-grade)"),
+      # group = ifelse(outcome == "Patient satisfaction", "Patient-reported", "Clinical"),
+      across(everything(), ~ str_remove(.x, "‡|†|\\*")),
+      grade = case_when(
+        grade == "Very low" ~ vlow,
+        grade == "Low" ~ low,
+        grade == "Moderate" ~ mod,
+        grade == "High" ~ high,
+        grade == "Low/very low" ~ low_very,
+        .default = grade
+      ),
     event_e = ifelse(!is.na(n_reg), paste0(events_reg, " (", n_reg, ")"), NA),
     event_c = ifelse(!is.na(n_gen), paste0(events_gen, " (", n_gen, ")"), NA),
     across(c(event_e, event_c), ~ str_remove(.x, "NA "))
   ) |>
   relocate(c(event_e, event_c), .after = rct) |>
-  select(-c(events_reg:n_gen, grade_2))
+  select(-c(events_reg:n_gen, grade_2, high, mod, low, vlow, low_very))
 
 reg_gen_dat |>
   gt(id = "one") |>
@@ -507,6 +513,7 @@ reg_gen_dat |>
     est     ~ px(160)
   ) |>
   sub_missing(columns = everything(), missing_text = "") |>
+  text_replace("NR", "—", locations = cells_body(grade)) |>
   tab_spanner(label = "Neuraxial", columns = c(event_e), level = 1) |>
   tab_spanner(label = "General", columns = c(event_c), level = 1) |>
   opt_footnote_marks(marks = "standard") |>
@@ -536,6 +543,11 @@ kq3_complications <- function() {
     rename(est = estimate_95_percent_ci) |>
     filter(!if_all(rct:est, ~ is.na(.x))) |>
     mutate(
+      high     = paste0("[", vlow, "]",     "(soe_gt.html#reg-gen-grade)"),
+      mod      = paste0("[", mod, "]",      "(soe_gt.html#reg-gen-grade)"),
+      low      = paste0("[", low, "]",      "(soe_gt.html#reg-gen-grade)"),
+      vlow     = paste0("[", vlow, "]",     "(soe_gt.html#reg-gen-grade)"),
+      low_very = paste0("[", low_very, "]", "(soe_gt.html#reg-gen-grade)"),
       # group = ifelse(outcome == "Patient satisfaction", "Patient-reported", "Clinical"),
       across(everything(), ~ str_remove(.x, "‡|†|\\*")),
       grade = case_when(
@@ -551,7 +563,7 @@ kq3_complications <- function() {
       across(c(event_e, event_c), ~ str_remove(.x, "NA "))
     ) |>
     relocate(c(event_e, event_c), .after = rct) |>
-    select(-c(events_reg:n_gen, grade_2))
+    select(-c(events_reg:n_gen, grade_2, high, mod, low, vlow, low_very))
 
   reg_gen_dat |>
     gt(id = "one") |>
@@ -662,8 +674,8 @@ kq4_balance_main <- function(inc_exclude = "exclude") {
       est     ~ px(140)
     ) |>
     sub_missing(columns = everything(), missing_text = "") |>
-    tab_spanner(label = "Regional", columns = c(event_e), level = 1) |>
-    tab_spanner(label = "General", columns = c(event_c), level = 1) |>
+    tab_spanner(label = "TIVA", columns = c(event_e), level = 1) |>
+    tab_spanner(label = "Inhaled", columns = c(event_c), level = 1) |>
     opt_footnote_marks(marks = "standard") |>
     tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(event_c, event_e))) |>
     tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(n, grade, rct, nrsi))) |>
@@ -742,8 +754,8 @@ kq4_complications <- function(){
       est     ~ px(140)
     ) |>
     sub_missing(columns = everything(), missing_text = "") |>
-    tab_spanner(label = "Regional", columns = c(event_e), level = 1) |>
-    tab_spanner(label = "General", columns = c(event_c), level = 1) |>
+    tab_spanner(label = "TIVA", columns = c(event_e), level = 1) |>
+    tab_spanner(label = "Inhaled", columns = c(event_c), level = 1) |>
     opt_footnote_marks(marks = "standard") |>
     tab_style(style = cell_text(align = "center"),       locations = cells_column_labels(columns = c(event_c, event_e))) |>
     tab_style(style = cell_text(align = "center"),       locations = cells_column_labels(columns = c(n, grade, rct, nrsi))) |>
