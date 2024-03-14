@@ -19,14 +19,13 @@ tables:
 #| include: false
 source("code/load_data.R")
 
-# exclude trials with blocks Weber 2009, Kasprzak 2006, Lewis 2008, Sellbrant 2021, Sellbrant 2021, Gu 2021, Aasbo 2002, Hestin 2022
-block_refid <- study_arm_dat |> 
-  filter(!(study == "Bielka 2021" & arm_id == 3)) |> 
-  filter(!is.na(kq3_reg_block)) |> 
+# exclude linked references
+linked_publications <- linked_refids |> 
+  filter(refid %in% kq3_refid) |> 
+  filter(!is.na(refid_to_link_to)) |> 
   pull(refid)
 
-kq3_refid <- kq3_refid[!kq3_refid %in% c(813, 16596)] # retrospective cohort and Neuman 2016
-kq3_refid <- kq3_refid[!kq3_refid %in% block_refid] # exclude blocks
+kq3_refid <- kq3_refid[!kq3_refid %in% linked_publications] # 2024-03-11 n = 38
 
 study_char_dat <- data_kq(study_char_dat, kq3_refid)
 
@@ -66,36 +65,15 @@ no_linked_refids <- study_char_dat |>
 
 ```
 
-```{r specfic_functions}
-n_per_tf <- function(var_name, n_dig = 1){
-  paste0(sum(var_name == TRUE), " (", format(round(100*(mean(var_name)), n_dig), nsmall = 1), ")")
-}
-```
-
 ### Trial Characteristics 
 
 <font size = 4> `r table_ref()` Characteristics of included randomized clinical trials. </font>
 
-```{r studyChar}
+```{r study_char_rct}
 study_char_tab <- study_char_dat |> 
-  filter(refid %in% no_linked_refids) |>
+  filter(refid %in% kq3_refid) |> 
+  filter(design == "rct") |> 
   mutate(
-    dates = str_c(date_start, "-", date_end),
-    country = countrycode::countryname(country, destination = "un.name.en"),
-    country = ifelse(grepl("United States", country), "United States", country),
-    country = ifelse(grepl("United Kingdom", country), "United Kingdom", country),
-    country = ifelse(grepl("Republic of Korea", country), "South Korea", country),
-    country = ifelse(grepl("Iran", country), "Iran", country),
-    country = ifelse(grepl("Türkiye", country), "Turkey", country),
-    eu = countrycode::countryname(country, destination = "eu28"),
-    un = countrycode::countryname(country, destination = "un.region.name"),
-    asia = un == "Asia",
-    eu = eu == "EU",
-    afr = un == "Africa",
-    us = grepl("United States", country),
-    ca = grepl("Canada", country),
-    sa = grepl("Brazil", country),
-    noneu = grepl("Bosnia|Kosovo", country),
     low_r = if_else(non_vh_hdi == "yes", 1, 0, missing = 0),
     pilot = if_else(pilot == "yes", 1, 0, missing = 0),
     ambulatory = !is.na(ambulatory),
@@ -105,218 +83,249 @@ study_char_tab <- study_char_dat |>
     regional = !is.na(regional),
     sedation = !is.na(sedation),
     non_vh_hdi = ifelse(is.na(non_vh_hdi), 0, 1),
-    fund_ind = funding == "industry",
-    fund_pubind = funding == "pub_indus",
-    fund_pub = funding == "public",
-    fund_nr = funding == "NR",     
-    auth_coi = author_coi == "author_coi",
+    funding = case_when(
+      funding == "industry" ~ "Industry",
+      funding == "pub_indus" ~ "Public and industry",
+      funding == "public" ~ "Public",
+      funding == "NR" ~ "Not reported",
+      TRUE ~ "Other"
+    ),
+    author_coi = author_coi == "author_coi",
     registered = if_else(registered == "yes", TRUE, FALSE, missing = FALSE),
+    across(c(ambulatory, one_center, multi_center, general, regional, sedation, registered, author_coi), ~ .x * 1)
   ) |> 
-  select(refid, study, eu, un, country, asia, eu, us, ca, sa, noneu, afr, low_r, non_vh_hdi, pilot, ambulatory, one_center, multi_center, general, regional, sedation, starts_with("fund_"), registered, n_enroll, arms, auth_coi) 
-  
-countries <- study_char_tab |> 
-  tabyl(country) |> 
-  arrange(desc(n)) |> 
-  mutate(
-  n_per = paste0(n, " (", round(percent * 100, 1), ")"),
-  characteristic = paste0("  ", country)
-  ) |> 
-  select(characteristic, n_per)
+  select(refid, study, country, low_r, non_vh_hdi, pilot, ambulatory, centers, funding, registered, n_enroll, arms, author_coi) 
 
-anesthetic <- study_arm_dat |> 
-  group_by(refid) |> 
-  slice(1) |> 
-  ungroup() |> 
-  mutate(
-    # volatile = if_any(c(vol_desflurane, vol_halothane, vol_isoflurane, vol_sevoflurane, vol_ns), ~ !is.na(.x)),
-    # tiva = ifelse(str_detect(gen_type, "tiva"), TRUE, FALSE)
-    volatile = kq3_gen_type %in% c("inhalation", "tiva_inhal"),
-    tiva = kq3_gen_type %in% c("tiva", "tiva_inhal")
-  ) |> 
-  select(refid, volatile, tiva)
-
-table <- study_char_tab |> 
-  left_join(anesthetic, by = "refid") |> 
-  summarize(
-    "Number of Trials" = n(),
-    "Patients Enrolled (N)" = " ",
-    "  Mean" = round(mean(n_enroll), 0),
-    "  Median" = median(n_enroll),
-    "  Range" = paste0("(", min(n_enroll), "-", max(n_enroll), ")"),
-    "Arms" = " ",
-    "  Two" = sum(arms == 2, na.rm = TRUE),
-    "  Multi" = sum(arms > 2, na.rm = TRUE),
-    "  Mean " = round(mean(arms, na.rm = TRUE), 1),
-    "  Median " = round(median(arms, na.rm = TRUE), 1),
-    "  Range " = paste0("(", min(arms, na.rm = TRUE), "-", max(arms, na.rm = TRUE), ")"),
-    "Pilot Study" = n_per_tf(pilot),
-    "Ambulatory" = n_per_tf(ambulatory),
-    "Centers" = " ",
-    "  Single Center" = n_per_tf(one_center),
-    "  Multicenter" = n_per_tf(multi_center),
-    # "Anesthesia" = " ",
-    "Volatile Anesthetic" = n_per_tf(volatile),
-    # "  TIVA" = n_per_tf(tiva),
-    # "  Sedation" = n_per_tf(sedation),
-    "Country" = " ",
-    "Non-very-high HDI Country" = n_per_tf(low_r),
-    # expression(paste("Non-very-high HDI")) = n_per_tf(low_r),
-    "Funding" = " ",
-    "  Industry" = n_per_tf(fund_ind),
-    "  Public/Industry" = n_per_tf(fund_pubind),
-    "  Public" = n_per_tf(fund_pub),
-    "  Not Reported" = n_per_tf(fund_nr),     
-    "Author COI" = n_per_tf(auth_coi),
-    "Registered" = n_per_tf(registered),
+study_char_gt <- study_char_tab |>
+  select(n_enroll, arms, pilot, ambulatory, centers, country, non_vh_hdi, funding, author_coi, registered) |>
+  tbl_summary(
+    label = list(
+      n_enroll = "Patients enrolled",
+      arms = "Arms",
+      pilot = "Pilot study",
+      ambulatory = "Ambulatory",
+      centers = "Centers",
+      country = "Country",
+      non_vh_hdi = "Low resource country",
+      funding = "Funding",
+      author_coi = "Author conflict of interest",
+      registered = "Registered"
+    ),
+    digits = list(
+      n_enroll ~ 0
+    ),
+    type = list(
+      n_enroll ~ "continuous",
+      arms ~ "categorical"
+    ),
+    statistic = list(
+    # calculate percentages including missing values in the denominator
+      n_enroll ~ "{mean} [<u>{median}</u>] ({min} - {max})",
+      arms ~ "{n} ({p})"
+    ),
+    missing_text = "Not reported",
+    sort = list(everything() ~ "frequency")
   ) |>
-  t() |> 
-  data.frame() %>% 
-  rename(n_per = 1) |> 
-  mutate(
-  n = str_extract(n_per, "^\\d{1,2}"),
-  per = str_extract(n_per, "\\(\\d{1,2}\\.\\d\\)")) |> 
-  rownames_to_column(var = "characteristic") |> 
-  select(characteristic, n_per) |> 
-  remove_rownames()
-
-table <- table |> 
-  add_row(countries, .after = 18)
-
-table |> 
-  gt(id = "one") |>
-  cols_label(
-    characteristic   = "Characteristic",
-    n_per            = "N (%)",
-  ) |>
+  as_gt(id = "one") |>
+  fmt_markdown(stat_0) |>
   cols_width(
-    characteristic ~ px(240),
-    n_per ~ px(150)
+    5 ~ px(320),
+    6 ~ px(140)
   ) |> 
- gt_theme_mg() |> 
- tab_footnote("Studies with multiple publications counted once.") |>
- tab_footnote(md("Non very-high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."), locations = cells_body(columns = c(characteristic), rows = characteristic == "Non-very-high HDI Country"))
+  gt_theme_mg()
 
-# writexl::write_xlsx(table, "/Users/mgrant/Desktop/study_char_tab_kq3.xlsx")
+study_char_gt
+
+```
+
+### Surgical Procedures
+
+<font size = 4> `r table_ref()` Surgical procedures performed. </font>
+
+```{r surg_rct}
+
+# number of hipfx only trials
+n_hip_only <- ortho_proc |>
+  filter(refid %in% kq3_refid) |>
+  filter(ortho == "HipFx") |> 
+  summarize(n = n_distinct(refid)) 
+
+surg_tab <- surgs |>
+  filter(refid %in% study_char_tab$refid) |> # only kq4 rcts
+  select(refid, surgs) |>
+  tabyl(surgs) |> # summarise(total = sum(n))
+  arrange(desc(percent)) |>
+  rename(per = percent) |>
+  mutate(
+    per = paste0("(", format(round(100 * per, 1), nsmall = 1), ")"),
+    per = str_replace(per, " ", ""),
+    n = as.character(n),
+    n_per = paste(n, per)
+  ) |>
+  select(surgs, n_per) |>
+  rename(result = n_per, characteristic = surgs)
+
+surgs_gt <- surgs |>
+  filter(refid %in% study_char_tab$refid) |> # only kq4 rcts
+  select(surgs) |> 
+  tbl_summary(
+    label = list(
+      surgs = "Procedure(s)"
+    ),
+    statistic = list(
+      surgs ~ "{n} ({p})"
+    ),
+    type = list(
+      surgs ~ "categorical"
+    ),
+    missing_text = "Not reported",
+    sort = list(everything() ~ "frequency")
+  ) |>
+  as_gt(id = "one") |>
+  gt_theme_mg() |>
+  cols_width(
+    5 ~ px(320),
+    6 ~ px(100)
+  ) |> 
+  tab_footnote("If reported as various/mixed or included more than 4 types of procedures.",  locations = cells_body(columns = label, rows = label == "Various"), placement = "right") |> 
+  tab_footnote(paste0("Hip fracture only in ", n_hip_only, "."), locations = cells_body(columns = label, rows = label == "Ortho"), placement = "right") 
+
+surgs_gt
+
 ```
 
 ### Patient Charcteristics
 
-<font size = 4> `r table_ref()` Patient characteristics. </font>
+<font size = 4> `r table_ref()` Patient characteristics in randomized clinical trials. </font>
 
-```{r ptCharRev}
-#| warning: false
-
-surg <- surgs |> 
-  filter(refid %in% no_linked_refids) |>
-  select(refid, surgs_single) |> 
-  rename(surgs = surgs_single) |> 
-  tabyl(surgs) |> 
-  arrange(desc(percent)) |> 
-  rename(per = percent) |> 
-  mutate(per = paste0( "(", format(round(100*per, 1), nsmall = 1), ")"),
-         per = str_replace(per, " ", ""),
-         n = as.character(n),
-         n_per = paste(n, per)) |> 
-  select(surgs, n_per) |> 
-  rename(result = n_per, characteristic = surgs) |> 
-  remove_rownames() |> 
-  mutate(
-    characteristic = str_replace(characteristic, "Gi", "GI"),
-    characteristic = str_replace(characteristic, "Cr", "CR"),
-    characteristic = ifelse(characteristic == "Various", "Various (>4)", characteristic),
-    characteristic = paste0("  ", characteristic),
-  )
-
+```{r pt_rct}
 asa_class <- asa_combine |>
-  filter(refid %in% no_linked_refids) |>
   mutate(asa = str_trim(asa_ps_incl)) |>
   select(refid, asa) |> 
   slice(1, .by = "refid")
 
+# summaries for individual studies combining arms
 pt_char_tab <- study_arm_dat |>
-  filter(refid %in% no_linked_refids) |>
-  # filter(
-  #   design %in% c("rct", "crossover"),
-  #   age == "Adult",
-  #   refid %in% rev_refids) |> 
+  filter(refid %in% study_char_tab$refid) |> # only kq3 rcts
+  mutate(
+    wgt = arm_n / sum(arm_n, na.rm = TRUE),
+    N = sum(arm_n),
+    .by = refid
+  ) |> 
   group_by(refid) |>
   summarize(
-    N = sum(arm_n),
-    wgt = arm_n / N,
-    # asa_12_all = round(sum(asa  == "12" * wgt, na.rm = FALSE)),
-    # asa_123_all = round(sum(asa = "123" * wgt, na.rm = FALSE)),
-    # asa_23_all = round(sum(asa = "23" * wgt, na.rm = FALSE)),
-    # asa_34_all = round(sum(asa_34 * wgt, na.rm = FALSE)),
-    age_mn_all = round(sum(age_mean * wgt, na.rm = FALSE)),
-    age_md_all = round(sum(age_med * wgt, na.rm = FALSE)),
-    sex_all = round(sum(female_perc * wgt, na.rm = FALSE)),
-    white_all = round(sum(white * wgt, na.rm = FALSE)),
-    black_all = round(sum(black * wgt, na.rm = FALSE)),
-    asian_all = round(sum(asian * wgt, na.rm = FALSE)),
-    bmi_mn_all = round(sum(bmi_m * wgt, na.rm = FALSE)),
-    bmi_md_all = round(sum(bmi_med * wgt, na.rm = FALSE)),
-    dm_mn_all = round(sum(dm * wgt, na.rm = FALSE)),
-    neuro_all = round(sum(neuro * wgt, na.rm = FALSE))) |>
-  filter(row_number() == 1) |>
-  ungroup() |> 
-  rename_with(~ str_replace(., "_all", "")) |> 
-  # mutate(across(asa_1:asa_34, ~ replace(., !is.na(.), "Y")),
-  #        across(asa_1:asa_34, ~ replace(., is.na(.),  "-")),
-  #        ) |> 
-  # unite(col = "asa", asa_1:asa_34, sep = "", remove = FALSE) |> 
-  mutate(
-    age = case_when(
-      !is.na(age_mn) ~ age_mn,
-      !is.na(age_md) ~ age_md,
+    across(
+      c(
+        age_mean,
+        age_med,
+        female_perc,
+        white,
+        black,
+        asian,
+        bmi_m,
+        bmi_med,
+        pre_mmse_m,
+        pre_mmse_med,
+        # living_independent,
+        # living_dependent,
+        # housing_home,
+        # housing_assisted,
+        cog_imp,
+        # malnourish,
+        dm,
+        cardiac,
+        # cancer,
+        # ortho,
+        # gi,
+        # neuro,
+        # pulm,
+        # endo,
+        # renal,
+        # hepatic
+      ),
+      ~ pt_sum(.x, wgt)
     ),
-    bmi = case_when(
-      !is.na(bmi_mn) ~ bmi_mn,
-      !is.na(bmi_md) ~ bmi_md,
-    ),
-  ) |> 
-  left_join(asa_class, by = c("refid")) |> 
-  summarise(
-    "Age (average of mean or med, range)" = paste0(round(sum(age/(n() - sum(is.na(age_mn) & is.na(age_md))), na.rm = TRUE), 1), " (", min(age, na.rm = TRUE), "-", max(age, na.rm = TRUE), ")"),
-    "Female (%, range)" = paste0(round(sum(sex, na.rm = TRUE)/(n() - sum(is.na(sex))), 1), " (", min(sex, na.rm = TRUE), "-", max(sex, na.rm = TRUE), ")"),
-    "ASA Physical Status (%)" = " ",
-    "  I-II" =   round(100 * mean(asa == "12"), 1),
-    "  I-III" =  round(100 * mean(asa == "123"), 1),
-    "  I-IV" =  round(100 * mean(asa == "1234"), 1),
-    "  II-IV" =  round(100 * mean(asa == "234"), 1),
-    "  II-III" =  round(100 * mean(asa == "23"), 1),
-    "  III" =  round(100 * mean(asa == "3"), 1),
-    "  III-IV" =  round(100 * mean(asa == "34"), 1),
-    "  NR"     = round(100*mean(asa == "NR"), 1), 
-    "BMI (average of mean or med, range)" = paste0(round(sum(bmi/(n() - sum(is.na(bmi_mn) & is.na(bmi_md))), na.rm = TRUE), 1), " (", min(bmi, na.rm = TRUE), "-", max(bmi, na.rm = TRUE), ")"),
-    "BMI (mean or med ≥ 30), (%)" = paste0("(", round(sum(bmi >= 30, na.rm = TRUE) / n() * 100, 1), ")"),
-    # "DM" = " ",
-    # "  Any (studies)" = sum(dm_mn > 0, na.rm = TRUE),
-    # "    % pts, (range)" = paste0("(", min(dm_mn[dm_mn != 0], na.rm = TRUE), "-", max(dm_mn, na.rm = TRUE), ")")
-  ) |> 
-t() |> 
-  data.frame() |> 
-  rownames_to_column(var = "characteristic") |> 
-  rename(result = 2) |> 
-  remove_rownames() |> 
-  add_row(characteristic = "Surgery, N (%)", result = "") |> 
-  # add surgery type
-  bind_rows(surg)
-
-pt_char_tab |>
-  filter(result != "0") |>
-  gt(id = "one") |>
-  cols_label(
-    characteristic   = "Characteristic",
-    result           = "N (%) or Value",
+    N = sum(arm_n)
   ) |>
-  cols_width(
-    characteristic ~ px(240),
-    result ~ px(150)
+  mutate(
+    age_mean_med = coalesce(age_mean, age_med),
+    bmi_mean_med = coalesce(bmi_m, bmi_med),
+    pre_mmse_mean_med = coalesce(pre_mmse_m, pre_mmse_med),
+  ) |>
+  select(-c(bmi_m, bmi_med, pre_mmse_m, pre_mmse_med, age_mean, age_med)) |>
+  left_join(asa_class, by = "refid")
+
+pt_char_gt <- pt_char_tab |>
+  select(age_mean_med, bmi_mean_med, female_perc, asa, white, black, asian, cog_imp, pre_mmse_mean_med, dm, cardiac) |>
+  mutate(
+    asian = ifelse(asian == 100, "100%", NA),
+    asa = ifelse(asa == "NR", NA, asa),
   ) |> 
- gt_theme_mg() |> 
- tab_footnote("Studies with multiple publications counted once.") 
-  
-# writexl::write_xlsx(pt_char_tab, "/Users/mgrant/Desktop/pt_char_tab.xlsx")
+  tbl_summary(
+    label = list(
+      age_mean_med = "Age (mean or median)",
+      bmi_mean_med = "BMI (mean or median)",
+      female_perc = "Female (%)",
+      asa = "ASA Physical Status",
+      white = "White (%)",
+      black = "Black (%)",
+      asian = "Asian",
+      cog_imp = "Dementia (%)",
+      pre_mmse_mean_med = "Preoperative MMSE (mean or median)",
+      dm = "Diabetes (%)",
+      cardiac = "Cardiac (%)"
+    ),
+    digits = list(
+      age_mean_med ~ 1,
+      bmi_mean_med ~ 1,
+      female_perc ~ 1,
+      asa ~ 1,
+      white ~ 1,
+      black ~ 1,
+      asian ~ 0,
+      pre_mmse_mean_med ~ 1,
+      dm ~ 1,
+      cardiac ~ 1
+    ),
+    statistic = list(
+      age_mean_med ~ "{mean} [<u>{median}</u>] ({min} - {max})",
+      bmi_mean_med ~ "{median} ({min} - {max})",
+      female_perc ~ "{median} ({min} - {max})",
+      asa ~ "{n} ({p}%)",
+      white ~ "{median} ({min} - {max})",
+      black ~ "{median} ({min} - {max})",
+      asian ~ "{n}",
+      cog_imp ~ "{median} ({min} - {max})",
+      pre_mmse_mean_med ~ "{median} ({min} - {max})",
+      dm ~ "{median} ({min} - {max})",
+      cardiac ~ "{median} ({min} - {max})"
+    ),
+    type = list(
+      age_mean_med ~ "continuous",
+      bmi_mean_med ~ "continuous",
+      female_perc ~ "continuous",
+      asa ~ "categorical",
+      white ~ "continuous",
+      black ~ "continuous",
+      asian ~ "categorical",
+      cog_imp ~ "continuous",
+      pre_mmse_mean_med ~ "continuous",
+      dm ~ "continuous",
+      cardiac ~ "continuous"
+    ),
+    missing_text = "Not reported"
+  ) |>
+  as_gt(id = "one") |> 
+  fmt_markdown(stat_0) |>
+    cols_width(
+    5 ~ px(320),
+    6 ~ px(140)
+  ) |> 
+  gt_theme_mg() |> 
+  tab_footnote("Shin 2020, Li 2022, and Neuman 2021 included patients with dementia.", locations = cells_body(columns = label, rows = label == "Dementia (%)"), placement = "right") 
+
+pt_char_gt
+# gtsave(pt_char_gt, "/Users/mgrant/Documents/_projects01/asa/_geriatric/geriatrics_synth/@@/summary_docx/kq3_pt_char.png")
 
 ```
 

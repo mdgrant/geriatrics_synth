@@ -284,17 +284,35 @@ soe_kq3_dat <- readxl::read_xlsx("data/soe_2023-05-22_local.xlsx", range = "A1:W
     )
   )
 
+# soe_summary <- soe_kq3_dat |>
+#   select(n, comparison, outcome, n_s, design, grade, acc, out_import, summary, result_links, compare_group) |>
+#   mutate(
+#     grade = case_when(
+#       grade == "very low" ~ vlow,
+#       grade == "low" ~ low,
+#       grade == "moderate" ~ mod, 
+#       grade == "high" ~ high,
+#       .default = grade
+#     )
+#   ) 
+
 soe_summary <- soe_kq3_dat |>
   select(n, comparison, outcome, n_s, design, grade, acc, out_import, summary, result_links, compare_group) |>
   mutate(
+    high = paste0("[", vlow, "]", "(soe_gt.html#reg-gen-grade)"), 
+    mod = paste0("[", mod, "]",   "(soe_gt.html#reg-gen-grade)"),
+    low = paste0("[", low, "]",   "(soe_gt.html#reg-gen-grade)"),
+    vlow = paste0("[", vlow, "]", "(soe_gt.html#reg-gen-grade)"),
+    low_very = paste0("[", low_very, "]", "(soe_gt.html#reg-grade)"),
     grade = case_when(
       grade == "very low" ~ vlow,
       grade == "low" ~ low,
-      grade == "moderate" ~ mod, 
+      grade == "moderate" ~ mod,
       grade == "high" ~ high,
       .default = grade
     )
-  ) 
+  ) |> 
+  select(-c(vlow, low, mod, high, low_very)) 
 
 domain_summary <- soe_kq3_dat |> 
   select(n, comparison, outcome, design, n_studies, n_pts, rob, consist, direct, prec, other, summary, ends_with("foot")) |> 
@@ -366,6 +384,8 @@ soe_summary |>
   soe_footnote() 
 
 ```
+
+<a id="reg-gen-grade"></a> 
 
 ### GRADE Domains
 

@@ -29,7 +29,7 @@ study_arm_dat <- data_kq(study_arm_dat, kq4_refid) |>
 
 ### Study Characteristics 
 
-<font size = 4> `r table_ref()` Characteristics of randomized clinical trials. </font>
+<font size = 4> `r table_ref()` Characteristics of included randomized clinical trials. </font>
 
 ```{r study_char_rct}
 study_char_tab <- study_char_dat |> 
@@ -150,7 +150,7 @@ asa_class <- asa_combine |>
   select(refid, asa) |> 
   slice(1, .by = "refid")
 
-# summaries for indiviual studies combining arms
+# summaries for individual studies combining arms
 pt_char_tab <- study_arm_dat |>
   filter(refid %in% study_char_tab$refid) |> # only kq4 rcts
   mutate(
@@ -330,6 +330,10 @@ study_char_tab |>
   ) |>
   as_gt(id = "one") |>
   fmt_markdown(stat_0) |>
+  # cols_width(
+  #   study_l          ~ px(165),
+  #   arm_n            ~ px(45)
+  # ) |> 
   gt_theme_mg()
 
 ```
