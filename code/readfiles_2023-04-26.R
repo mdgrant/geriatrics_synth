@@ -231,61 +231,43 @@ ortho_hipfx_refid <- ortho_proc |> filter(!is.na(surg_ortho_hipfx)) |> pull(refi
 
 ## add linked references ------------------------------ (2023-02-18 12:27) @----
 # study_l_w_linked includes study with links to both studies
-# study_w_linked:
-# study_w_linked_date: only date
-# study_l_w_linked: adds link to evidence table from linked study added to study_l
-# study_l_w_linked_date: adds link to evidence table using date of linked study
-# refid_linked, study_link:
+# refid_to_link_to is refid of first publication (hopefully primary or initial cloned)
 
 linked_refids <- study_char_dat |>
   filter(!is.na(linked_references)) |>
+  # filter(!is.na(refid)) |> # remove linked to/primary refid (a appended or cloned from)
   select(refid, study, study_l, author, year, linked_references) |>
-  arrange(linked_references) |>
+  group_by(linked_references) |>
+  arrange(year) |>
   mutate(
-    linked = str_remove(linked_references, as.character(refid)),
-    linked = as.numeric(str_extract(linked, "\\d+"))
-  )
+    refid_to_link_to = str_extract(linked_references, "^\\d*"),
+    refid_to_link_to = as.numeric(ifelse(row_number() == 1, NA, refid_to_link_to)),
+    # NOTE: temporary fix because 813 slor is not at level 3
+    refid_to_link_to = if_else(refid_to_link_to == 813, 8574, refid_to_link_to)
+  ) |>
+  ungroup() |>
+  arrange(linked_references)
+
+study_l_link_add <- study_char_dat |> # study_l for refid_to_link_to
+  filter(refid %in% linked_refids$refid_to_link_to) |>
+  select(refid, study_l) |>
+  rename(refid_to_link_to = refid, study_l_to_link_to = study_l)
 
 targets_linked_refids <- linked_refids |>
-  select(refid, year, study, study_l) |>
-  mutate(
-    linked = refid,
-    year_linked = year,
-    target = str_extract(study_l, "\\(.*"),
-    link_to_linked_date = paste0(" ", "[", year, "]", target),
-    link_to_linked = paste0("[", study, "]", target)
-  ) |>
-  rename(refid_linked = refid, study_linked = study) |>
-  select(refid_linked, linked, link_to_linked, link_to_linked_date, year_linked, study_linked) |>
-  left_join(linked_refids, by = "linked") |>
-  mutate(
-    study_l_w_linked = paste0(study_l, " (", link_to_linked, ")"),
-    study_l_w_linked_date = paste0(study_l, link_to_linked_date),
-    study_w_linked = paste0(study, " [", study_linked, "]"),
-    study_w_linked_date = paste0(study, " [", str_extract(study_linked, "\\d{4}"), "]"),
-  ) |>
-  select(refid, refid_linked, study_w_linked, study_w_linked_date, study_l_w_linked, study_l_w_linked_date, study_linked)
+  select(refid, year, study, study_l, refid_to_link_to) |>
+  filter(!is.na(refid_to_link_to)) |>
+  left_join(study_l_link_add, by = c("refid_to_link_to")) |>
+  mutate(study_l_w_linked = paste0(study_l, " (", (study_l_to_link_to), ")"))
 
 study_char_dat <- study_char_dat |>
-  left_join(targets_linked_refids, by = "refid") |>
+  left_join(targets_linked_refids |> select(refid, refid_to_link_to, study_l_w_linked), by = "refid") |>
   mutate(
-    study_w_linked = if_else(is.na(study_w_linked), study, study_w_linked),
     study_l_w_linked = if_else(is.na(study_l_w_linked), study_l, study_l_w_linked),
-    study_l_w_linked_date = if_else(is.na(study_l_w_linked_date), study_l, study_l_w_linked_date),
-    study_w_linked_date = if_else(is.na(study_w_linked_date), study, study_w_linked_date),
     linked_references_all_refid = if_else(!is.na(linked_references), linked_references, as.character(refid))
   ) |>
-  relocate(study_w_linked, study_w_linked_date, study_l_w_linked, study_l_w_linked_date, refid_linked, study_linked, linked_references_all_refid, .after = study_l)
+  relocate(study_l_w_linked, refid_to_link_to, linked_references_all_refid, .after = study_l)
 
-# save for reference during in analysis
-linked_refids <- targets_linked_refids |>
-  mutate(study = str_extract(study_w_linked, "^\\w*\\s\\d{4}\\w{1}?")) |>
-  select(refid, study, refid_linked, study_linked)
-
-rm(targets_linked_refids)
-
-# levels(study_char_dat$design_f_lab)
-# study_char_dat |> tabyl(design_f)
+rm(targets_linked_refids, study_l_link_add)
 
 # verify correct column types (nb suppressed warnings)
 # type_col(study_char_dat) |> arrange(desc(mode)) |> View()
@@ -306,7 +288,7 @@ study_arm_dat <- read_csv(path_csv(study_arm_file)) |>
   mutate(
     study_l = paste0("[", study, "]", "(", "evidence_tables.html#", refid, ")"),
     study_id = paste0(study, "-", arm_id), # each table row unique for footnote
-    # refid_c = case_when( # append refid_c for factorial or subgroups designs to indicate comparison groups
+    # VARIABLE: append refid_c for factorial or subgroups designs to indicate comparison groups
     refid_c = as.character(refid),
     refid_c = case_when(
       refid == 1419 & arm_id  %in% c(4, 3) ~ "1419-1",
@@ -368,6 +350,7 @@ if (verify_no_duplicate_arm_id != 0) {
 
 ## for factorial designs add arm ids
 study_arm_dat <- study_arm_dat |>
+  # filter(refid %in% c(18678, 1419, 328)) |>
   mutate(
     study = if_else(study == "Liu 2016" & str_detect(notes_studyarm, "^aMCI"), paste0(study, " (MCI)"), study),
     study = if_else(study == "Liu 2016" & str_detect(notes_studyarm, "^non-aMCI"), paste0(study, " (no MCI)"), study),
@@ -385,6 +368,7 @@ study_arm_dat <- study_arm_dat |>
     study = if_else(study == "Zhang 2018b" & str_detect(refid_c, "-2"), paste0(study, " (sevo)"), study),
     kq6_other_spec = if_else(study_id == "Lee 2018b-4", "pregabalin", kq6_other_spec)
     )
+  # select(refid, starts_with("study"), subgroup)
 
 # type_col(study_arm_dat) |> arrange(desc(mode)) |> View()
 
