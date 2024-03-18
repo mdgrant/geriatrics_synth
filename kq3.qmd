@@ -177,7 +177,7 @@ tiva_inhaled_dat |>
 
 ```
 
-There were no changes to the adverse events following the search update.
+There were no changes to the adverse event results following the search update.
 
 ```{r}
 #| tbl-cap: No changes to adverse events following search update.
