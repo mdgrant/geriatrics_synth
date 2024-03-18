@@ -707,6 +707,7 @@ delirium_meta_rct <- metabin(event2, n2, event1, n1,
   method = "MH",
   method.tau = "REML",
   method.random.ci = "HK",
+  method.predict = "HK",
   prediction = TRUE,
   allstudies = TRUE,
 )
