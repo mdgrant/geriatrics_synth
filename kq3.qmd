@@ -119,13 +119,12 @@ kq3_refid[!kq3_refid %in% c(delirium_refid, cogfunc_refid)]
 | 2024-01-06 | Added [pooled risk difference](kq3.html#risk-diff) to delirium. Updated balance tables. |
 | 2024-03-11 | Added 2 new publications (1 new trial); [O'Brien 2023](https://doi.org/10.1002/alz.13132) dementia subgroups from Neuman 2021 and [Sciberras 2022](https://doi.org/10.2217/pmt-2021-0081).| 
 | 2024-03-15 | Studies enrolling and corresponding number of patients with dementia added to delirium analyses. |
-| 2024-03-16 | Dementia subgroup delirium results added. |
+| 2024-03-16 | Dementia subgroup delirium results added; [Figure 1](kq3.html#pooled) footnote. |
 |            | Fixed coding error when collapsing arms for Shin 2020, that resulted in an incorrect denominator for the general anesthesia arm. |
 |            | Changed Li 2020 to exclude patients with preoperative delirium. |
 |            | Changed prediction method to use Hartung-Knapp adjustment with 5 or more trials.|
 |            | Included additional detail pertaining to meta-analysis methods where appropriate.|
 |            | Added mean delirium incidence rates to plot of baseline risk and risk difference (assist interpreting risk difference).|
-|            | Added delirium results for dementia subgroups to [Figure 1](kq3.html#pooled) footnote. |
 |            | Deleted Zhang 2019a (assessment on day 1) from table of delayed neurocognitive recovery. |
 |            | Added table for Neuman et al 2021 inability to walk at 60d without human assistance to physical function. |
 |            | Added Sciberras 2022 to physical function table and pooled result. |
