@@ -370,7 +370,7 @@ study_char_dat |>
     # "Stroke" = prim_stroke,
     # "Intraoperative awareness" = prim_aware,
     # "Quality of recovery" = prim_recovery,
-    "Depression" = prim_depress,
+    # "Depression" = prim_depress,
     "Patient/caregiver satisfaction" = prim_satis,
     # "Valued life activities" = prim_val_life,
     "Functional status (ADL, IADL, mobility)" = prim_function,
