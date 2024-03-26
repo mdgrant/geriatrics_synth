@@ -746,7 +746,7 @@ gen_reg_delirium_meta <- metabin(event2, n2, event1, n1,
   method.random.ci = "HK",
   method.predict = "HK",
   prediction = TRUE,
-  allstudies = TRUE,
+  allstudies = FALSE,
   # subset = surg_hip_oth == "Hip Fx"
   subset = !str_detect(study, "dementia"),
   subgroup = surg_hip_oth
@@ -790,7 +790,7 @@ gen_reg_delirium_cummeta <- metacum(gen_reg_delirium_meta, pooled = "random", so
 #| include: false
 png("assets/kq3_delirium_meta_forest.png", width = 9.95, height = 5.8, units = "in", res = 300)
 forest(gen_reg_delirium_meta,
-  allstudies = TRUE,
+  allstudies = FALSE,
   common = TRUE,
   label.e = "Neuraxial",
   label.c = "General",
@@ -2433,7 +2433,7 @@ satis_meta <- metabin(satis_n_Neur, arm_n_Neur, satis_n_Gen, arm_n_Gen,
   method.tau = "REML",
   method.random.ci = "classic",
   prediction = TRUE,
-  allstudies = TRUE,
+  allstudies = FALSE,
 )
 
 # summary(plac_meta)
@@ -2961,12 +2961,13 @@ mortality_rct_meta_dat <- mortality_dat |>
   filter(!(study %in% c("Shin 2020") & arm_id %in% c(2))) |> 
   select(refid, study, arm, mort_n, arm_n, mort_period) 
 
+# NOTE allstudies = FALSE
 pairwise_rct_mort_dat <- pairwise(
   treat = arm,
   event = mort_n,
   n = arm_n,
   studlab = study,
-  allstudies = TRUE,
+  allstudies = FALSE,
   data = mortality_rct_meta_dat,
   sm = "RR",
   keep.all.comparisons = TRUE
@@ -3172,12 +3173,13 @@ mortality_rct_meta_90d_dat <- mortality_dat |>
   filter(!(study %in% c("Shin 2020") & arm_id %in% c(2))) |> 
   select(refid, study, arm, mort_n, arm_n, mort_period) 
 
+# NOTE: allstudies = FALSE
 pairwise_rct_mort_90d_dat <- pairwise(
   treat = arm,
   event = mort_n,
   n = arm_n,
   studlab = study,
-  allstudies = TRUE,
+  allstudies = FALSE,
   data = mortality_rct_meta_90d_dat,
   sm = "RR",
   keep.all.comparisons = TRUE
