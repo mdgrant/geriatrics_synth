@@ -265,7 +265,7 @@ kq1_domain |>
 ```{r soe_kq3_data}
 #| include: false
 col_types_soe <- c("numeric", rep("text", 5), "numeric", rep("text", 16))
-soe_kq3_dat <- readxl::read_xlsx("data/soe_2023-05-22_local.xlsx", range = "A1:W24", sheet = "soe_kq3", col_types = col_types_soe) |>
+soe_kq3_dat <- readxl::read_xlsx("data/soe_2023-05-22_local.xlsx", range = "A1:W20", sheet = "soe_kq3", col_types = col_types_soe) |>
   clean_names() |>
   mutate(
     n_s = paste0(n_studies, " <br/>(", format(n_pts, big.mark = ","), ")"),
@@ -359,13 +359,13 @@ soe_summary |>
   gt_theme_mg() |>
   cols_width(
     outcome ~ px(220),
-    design ~ px(60),
+    design ~ px(80),
     n_s ~ px(85),
-    grade ~ px(60),
+    grade ~ px(50),
     acc ~ px(60),
     out_import ~ px(90),
     summary ~ px(325),
-    result_links ~ px(125)
+    result_links ~ px(120)
   ) |>
     opt_css(
     css = "
@@ -568,10 +568,10 @@ soe_summary |>
   tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(outcome, summary, result_links))) |>
   gt_theme_mg() |>
   cols_width(
-    outcome ~ px(200),
+    outcome ~ px(220),
     design ~ px(80),
     n_s ~ px(85),
-    grade ~ px(60),
+    grade ~ px(50),
     acc ~ px(60),
     out_import ~ px(90),
     summary ~ px(325),
