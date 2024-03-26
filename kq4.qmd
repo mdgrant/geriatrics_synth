@@ -709,7 +709,7 @@ delirium_meta_rct <- metabin(event2, n2, event1, n1,
   method.random.ci = "HK",
   method.predict = "HK",
   prediction = TRUE,
-  allstudies = TRUE,
+  allstudies = FALSE, #
 )
 
 delirium_meta_rct_rd <- update(delirium_meta_rct, sm = "RD")
@@ -1218,7 +1218,7 @@ dncr_tiva_inhaled_meta <- metabin(event2, n2, event1, n1,
   print.subgroup.name = FALSE,
   method.random.ci = "HK",
   prediction = TRUE,
-  allstudies = TRUE,
+  allstudies = FALSE, #
   subset = study != "Geng 2017",
   # subgroup = country
 )
@@ -1540,7 +1540,7 @@ ncd_meta <- metabin(n_TIVA, arm_n_TIVA, n_Inhaled, arm_n_Inhaled,
   method.tau = "REML",
   method.random.ci = "classic",
   prediction = FALSE,
-  allstudies = TRUE,
+  allstudies = FALSE, #
 ) 
 
 ncd_meta_dat |>
@@ -2030,7 +2030,7 @@ complication_summary_rd <- function(compl_label){
 
 png("assets/kq4_complication_mi.png", width = 8.9, height = 4.2, units = "in", res = 300)
 temp_meta <- complication_meta_or("Myocardial Infarction", use_hakn = TRUE, study_label = "study_design")
-complication_forest_or(temp_meta, big.mark = ",", text.addline2 = risk_diff_meta_or())
+complication_forest_or(temp_meta, big.mark = ",", text.addline2 = risk_diff_meta_or_kq4())
 dev.off()
 
 # meta_rob_traffic_light_refid(temp_meta)
@@ -2056,7 +2056,7 @@ dev.off()
 #| include: false
 png("assets/kq4_complication_cardiac_arrest.png", width = 8.1, height = 2.8, units = "in", res = 300)
 temp_meta <- complication_meta_rr("Cardiac Arrest", random = FALSE, use_hakn = FALSE)
-complication_forest_rr(temp_meta, random = FALSE, big.mark = ",", text.addline2 = risk_diff_meta_rr())
+complication_forest_rr(temp_meta, random = FALSE, big.mark = ",", text.addline2 = risk_diff_meta_rr_kq4())
 dev.off()
 
 # complication_summary_rr_or("Cardiac Arrest")
@@ -2079,14 +2079,13 @@ dev.off()
 #| include: false
 png("assets/kq4_complication_brady.png", width = 8.11, height = 3.8, units = "in", res = 300)
 temp_meta <- complication_meta_rr("Bradycardia", use_hakn = TRUE)
-complication_forest_rr(temp_meta, big.mark = ",", text.addline2 = risk_diff_meta_rr())
+complication_forest_rr(temp_meta, big.mark = ",", text.addline2 = risk_diff_meta_rr_kq4())
 dev.off()
 
 # meta_rob_traffic_light_refid(temp_meta)
 # complication_summary_rr_or("Bradycardia")
 # soe_meta_result_rr_or(temp_meta, "OR")
 # soe_meta_rd_rr(temp_meta, digits = 2)
-
 
 ```
 
@@ -2106,7 +2105,7 @@ dev.off()
 
 png("assets/kq4_complication_hypotension.png", width = 8.02, height = 3.6, units = "in", res = 300)
 temp_meta <- complication_meta_rr("Hypotension", use_hakn = FALSE)
-complication_forest_rr(temp_meta, big.mark = ",", text.addline2 = risk_diff_meta_rr())
+complication_forest_rr(temp_meta, big.mark = ",", text.addline2 = risk_diff_meta_rr_kq4())
 dev.off()
 
 # meta_rob_traffic_light_refid(temp_meta)
@@ -2132,7 +2131,7 @@ dev.off()
 
 png("assets/kq4_complication_stroke.png", width = 8.13, height = 2.8, units = "in", res = 300)
 temp_meta <- complication_meta_or("Stroke", use_hakn = FALSE, random = FALSE)
-complication_forest_or(temp_meta, big.mark = ",", random = FALSE, text.addline2 = risk_diff_meta_or())
+complication_forest_or(temp_meta, big.mark = ",", random = FALSE, text.addline2 = risk_diff_meta_or_kq4())
 dev.off()
 
 # meta_rob_traffic_light_refid(temp_meta)
@@ -2158,7 +2157,7 @@ dev.off()
 
 png("assets/kq4_complication_renal.png", width = 8.9, height = 4, units = "in", res = 300)
 temp_meta <- complication_meta_or("Acute Kidney Injury", use_hakn = TRUE)
-complication_forest_or(temp_meta, big.mark = ",", text.addline2 = risk_diff_meta_or(digits = 2))
+complication_forest_or(temp_meta, big.mark = ",", text.addline2 = risk_diff_meta_or_kq4(digits = 2))
 dev.off()
 
 # meta_rob_traffic_light_refid(temp_meta)
@@ -2184,7 +2183,7 @@ dev.off()
 
 png("assets/kq4_complication_pneumonia.png", width = 8.54, height = 3.8, units = "in", res = 300)
 temp_meta <- complication_meta_or("Pneumonia", use_hakn = TRUE, predictive = TRUE)
-complication_forest_or(temp_meta, use_predictive = TRUE, text.addline2 = risk_diff_meta_or())
+complication_forest_or(temp_meta, use_predictive = TRUE, text.addline2 = risk_diff_meta_or_kq4())
 dev.off()
 
 # meta_rob_traffic_light_refid(temp_meta)
@@ -2217,7 +2216,7 @@ dev.off()
 
 png("assets/kq4_complication_pe.png", width = 9.1, height = 3.8, units = "in", res = 300)
 temp_meta <- complication_meta_or("Pulmonary Embolism", use_hakn = TRUE, predictive = FALSE)
-complication_forest_or(temp_meta, use_predictive = TRUE, big.mark = ",", text.addline2 = risk_diff_meta_or(digits = 2))
+complication_forest_or(temp_meta, use_predictive = TRUE, big.mark = ",", text.addline2 = risk_diff_meta_or_kq4(digits = 2))
 dev.off()
 
 # meta_rob_traffic_light_refid(temp_meta)
@@ -2251,7 +2250,7 @@ dev.off()
 
 png("assets/kq4_respiratory_failure.png", width = 8.5, height = 3.6, units = "in", res = 300)
 temp_meta <- complication_meta_or("Respiratory Failure", use_hakn = FALSE, predictive = FALSE)
-complication_forest_or(temp_meta, use_predictive = TRUE, big.mark = ",", text.addline2 = risk_diff_meta_or(digits = 2))
+complication_forest_or(temp_meta, use_predictive = TRUE, big.mark = ",", text.addline2 = risk_diff_meta_or_kq4(digits = 2))
 dev.off()
 
 # meta_rob_traffic_light_refid(temp_meta)
@@ -2396,7 +2395,7 @@ satis_meta <- metabin(satis_n_TIVA, arm_n_TIVA, satis_n_Inhaled, arm_n_Inhaled,
   method.tau = "REML",
   method.random.ci = "classic",
   prediction = FALSE,
-  allstudies = TRUE,
+  allstudies = FALSE, #
 )
 
 # summary(plac_meta)
