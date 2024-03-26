@@ -120,7 +120,7 @@ kq3_refid[!kq3_refid %in% c(delirium_refid, cogfunc_refid)]
 | 2024-03-11 | Added 2 new publications (1 new trial); [O'Brien 2023](https://doi.org/10.1002/alz.13132) dementia subgroups from Neuman 2021 and [Sciberras 2022](https://doi.org/10.2217/pmt-2021-0081).| 
 | 2024-03-15 | Studies enrolling and corresponding number of patients with dementia added to delirium analyses. |
 | 2024-03-16 | Dementia subgroup delirium results added; [Figure 1](kq3.html#pooled) footnote. |
-|            | Fixed coding error when collapsing arms for Shin 2020, that resulted in an incorrect denominator for the general anesthesia arm. |
+|            | Fixed coding error when collapsing arms for Shin 2020, that resulted in an incorrect denominator for the general anesthesia arm with delirium and mortality outcomes. Was correct for complications.|
 |            | Changed Li 2020 to exclude patients with preoperative delirium. |
 |            | Changed prediction method to use Hartung-Knapp adjustment with 5 or more trials.|
 |            | Included additional detail pertaining to meta-analysis methods where appropriate.|
@@ -134,7 +134,7 @@ kq3_refid[!kq3_refid %in% c(delirium_refid, cogfunc_refid)]
 #| tbl-cap: Overview of changes to primary outcomes following search update.
 #| eval: true
 #| html-table-processing: none
-tiva_inhaled_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "RegionalGeneral", range = "A4:P21") |> # [, c(2:4, 10, 12, 13, 15:18)] |>
+reg_gen_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "RegionalGeneral", range = "A4:P21") |> # [, c(2:4, 10, 12, 13, 15:18)] |>
   # remove_empty(which = "cols") |>
   clean_names() |>
   mutate(
@@ -142,7 +142,7 @@ tiva_inhaled_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xl
     estimate_95_percent_ci = ifelse(estimate_95_percent_ci == "See Appendix", "See Below", estimate_95_percent_ci)
   )
 
-tiva_inhaled_dat |>
+reg_gen_dat |>
   gt(id = "one") |>
   cols_hide(c(exclude, grade_2, rct, events_reg:n, updated)) |>
   cols_label(
@@ -160,7 +160,7 @@ tiva_inhaled_dat |>
     rct_new ~ px(50),
     grade ~ px(95),
     measure ~ px(75),
-    estimate_95_percent_ci ~ px(120),
+    estimate_95_percent_ci ~ px(125),
     rct_new ~ px(55),
     prior_est ~ px(120),
     grade_change ~ px(105),
@@ -171,57 +171,57 @@ tiva_inhaled_dat |>
   tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rct, rct_new, prior_est, grade_change))) |>
   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(rct, rct_new, prior_est, grade_change))) |>
   tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(estimate_95_percent_ci , measure, prior_est), rows = str_detect(measure, "RD"))) |>
-  tab_footnote("RCT: randomized controlled trial; GRADE: Grading of Recommendations Assessment, Development and Evaluation; Est: effect estimate; CI: confidence interval; RR: risk ratio; MD: mean difference; RD: risk difference.") 
+  tab_footnote("RCT: randomized controlled trial; GRADE: Grading of Recommendations Assessment, Development and Evaluation; Est: effect estimate; CI: confidence interval; RR: risk ratio; MD: mean difference; RD: risk difference.") |> 
+  tab_footnote("Changed after additional review.", locations = cells_body(columns = c(grade_change), rows = grade_change == "Very low → Low")) |>
+  tab_footnote("Corrected Shin 2020.", locations = cells_body(columns = c(estimate_95_percent_ci), rows = estimate_95_percent_ci %in% c(" 0.66 (0.28–1.50)", "-5.4 (-12.3 to 1.5)", " 0.75 (0.34–1.64)", "-3.6 (-16.6 to 9.5)", " 0.20 (0.02–1.71)", "-8.8 (-21.1 to 3.6)", "1.12 (0.57–2.20)", "-3.1 (-15.4 to 9.1)"))) |>
+  tab_footnote("Fixed coding error when collapsing arms for Shin 2020, that resulting in an incorrect denominator for the general anesthesia arm. Changed Li 2020 to exclude patients with preoperative delirium.", locations = cells_body(columns = c(estimate_95_percent_ci), rows = outcome == "Delirium"))
   # tab_footnote("Corrected model fitting parameter.", locations = cells_body(columns = prior_est, rows = outcome == "Mortality (in-hospital and 30-day)")) 
 
 ```
 
-There were no changes to the adverse event results following the search update.
-
 ```{r}
-#| tbl-cap: No changes to adverse events following search update.
-#| eval: false
+#| tbl-cap: Changes to adverse events following search update.
+#| eval: true
 #| html-table-processing: none
-tiva_inhaled_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "TIVAInhaled", range = "A24:R43")[, c(2:4, 10, 12, 13, 15:18)] |>
-  remove_empty(which = "cols") |>
+reg_gen_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "RegionalGeneral", range = "B33:P52") |>
+  # remove_empty(which = "cols") |>
   clean_names() |>
   mutate(
     across(everything(), ~ replace(.x, is.na(.x), "")),
     estimate_95_percent_ci = ifelse(estimate_95_percent_ci == "See Appendix", "See Below", estimate_95_percent_ci)
     ) 
 
-tiva_inhaled_dat |>
+reg_gen_dat |>
   gt(id = "one") |>
+  cols_hide(c(rct:n, grade_2, updated)) |> 
   cols_label(
     outcome = "Outcome",
-    rct = "RCT",
-    nrsi = "NRSI",
+    rct_new = "RCT",
     grade = "GRADE",
     measure = "Effect",
     estimate_95_percent_ci = "Est (CI)",
-    rct_new = "New RCT",
-    nrsi_new = "New NRSI",
-    prior_est = "Old Est (CI)",
+    rct_new = md("New<br/> RCT"),
+    prior_est = md("  Old<br/> Est (CI)"),
     grade_change = "GRADE Δ"
   ) |>
   cols_width(
     outcome ~ px(215),
-    rct ~ px(50),
-    nrsi ~ px(50),
+    rct_new ~ px(50),
     grade ~ px(95),
     measure ~ px(75),
-    estimate_95_percent_ci ~ px(120),
-    rct_new ~ px(45),
-    nrsi_new ~ px(50),
+    estimate_95_percent_ci ~ px(125),
+    rct_new ~ px(55),
     prior_est ~ px(120),
     grade_change ~ px(105),
   ) |>
   gt_theme_mg() |>
   tab_style(style = cell_text(size = "12px"), locations = cells_body(columns = everything())) |> 
   tab_style(style = cell_text(size = "11px"), locations = cells_column_labels(columns = everything())) |> 
-  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rct, nrsi, rct_new, nrsi_new))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rct, rct_new))) |>
   tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(estimate_95_percent_ci, measure, prior_est), rows = str_detect(measure, "RD"))) |>
-  tab_footnote("RCT: randomized controlled trial; NRSI: non-randomized study of intervention; GRADE: Grading of Recommendations Assessment, Development and Evaluation; Est: effect estimate; CI: confidence interval; RR: risk ratio; OR: odds ratio; RD: risk difference.")
+  tab_footnote("RCT: randomized controlled trial; NRSI: non-randomized study of intervention; GRADE: Grading of Recommendations Assessment, Development and Evaluation; Est: effect estimate; CI: confidence interval; RR: risk ratio; OR: odds ratio; RD: risk difference.") |> 
+  tab_footnote("Change to random effects.", locations = cells_body(columns = c(estimate_95_percent_ci), rows = prior_est  %in% c("-11.8 (-28.5 to 4.5)", "-3.7 (-10.6 to 3.3)", "-3.7 (-9.2 to 1.8)"))) |> 
+  tab_footnote("Corrected to use Hartung-Knapp adjustment.", locations = cells_body(columns = c(estimate_95_percent_ci), rows = prior_est  %in% c("-11.8 (-28.5 to 4.5)")))
 
 ```
 
@@ -237,8 +237,8 @@ Among older patients undergoing surgery and anesthesia, does neuraxial anesthesi
 
 ```{r reg_gen_balance}
 kq3_balance_main() |> 
-  # text_replace("See Appendix", "See below", locations = cells_body())
-  text_replace("See Appendix", "See Appendix", locations = cells_body())
+  text_replace("See Appendix", "See Appendix", locations = cells_body()) |> 
+  tab_footnote(md("RCT: randomized clinical trial; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; SMD: standardized mean difference; MD: mean difference; RD/1000: risk difference per 1000.")) 
 ```
 
 <font size = 4> Included complications and strength of evidence (GRADE) for neuraxial versus general anesthesia. </font>
@@ -611,7 +611,6 @@ reg_gen_delirium_tab <- delirium_meta_dat |>
   ) |>
   relocate(calc_percent, .after = delitotal_perc) |>
   unite(scale_delirium, cam:other, remove = TRUE, sep = "/", na.rm = TRUE) |>
-# VARIABLE: changed delirium index variable name  
   mutate(
     scale_delirium = ifelse(scale_delirium == "unspec", "NR", scale_delirium),
     scale_delirium = ifelse(scale_delirium == "DELIRIUM INDEX (DI)", "DI", scale_delirium)
@@ -633,7 +632,6 @@ reg_gen_delirium_tab <- delirium_meta_dat |>
     ) |> 
   relocate(cog_imp_nper, .after = pre_mmse)
 
-# TODO: fix in distiller
 # update for delirium now as correct "  0 (0)" to select for meta-analysis (note better fixed in data to avoid this fix)
 cog_imp_delirium_dat <- reg_gen_delirium_tab |> 
   select(refid_c, arm_id, cog_imp_nper)
@@ -739,8 +737,6 @@ del_meta_dat <- pairwise_dat |>
     )
   )
 
-# total_meta(del_meta_dat)
-
 gen_reg_delirium_meta <- metabin(event2, n2, event1, n1,
   data = del_meta_dat,
   studlab = study,
@@ -751,19 +747,22 @@ gen_reg_delirium_meta <- metabin(event2, n2, event1, n1,
   method.predict = "HK",
   prediction = TRUE,
   allstudies = TRUE,
-  # subset = surg_hip_oth == "Hip fx"
+  # subset = surg_hip_oth == "Hip Fx"
   subset = !str_detect(study, "dementia"),
   subgroup = surg_hip_oth
 )
 
 # gen_reg_delirium_meta_dementia <- update(gen_reg_delirium_meta, random = FALSE, subset = str_detect(study, "\\(dementia\\)"))
-# gen_reg_delirium_meta_nodementia <- update(gen_reg_delirium_meta,   method.random.ci = "HK", subset = refid_c %in% no_cogimpair_refid_c)
+# gen_reg_delirium_meta_nodementia <- update(gen_reg_delirium_meta, method.random.ci = "HK", method.predict = "HK", subset = refid_c %in% no_cogimpair_refid_c)
 # soe_meta_result_rr_or(gen_reg_delirium_meta_dementia, effect = "RR", digits = 2) |> str_remove("; PI  NA– NA\\)")
 # soe_meta_result_rr_or(gen_reg_delirium_meta_nodementia, effect = "RR", digits = 2)
 # summary(gen_reg_delirium_meta_nodementia)
+# summary(gen_reg_delirium_meta_dementia)
 # summary(gen_reg_delirium_meta)
 
-gen_reg_delirium_baseline_meta <- metaprop(event1, n1, data = del_meta_dat, studlab = study, method = "Inverse", prediction = TRUE, allstudies = TRUE, subset = !str_detect(study, "dementia"), subgroup = surg_hip_oth)
+gen_reg_delirium_meta_hip <- update(gen_reg_delirium_meta, subgroup = NULL, subset = (surg_hip_oth == "Hip Fx" & !str_detect(study, "dementia")))
+gen_reg_delirium_meta_nohip <- update(gen_reg_delirium_meta, method.random.ci = "classic", subgroup = NULL, subset = (surg_hip_oth != "Hip Fx" & !str_detect(study, "dementia")))
+gen_reg_delirium_baseline_meta <- metaprop(event1, n1, data = del_meta_dat, studlab = study, method = "Inverse", random = FALSE, prediction = TRUE, allstudies = TRUE, subset = !str_detect(study, "dementia"), subgroup = surg_hip_oth)
 
 # no subgroup
 gen_reg_delirium_meta_nosub <- update(gen_reg_delirium_meta, subgroup = NULL)
@@ -780,6 +779,8 @@ gen_reg_delirium_cummeta <- metacum(gen_reg_delirium_meta, pooled = "random", so
 
 ```
 
+<a id="figs_1-6"></a>
+
 ### *Pooled*
 
 <caption_mg> `r figure_ref()` Delirium incidence for neuraxial versus general anesthesia. </caption_mg>
@@ -787,7 +788,7 @@ gen_reg_delirium_cummeta <- metacum(gen_reg_delirium_meta, pooled = "random", so
 ```{r delirium_meta_forest}
 #| echo: false
 #| include: false
-png("assets/kq3_delirium_meta_forest.png", width = 9.95, height = 7.05, units = "in", res = 300)
+png("assets/kq3_delirium_meta_forest.png", width = 9.95, height = 5.8, units = "in", res = 300)
 forest(gen_reg_delirium_meta,
   allstudies = TRUE,
   common = TRUE,
@@ -795,37 +796,38 @@ forest(gen_reg_delirium_meta,
   label.c = "General",
   rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
   rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
-  # label.right = "General",
-  # label.left = "Favors: Neuraxial",
-  just.addcols.right = "right",
+  just.addcols.right = "center",
   digits = 2,
   digits.tau2 = 1,
   overall.hetstat = TRUE,
   print.I2.ci = TRUE,
-  # sortvar = year,
   prediction = TRUE,
-  subgroup = TRUE,
+  subgroup = FALSE,
   prediction.subgroup = TRUE,
   print.subgroup.name = FALSE,
   fs.xlab = 11,
   pooled.events = TRUE,
   print.pval.Q = FALSE,
   xlim = c(0.1, 10),
-  # xlab = "Favors: Neuraxial                          General",
-  # label.right = "Favors General",
-  # label.left = "Favors Neuraxial",
+  xlab = "Favors: Neuraxial                                 General            ",
   addrows.below.overall = 4,
   fs.test.subgroup = 10,
-  fs.hetstat = 10
+  fs.hetstat = 10,
+  text.addline1 = "Hip fracture: 1.08 (95% CI, 0.87–1.35; prediction interval 0.86–1.37)",
+  text.addline2 = "Other: 0.74 (95% CI, 0.35–1.57; prediction interval 0.04–13.53)"
 )
 dev.off()
 ```
 
 ![](assets/kq3_delirium_meta_forest.png){#fig-delirium-main fig.align="left" width="71%"}
 
-<foot_mg>RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/> Risk ratios not applying the Hartung-Knapp adjustment --- hip fracture 1.08 (95% CI, 0.89--1.31), others 0.74 (95% CI: 0.35--1.57); random effects pooled estimate weights — Neuman 2021 (63.6%), Brown 2021 (11.9%), Li 2022 (9.4%), and Shin 2020 (5.1%).<br/> `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> `r paste0("Delirium was designated a primary or secondary outcome in ", prim_sec_out_fun(prim_delirium, delirium_meta_dat$refid), " and ", prim_sec_out_fun(sec_delirium, delirium_meta_dat$refid), " of trials, respectively.")`<br/>
-In subgroups from O'Brien 2023 (Neuman 2021) and Li 2022 of patients with dementia RR 1.07 (95% CI, 0.83–1.38).<br/>
-In 7 studies including or reporting results for patients without dementia RR 1.03 (95% CI, 0.60–1.75; PI 0.38–2.73)
+<foot_mg>RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> 
+Risk of bias ratings: low +, some concerns ?, high -- . <br/> 
+Random effects pooled estimate weights — Neuman 2021 (63.6%), Brown 2021 (11.9%), Li 2022 (9.4%), and Shin 2020 (5.1%).<br/> 
+`r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> 
+`r paste0("Delirium was designated a primary or secondary outcome in ", prim_sec_out_fun(prim_delirium, delirium_meta_dat$refid), " and ", prim_sec_out_fun(sec_delirium, delirium_meta_dat$refid), " of trials, respectively.")`<br/>
+In subgroups from O'Brien 2023 (Neuman 2021) and Li 2022 of patients with dementia RR 1.08 (95% CI, 0.83–1.39; common effects model).<br/>
+In 8 studies including or reporting results for patients without dementia RR 1.03 (95% CI, 0.67–1.57; prediction interval 0.54–1.97).
 </foot_mg>  
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
@@ -883,7 +885,10 @@ dev.off()
 ```
 ![](assets/kq3_delirium_meta_forest_rd.png){fig.align="left" width="75%"}
 
-<foot_mg> Incidence of postoperative delirium with general anesthesia: <br/> Overall 9.4 per 100 (95% CI, 5.2 to 16.1)<br/> Hip fracture 7.9 per 100 (95% CI, 3.5 to 17.2)<br/> Other 11.1 per 100 (95% CI, 4.1 to 26.4) </foot_mg> 
+<foot_mg> Pooled incidence of postoperative delirium with general anesthesia (common effects models): <br/> 
+Overall 14.7 per 100 (95% CI, 13.0 to 16.6)<br/> 
+Hip fracture 15.1 per 100 (95% CI, 13.1 to 17.4)<br/> 
+Other 13.3 per 100 (95% CI, 10.5 to 17.3) </foot_mg> 
 
 :::
 
@@ -990,12 +995,13 @@ rm(hipfx_study, temp, fitted_meta)
 
 ![](assets/kq3_delirium_meta_bubble.png){width="75%"}
 
-<foot_mg> No suggestion for RR dependence on baseline risk. Asterisks indicate trials limited to hip fracture repair. <br/> The pooled incidence of postoperative delirium with general anesthesia was 9.4 per 100 (95% CI, 5.2 to 16.1) overall, following hip fracture was 7.9 per 100 (95% CI, 3.5 to 17.2), and among other surgical procedures 11.1 per 100 (95% CI, 4.1 to 26.4)</foot_mg> 
+<foot_mg> No suggestion for RR dependence on baseline risk. Asterisks indicate trials limited to hip fracture repair. <br/> 
+The overall pooled incidence of postoperative delirium (common effect model) with general anesthesia was 14.7 per 100 (95% CI, 13.0 to 16.6), following hip fracture was 15.1 per 100 (95% CI, 13.1 to 17.4), and for other surgical procedures 13.3 per 100 (95% CI, 10.5 to 17.3).</foot_mg> 
 
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <caption_mg> `r figure_ref()` Summary risk of bias from randomized clinical trials comparing neuraxial to general anesthesia (weighted). </caption_mg>
+#### <caption_mg> `r figure_ref()` Summary risk of bias from randomized clinical trials reporting delirium (weighted). </caption_mg>
 
 ```{r rob2_summary_delirium, fig.height = 3, out.width = "60%"}
 rob_summary_meta_weighted_subset_fun(gen_reg_delirium_meta)
@@ -1088,7 +1094,7 @@ dncr_dat <- dncr_dat |>
 rm(dncr_rr_ref)
 ```
 
-<caption_mg> `r table_ref()` Delayed neurocognitive recovery incidence and ascertainment in randomized clinical trials comparing neuraxial to general anesthesia. </caption_mg>
+<caption_mg> `r table_ref()` Delayed neurocognitive recovery incidence and ascertainment. </caption_mg>
 
 ```{r dncr_gt}
 #| eval: true
@@ -1177,31 +1183,21 @@ dncr_dat |>
 
 ```{r dncr_ncd_likert_dat}
 #| eval: false
+# to inspect 
 temp_dat <- likert_dat |>
   filter(if_any(c(cog_func_cdr, cog_func_cfq, cog_func_dst, cog_func_mmse, cog_func_moca, cog_func_trail, cog_func_other), ~ !is.na(.x))) |> 
   select(refid, study, starts_with(c("cfq", "cdr", "digit", "mmse", "moca", "trail", "othercog"))) |> 
-  select(refid, study, starts_with("mmse"))
-  # remove_empty(which = "cols") 
+  select(refid, study, starts_with("mmse")) |> 
+  remove_empty(which = "cols")
 
 writexl::write_xlsx(temp_dat, "/Users/mgrant/Desktop/temp_dat.xlsx")
-
-  # filter(if_any(c(mmse_time1, mmse_time2, mmse_time3, mmse_time1, mmselast_time, mmsetotal_time), ~ !is.na(.x))) |>
-  
-  filter(if_any(c(mmse_time1, mmse_time2, mmse_time3, mmse_time1, mmselast_time, mmsetotal_time), ~ !is.na(.x))) |> 
-  select(refid, study, mmse_time1, mmse_time2, mmse_time3, mmse_time1, mmselast_time, mmsetotal_time)
-  select(starts_with("mmse"))
-  filter(if_any(c(mmse_M1, mmse_SD1, mmse_Med1, mmse_RL1, mmse_RU1, mmse_IQRL1, mmse_IQRU1, mmse_M2, mmse_SD, mmse_Med2, mmse_RL2, mmse_RU2, mmse_IQRL2, mmse_IQRU2, mmse_M3, mmse_SD, mmse_Med3, mmse_RL3, mmse_RU3, mmse_IQRL3, mmse_IQRU3, mmselast_M, mmselast_SD, mmselast_Med, mmselast_RL, mmselast_RU, mmselast_IQRL, mmselast_IQRU, mmsetotal_M, mmsetotal_SD, mmsetotal_Med, mmsetotal_RL, mmsetotal_RU, mmsetotal_IQRL, mmsetotal_IQRU), ~ !is.na(.x)))
-  # > 30 day exam
-  # filter(if_any(matches("neurocog.*time.*"), ~ .x <= 30)) |>
-  # mutate(
-  #   arm_n = ifelse(!is.na(neurocog_update_arm_n), neurocog_update_arm_n, arm_n)
-  # )
-
 ```
+
+<a id="fig-7"></a>
 
 ### *Pooled*
 
-<caption_mg> `r figure_ref()` Delayed neurcognitive recovery for neuraxial versus general anesthesia. </caption_mg>
+<caption_mg> `r figure_ref()` Delayed neurcognitive recovery. </caption_mg>
 
 ```{r dncr_meta} 
 #| echo: false
@@ -1236,6 +1232,7 @@ gen_reg_dncr_meta <- metabin(event2, n2, event1, n1,
   sm = "RR",
   method = "MH",
   method.tau = "REML",
+  method.random.ci = "classic",
   hakn = FALSE,
   prediction = TRUE
 )
@@ -1283,7 +1280,19 @@ temp <- print(gen_reg_dncr_meta) |>
 ```
 
 <foot_mg> `r temp` </foot_mg>
+
 :::
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <caption_mg> `r figure_ref()` Summary risk of bias from randomized clinical trials reporting delayed neurocognitive recovery (weighted). </caption_mg>
+
+```{r rob2_summary_dncr, fig.height = 3, out.width = "60%"}
+rob_summary_meta_weighted_fun(gen_reg_dncr_meta)
+# rob_summary_fun(delirium_meta_dat$refid)
+```
+:::
+
+<foot_mg> `r temp` </foot_mg>
  
 ## **Postoperative Neurocognitive Disorder**
 
@@ -1466,11 +1475,15 @@ tribble(
   tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(n_per, rr_ci))) |>
   tab_footnote("Inability to walk without human assistance at 60 days.", locations = cells_column_labels(columns = n_per)) |>
   tab_footnote("Gen: general anesthesia; Neur: neuraxial anesthesia.", locations = cells_column_labels(columns = arm)) |>
-  tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:rr_ci), rows = str_detect(arm, "Neur")))
+  tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(arm_n:rr_ci), rows = str_detect(arm, "Neur"))) |> 
+  tab_footnote("Equivalent standardized mean difference: 0.04 (95% CI, -0.13 to 0.20).", locations = cells_body(columns = c(rr_ci), rows = arm == 'Neur'))
+
+# calculate smd
+# or2smd(or_ln_te_fun(104, 684, 101, 701), or_ln_se_fun(104, 684, 101, 701))
 
 ```
 
-<caption_mg> `r table_ref()` Physical functional status ascertained ascertained by various instruments in randomized clinical trials comparing neuraxial to general anesthesia. </caption_mg>
+<caption_mg> `r table_ref()` Physical functional status and instrument in randomized clinical trials comparing neuraxial to general anesthesia. </caption_mg>
 
 ```{r exp_std_adl}
 #| include: true
@@ -1724,7 +1737,7 @@ adl_long_dat |>
   tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(smd, age_table, scale))) |>
   tab_style(style = cell_text(align = "left"),        locations = cells_column_labels(columns = c(arm))) |>
   tab_footnote("SMD: standardized mean difference; Gen: general; Neur: neuraxial.") |>
-  tab_footnote("Arrow indicates better functional outcome.", locations = cells_column_labels(columns = scale)) |>
+  tab_footnote("Arrow direction indicates better functional outcome.", locations = cells_column_labels(columns = scale)) |>
   tab_footnote("Composite WOMAC includes pain, stiffness, and physical function. Physical function accounts for 68 of the 96 points.", locations = cells_body(columns = scale, rows = scale == "WOMAC")) |>
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, table))) |> 
   tab_footnote("Direction reversed so that lower favors neuraxial consistent with other scales.", locations = cells_body(columns = smd, rows = smd == "-0.26 (-0.78 to 0.25)")) |> 
@@ -1733,13 +1746,24 @@ adl_long_dat |>
 
 ```
 
+<a id="fig-function"></a>
+
 ### *Pooled*
 
 <caption_mg> `r figure_ref()` Pooled standardized mean differences for physical functional status at 30 to 90 days. Lower represents better with neuraxial anesthesia. </caption_mg>
 
-```{r}
+```{r function_meta}
 #| echo: false
 #| include: false
+
+# calculate smd and se from neuman 2021 primary result to include in sensitivity pooled analysis
+neuman_walk <- or2smd(or_ln_te_fun(104, 684, 101, 701), or_ln_se_fun(104, 684, 101, 701))
+neuman_walk <- data.frame(matrix(c("Neuman 2021", neuman_walk$TE.common, neuman_walk$seTE.common), nrow = 1, ncol = 3)) 
+names(neuman_walk) <- c("study", "te", "se_te")
+neuman_walk <- neuman_walk |> mutate(study = as.character(study), te = as.numeric(te), se_te = as.numeric(se_te)) |>  tibble()
+
+# other data 
+adl_meta_dat <- adl_meta_dat |> filter(time != 180) 
 
 physical_meta <- metacont(
   mean.e = mean_Neur, sd.e = sd_Neur, n.e = n_Neur, mean.c = mean_Gen, sd.c = sd_Gen, n.c = n_Gen,
@@ -1749,7 +1773,27 @@ physical_meta <- metacont(
   subset = time != 180,
 )
 
-png("assets/kq3_function_meta.png", width = 8.75, height = 2.8, units = "in", res = 300)
+# as odds ratio: smd2or(physical_meta)
+
+study <- physical_meta$studlab
+te <- physical_meta$TE
+se_te <- physical_meta$seTE
+
+physical_sens_dat <- bind_rows(
+  tibble(study, te, se_te)[c(1, 3), ],
+  neuman_walk
+)
+
+physical_sens_meta <- metagen(
+  te,
+  se_te,
+  sm = "SMD",
+  data = physical_sens_dat,
+)
+
+# smd2or(physical_sens_meta)
+
+png("assets/kq3_function_meta.png", width = 8.68, height = 2.8, units = "in", res = 300)
 forest(physical_meta,
   weight.study = "random",
   common =  FALSE,
@@ -1782,6 +1826,11 @@ dev.off()
 ```
 
 ![](assets/kq3_function_meta.png){fig.align="left" width="62%"}
+
+<foot_mg> Equivalent OR 1.02 (95% CI, 0.50–2.14).<br/>
+Using Neuman 2021 primary result from 1385 participants in a sensitivity analysis yield a pooled SMD -0.07 (95% CI, -0.25 to 0.12) and equivalent OR 0.89 (95% CI, 0.63–1.24).
+</foot_mg> 
+
 
 ## **Complications**
 
@@ -1879,12 +1928,16 @@ adverse_events_dat <- adverse_events_dat |>
   select(refid, year, arm_id, study, study_l, study_compl, arm_n, arm, n, age_table, surgs_single, n_per, bar, rd_ci, complication, design_f_lab, detail_cardiac, detail_renal)
 
 # for summary table
-# adverse_events_dat |> 
-#   group_by(refid, arm_id) |> 
+# adverse_events_dat |>
+#   group_by(refid, arm_id) |>
 #   slice(1) |> 
-#   ungroup() |> 
+#   ungroup() |>
 #   summarise(total = sum(arm_n))
-
+# 
+# adverse_events_dat |>
+#   select(refid) |>
+#   distinct() 
+  
 ```
 
 ```{r complications_gt}
@@ -1962,7 +2015,8 @@ adverse_events_gt_dat |>
   tab_footnote("Also reported hypo- (12.3% vs. 9.8%) or hypertension (3.8% vs. 12.8%), and left heart failure (0.9% vs. 0%).", locations = cells_body(columns = c(study_l), rows = !is.na(detail_cardiac) & study == "Li 2022" & arm_id == 1)) |>
   tab_footnote("AKI",                                   locations = cells_body(columns = c(study_l), rows = detail_renal == "AKI")) |>
   tab_footnote("Renal failure",                         locations = cells_body(columns = c(study_l), rows = detail_renal == "Renal failure")) |>
-  tab_footnote("Verus combined general arms — RD 0.7% (-8.8 to 7.4), RR 0.90 (0.28–2.81).", locations = cells_body(columns = c(rd_ci), rows = rd_ci == c("0.2% (-8.8, 9.3)")))
+  tab_footnote("Verus combined general arms — RD 0.7% (-8.8 to 7.4), RR 0.90 (0.28–2.81).", locations = cells_body(columns = c(rd_ci), rows = rd_ci == c("0.2% (-8.8, 9.3)"))) |> 
+  tab_footnote("With general arms combined RR 0.90 (95% CI, 0.29–2.81).", locations = cells_body(columns = c(rd_ci), rows = study_compl == "Shin 2020pulm" & arm_id == 3))
 ```
 
 ### *Pooled*
@@ -2013,8 +2067,8 @@ adverse_meta_wide_dat <- adverse_meta_dat |>
   left_join(rob2_meta_dat, by = "refid") |> 
   left_join(surgs |> select(refid, surgs_single), by = "refid") |>
   mutate(
-    surg_hip_oth = ifelse(refid %in% ortho_hipfx_only_refid, "Hip fx", "Other"),
-    surgs_single = ifelse(surg_hip_oth == "Hip fx", "Hip fx", surgs_single)
+    surg_hip_oth = ifelse(refid %in% ortho_hipfx_only_refid, "Hip Fx", "Other"),
+    surgs_single = ifelse(surg_hip_oth == "Hip Fx", "Hip Fx", surgs_single)
   ) 
 
 ```
@@ -2022,7 +2076,7 @@ adverse_meta_wide_dat <- adverse_meta_dat |>
 ```{r complication_functions}
 complication_meta <- c("Cardiac", "MI", "Cardiac Arrest", "Stroke", "Renal", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Reintubation")
 
-complication_meta_fun <- function(compl_label, use_hakn = TRUE, predictive = TRUE){
+complication_meta_fun <- function(compl_label, use_hakn = "HK", predictive = TRUE){
 meta_dat <- adverse_meta_wide_dat |> 
     filter(complication %in% compl_label)
 
@@ -2034,7 +2088,7 @@ complication_bin <- metabin(
   method.tau = "REML",
   sm = "RR",
   prediction = predictive,  
-  hakn = use_hakn,
+  method.random.ci = use_hakn,
   allstudies = FALSE,
 )  
 }
@@ -2070,7 +2124,7 @@ forest(adverse_meta,
 )
 }
 
-complication_meta_riskdiff_fun <- function(compl_label, use_hakn = TRUE, predictive = TRUE){
+complication_meta_riskdiff_fun <- function(compl_label, use_hakn = "HK", predictive = TRUE){
 meta_dat <- adverse_meta_wide_dat |> 
     filter(complication %in% compl_label)
 
@@ -2082,7 +2136,7 @@ complication_bin <- metabin(
   method.tau = "REML",
   sm = "RD",
   prediction = predictive,  
-  hakn = use_hakn,
+  method.random.ci = use_hakn,
   allstudies = FALSE,
 )  
 }
@@ -2118,9 +2172,11 @@ forest(adverse_meta,
 }
 ```
 
+<a id="fig-myocardial-infarction"></a>
+
 #### Myocardial Infarction
 
-<caption_mg> `r figure_ref()` **Risk ratio** for myocardial infarction (neuraxial versus general anesthesia; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` **Risk ratio** for myocardial infarction. </caption_mg>
 
 ```{r complication_mi}
 #| echo: false
@@ -2134,9 +2190,11 @@ dev.off()
 
 ![](assets/kq3_complication_mi.png){fig.align="left" width="58%"}
 
+<a id="fig-bradycardia"></a>
+
 #### Bradycardia
 
-<caption_mg> `r figure_ref()` **Risk ratio** for bradycardia (neuraxial versus general anesthesia; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` **Risk ratio** for bradycardia. </caption_mg>
 
 ```{r complication_bradycardia}
 #| echo: false
@@ -2156,24 +2214,27 @@ bradycardia_footnote <- cardiac_compl |>
 png("assets/kq3_complication_brady.png", width = 8.1, height = 3.2, units = "in", res = 300)
 temp_meta <- complication_meta_fun("Other Cardiac")
 temp_meta <- update(temp_meta, subset = study %in% c("Carron 2007", "Nishikawa 2007b", "Wongyingsinn 2020", "Bielka 2021"))
-complication_forest_fun(temp_meta, predictive = FALSE, risk_diff_meta_rr())
+complication_forest_fun(temp_meta, predictive = FALSE, risk_diff_meta_subset_rr())
 dev.off()
+
 ```
 
 ![](assets/kq3_complication_brady.png){fig.align="left" width="58%"}
 
 <foot_mg> `r bradycardia_footnote`. <br/> Prediction interval not displayed due to limited events. </foot_mg> 
 
+<a id="fig-stroke"></a>
+
 #### Stroke
 
-<caption_mg> `r figure_ref()` **Risk ratio** for stroke (neuraxial versus general anesthesia; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` **Risk ratio** for stroke. </caption_mg>
 
 ```{r complication_stroke}
 #| echo: false
 #| include: false
 
-png("assets/kq3_complication_stroke.png", width = 8.1, height = 3.0, units = "in", res = 300)
-temp_meta <- complication_meta_fun("Stroke", use_hakn = FALSE, predictive = FALSE)
+png("assets/kq3_complication_stroke.png", width = 8.1, height = 3.0, units = "in", res = 300) 
+temp_meta <- complication_meta_fun("Stroke", use_hakn = "classic", predictive = FALSE)
 complication_forest_fun(temp_meta, predictive = FALSE, risk_diff_meta_rr())
 dev.off()
 
@@ -2182,32 +2243,36 @@ dev.off()
 
 ![](assets/kq3_complication_stroke.png){fig.align="left" width="58%"}
 
+<a id="fig-renal"></a>
+
 #### AKI/Renal Failure
 
-<caption_mg> `r figure_ref()` **Risk ratio** for renal complications (neuraxial versus general anesthesia; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` **Risk ratio** for acute kidney injury or renal failure. </caption_mg>
 
 ```{r complication_renal}
 #| echo: false
 #| include: false
  
-png("assets/kq3_complication_renal.png", width = 8.1, height = 3.2, units = "in", res = 300)
-temp_meta <- complication_meta_fun("AKI/Renal Failure", use_hakn = FALSE, predictive = FALSE)
-complication_forest_fun(temp_meta, predictive = FALSE, risk_diff_meta_rr())
+png("assets/kq3_complication_renal.png", width = 8.1, height = 3.37, units = "in", res = 300)
+temp_meta <- complication_meta_fun("AKI/Renal Failure", use_hakn = "classic", predictive = FALSE)
+complication_forest_fun(temp_meta, predictive = TRUE, risk_diff_meta_rr())
 dev.off()
 
 ```
 ![](assets/kq3_complication_renal.png){fig.align="left" width="58%"}
 
+<a id="fig-pneumonia"></a>
+
 #### Pneumonia
 
-<caption_mg> `r figure_ref()` **Risk ratio** for pneumonia (neuraxial versus general anesthesia; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` **Risk ratio** for pneumonia. </caption_mg>
 
 ```{r complication_pneumonia}
 #| echo: false
 #| include: false
 
 png("assets/kq3_complication_pneumonia.png", width = 8.1, height = 4.2, units = "in", res = 300)
-temp_meta <- complication_meta_fun("Pneumonia", use_hakn = TRUE, predictive = FALSE)
+temp_meta <- complication_meta_fun("Pneumonia", use_hakn = "HK", predictive = FALSE)
 # temp_meta <- update(temp_meta, subgroup = surg_hip_oth)
 complication_forest_fun(temp_meta, "Similar arms combined for Liang 2017. Hip fracture studies only RR 0.48 (0.33–0.70).", text.addline2 = risk_diff_meta_rr())
 dev.off()
@@ -2215,16 +2280,18 @@ dev.off()
 ```
 ![](assets/kq3_complication_pneumonia.png){fig.align="left" width="58%"}
 
+<a id="fig-pulmonary-embolism"></a>
+
 #### Pulmonary Embolism
 
-<caption_mg> `r figure_ref()` **Risk ratio** for pulmonary embolism (neuraxial versus general anesthesia; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` **Risk ratio** for pulmonary embolism. </caption_mg>
 
 ```{r complication_pe}
 #| echo: false
 #| include: false
 
 png("assets/kq3_complication_pe.png", width = 8.1, height = 4, units = "in", res = 300)
-temp_meta <- complication_meta_fun("Pulmonary Embolism", use_hakn = TRUE, predictive = FALSE)
+temp_meta <- complication_meta_fun("Pulmonary Embolism", use_hakn = "HK", predictive = TRUE)
 complication_forest_fun(temp_meta, "Similar arms combined for Liang 2017.", text.addline2 = risk_diff_meta_rr())
 dev.off()
 
@@ -2342,6 +2409,8 @@ satis_dat_gt |>
 
 ```
 
+<a id="fig-satisfaction"></a>
+
 ### *Pooled*
 
 <caption_mg> `r figure_ref()` Risk ratio comparing higher versus lower categories of patient satisfaction. </caption_mg>
@@ -2362,13 +2431,13 @@ satis_meta <- metabin(satis_n_Neur, arm_n_Neur, satis_n_Gen, arm_n_Gen,
   sm = "RR",
   method = "MH",
   method.tau = "REML",
-  hakn = FALSE,
-  prediction = FALSE,
+  method.random.ci = "classic",
+  prediction = TRUE,
   allstudies = TRUE,
 )
 
 # summary(plac_meta)
-png("assets/kq3_satis_meta.png", width = 8.1, height = 4.4, units = "in", res = 300)
+png("assets/kq3_satis_meta.png", width = 8.1, height = 4.6, units = "in", res = 300)
 forest(satis_meta,
   allstudies = TRUE,
   # random = FALSE,
@@ -2390,20 +2459,22 @@ forest(satis_meta,
   prediction = TRUE,
   xlim = c(0.8, 1.8),
   at = c(0.8, 1, 1.3, 1.8),
-  xlab = "Favors: General                       Neuraxial       ",
+  xlab = "Favors: General                                 Neuraxial              ",
   addrows.below.overall = 4,
-  # text.addline1 = "Comparing higher versus lower categories (see table)."
+  text.addline1 = "Comparing higher versus lower categories (see table)."
 )
 dev.off()
 ```
 
 ![](assets/kq3_satis_meta.png){fig.align="left" width="60%"}
 
+<foot_mg> Pooled effect weights dominated by Neuman 2022 (62%), Salonia (12%), and Xu 2020 (11%). </foot_mg> 
+
 <br/>
 
 ## **Length of Stay**
 
-<caption_mg> `r table_ref()` Length of stay according to procedure classification and comparator. </caption_mg>
+<caption_mg> `r table_ref()` Length of stay according to procedure classification. </caption_mg>
 
 ```{r length_of_stay}
 #| eval: true
@@ -2531,7 +2602,7 @@ los_tab |>
 
 ### *Pooled*
 
-<caption_mg> `r figure_ref()` Mean difference in lengths of stay (neuraxial versus general anesthesia; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` Mean difference in lengths of stay. </caption_mg>
 
 ```{r los_meta}
 #| include: false
@@ -2661,6 +2732,7 @@ dc_loc_dat <- dichot_dat |>
   group_by(study) |> 
   mutate(
     ref_disch_n = ifelse(arm_id > 1, first(disch_inst_n), NA),
+    ref_disch_n = ifelse(str_detect(study, "O'Brien") & arm_id == 3, NA, ref_disch_n),
     ref_arm_n = ifelse(arm_id > 1, first(arm_n), NA),
     rr_ci = ifelse(!is.na(ref_disch_n), rr_ci_fun(disch_inst_n, arm_n, ref_disch_n, ref_arm_n), NA)) |> 
   select(-starts_with("ref_")) 
@@ -2790,7 +2862,7 @@ mortality_dat <- dichot_dat |>
 
 ```
 
-<caption_mg> `r table_ref()` Reported in-hospital, 30-day, and 1-year mortality from randomized clinical trials.</caption_mg>
+<caption_mg> `r table_ref()` Reported in-hospital, 30-day, and 1-year mortality.</caption_mg>
 
 ```{r mortality_rct_gt}
 #| eval: true
@@ -2866,6 +2938,8 @@ mortality_dat |>
 
 ```
 
+<a id="fig-mort-30d"></a>
+
 ### *Pooled*
 
 ```{r mortality_hosp_30d_meta}
@@ -2874,14 +2948,13 @@ mortality_rct_meta_dat <- mortality_dat |>
   filter(mort_period %in% c("Hospital", "30-day")) |>
   # exclude Shin 2020 hospital; retain 30-day
   filter(!(study == "Shin 2020" & mort_period == "Hospital")) |> 
-  filter(refid != 16596) |> # exclude Neuman 2016
   mutate(
-    delitotal_n = case_when(
-      study == "Shin 2020" & arm_id == 1 ~ collapse_dichot(dichot_dat, "Shin 2020", c(1, 2), mort_n),
+    mort_n = case_when(
+      study == "Shin 2020" & arm_id == 1 ~ 3,
       .default = mort_n
     ),
     arm_n = case_when(
-      study == "Shin 2020" & arm_id == 2 ~ collapse_dichot(dichot_dat, "Shin 2020", c(1, 2), arm_n),
+      study == "Shin 2020" & arm_id == 1 ~ collapse_dichot(dichot_dat, "Shin 2020", c(1, 2), arm_n),
       .default = arm_n
     ),
   ) |>
@@ -2901,7 +2974,7 @@ pairwise_rct_mort_dat <- pairwise(
 
 ```
 
-```{r}
+```{r baseline_risk_plot}
 #| eval: false
 temp <- pairwise_rct_mort_dat |> 
   mutate(
@@ -2955,7 +3028,7 @@ dev.off()
 
 ```
 
-<caption_mg> `r figure_ref()` **Risk ratio** for hospital or 30-day mortality (neuraxial versus general; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` **Risk ratio** for hospital or 30-day mortality. </caption_mg>
 
 ```{r mort_rct_meta}
 #| echo: false
@@ -2966,15 +3039,15 @@ mort_meta_dat <- pairwise_rct_mort_dat |>
   left_join(surgs |> select(refid, surgs_single), by = "refid") |>
   mutate(
     year = str_extract(study, "\\d{4}"),
-    surg_hip_oth = ifelse(refid %in% ortho_hipfx_only_refid, "Hip fx", "Other"),
-    surgs_single = ifelse(surg_hip_oth == "Hip fx", "Hip fx", surgs_single)
+    surg_hip_oth = ifelse(refid %in% ortho_hipfx_only_refid, "Hip Fx", "Other"),
+    surgs_single = ifelse(surg_hip_oth == "Hip Fx", "Hip Fx", surgs_single)
   ) |>
   select(study, year, event2, n2, event1, n1, D1:Overall, mort_period, refid, surg_hip_oth, surgs_single) 
 
 # total_meta(mort_meta_dat)
 # refid_meta_fun(mort_meta_dat)
 
-mort_rct_meta <- metabin(event2, n2, event1, n1,
+mort_rct_30d_meta <- metabin(event2, n2, event1, n1,
   data = mort_meta_dat,
   studlab = study,
   subgroup = surg_hip_oth,
@@ -2982,14 +3055,14 @@ mort_rct_meta <- metabin(event2, n2, event1, n1,
   sm = "RR",
   method = "MH",
   method.tau = "REML",
-  hakn = TRUE,
+  method.random.ci = "HK",
   prediction = FALSE,
   allstudies = FALSE,
 )
 
 # summary(plac_meta)
-png("assets/kq3_mort_rct_meta.png", width = 9, height = 7.1, units = "in", res = 300)
-forest(mort_rct_meta,
+png("assets/kq3_mort_rct_meta.png", width = 9.03, height = 4.85, units = "in", res = 300)
+forest(mort_rct_30d_meta,
   allstudies = TRUE,
   # random = FALSE,
   label.e = "Neuraxial",
@@ -3006,30 +3079,40 @@ forest(mort_rct_meta,
   print.subgroup.name = FALSE,
   fs.xlab = 11,
   pooled.events = TRUE,
+  subgroup = FALSE,
+  test.subgroup = FALSE,
   # pscale = 10000,
   digits = 2, 
   print.pval.Q = FALSE,
   # xlim = c(0.1, 20),
   xlab = "Favors: Neuraxial                      General     ",
-  addrows.below.overall = 4,
-  text.addline1 = "Hartung-Knapp adjustment not applied. Overall random effects estimate with adjustment RR 0.64 (95% CI, 0.48–1.48)."
+  addrows.below.overall = 4
 )
 dev.off()
+
+# subgroup data edit as needed 
+# temp <- update(mort_rct_30d_meta, method.random.ci = "classic", subset = surgs_single != "Hip Fx", allstudies = FALSE, sm = "RD")
+# forest(temp, pooled.events = TRUE, pscale = 1000)
 
 ```
 ![](assets/kq3_mort_rct_meta.png){fig.align="left" width="65%"}
 
+<foot_mg> 
+Hip fracture RR 0.75 (95% CI, 0.34–1.64) <br/>
+Other RR 0.20 (95% CI, 0.02–1.71)
+</foot_mg> 
+
 <br/>
 
-<caption_mg> `r figure_ref()` **Risk difference (per 1000)** for hospital or 30-day mortality (neuraxial versus general; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` **Risk difference (per 1000)** for hospital or 30-day mortality. </caption_mg>
 
 ```{r mort_rct_rd_meta}
 #| echo: false
 #| include: false 
 
-png("assets/kq3_mort_rct_rd_meta.png", width = 9.03, height = 6.9, units = "in", res = 300)
-mort_rct_meta <- update(mort_rct_meta, sm = "RD", hakn = TRUE)
-forest(mort_rct_meta,
+png("assets/kq3_mort_rct_rd_meta.png", width = 9.03, height = 4.85, units = "in", res = 300)
+mort_rct_30d_rd_meta <- update(mort_rct_30d_meta, sm = "RD", method.random.ci = "HK")
+forest(mort_rct_30d_rd_meta,
   allstudies = TRUE,
   # random = FALSE,
   label.e = "Neuraxial",
@@ -3044,6 +3127,8 @@ forest(mort_rct_meta,
   prediction = TRUE,
   prediction.subgroup = TRUE,
   print.subgroup.name = FALSE,
+  subgroup = FALSE,
+  test.subgroup = FALSE,
   fs.xlab = 11,
   pooled.events = TRUE,
   pscale = 1000,
@@ -3055,12 +3140,24 @@ forest(mort_rct_meta,
 )
 dev.off()
 
+# subgroups
+# update(mort_rct_meta, method.random.ci = "classic", subset = surgs_single != "Hip Fx", allstudies = FALSE, pscale = 1000)
+
 ```
 ![](assets/kq3_mort_rct_rd_meta.png){fig.align="left" width="65%"}
 
+<a id="fig-mort-90d"></a>
+
+<foot_mg>  
+Hip fracture RD -3.6 (95% CI, -16.6 to 9.5)<br/>
+Other RD -8.8 (95% CI, -21.1 to 3.6)
+</foot_mg> 
+
+<br/>
+
 ```{r mortality_hosp_90d_meta}
 #| eval: true
-mortality_rct_meta_dat <- mortality_dat |>
+mortality_rct_meta_90d_dat <- mortality_dat |>
   filter(mort_period %in% c("90-day")) |>
   mutate(
     delitotal_n = case_when(
@@ -3068,53 +3165,52 @@ mortality_rct_meta_dat <- mortality_dat |>
       .default = mort_n
     ),
     arm_n = case_when(
-      study == "Shin 2020" & arm_id == 2 ~ collapse_dichot(dichot_dat, "Shin 2020", c(1, 2), arm_n),
+      study == "Shin 2020" & arm_id == 1 ~ collapse_dichot(dichot_dat, "Shin 2020", c(1, 2), arm_n),
       .default = arm_n
     )
   ) |>
   filter(!(study %in% c("Shin 2020") & arm_id %in% c(2))) |> 
   select(refid, study, arm, mort_n, arm_n, mort_period) 
 
-pairwise_rct_mort_dat <- pairwise(
+pairwise_rct_mort_90d_dat <- pairwise(
   treat = arm,
   event = mort_n,
   n = arm_n,
   studlab = study,
   allstudies = TRUE,
-  data = mortality_rct_meta_dat,
+  data = mortality_rct_meta_90d_dat,
   sm = "RR",
   keep.all.comparisons = TRUE
 )
 ```
 
-<caption_mg> `r figure_ref()` **Risk ratio** for 90-day mortality (neuraxial versus general; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` **Risk ratio** for 90-day mortality. </caption_mg>
 
 ```{r mort_rct_90d_meta}
 #| echo: false
 #| include: false
 
-mort_meta_dat <- pairwise_rct_mort_dat |> 
+mort_meta_90d_dat <- pairwise_rct_mort_90d_dat |> 
   mutate(year = str_extract(study, "\\d{4}")) |> 
   left_join(rob2_meta_dat, by = "refid") |>
   left_join(surgs |> select(refid, surgs_single), by = "refid") |>
   mutate(
     year = str_extract(study, "\\d{4}"),
-    surg_hip_oth = ifelse(refid %in% ortho_hipfx_only_refid, "Hip fx", "Other"),
-    surgs_single = ifelse(surg_hip_oth == "Hip fx", "Hip fx", surgs_single)
+    surg_hip_oth = ifelse(refid %in% ortho_hipfx_only_refid, "Hip Fx", "Other"),
+    surgs_single = ifelse(surg_hip_oth == "Hip Fx", "Hip Fx", surgs_single)
   ) |>
   select(study, year, event2, n2, event1, n1, D1:Overall, mort_period, refid, surg_hip_oth, surgs_single) 
 
 # total_meta(mort_meta_dat)
 # refid_meta_fun(mort_meta_dat)
 
-mort_rct_meta <- metabin(event2, n2, event1, n1,
-  data = mort_meta_dat,
+mort_rct_90d_meta <- metabin(event2, n2, event1, n1,
+  data = mort_meta_90d_dat,
   studlab = study,
   # cluster = refid,
   sm = "RR",
-  method = "MH",
+  method.random.ci = "classic",
   method.tau = "REML",
-  hakn = FALSE,
   prediction = TRUE,
   allstudies = FALSE,
 )
@@ -3122,7 +3218,7 @@ mort_rct_meta <- metabin(event2, n2, event1, n1,
 # summary(plac_meta)
 
 png("assets/kq3_mort_rct_90d_meta.png", width = 9, height = 3.05, units = "in", res = 300)
-forest(mort_rct_meta,
+forest(mort_rct_90d_meta,
   allstudies = TRUE,
   # random = FALSE,
   label.e = "Neuraxial",
@@ -3149,15 +3245,15 @@ dev.off()
 ```
 ![](assets/kq3_mort_rct_90d_meta.png){fig.align="left" width="65%"}
 
-<caption_mg> `r figure_ref()` **Risk difference (per 1000)** for 90-day mortality (neuraxial versus general; randomized clinical trials). </caption_mg>
+<caption_mg> `r figure_ref()` **Risk difference (per 1000)** for 90-day mortality. </caption_mg>
 
 ```{r mort_rct_rd_90dmeta}
 #| echo: false
 #| include: false
 
 png("assets/kq3_mort_rct_rd_90dmeta.png", width = 8.93, height = 3, units = "in", res = 300)
-mort_rct_meta <- update(mort_rct_meta, sm = "RD")
-forest(mort_rct_meta,
+mort_rct_90d_rd_meta <- update(mort_rct_90d_meta, sm = "RD")
+forest(mort_rct_90d_rd_meta,
   allstudies = TRUE,
   # random = FALSE,
   label.e = "Neuraxial",

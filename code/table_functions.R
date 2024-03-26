@@ -438,6 +438,19 @@ rob_summary_meta_weighted_fun <- function(meta) {
   rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind", weighted = TRUE)
 }
 
+# to use with meta object and subset
+rob_summary_meta_weighted_subset_fun <- function(meta) {
+  add_weights <- tibble(as.numeric(meta$data$refid[meta$subset]), meta$w.random / sum(meta$w.random)) |>
+    set_names("refid", "weight")
+  rob_temp_dat <- rob2_dat |>
+    filter(refid %in% meta$data$refid[meta$subset]) |>
+    select(refid, Study, D1:Overall) |>
+    left_join(add_weights, by = "refid") |>
+    rename(Weight = weight) |>
+    select(-refid)
+  rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind", weighted = TRUE)
+}
+
 robinsi_summary_fun <- function(robinsi_refids) {
   rob_temp_dat <- robinsi_dat |>
     filter(refid %in% {{ robinsi_refids }}) |>
@@ -457,10 +470,13 @@ robinsi_summary_fun <- function(robinsi_refids) {
 
 riskdiff_color <- "#888888"
 
-kq3_balance_main <- function() {
+kq3_balance_main <- function(exclude = "RD") {
   reg_gen_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "RegionalGeneral", range = "B4:L21") |>
   remove_empty(which = "cols") |>
   clean_names() |>
+  # filter(!is.na(outcome)) |>
+  filter(if(exclude == "RD/1000") !is.na(outcome) else TRUE) |>
+  # filter(measure != no_riskdiff) |>
   rename(est = estimate_95_percent_ci) |>
   # filter(!if_all(rct:est, ~ is.na(.x))) |>
     mutate(
@@ -525,19 +541,19 @@ reg_gen_dat |>
   tab_style(style = cell_text(indent = px(10)),       locations = cells_body(columns = c(outcome), rows = outcome %in% c("All procedures", "Hip fracture", "Other"))) |>
   tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(est, measure), rows = str_detect(measure, "RD"))) |>
   # tab_footnote(md("RCT: randomized clinical trial; [GRADE: Grades of Recommendation, Assessment, Development, and Evaluation](soe_gt.html#grade); RR: risk ratio; SMD: standardized mean difference; MD: mean difference; RD/100: risk difference per 100; RD/1000: risk difference per 1000; NR: not rated.")) |>
-  tab_footnote(md("RCT: randomized clinical trial; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; SMD: standardized mean difference; MD: mean difference; RD/1000: risk difference per 1000.")) |>
   tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
   tab_footnote("Studies reported 0 and 2 events.", locations = cells_body(columns = c(est), rows = outcome == "Cardiac arrest"), placement = "right") |>
   # tab_footnote(md("[Comparing higher/highest category or categories with lower ones.](kq3.html#patient-satisfaction)"), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |>
   tab_footnote(md("Comparing higher/highest category or categories with lower ones."), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |>
   tab_footnote("Complications reported variously across the 13 trials. ", locations = cells_body(columns = c(outcome), rows = outcome == "Complications"), placement = "right") |>
-  tab_footnote("Hip fracture trials RR 1.05 (0.76–1.43); others RR 0.74 (0.35–1.60; no Hartung-Knapp adjustment).", locations = cells_body(columns = c(est), rows = outcome == "Delirium"), placement = "right") |>
-  tab_footnote("RD per 100 for all surgeries 0.1 (-1.8 to 2.2); in hip fracture trials 1.3 (-1.3 to 3.9); others -2.2 (-9.2 to 4.8; no Hartung-Knapp adjustment).",  locations = cells_body(columns = c(est), rows = outcome == "Delirium"), placement = "right") |>
-  tab_footnote("Fixed effects model given only 2 trials.", locations = cells_body(columns = c(est), rows = outcome == "Other"), placement = "right")
+  tab_footnote("Hip fracture trials (n = 6) RR 1.08 (95% CI, 0.87–1.35); other procedures (n = 4) RR 0.74 (95% CI, 0.35–1.57).", locations = cells_body(columns = c(est), rows = outcome == "Delirium"), placement = "right") |>
+  tab_footnote("RD per 100 for all surgeries 0.1 (-1.8 to 2.2); in hip fracture trials 1.3 (-1.3 to 3.9); others -2.2 (-9.2 to 4.8).",  locations = cells_body(columns = c(est), rows = outcome == "Delirium"), placement = "right") |>
+  tab_footnote("Common effects model (2 trials).", locations = cells_body(columns = c(est), rows = outcome == "Other"), placement = "right") |>
+  tab_footnote("Using Neuman 2021 primary result of inability to walk 60 feet without human assistance in a sensitivity analysis including 1644 patients yield a pooled SMD -0.07 (95% CI, -0.25 to 0.12).", locations = cells_body(columns = c(est), rows = outcome == "Physical function"), placement = "right")
 }
 
 kq3_complications <- function() {
-  reg_gen_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "RegionalGeneral", range = "B33:L50") |>
+  reg_gen_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "RegionalGeneral", range = "B33:L52") |>
     remove_empty(which = "cols") |>
     clean_names() |>
     rename(est = estimate_95_percent_ci) |>
@@ -773,7 +789,7 @@ kq4_complications <- function(){
     tab_footnote("Cardiovascular, pulmonary, and acute kidney injury.", locations = cells_body(columns = c(outcome), rows = outcome == "Complications")) |>
     tab_footnote("Complications reported variously across the 13 trials. ", locations = cells_body(columns = c(rct), rows = outcome == "Complications"), placement = "right") |>
     tab_footnote("One study no events; the other two. ", locations = cells_body(columns = c(est), rows = outcome == "cardiac arrest"), placement = "right") |>
-    tab_footnote("Common/fixed effects model.", locations = cells_body(columns = c(est), rows = est %in% c("3.47 (0.57–21.2)", "1.7 (-0.7 to 4.1)")), placement = "right") |>
+    tab_footnote("Common effects model.", locations = cells_body(columns = c(est), rows = est %in% c("3.47 (0.57–21.2)", "1.7 (-0.7 to 4.1)")), placement = "right") |>
     tab_footnote("No events in 1 study; 3 in the other.", locations = cells_body(columns = c(est), rows = str_detect(est, "—")), placement = "right")
 }
 

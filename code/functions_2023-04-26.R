@@ -92,7 +92,9 @@ na_to_x <- function(variable, symbol = "\U00D7") {
 # format to n (percent)
 # n_per_fun(9, 28, 1)
 n_per_fun <- function(events_n, total, n_sig_dig = 1){
-  str_c(format(events_n, big.mark = ",")," (", formatC(events_n/total * 100, digits = n_sig_dig, format = "f"), ")")
+  temp <- str_c(format(events_n, big.mark = ",")," (", formatC(events_n/total * 100, digits = n_sig_dig, format = "f"), ")")
+  temp <- str_replace(temp, "100.0", "100")
+  temp <- str_replace(temp, "\\(0.0\\)", "(0)")
 }
 
 # for summary tables
@@ -332,6 +334,7 @@ mean_med_table_adl <- function(data, variable_select, observation_n = NULL, digs
     rename_with(~ gsub(variable_select, "", .x, fixed = TRUE)) |>
     rename_with(~ str_replace(.x, "[1-4]", "")) |>
     mutate(
+      # sd = ifelse(is.na(sd) & !is.na(ci95l + ci95u), (ci95u - ci95l) / (1.96 * 2), sd),
       sd = ifelse(is.na(sd) & !is.na(ci95l + ci95u), (ci95u - ci95l) / (1.96 * 2) * sqrt(arm_n), sd),
       sd_f = formatC(sd, digits = 1, format = "f"),
       table =
@@ -684,12 +687,13 @@ bubble_plot_data <- function(meta_object) {
 ## risk difference from meta with or ------------------ (2024-01-22 16:52) @----
 # riskdiff_ci_from_meta_or(temp_meta, pscale = 100)
 riskdiff_ci_from_meta_or <- function(meta_object, pscale = 1, digits = 2) {
-  temp <- metaprop(meta_object$data[[9]], meta_object$data[[7]])
+  temp <- metaprop(meta_object$data$.event.c, meta_object$data$.n.c)
   control_arm <- boot::inv.logit(temp$TE.common)
   odds_ratios <- exp(c(meta_object$TE.random, meta_object$lower.random, meta_object$upper.random))
   temp <- effectsize::oddsratio_to_arr(odds_ratios, control_arm) * pscale
   temp <- formatC(temp, digits = digits, format = "f")
-  paste0(temp[1], " per ", pscale, " (95% CI, ", temp[2], " to ", temp[3], ")")
+  control_arm <- formatC(control_arm * pscale, digits = digits, format = "f")
+  paste0(temp[1], " per ", pscale, " (95% CI, ", temp[2], " to ", temp[3], ")", ";", " control arm event rate ", control_arm, " per ", pscale, ".")
 }
 
 ## risk difference from meta with rr ------------------ (2024-01-22 16:53) @----
@@ -697,7 +701,32 @@ riskdiff_ci_from_meta_rr <- function(meta_object, pscale = 100, digits = 2) {
   meta_object <- update(meta_object, sm = "RD")
   temp <- c(meta_object$TE.random, meta_object$lower.random, meta_object$upper.random) * pscale
   temp <- formatC(temp, digits = digits, format = "f")
-  paste0(temp[1], " per ", pscale, " (95% CI, ", temp[2], " to ", temp[3], ")")
+  temp_control <- metaprop(meta_object$data$.event.c, meta_object$data$.n.c)
+  control_arm <- boot::inv.logit(temp_control$TE.common) * pscale
+  control_arm <- formatC(control_arm, digits = digits, format = "f")
+  paste0(temp[1], " per ", pscale, " (95% CI, ", temp[2], " to ", temp[3], ")", ";", " control arm event rate ", control_arm, " per ", pscale, ".")
+}
+
+# change toi common effect
+# riskdiff_ci_from_meta_rr <- function(meta_object, pscale = 100, digits = 2) {
+#   meta_object <- update(meta_object, sm = "RD")
+#   temp <- c(meta_object$TE.common, meta_object$lower.common, meta_object$upper.common) * pscale
+#   temp <- formatC(temp, digits = digits, format = "f")
+#   temp_control <- metaprop(meta_object$data$.event.c, meta_object$data$.n.c)
+#   control_arm <- boot::inv.logit(temp_control$TE.common) * pscale
+#   control_arm <- formatC(control_arm, digits = digits, format = "f")
+#   paste0(temp[1], " per ", pscale, " (95% CI, ", temp[2], " to ", temp[3], ")", ";", " control arm event rate ", control_arm, " per ", pscale, ".")
+# }
+
+## risk difference from meta with rr with subset ------ (2024-03-23 10:05) @----
+riskdiff_ci_from_meta_subset_rr <- function(meta_object, pscale = 100, digits = 2) {
+  meta_object <- update(meta_object, sm = "RD")
+  temp <- c(meta_object$TE.random, meta_object$lower.random, meta_object$upper.random) * pscale
+  temp <- formatC(temp, digits = digits, format = "f")
+  temp_control <- metaprop(meta_object$data$.event.c[meta_object$subset], meta_object$data$.n.c[meta_object$subset])
+  control_arm <- boot::inv.logit(temp_control$TE.common) * pscale
+  control_arm <- formatC(control_arm, digits = digits, format = "f")
+  paste0(temp[1], " per ", pscale, " (95% CI, ", temp[2], " to ", temp[3], ")", ";", " control arm event rate ", control_arm, " per ", pscale, ".")
 }
 
 ## text for risk difference from rr meta -------------- (2024-01-22 16:53) @----
@@ -706,6 +735,10 @@ riskdiff_ci_from_meta_rr <- function(meta_object, pscale = 100, digits = 2) {
 risk_diff_meta_rr <- function(meta_select = temp_meta, scale = 1000, digits = 1) {
   paste0("Pooled risk difference ", riskdiff_ci_from_meta_rr(meta_select, pscale = scale, digits = digits))
   }
+
+risk_diff_meta_subset_rr <- function(meta_select = temp_meta, scale = 1000, digits = 1) {
+  paste0("Pooled risk difference ", riskdiff_ci_from_meta_subset_rr(meta_select, pscale = scale, digits = digits))
+}
 
 ## clip risk difference from rr meta ------------------ (2024-01-22 16:53) @----
 risk_diff_meta_rr_clip <- function(meta_select = temp_meta, scale = 1000, digits = 1) {

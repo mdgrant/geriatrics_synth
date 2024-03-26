@@ -332,7 +332,8 @@ study_arm_dat <- read_csv(path_csv(study_arm_file)) |>
     volatile_tab = if_else(!is.na(inhalation), "✓", NA),
     tiva_tab = if_else(!is.na(tiva), "✓", NA),
     regional_tab = if_else(if_any(spinal:regional_oth, ~ !is.na(.x)), "✓", NA),
-    sedation_only_tab = if_else(!is.na(sedation), "✓", NA)
+    sedation_only_tab = if_else(!is.na(sedation), "✓", NA),
+    cog_imp_n = ifelse(cog_imp == 0, 0, cog_imp_n) # cog_imp_n added and not completed when cog_imp == 0
   ) |>
   relocate(anesth_type, volatile_tab:sedation_only_tab, .before = inhalation)
 

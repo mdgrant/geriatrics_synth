@@ -219,8 +219,9 @@ expanded_dat |>
 <font size = 4> `r table_ref()` Benefits, harms, and strength of evidence (GRADE) for regional versus general anesthesia. </font>
 
 ```{r reg_gen_balance}
-kq3_balance_main() |> 
-  text_replace(replace_text, paste0("See Table ", table_n + 1), locations = cells_body())
+kq3_balance_main(exclude = "RD/1000") |> 
+  text_replace(replace_text, paste0("See Table ", table_n + 1), locations = cells_body()) |> 
+  tab_footnote(md("RCT: randomized clinical trial; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; SMD: standardized mean difference; MD: mean difference."))
 ```
 
 <br/>
