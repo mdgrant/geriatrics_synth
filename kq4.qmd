@@ -62,16 +62,17 @@ dichot_dat <- data_kq(dichot_dat, kq4_refid) |>
 
 ## Updates
 ::: {.callout-important collapse="true"}
-### 2024-03-05
+### 2024-03-28
 
 | Date       | Modification                                                                                                                                                                    |
 |:-----------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 2024-03-05 | 11 studies (7 RCTs and 4 retrospective cohort studies added from updated search. |
+| 2024-03-05 | 11 studies (7 RCTs and 4 retrospective cohort) added from updated search. |
 |            | Updated relevant analyses, tables, and evidence summaries (GRADE) as appropriate.|
 |            | Revised complications meta-analyses and corrected error when adjusted odds ratios from non-randomized studies were incorporated (propensity, multivariable). Resulted in some small numerical differences, but are now consistent with published results from individual studies.|
 |            | Hypotension and bradycardia separated from other cardiac complications. |
 |            | Included additional detail pertaining to meta-analysis methods where appropriate.|
 |2024-03-07  | Added [summaries of study and patient characteristics](summary_kq4.html) to appendix.| 
+|2024-03-28  | Revised method to obtain estimates of risk differences when adjusted odds ratios from nonrandomize designs. Still approximate owing to pruning in those studies using propensity matching but consistent with approach for risk ratios.|.
 
 
 ```{r}
@@ -118,7 +119,8 @@ tiva_inhaled_dat |>
   tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(estimate_95_percent_ci , measure, prior_est), rows = str_detect(measure, "RD"))) |>
   tab_footnote("RCT: randomized controlled trial; NRSI: non-randomized study of intervention; GRADE: Grading of Recommendations Assessment, Development and Evaluation; Est: effect estimate; CI: confidence interval; RR: risk ratio; MD: mean difference; RD: risk difference.") |>
   tab_footnote("Corrected model fitting parameter.", locations = cells_body(columns = prior_est, rows = outcome == "Mortality (in-hospital and 30-day)")) |>
-  tab_footnote("Risk ratio.", locations = cells_body(columns = prior_est, rows = nrsi == 7))
+  tab_footnote("Risk ratio.", locations = cells_body(columns = prior_est, rows = nrsi == 7)) |> 
+  tab_footnote("Revised estimate from raw data; still approximate owing to pruning in those studies using propensity matching but more consistent with when a risk ratio was used.", locations = cells_body(columns = prior_est, rows = prior_est %in% c("-0.8 (-6.5 to 10.2)"))) 
 
 ```
 
@@ -164,7 +166,8 @@ tiva_inhaled_dat |>
   tab_style(style = cell_text(size = "11px"), locations = cells_column_labels(columns = everything())) |> 
   tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rct, nrsi, rct_new, nrsi_new))) |>
   tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(estimate_95_percent_ci, measure, prior_est), rows = str_detect(measure, "RD"))) |>
-  tab_footnote("RCT: randomized controlled trial; NRSI: non-randomized study of intervention; GRADE: Grading of Recommendations Assessment, Development and Evaluation; Est: effect estimate; CI: confidence interval; RR: risk ratio; OR: odds ratio; RD: risk difference.")
+  tab_footnote("RCT: randomized controlled trial; NRSI: non-randomized study of intervention; GRADE: Grading of Recommendations Assessment, Development and Evaluation; Est: effect estimate; CI: confidence interval; RR: risk ratio; OR: odds ratio; RD: risk difference.") |> 
+    tab_footnote("Revised estimate from raw data; still approximate owing to pruning in those studies using propensity matching but more consistent with when a risk ratio was used.", locations = cells_body(columns = prior_est, rows = prior_est %in% c("-1.9 (3.0 to -0.7)", "0.62 (-1.23 to 3.49)", "-0.05 (-0.61 to 0.57)", "-7.1 (-21.8 to 21.8", "0.33 (0.14 to 0.57)", "-0.53 (-0.82 to -0.20)"))) 
 
 ```
 
@@ -2157,7 +2160,7 @@ dev.off()
 
 png("assets/kq4_complication_renal.png", width = 8.9, height = 4, units = "in", res = 300)
 temp_meta <- complication_meta_or("Acute Kidney Injury", use_hakn = TRUE)
-complication_forest_or(temp_meta, big.mark = ",", text.addline2 = risk_diff_meta_or_kq4(digits = 2))
+complication_forest_or(temp_meta, big.mark = ",", text.addline2 = risk_diff_meta_or_kq4(digits = 1))
 dev.off()
 
 # meta_rob_traffic_light_refid(temp_meta)
@@ -2216,7 +2219,7 @@ dev.off()
 
 png("assets/kq4_complication_pe.png", width = 9.1, height = 3.8, units = "in", res = 300)
 temp_meta <- complication_meta_or("Pulmonary Embolism", use_hakn = TRUE, predictive = FALSE)
-complication_forest_or(temp_meta, use_predictive = TRUE, big.mark = ",", text.addline2 = risk_diff_meta_or_kq4(digits = 2))
+complication_forest_or(temp_meta, use_predictive = TRUE, big.mark = ",", text.addline2 = risk_diff_meta_or_kq4(digits = 1))
 dev.off()
 
 # meta_rob_traffic_light_refid(temp_meta)
@@ -3174,7 +3177,7 @@ forest(mort_rct_meta,
   fs.hetstat = 10,
   big.mark = ",",
   method.random.ci = "HK",
-  text.addline1 = risk_diff_meta_rr()
+  text.addline1 = risk_diff_meta_rr_kq4()
 )
 dev.off()
 
@@ -3215,19 +3218,20 @@ mort_nrsi_meta <- metagen(ln_or, ln_se,
 
 # summary(plac_meta)
 
+# for risk difference
 temp_meta <- mort_nrsi_meta
 temp_meta <- metabin(
   mort_n_TIVA, arm_n_TIVA, mort_n_Inhaled, arm_n_Inhaled,
   data = mort_meta_dat,
   studlab = study,
-  sm = "OR",
+  sm = "RD", # could be RR as well
   method.tau = "REML",
   method.random.ci = "HK",
   prediction = TRUE,
-  allstudies = FALSE,
+  allstudies = TRUE,
 )
 
-# riskdiff_ci_from_meta_or <- function(meta_object, pscale = 1, digits = 2) {
+# riskdiff_ci_from_meta_rr_kq4(temp_meta, digits = 2)
 
 temp <- metaprop(mort_n_Inhaled, arm_n_Inhaled, data = mort_meta_dat)
 control_arm <- boot::inv.logit(temp$TE.common)
@@ -3263,7 +3267,7 @@ forest(mort_nrsi_meta,
   fs.hetstat = 10,
   big.mark = ",",
   method.random.ci = "HK",
-  text.addline2 = paste0("Approximate pooled risk difference ", temp[1], " per ", 1000, " (95% CI, ", temp[2], " to ", temp[3], ")")
+  text.addline2 = paste0("Approximate pooled risk difference ", riskdiff_ci_from_meta_rr_kq4(temp_meta, digits = 2))
 )
 dev.off()
 
