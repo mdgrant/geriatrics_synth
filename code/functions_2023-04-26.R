@@ -776,11 +776,18 @@ soe_meta_rd_rr <- function(meta_object = temp_meta, digits = 1, scale = 1000) {
 }
 
 ## kq4 risk difference functions + -------------------- (2024-03-26 10:52) @----
+# riskdiff_ci_from_meta_or_kq4 <- function(meta_object, pscale = 1, digits = 2) {
+#   temp <- metaprop(meta_object$data[[9]], meta_object$data[[7]])
+#   control_arm <- boot::inv.logit(temp$TE.common)
+#   odds_ratios <- exp(c(meta_object$TE.random, meta_object$lower.random, meta_object$upper.random))
+#   temp <- effectsize::oddsratio_to_arr(odds_ratios, control_arm) * pscale
+#   temp <- formatC(temp, digits = digits, format = "f")
+#   paste0(temp[1], " per ", pscale, " (95% CI, ", temp[2], " to ", temp[3], ")")
+# }
+
 riskdiff_ci_from_meta_or_kq4 <- function(meta_object, pscale = 1, digits = 2) {
-  temp <- metaprop(meta_object$data[[9]], meta_object$data[[7]])
-  control_arm <- boot::inv.logit(temp$TE.common)
-  odds_ratios <- exp(c(meta_object$TE.random, meta_object$lower.random, meta_object$upper.random))
-  temp <- effectsize::oddsratio_to_arr(odds_ratios, control_arm) * pscale
+  temp <- metabin(meta_object$data$n_TIVA, meta_object$data$arm_n_TIVA, meta_object$data$n_Inhaled, meta_object$data$arm_n_Inhaled, sm = "RD")
+  temp <- c(temp$TE.random, temp$lower.random, temp$upper.random) * pscale
   temp <- formatC(temp, digits = digits, format = "f")
   paste0(temp[1], " per ", pscale, " (95% CI, ", temp[2], " to ", temp[3], ")")
 }

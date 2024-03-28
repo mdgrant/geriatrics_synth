@@ -780,7 +780,7 @@ kq4_complications <- function(){
     tab_style(style = cell_text(align = "center"),       locations = cells_body(columns = c(grade, rct, nrsi))) |>
     tab_style(style = cell_text(align = "left"),         locations = cells_body(columns = c(est, measure))) |>
     tab_style(style = cell_text(size = px(12)),               locations = cells_body(columns = c(measure), rows = measure == "RD/1000")) |>
-    tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(rct:measure), rows = str_detect(measure, "RD"))) |>
+    tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(rct:est), rows = str_detect(measure, "RD"))) |>
     tab_footnote(md("RCT: randomized clinical trial; NRSI: nonrandomized studies of interventions; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; OR: odds ratio; RD: risk difference.")) |>
     tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
     tab_footnote("Approximate based on the event rate in the inhaled anesthetic arms and the risk ratio calculated from the odds ratio.", locations = cells_body(columns = c(est), rows = dplyr::lag(measure) == "OR" & !is.na(est))) |>
