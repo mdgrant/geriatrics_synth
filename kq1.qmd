@@ -18,10 +18,6 @@ link-citations: false
 nocite: '@*'
 ---
 
-## Key Question
-
-Among older patients anticipating surgery and anesthesia, does expanded preoperative evaluation (e.g., for frailty, cognitive impairment, functional status, or psychosocial issues) lead to improved postoperative outcomes?
-
 ```{r, read_data}
 #| include: false
 source("code/load_data.R")
@@ -40,12 +36,12 @@ study_char_dat <- study_char_dat |>
   mutate(
     study = ifelse(study == "Tarazona-Santabalbina 2019", "T-Santabalbina 2019", study),
     study_l = str_replace(study_l, "Tarazona-", "T-")
-  ) |> 
+  ) |> # tabyl(surgs_single_f) |> View() # to examine
   mutate(
     surgs = unclass(surgs_single_f), 
     surgs = ifelse(refid %in% kq1_refid_hip, "HipFx", surgs),
     surgs = ifelse(surgs == "Ortho", "Other Ortho", surgs),
-    surgs = factor(surgs, levels = c("HipFx", "Other Ortho", "GI/Abd", "Various", "Urol", "Neuro"))
+    surgs = factor(surgs, levels = c("HipFx", "Other Ortho", "GI/Abd", "Cardiac", "Various", "Urol", "Neuro"))
   ) 
 
 study_arm_dat <- study_arm_dat |>
@@ -95,6 +91,81 @@ likert_dat <- likert_dat |>
     study_l = str_replace(study_l, "Tarazona-", "T-")
   )
 
+```
+
+## Updates
+::: {.callout-important collapse="true"}
+### 2024-03-28
+
+| Date       | Modification                                                                                                                                                                    |
+|:-----------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 2024-03-28 | 4 studies (3 before-after [[Harari 2007](evidence_tables.html#19171), [Smoor 2023](evidence_tables.html#18797), [Staiger 2023](evidence_tables.html#18807)] 1 retrospective cohort [[Paille 2021](evidence_tables.html#19377)]) added from updated search. |
+
+
+<caption_mg> Outcomes reported in additional studies.  </caption_mg>
+```{r}
+tribble(
+  ~outcome, ~before_after, ~ret_coh,
+  "Delirium", 1, 1,
+  "Complications", 3, 1,
+  "Length of stay", 2, 1,
+  "Discharge location", NA, 1,
+  "Readmission", 1, 1,
+  "Mortality", 2, 1,
+) |>
+  gt(id = "one") |>
+  cols_label(
+    outcome          = "Outcome",
+    before_after     = "Before-After",
+    ret_coh          = md("Retrospective<br/> Cohort")
+  ) |>
+  gt_theme_mg() |>
+  sub_missing(columns = everything(), missing_text = "") |>
+  tab_spanner(label = "Studies Reporting", columns = c(before_after, ret_coh), level = 1) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(before_after, ret_coh))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(before_after, ret_coh)))
+
+```
+
+
+
+
+
+```{r}
+#| tbl-cap: Overview of changes to primary outcomes following search update.
+#| html-table-processing: none
+
+
+```
+
+```{r}
+#| tbl-cap: Overview of changes to adverse events following search update.
+#| html-table-processing: none
+
+
+```
+
+:::
+
+## Key Question
+
+Among older patients anticipating surgery and anesthesia, does expanded preoperative evaluation (e.g., for frailty, cognitive impairment, functional status, or psychosocial issues) lead to improved postoperative outcomes?
+
+
+## Balance Tables
+
+<caption_mg> Benefits, harms, and strength of evidence (GRADE) for expanded versus standard preoperative evaluation. </caption_mg>
+
+```{r reg_gen_balance}
+kq1_balance_main() |> 
+  text_replace("See Appendix", "See below", locations = cells_body()) 
+  # text_replace("See Appendix", "See Appendix", locations = cells_body())
+```
+
+<caption_mg> Included complications and strength of evidence (GRADE) for expanded versus standard preoperative evaluation. </caption_mg>
+
+```{r reg_gen_complications}
+kq1_complications()
 ```
 
 ## **Outcome Importance Rankings**
@@ -254,9 +325,12 @@ study_char_dat |>
 <font size = 4> `r table_ref()` Selected characteristic of included studies. </font>
 
 ```{r studychar_tab}
+# RESUME HERE 2024-03-13
 studychar_tab <- study_arm_dat |>
   select(refid, arm_id, study, study_l, design_f_lab, year, arm_n, arm, pacu_screen, asa_ps_incl) |>
-  left_join(study_char_dat |> select(refid, surgs), by = "refid") |>
+  # left_join(study_char_dat |> select(refid, surgs), by = "refid") |>
+  left_join(surgs |> select(refid, surgs_single_f_lump), by = "refid") |>
+  rename(surgs = surgs_single_f_lump) |>
   left_join(table_age_mn_med, by = c("refid", "arm_id")) |>
   left_join(table_mn_med |> select(refid, arm_id, pre_mmse), by = c("refid", "arm_id")) |>
   mutate(
@@ -543,7 +617,7 @@ delirium_meta_dat <- dichot_dat |>
   left_join(study_char_dat |> select(refid, country, surgs), by = "refid") |> 
   left_join(surgs |> select(refid, surgs_single_f), by = c("refid")) |>
   rename(surg_f = surgs) |> 
-  select(refid, study, arm_id, arm, year, design_f_lab, country, surg_f, delitotal_n, arm_n, delirium_inc_prop, delitotal_time:delitotal_95high, deli_cam:deli_scale_otherspec) |> 
+  select(refid, study, arm_id, arm, year, design_f_lab, country, surg_f, delitotal_n, arm_n, delirium_inc_prop, delitotal_time:delitotal_95high, deli_scale_cam:deli_scale_otherspec) |> 
   arrange(design_f_lab, study, arm_id)
 
 ```
@@ -570,11 +644,11 @@ delirium_rr_ref <- delirium_meta_dat |>
   ) 
 
 delirium_tab <- delirium_meta_dat |>
-  # select(refid, refid, year, arm_id, design_f_lab, study, study_l, arm_n, delitotal_time:delitotal_95high, deli_cam:deli_scale_otherspec) |>
+  # select(refid, refid, year, arm_id, design_f_lab, study, study_l, arm_n, delitotal_time:delitotal_95high, deli_scale_cam:deli_scale_otherspec) |>
   mutate(
     across(starts_with("deli_"), ~ str_remove_all(.x, "scale_")),
     across(starts_with("deli_"), ~ str_remove_all(.x, "deli_")),
-    across(deli_cam:deli_scale_icdsc, ~ toupper(.x)),
+    across(deli_scale_cam:deli_scale_icdsc, ~ toupper(.x)),
   ) |>
   rename_with(~ gsub("scale_", "", .x, fixed = TRUE)) |>
   rename_with(~ gsub("deli_", "", .x, fixed = TRUE)) |>
@@ -603,6 +677,7 @@ delirium_tab <- delirium_meta_dat |>
     #   .default = study_l
     # )) |> 
   relocate(calc_percent, .after = delitotal_perc) |>
+# VARIABLE: changed delirium index variable name  
   unite(scale_delirium, cam:other, remove = TRUE, sep = "/", na.rm = TRUE) |>
   mutate(
     scale_delirium = ifelse(scale_delirium == "unspec", "NR", scale_delirium),
@@ -953,8 +1028,8 @@ dncr_dat <- dichot_dat |>
     year = as.numeric(str_extract(study, "\\d{4}")),
     # arm = fct_collapse(arm, "Plac/None" = c("Plac", "None")),
     across(c(arm, design_f_lab, surg_f), ~ fct_drop(.x)),
-    scale_mmse = ifelse(!is.na(neurocog_mmse), "\U2713", NA),
-    scale_dst = ifelse(!is.na(neurocog_dst) | str_detect(neurocog_scale_otherspec, "[Dd]igit"), "\U2713", NA),
+    scale_mmse = ifelse(!is.na(neurocog_scale_mmse), "\U2713", NA),
+    scale_dst = ifelse(!is.na(neurocog_scale_dst) | str_detect(neurocog_scale_otherspec, "[Dd]igit"), "\U2713", NA),
     scale_moca = ifelse(str_detect(neurocog_scale_otherspec, "MoCA|Montreal"), "\U2713", NA),
     scale_other = neurocog_scale_otherspec,
     scale_other = str_to_title(str_replace(scale_other, "Digit [Ss]ymbol [Tt]est; |Digit symbol substitution test; |Montreal Cognitive Assessment \\(MoCA\\)|MoCA", "")),
@@ -2373,15 +2448,18 @@ forest(dc_loc_nrsi_meta,
 ```{r mortality_data}
 #| eval: true
 mortality_dat <- dichot_dat |>
+  # filter(refid == 1313) |>
+  # filter(!is.na(mort1yr_update_arm_n) | !is.na(mort_update_arm_n)) |>
   filter(study != "Lau 2013") |> # no denominators
   filter(if_any(starts_with("mort"), ~ !is.na(.x))) |>
   # filter(arm_n != mort_update_arm_n) |>
   # select(refid, arm_n, mort_update_arm_n)
-  mutate(
-    # arm_n use mort_update_arm_n if different
-    arm_n = ifelse(!is.na(mort_update_arm_n), mort_update_arm_n, arm_n)
-  ) |>
-  select(refid, refid_c, arm_id, arm, year, study, study_l, design_f_lab, arm_n, matches("_n|per") & starts_with("mort"), -mort_update_arm_n) |>
+  # mutate(
+  #   # arm_n use mort_update_arm_n if different
+  #   arm_n = ifelse(!is.na(mort_update_arm_n), mort_update_arm_n, arm_n)
+  # ) |>
+  rename(update_arm_n_1yr = mort1yr_update_arm_n, update_arm_n = mort_update_arm_n) |>
+  select(refid, refid_c, arm_id, arm, year, study, study_l, design_f_lab, arm_n, matches("_n|per") & starts_with("mort"), update_arm_n, update_arm_n_1yr) |>
   pivot_longer(
     cols = starts_with("mort"),
     names_to = "estimand",
@@ -2397,6 +2475,11 @@ mortality_dat <- dichot_dat |>
     values_from = estimate
   ) |>
   mutate(
+    arm_n = case_when(
+      !is.na(update_arm_n) & mort_period != "mort1" ~ update_arm_n,
+      !is.na(update_arm_n_1yr) & mort_period == "mort1" ~ update_arm_n_1yr,
+      .default = arm_n
+    ),
     mort_period = case_when(
       str_detect(mort_period, "hosp") ~ "Hospital",
       str_detect(mort_period, "mort30") ~ "30-day",
@@ -2794,7 +2877,7 @@ forest(mort_nrsi_1yr_meta,
   prediction = TRUE,
   fs.xlab = 11,
   pooled.events = TRUE,
-  pscale = 1000,
+  # pscale = 1000,
   digits = 2, 
   print.pval.Q = FALSE,
   xlim = c(0.1, 10),
