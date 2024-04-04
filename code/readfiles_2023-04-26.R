@@ -368,7 +368,8 @@ study_arm_dat <- study_arm_dat |>
     study = if_else(study == "Zhang 2018b" & str_detect(refid_c, "-1"), paste0(study, " (prop)"), study),
     study = if_else(study == "Zhang 2018b" & str_detect(refid_c, "-2"), paste0(study, " (sevo)"), study),
     kq6_other_spec = if_else(study_id == "Lee 2018b-4", "pregabalin", kq6_other_spec)
-    )
+    ) |>
+  rename(kq1_staff_other_spec = staff_other_spec, kq1_staff_other_spec_std = staff_other_spec_std)
   # select(refid, starts_with("study"), subgroup)
 
 # type_col(study_arm_dat) |> arrange(desc(mode)) |> View()
@@ -596,14 +597,14 @@ cardiac_compl <- readxl::read_xlsx("data/complications_defs_2023-05-22.xlsx", ra
   relocate(detail_cardiac, .after = complication) |>
   select(-c(study, kq))
 
-pulmonary_compl <- readxl::read_xlsx("data/complications_defs_2023-05-22.xlsx", range = "A1:D16", sheet = "pulmonary") |>
+pulmonary_compl <- readxl::read_xlsx("data/complications_defs_2023-05-22.xlsx", range = "A1:D17", sheet = "pulmonary") |>
   clean_names() |>
   mutate(pulmonary_complications = firstlower(pulmonary_complications),
          complication = "pulm") |>
   rename(detail_pulmonary = pulmonary_complications) |>
   select(-c(study, kq))
 
-renal_compl <- readxl::read_xlsx("data/complications_defs_2023-05-22.xlsx", range = "A1:D9", sheet = "renal") |>
+renal_compl <- readxl::read_xlsx("data/complications_defs_2023-05-22.xlsx", range = "A1:D17", sheet = "renal") |>
   clean_names() |>
   mutate(complication = "kidneyinj") |>
   rename(detail_renal = renal_complications) |>

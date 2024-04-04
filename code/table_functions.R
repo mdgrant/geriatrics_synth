@@ -519,7 +519,7 @@ kq1_balance_main <- function() {
       event_e ~ px(80),
       event_c ~ px(80),
       grade   ~ px(100),
-      measure ~ px(45),
+      measure ~ px(65),
       est     ~ px(140)
     ) |>
     sub_missing(columns = everything(), missing_text = "") |>
@@ -533,7 +533,8 @@ kq1_balance_main <- function() {
     tab_style(style = cell_text(indent = px(15)),       locations = cells_body(rows = outcome %in% c("Hip fracture", "Other", "Any procedure"), columns = outcome)) |>
     tab_footnote(md("RCT: randomized clinical trial; NRSI: nonrandomized studies of interventions (includes before-after designs);  GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; MD: mean difference.")) |>
     tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
-    tab_footnote("Cardiovascular, pulmonary, and renal.", locations = cells_body(columns = c(outcome), rows = outcome == "Complications"))
+    tab_footnote("Cardiovascular, pulmonary, and renal.", locations = cells_body(columns = c(outcome), rows = outcome == "Complications")) |>
+    tab_footnote("High versus lower satisfaction.", locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"))
   # tab_footnote("Studies reported 0 and 2 events.", locations = cells_body(columns = c(est), rows = outcome == "Cardiac arrest"), placement = "right")
   # tab_footnote(md("Per 100 patients for [higher or highest category or categories with lower ones.](kq3.html#patient-satisfaction)"), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right")
 

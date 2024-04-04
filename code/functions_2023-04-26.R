@@ -480,10 +480,11 @@ se_ci_fun <- function(low, high) {
 ## smd_ci_function ------------------------------------ (2023-07-13 13:34) @----
 smd_ci <- function(n1, mean1, sd1, n2, mean2, sd2, digits = 2){
   a <- meta::metacont(n.e = n1, mean.e = mean1, sd.e = sd1, n.c = n2, mean.c = mean2, sd.c = sd2, sm = "SMD")
-  with(a, paste0(
+  a <- with(a, paste0(
     sprintf(paste0("%.", digits, "f"), round(TE, digits)), " (",
     sprintf(paste0("%.", digits, "f"), round(lower, digits)), " to ",
     sprintf(paste0("%.", digits, "f"), round(upper, digits)), ")"))
+  ifelse(!grepl("^-", a), paste0(" ", a), a)
 }
 
 ## format_est_ci_fun ---------------------------------- (2023-05-13 10:20) @----
