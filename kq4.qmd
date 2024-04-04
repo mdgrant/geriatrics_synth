@@ -207,20 +207,20 @@ outcome_tab(outcome_dat, 11)
 
 ## Outcomes Reported
 
-<caption_mg> `r table_ref()` Dichotomous or count outcomes. </caption_mg>
+<caption_mg> `r table_ref()` Publications reporting dichotomous or count outcomes (not unique studies).. </caption_mg>
 
 ```{r dichot_outcome_freq}
 # CODE: reporting frequency tabulation
 dichot_freq_fun(dichot_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
 ```
 
-<caption_mg> `r table_ref()` Continuous outcomes. </caption_mg>
+<caption_mg> `r table_ref()` Publications reporting continuous outcomes (not unique studies). </caption_mg>
 
 ```{r cont_outcome_freq}
 contin_freq_fun(contin_dat)
 ```
 
-<caption_mg> `r table_ref()` Likert or ordinal outcomes. </caption_mg>
+<caption_mg> `r table_ref()` Publications reporting likert or ordinal outcomes (not unique studies). </caption_mg>
 
 ```{r likert_outcome_freq}
 likert_freq_fun(likert_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
@@ -404,7 +404,7 @@ tiva_inh_tab |>
   cols_label(
     study_l          = "Study",
     arm_n            = "N ",
-    arm              = "Comparator",
+    arm              = "Arm",
     asa_ps_incl      = "PS",
     age_table        = "    Age",
     pre_mmse         = "MMSE",
@@ -428,7 +428,7 @@ tiva_inh_tab |>
   gt_theme_mg() |>
   cols_width(
     study_l ~ px(165),
-    arm_n ~ px(65),
+    arm_n ~ px(55),
     arm ~ px(80),
     asa_ps_incl ~ px(60),
     age_table ~ px(100),
@@ -729,7 +729,7 @@ forest(delirium_meta_rct,
   label.c = "Inhaled   ",
   rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
   rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
-  just.addcols.right = "right",
+  just.addcols.right = "left",
   digits.TE = 3,
   digits.tau2 = 2,
   overall.hetstat = TRUE,
@@ -785,7 +785,7 @@ forest(delirium_meta_rct_rd,
   label.c = "Inhaled   ",
   rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
   rightlabs = c("RD", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
-  just.addcols.right = "right",
+  just.addcols.right = "left",
   digits = 1,
   print.tau2 = FALSE,
   print.tau = TRUE,
@@ -816,14 +816,16 @@ dev.off()
 #| echo: false
 #| include: false
 
+# FIXME: delirium meta-analysis funnel plot
 delirium_meta_or <- update(delirium_meta_rct, sm = "OR")
+temp_limit_meta <- limitmeta(delirium_meta_or)
 
 png("assets/kq4_delirium_or_funnel.png", width = 8.5, height = 5.5, units = "in", res = 300)
 par(mar = c(4, 4, 2, 1))
 limit_colors <- c("#AAB7B8", "#D5DBDB", "#F4F6F6")
 # text(1.2, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .9)
 par(bty = "n", xaxt = "s", yaxt = "s")
-funnel(delirium_meta_or,  pch = 20, contour = c(0.9, 0.95, 0.99), col.contour = limit_colors, studlab = TRUE, pos.studlab = 4, fs.smlab = 6, ff.smlab = "italic")
+funnel(temp_limit_meta,  pch = 20, contour = c(0.9, 0.95, 0.99), col.contour = limit_colors, studlab = TRUE, pos.studlab = 4, fs.smlab = 6, ff.smlab = "italic")
 legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#AAB7B8", "#D5DBDB", "#F4F6F6"), bty = "n")
 dev.off()
 
@@ -910,7 +912,7 @@ forest(delirium_meta_nrsi,
   rightlabs = c("OR", "(95% CI)  ", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "All"),
   leftcols = c("study", "event2", "n2", "event1", "n1"), 
   leftlabs = c("Study", "Events", "TIVA    \n Total", "Events", "Inhaled\n Total"),
-  just.addcols.right = "center",
+  just.addcols.right = "left",
   just.addcols.left = "right",
   digits.TE = 3,
   digits.tau2 = 1,
@@ -1297,7 +1299,7 @@ forest(dncr_tiva_inhaled_meta_rct_rd,
   label.c = "Inhaled   ",
   rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
   rightlabs = c("RD", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
-  just.addcols.right = "right",
+  just.addcols.right = "left",
   digits = 1,
   digits.tau2 = 1,
   overall.hetstat = TRUE,
@@ -1925,7 +1927,7 @@ complication_forest_or <- function(adverse_meta, use_predictive = TRUE, random =
     leftcols = c("study_design", "n_TIVA", "arm_n_TIVA", "n_Inhaled", "arm_n_Inhaled"),
     leftlabs = c("Study", "TIVA\n Events", "Total", "Inhaled\nEvents", " Total"),
     colgap.forest = "5mm",
-    just.addcols.right = "center",
+    just.addcols.right = "left",
     just.addcols.left = "right",
     digits.TE = 3,
     digits.tau2 = 1,
@@ -2411,7 +2413,7 @@ forest(satis_meta,
   label.c = "Inhaled   ",
   rightcols = c("effect", "ci"),
   rightlabs = c("RR", "(95% CI)"),
-  just.addcols.right = "right",
+  just.addcols.right = "left",
   colgap.forest = "5mm",
   digits.TE = 3,
   digits.tau2 = 1,
@@ -2597,7 +2599,7 @@ forest(los_meta,
   # digits.pval.Q = 2,
   print.I2.ci = TRUE,
   fs.xlab = 10,
-  just.addcols.right = "right",
+  just.addcols.right = "left",
   print.pval.Q = FALSE,
   # sortvar = -TE,
   xlim = c(-10, 10),
@@ -2684,7 +2686,7 @@ forest(los_meta,
   digits.tau = 1,
   print.I2.ci = TRUE,
   fs.xlab = 10,
-  just.addcols.right = "right",
+  just.addcols.right = "left",
   print.pval.Q = FALSE,
   # sortvar = -TE,
   xlim = c(-10, 10),

@@ -260,21 +260,21 @@ outcome_tab(outcome_dat, 11)
 
 ## Outcomes Reported
 
-<caption_mg> `r table_ref()` Dichotomous or count outcomes. </caption_mg>
+<caption_mg> `r table_ref()` Publications reporting dichotomous or count outcomes (not unique studies).. </caption_mg>
 
 ```{r dichot_outcome_freq}
 dichot_freq_fun(dichot_dat, "ADL: activities of daily living; DNCR: delayed neurocognitive recovery; PND: postoperative neurocognitive disorder; QoR: quality of recovery; ") |>
   tab_footnote("Number of publications, not unique trials (see inlcuded studies below).", locations = cells_column_labels(columns = stat_1))
 ```
 
-<caption_mg> `r table_ref()` Continuous outcomes. </caption_mg>
+<caption_mg> `r table_ref()` Publications reporting continuous outcomes (not unique studies). </caption_mg>
 
 ```{r cont_outcome_freq}
 contin_freq_fun(contin_dat) |>
   tab_footnote("Number of publications, not unique trials (see inlcuded studies below).", locations = cells_column_labels(columns = stat_1)) 
 ```
 
-<caption_mg> `r table_ref()` Likert or ordinal outcomes. </caption_mg>
+<caption_mg> `r table_ref()` Publications reporting likert or ordinal outcomes (not unique studies). </caption_mg>
 
 ```{r likert_outcome_freq}
 likert_freq_fun(likert_dat, "ADL: activities of daily living; DNCR: delayed neurocognitive recovery; PND: postoperative neurocognitive disorder; QoR: quality of recovery; ") |>
@@ -462,7 +462,7 @@ reg_gen_tab |>
   cols_label(
     study_l          = "Study",
     arm_n            = " N",
-    arm              = "Comparator",
+    arm              = "Arm",
     asa_ps_incl      = "PS",
     age_table        = "    Age",
     pre_mmse         = "MMSE",
@@ -487,7 +487,7 @@ reg_gen_tab |>
   cols_width(
     study_l ~ px(175),
     arm_n ~ px(45),
-    arm ~ px(80),
+    arm ~ px(55),
     asa_ps_incl ~ px(60),
     age_table ~ px(100),
     pre_mmse ~ px(80),
@@ -796,7 +796,7 @@ forest(gen_reg_delirium_meta,
   label.c = "General",
   rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
   rightlabs = c("RR", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
-  just.addcols.right = "center",
+  just.addcols.right = "left",
   digits = 2,
   digits.tau2 = 1,
   overall.hetstat = TRUE,
@@ -859,7 +859,7 @@ forest(gen_reg_delirium_meta_rd,
   label.c = "General",
   rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
   rightlabs = c("RD", "(95% CI)", "D1", "D2", "D3", "D4", "D5", "All"),
-  just.addcols.right = "right",
+  just.addcols.right = "left",
   digits = 1,
   digits.tau2 = 1,
   overall.hetstat = TRUE,
@@ -907,7 +907,7 @@ forest(gen_reg_delirium_cummeta,
   label.c = "General",
   rightcols = c("effect", "ci", "pval", "tau2", "I2"),
   rightlabs = c("RR", "(95% CI)  ", "P  ", "\U03C4 ²", "I²"),
-  # just.addcols.right = "right",
+  # just.addcols.right = "left",
   digits = 2,
   digits.tau2 = 2,
   digits.tau = 2,
@@ -1245,7 +1245,7 @@ forest(gen_reg_dncr_meta,
   label.c = "General  ",
   rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
   rightlabs = c("RR ", "(95% CI)   ", "D1", "D2", "D3", "D4", "D5", "All"),
-  just.addcols.right = "right",
+  just.addcols.right = "left",
   digits = 2,
   digits.tau2 = 1,
   overall.hetstat = TRUE,
@@ -2099,10 +2099,10 @@ forest(adverse_meta,
   random = random,
   label.e = "Neuraxial ",
   label.c = "General ",
-  just.addcols.right = "center",
+  just.addcols.right = "left",
   rightcols = c("effect", "ci"),
   rightlabs = c("RR", "(95% CI)"),
-  # just.addcols.right = "right",
+  # just.addcols.right = "left",
   print.subgroup.name = FALSE,
   pool.events = TRUE, 
   digits.TE = 3,
@@ -2147,10 +2147,10 @@ forest(adverse_meta,
   random = random,
   label.e = "Neuraxial ",
   label.c = "General ",
-  just.addcols.right = "center",
+  just.addcols.right = "left",
   rightcols = c("effect", "ci"),
   rightlabs = c("RD", "(95% CI)"),
-  # just.addcols.right = "right",
+  # just.addcols.right = "left",
   print.subgroup.name = FALSE,
   pool.events = TRUE, 
   digits.TE = 3,
@@ -2445,7 +2445,7 @@ forest(satis_meta,
   label.c = "General     ",
   rightcols = c("effect", "ci"),
   rightlabs = c("RR", "(95% CI)"),
-  just.addcols.right = "right",
+  just.addcols.right = "left",
   colgap.right = "4mm",
   colgap.forest = "5mm",
   digits.TE = 3,
