@@ -2438,7 +2438,7 @@ dev.off()
 
 ```
 
-![](assets/kq1_los_meta.pn){fig.align="left" width="70%"}
+![](assets/kq1_los_meta.png){fig.align="left" width="70%"}
 
 <foot_mg>Partridge 2017 geometric means reported.<br/> Ommundsen 2018 reported only median and between-group p-value and was excluded. </foot_mg>
 
