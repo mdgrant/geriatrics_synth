@@ -44,6 +44,8 @@ website:
             text: "Study-level evidence tables"
           - href: outcome_rankings.html
             text: "Outcome rankings"
+          - href: summary_kq1.html
+            text: "Summary of study and patient characteristics: Expanded Preoperative Evaluation"
           - href: summary_kq3.html
             text: "Summary of study and patient characteristics: Neuraxial versus General Anesthesia"
           - href: summary_kq4.html

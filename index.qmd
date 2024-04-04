@@ -48,6 +48,8 @@ Includes links to publications.
 
 Study/patient characteristics and primary outcome summaries  
 
+[   Expanded Preoperative Evaluation](summary_kq1.html)
+
 [   Neuraxial versus General Anesthesia](summary_kq3.html)
 
 [   TIVA versus Inhaled Anesthesia](summary_kq4.html)
