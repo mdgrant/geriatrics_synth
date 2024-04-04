@@ -31,7 +31,7 @@ temp <- study_char_dat |> filter(refid %in% c(kq1_refid)) |> select(refid, study
 # note working file not renamed
 # temp <-  study_char_dat |> 
 study_char_dat <- study_char_dat |>
-  filter(refid %in% c(kq1_refid)) |>
+  filter(refid %in% kq1_refid) |>
   arrange(design_f) |>
   mutate(
     study = ifelse(study == "Tarazona-Santabalbina 2019", "T-Santabalbina 2019", study),
@@ -45,7 +45,7 @@ study_char_dat <- study_char_dat |>
   ) 
 
 study_arm_dat <- study_arm_dat |>
-  filter(refid %in% c(kq1_refid)) |>
+  filter(refid %in% kq1_refid) |>
   arrange(design_f) |>
   mutate(
     arm = ifelse(arm_kq1_eval == "eval_expand", "Exp", "Std"),
@@ -63,7 +63,7 @@ study_arm_dat <- study_arm_dat |>
   )
 
 dichot_dat <- dichot_dat |>
-  filter(refid %in% c(kq1_refid)) |>
+  filter(refid %in% kq1_refid) |>
   arrange(design_f) |>
   left_join(study_arm_dat |> select(refid, arm_id, arm), by = c("refid", "arm_id")) |>
   relocate(arm, .after = arm_id) |>
@@ -80,7 +80,7 @@ dichot_dat <- dichot_dat |>
   )
 
 contin_dat <- contin_dat |>
-  filter(refid %in% c(kq1_refid)) |>
+  filter(refid %in% kq1_refid) |>
   left_join(study_arm_dat |> select(refid, arm_id, arm), by = c("refid", "arm_id")) |>
   arrange(design_f) |>
   mutate(
@@ -89,7 +89,7 @@ contin_dat <- contin_dat |>
   )
 
 likert_dat <- likert_dat |> 
-  filter(refid %in% c(kq1_refid)) |> 
+  filter(refid %in% kq1_refid) |> 
   left_join(study_arm_dat |> select(refid, arm_id, arm), by = c("refid", "arm_id")) |>
   arrange(design_f) |> 
     mutate(
@@ -107,7 +107,7 @@ likert_dat <- likert_dat |>
 |:-----------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | 2024-03-28 | 4 studies (3 before-after [[Harari 2007](evidence_tables.html#19171), [Smoor 2023](evidence_tables.html#18797), [Staiger 2023](evidence_tables.html#18807)] 1 retrospective cohort [[Paille 2021](evidence_tables.html#19377)]) added from updated search. |
 | 2024-03-30 | Correction to link Shyu 2005 and 2008 (same trial). <br/> Added dementia to study characteristics table.<br/> Consistent study and group ordering now consistent study characteristics and evaluation tables. |
-| 2024-04-04 | Added table listing interventions. <br/> Physical function pooled removed period subgroups; arranged by time in forest plot and for pooled RCTs add a bubble plot. <br/> Combined randomized and nonrandomized designs in pooled complication results consistent with kq4. <br/> Deleted pooled pulmonary complications owing lack of consistent outcome definitions. <br/> Reorganized discharge location pooled to display for randomized and nonrandomized designs. <br/> Removed pooled 1-year mortality result. |
+| 2024-04-04 | Added table of intervention frequency. <br/> Physical function pooled removed period subgroups; arranged by time in forest plot and for pooled RCTs add a bubble plot. <br/> Combined randomized and nonrandomized designs in pooled complication results consistent with kq4. <br/> Deleted pooled pulmonary complications owing lack of consistent outcome definitions. <br/> Reorganized discharge location pooled to display for randomized and nonrandomized designs. <br/> Removed pooled 1-year mortality result. |
  
  
 <caption_mg> Outcomes reported in additional publications (not unique studies).  </caption_mg>
@@ -1099,6 +1099,183 @@ dev.off()
 
 <foot_mg> RR: risk ratio; D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable.<br/> Sensitivity analysis including Vochteloo 2011 assuming effectively equal numbers of participants studied each year, obtained RR 0.70 (95% CI, 0.53-0.95; PI, 0.35–1.42). </foot_mg>
 
+
+## **Delayed Neurocognitive Recovery**
+
+```{r dncr_ncd_dat}
+
+dncr_dat <- dichot_dat |>
+  filter(if_any(c(neurocog_n1, neurocog_n2, neurocog_n3, neurocog_last_n, neurocog_total_n), ~ !is.na(.x))) |>
+  mutate(
+    arm_n = ifelse(!is.na(neurocog_update_arm_n), neurocog_update_arm_n, arm_n),
+    dncr_time = pmax(neurocog_time1, neurocog_time2, neurocog_time3, neurocog_last_time, neurocog_total_time, na.rm = TRUE),
+    neurocog_total_n = case_when(
+      neurocog_time1 == dncr_time ~ neurocog_n1,
+      neurocog_time2 == dncr_time ~ neurocog_n2,
+      neurocog_time3 == dncr_time ~ neurocog_n3,
+      neurocog_last_time == dncr_time ~ neurocog_last_n,
+      neurocog_total_time == dncr_time ~ neurocog_total_n
+    ),
+    neurocog_prop = neurocog_total_n/arm_n,
+    neurocog_nper = n_per_fun(neurocog_total_n, arm_n, 1)
+  ) |>
+  left_join(study_char_dat |> select(refid, country, neuro_threshold), by = "refid") |>
+  left_join(surgs |> select(refid, surgs_single_f, surgs_noabbr_f), by = c("refid")) |>
+  left_join(table_mn_med |> select(refid, arm_id, pre_mmse), by = c("refid", "arm_id")) |>
+  rename(surg_f = surgs_single_f) |>
+  arrange(refid_c, arm_id) |>
+  mutate(
+    bar = case_when(
+      str_detect(arm, "Exp") ~ bar_prop(neurocog_prop * 100, "#A93226"),
+      .default = bar_prop(neurocog_prop * 100, "#969696")),
+    year = as.numeric(str_extract(study, "\\d{4}")),
+    # arm = fct_collapse(arm, "Plac/None" = c("Plac", "None")),
+    across(c(arm, design_f_lab, surg_f), ~ fct_drop(.x)),
+    scale_mmse = ifelse(!is.na(neurocog_scale_mmse), "\U2713", NA),
+    scale_dst = ifelse(!is.na(neurocog_scale_dst) | str_detect(neurocog_scale_otherspec, "[Dd]igit"), "\U2713", NA),
+    scale_moca = ifelse(str_detect(neurocog_scale_otherspec, "MoCA|Montreal"), "\U2713", NA),
+    scale_other = neurocog_scale_otherspec,
+    scale_other = str_to_title(str_replace(scale_other, "Digit [Ss]ymbol [Tt]est; |Digit symbol substitution test; |Montreal Cognitive Assessment \\(MoCA\\)|MoCA", "")),
+    scale_other = ifelse(scale_other == "", NA, scale_other),
+    scale_other = str_replace_all(scale_other, "Pocd", "POCD"),
+    scale_other_tf = ifelse(!is.na(scale_other), "\U2713", NA)
+  ) |> 
+  select(refid, refid_c, year, arm_id, study, study_l, design_f_lab, pre_mmse, country, surg_f, surgs_noabbr_f, arm, pre_mmse, dncr_time, neurocog_total_n, arm_n, arm, neurocog_nper, neurocog_prop, bar, scale_mmse:scale_other_tf, neuro_threshold)
+
+# add referents for rr calculation
+dncr_rr_ref <- dncr_dat |>
+  select(refid, refid_c, arm_id, neurocog_total_n, arm_n) |>
+  arrange(refid_c, arm_id) |>
+  rename(ref_neurocog_n = neurocog_total_n, ref_arm_n = arm_n) |>
+  group_by(refid_c) |>
+  mutate(
+    ref_arm_n = ifelse(row_number() > 1, NA, ref_arm_n),
+    ref_neurocog_n = ifelse(row_number() > 1, NA, ref_neurocog_n)
+  ) |>
+  fill(ref_arm_n, ref_neurocog_n) |>
+  mutate(
+    ref_arm_n = ifelse(row_number() == 1, NA, ref_arm_n),
+    ref_neurocog_n = ifelse(row_number() == 1, NA, ref_neurocog_n)
+  ) |>
+  select(-refid)
+
+neurocog_allarms_meta_dat <- dncr_dat |> 
+  select(refid, study, design_f_lab, year, arm_id, arm, neurocog_total_n, arm_n, dncr_time, surgs_noabbr_f) 
+
+dncr_dat <- dncr_dat |> 
+  left_join(dncr_rr_ref, by = c("refid_c", "arm_id")) |> 
+  mutate(rr_ci = ifelse(!is.na(ref_arm_n), rr_ci_fun(neurocog_total_n, arm_n, ref_neurocog_n, ref_arm_n), "—")) |> 
+  select(refid, year, design_f_lab, surg_f, surgs_noabbr_f, study, study_l, arm_id, arm_n, arm, pre_mmse, scale_mmse:scale_other_tf, neuro_threshold, dncr_time, neurocog_nper, bar, rr_ci)
+
+rm(dncr_rr_ref)
+```
+
+<font size = 4> `r table_ref()` Delayed neurocognitive recovery incidence and ascertainment (expanded versus standard preoperative evaluation; randomized and nonrandomized designs). </font>
+
+```{r dncr_gt}
+
+# create footnotes for thresholds
+# dncr_dat |>
+#   select(refid, study, scale_mmse, scale_dst, scale_moca, neuro_threshold) |>
+#   slice(1, .by = refid) |>
+#   mutate(
+#     neuro_threshold = str_replace(neuro_threshold, "≤-", "≥"),
+#     footnotes = case_when(
+#     !is.na(scale_mmse) ~ paste0("tab_footnote('", neuro_threshold, ".', locations = cells_body(columns = c(scale_mmse), rows = arm_id == 1 & study == '", study, "')) |>"),
+#     !is.na(scale_dst) ~ paste0("tab_footnote('", neuro_threshold, ".', locations = cells_body(columns = c(scale_dst), rows = arm_id == 1 & study == '", study, "')) |>"),
+#     !is.na(scale_moca) ~ paste0("tab_footnote('", neuro_threshold, ".', locations = cells_body(columns = c(scale_moca), rows = arm_id == 1 & study == '", study, "')) |>")
+#   ),
+#   footnotes = ifelse(row_number() == n(), str_remove(footnotes, ".{2}$"), footnotes)) |>
+#   filter(!is.na(footnotes)) |>
+#   pull(footnotes) |>
+#   noquote()
+
+dncr_dat |>
+  arrange(year, study) |>
+  mutate(
+    design_surg = paste0(as.character(design_f_lab), " — ", as.character(surgs_noabbr_f)),
+  ) |>
+  # tabyl(design_surg) |> arrange(desc(percent)) |> pull(design_surg) |> toString()
+  mutate(
+    study_l = ifelse(row_number() > 1, NA, study_l),
+    across(scale_mmse:scale_other_tf, ~ ifelse(row_number() > 1, NA, .x)),
+    dncr_time = ifelse(row_number() > 1, NA, dncr_time),
+    .by = study
+  ) |>
+  mutate(design_surg = str_replace(design_surg, "Various", "Various Procedures")) |>
+  group_by(design_surg) |>
+  gt(id = "one") |>
+  # row_group_order(groups = c("Randomized Clinical Trial — Gastrointestinal/Abdominal", "Randomized Clinical Trial — Thoracic", "Randomized Clinical Trial — Otolaryngological", "Randomized Clinical Trial — Spine", "Randomized Clinical Trial — Various", "Randomized Clinical Trial — Vascular", "Prospective Cohort — Orthopedic")) |>
+  cols_hide(c(refid, year, arm_id, study, scale_other, design_f_lab, surg_f, neuro_threshold, surgs_noabbr_f, dncr_time)) |>
+  cols_label(
+    study_l          = "Study",
+    arm_n            = " N",
+    arm              = "Drug",
+    pre_mmse         = "MMSE",
+    scale_mmse       = "MMSE",
+    scale_dst        = "DST",
+    scale_moca       = "MoCA",
+    scale_other_tf   = "Other",
+    # dncr_time        = "Day",
+    neurocog_nper    = "N (%)",
+    bar              = "0 — 100%",
+    rr_ci            = "RR (95% CI)"
+  ) |>
+  gt_theme_mg() |>
+  fmt_markdown(columns = c(study_l, bar, pre_mmse, scale_mmse:scale_other_tf)) |>
+  fmt_number(dncr_time, decimals = 0) |>
+  sub_missing(columns = everything(), missing_text = "") |>
+  tab_spanner(label = "Instrument", columns = c(scale_mmse:scale_other_tf), level = 1) |>
+  tab_spanner(label = "Delayed Neurocognitive Recovery", columns = c(neurocog_nper:rr_ci), level = 1) |>
+  tab_spanner(label = "Preop", columns = c(pre_mmse), level = 1) |>
+  cols_width(
+    study_l ~ px(165),
+    arm_n ~ px(45),
+    arm ~ px(70),
+    pre_mmse ~ px(100),
+    scale_mmse ~ px(50),
+    scale_dst ~ px(50),
+    scale_moca ~ px(50),
+    scale_other_tf ~ px(50),
+    # dncr_time ~ px(60),
+    neurocog_nper ~ px(90),
+    bar ~ px(100),
+    rr_ci ~ px(140),
+  ) |>
+  # text_replace("999", replacement, locations = cells_body(columns = dncr_time))
+  tab_style(style = cell_text(align = "left"), locations = cells_column_labels(columns = c(study, arm))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(starts_with("scale"), pre_mmse, dncr_time, neurocog_nper, rr_ci))) |>
+  tab_style(style = cell_text(align = "right"), locations = cells_column_labels(columns = c(neurocog_nper))) |>
+  tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(study, arm, pre_mmse))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(starts_with("scale"), dncr_time, rr_ci))) |>
+  tab_style(style = cell_text(align = "right"), locations = cells_body(columns = c(neurocog_nper))) |>
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:pre_mmse, neurocog_nper), rows = str_detect(arm, "Exp"))) |>
+  tab_footnote("Mini-Mental State Exam; DST: Digit Span Test; MoCA: Montreal Cognitive Assessment; RR: risk ratio.")
+```
+
+## **Postoperative Neurocognitive Disorder**
+
+<caption_mg> No studies </caption_mg>
+
+```{r ncd_dat}
+#| eval: false
+
+temp <- dichot_dat |>
+  filter(if_any(c(neurocog_n1, neurocog_n2, neurocog_n3, neurocog_last_n, neurocog_total_n), ~ !is.na(.x))) |>
+  # > 30 day exam
+  filter(if_any(matches("neurocog.*time.*"), ~ .x > 30)) 
+
+if (nrow(temp) > 0) {
+  temp |>
+    gt() |>
+    gt_theme_mg()
+} else {
+  "No studies"
+}
+
+```
+
+
 ## **Physical Function**
 
 <font size = 4> `r table_ref()` Physical functional status for expanded versus standard preoperative evaluation (randomized\* and nonrandomized designs). </font>
@@ -1407,9 +1584,9 @@ adl_nrsi_meta <- metacont(n_Exp, mean_Exp, sd_Exp, n_Std, mean_Std, sd_Std,
 #   cluster = study
 # )
 
-png("assets/kq1_adl_forest.png", width = 9.78, height = 3.8, units = "in", res = 300)
+png("assets/kq1_adl_forest.png", width = 9.78, height = 3.6, units = "in", res = 300)
 forest(adl_rct_meta,
-  common = TRUE,
+  common = FALSE,
   label.e = "Expanded",
   label.c = "Standard",
   leftcols = c("studlab", "n.e", "mean.e", "sd.e", "n.c", "mean.c", "sd.c"),
@@ -1434,6 +1611,13 @@ forest(adl_rct_meta,
   addrows.below.overall = 4
 )
 dev.off()
+
+temp_refid <- study_char_dat |> 
+  filter(study %in% adl_meta_lte180_dat$study & design_f == "rct") |> 
+  pull(refid)
+
+rob2_traffic_light_refid(temp_refid)
+
 
 ```
 
@@ -1503,9 +1687,9 @@ rm(temp, fitted_meta)
 #| include: false
 #| echo: false
 
-png("assets/kq1_adl_nrsi_forest.png", width = 9.83, height = 3.6, units = "in", res = 300)
+png("assets/kq1_adl_nrsi_forest.png", width = 9.83, height = 3.4, units = "in", res = 300)
 forest(adl_nrsi_meta,
-  common = TRUE,
+  common = FALSE,
   label.e = "Expanded",
   label.c = "Standard",
   leftcols = c("studlab", "n.e", "mean.e", "sd.e", "n.c", "mean.c", "sd.c"),
@@ -2074,7 +2258,7 @@ satis_dat_gt |>
 
 los_tab <- contin_dat |>
   mutate(los_for_tables(contin_dat)) |>
-  filter(refid %in% kq1_refid) |> 
+  filter(study != "Shyu 2008") |> 
   filter(if_any(los_m:los_diff_pval, ~ !is.na(.))) |>
   left_join(table_age_mn_med, by = c("refid", "arm_id")) |> # age_table
   left_join(study_arm_dat |> select(refid, arm_id, asa_ps_incl), by = c("refid", "arm_id")) |>
@@ -2144,7 +2328,8 @@ los_tab |>
   tab_footnote("Geometric mean.", locations = cells_body(columns = c(los_table), rows = study == "Partridge 2017")) 
   
 # save refids for meta-analysis
-los_refid <- los_tab$refid
+los_refid <- sort(unique(los_tab$refid))
+
 ```
 
 ### *Pooled*
@@ -2155,7 +2340,6 @@ los_refid <- los_tab$refid
 #| echo: false
 
 los_meta_dat <- contin_dat |>
-  filter(refid %in% kq1_refid) |> 
   filter(refid %in% los_refid) |> 
   filter(!study %in% c("Lau 2013", "Vochteloo 2011")) |> # time-series, multiple times w/o sufficient data
   filter(!study %in% c("Ommundsen 2018")) |> # only median and bwgrp p-value
@@ -2219,7 +2403,7 @@ los_meta <- metacont(
   studlab = study
 )
 
-png("assets/kq1_los_meta.png", width = 9.55, height = 6.02, units = "in", res = 300)
+png("assets/kq1_los_meta.png", width = 9.55, height = 5.83, units = "in", res = 300)
 forest(los_meta,
   weight.study = "random",
   # common =  FALSE,
@@ -2254,7 +2438,7 @@ dev.off()
 
 ```
 
-![](assets/kq1_los_meta.png){fig.align="left" width="70%"}
+![](assets/kq1_los_meta.pn){fig.align="left" width="70%"}
 
 <foot_mg>Partridge 2017 geometric means reported.<br/> Ommundsen 2018 reported only median and between-group p-value and was excluded. </foot_mg>
 
