@@ -1143,7 +1143,7 @@ dev.off()
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <caption_mg> `r figure_ref()` Delirium incidence summary risk of bias in RCTs (weighted). </caption_mg>
 
-```{r robinsi_summary_nrsi_delirium, fig.height = 3, out.width = "60%"}
+```{r rob2_summary_rct_delirium, fig.height = 3, out.width = "60%"}
 rob_summary_meta_weighted_fun(delirium_rct_meta)
 # rob_summary_fun(delirium_meta_dat$refid)
 ```
@@ -1213,6 +1213,15 @@ dev.off()
 ```
 
 ![](assets/kq1_delirium_or_nrsi_funnel.png){width="70%"}
+:::
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <caption_mg> `r figure_ref()` Delirium incidence summary risk of bias in nonrandomized studies (weighted). </caption_mg>
+
+```{r robinsi_summary_nrsi_delirium, fig.height = 3, out.width = "60%"}
+rob_summary_meta_weighted_nrsi_fun(delirium_nrsi_meta)
+# rob_summary_fun(delirium_meta_dat$refid)
+```
 :::
 
 ## **Delayed Neurocognitive Recovery**
