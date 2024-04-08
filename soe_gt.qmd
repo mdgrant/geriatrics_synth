@@ -17,8 +17,9 @@ tables:
 
 ---
 
-::: {.callout-note collapse="false"}
-## Recent updates (last 2024-01-02)
+## Updates
+::: {.callout-important collapse="true"}
+### `r lubridate::today()`
 
 | Date               | Modification|
 |:------------------------|:-----------------------------------------------|
@@ -68,7 +69,7 @@ domain_footnote <- function(x) {
 ```{r soe_kq1_data}
 #| include: false
 col_types_soe <- c("numeric", rep("text", 5), "numeric", rep("text", 16))
-soe_kq1_dat <- readxl::read_xlsx("data/soe_2023-05-22_local.xlsx", range = "A1:W29", sheet = "soe_kq1", col_types = col_types_soe) |>
+soe_kq1_dat <- readxl::read_xlsx("data/soe_2023-05-22_local.xlsx", range = "A1:W24", sheet = "soe_kq1", col_types = col_types_soe) |>
   clean_names() |>
   filter(outcome != "Atelectasis") |> 
   filter(!n %in% c(1.011, 1.012)) |>

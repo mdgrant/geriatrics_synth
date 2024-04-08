@@ -101,15 +101,14 @@ likert_dat <- likert_dat |>
 
 ## Updates
 ::: {.callout-important collapse="true"}
-### 2024-04-04
+### 2024-04-08
 
 | Date       | Modification                                                                                                                                                                    |
 |:-----------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | 2024-03-28 | 4 studies (3 before-after [[Harari 2007](evidence_tables.html#19171), [Smoor 2023](evidence_tables.html#18797), [Staiger 2023](evidence_tables.html#18807)] 1 retrospective cohort [[Paille 2021](evidence_tables.html#19377)]) added from updated search. |
 | 2024-03-30 | Correction to link Shyu 2005 and 2008 (same trial). <br/> Added dementia to study characteristics table.<br/> Consistent study and group ordering now consistent study characteristics and evaluation tables. |
-| 2024-04-04 | Added table of intervention frequency. <br/> Physical function pooled removed period subgroups; arranged by time in forest plot and for pooled RCTs add a bubble plot. <br/> Combined randomized and nonrandomized designs in pooled complication results consistent with kq4. <br/> Deleted pooled pulmonary complications owing lack of consistent outcome definitions. <br/> Reorganized discharge location pooled to display for randomized and nonrandomized designs. <br/> Removed pooled 1-year mortality result. |
- 
- 
+| 2024-04-08 | Added table of intervention frequency. <br/> Physical function pooled removed period subgroups; arranged by time in forest plot and for pooled RCTs add a bubble plot. <br/> Consistent with other questions, adverse event results were combined (naïvely) from randomized and nonrandomized designs when the GRADE from randomized clinical trials would have been low or very low. <br/> Deleted pooled pulmonary complications owing lack of consistent outcome definitions. <br/> Reorganized discharge location pooled to display for randomized and nonrandomized designs. <br/> Omitted balance table results for body of text from non-randomized designs except for hospital and 30-day mortality (GRADE higher for nonrandomized). 
+
 <caption_mg> Outcomes reported in additional publications (not unique studies).  </caption_mg>
 ```{r}
 tribble(
@@ -138,12 +137,100 @@ tribble(
 ```{r}
 #| tbl-cap: Overview of changes to primary outcomes following search update.
 #| html-table-processing: none
+expanded_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "ExpandedPreop", range = "A4:R26")[, c(2:4, 10, 12, 13, 15:18)] |>
+    remove_empty(which = "cols") |>
+    clean_names() |>
+  mutate(
+    across(everything(), ~ replace(.x, is.na(.x), "")),
+    estimate_95_percent_ci = ifelse(estimate_95_percent_ci == "See Appendix", "See Below", estimate_95_percent_ci)
+  )
+
+expanded_dat |>
+  gt(id = "one") |>
+  cols_label(
+    outcome = "Outcome",
+    rct = "RCT",
+    nrsi = "NRSI",
+    grade = "GRADE",
+    measure = "Effect",
+    estimate_95_percent_ci = "Est (CI)",
+    rct_new = "New RCT",
+    nrsi_new = "New NRSI",
+    prior_est = "Old Est (CI)",
+    grade_change = "GRADE Δ"
+  ) |>
+  cols_width(
+    outcome ~ px(215),
+    rct ~ px(50),
+    nrsi ~ px(50),
+    grade ~ px(95),
+    measure ~ px(75),
+    estimate_95_percent_ci ~ px(125),
+    rct_new ~ px(45),
+    nrsi_new ~ px(50),
+    prior_est ~ px(120),
+    grade_change ~ px(80),
+  ) |>
+  gt_theme_mg() |>
+  tab_style(style = cell_text(size = "12px"), locations = cells_body(columns = everything())) |> 
+  tab_style(style = cell_text(size = "11px"), locations = cells_column_labels(columns = everything())) |> 
+  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rct, nrsi, rct_new, nrsi_new))) |>
+  tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(estimate_95_percent_ci , measure, prior_est), rows = str_detect(measure, "RD"))) |>
+  tab_footnote("RCT: randomized controlled trial; NRSI: non-randomized study of intervention; GRADE: Grading of Recommendations Assessment, Development and Evaluation; Est: effect estimate; CI: confidence interval; RR: risk ratio; MD: mean difference; RD: risk difference.") |> 
+    tab_footnote("Error in transcribing confidence interval.", locations = cells_body(columns = prior_est, rows = prior_est %in% c("1.02 (0.12–8.46)"))) |> 
+    tab_footnote("Difference in confidence intervals TBD.", locations = cells_body(columns = prior_est, rows = prior_est %in% c("0.77 (0.30–1.64)"))) 
+    
 
 ```
 
 ```{r}
 #| tbl-cap: Overview of changes to adverse events following search update.
 #| html-table-processing: none
+
+expanded_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "ExpandedPreop", range = "A36:R47")[, c(2:4, 10, 12, 13, 15:18)] |>
+    remove_empty(which = "cols") |>
+    clean_names() |>
+  mutate(
+    across(everything(), ~ replace(.x, is.na(.x), "")),
+    estimate_95_percent_ci = ifelse(estimate_95_percent_ci == "See Appendix", "See Below", estimate_95_percent_ci)
+  )
+
+expanded_dat |>
+  gt(id = "one") |>
+  cols_label(
+    outcome = "Outcome",
+    rct = "RCT",
+    nrsi = "NRSI",
+    grade = "GRADE",
+    measure = "Effect",
+    estimate_95_percent_ci = "Est (CI)",
+    rct_new = "New RCT",
+    nrsi_new = "New NRSI",
+    prior_est = "Old Est (CI)",
+    grade_change = "GRADE Δ"
+  ) |>
+  cols_width(
+    outcome ~ px(215),
+    rct ~ px(50),
+    nrsi ~ px(50),
+    grade ~ px(95),
+    measure ~ px(75),
+    estimate_95_percent_ci ~ px(120),
+    rct_new ~ px(45),
+    nrsi_new ~ px(50),
+    prior_est ~ px(120),
+    grade_change ~ px(105),
+  ) |>
+  gt_theme_mg() |>
+  tab_style(style = cell_text(size = "12px"), locations = cells_body(columns = everything())) |> 
+  tab_style(style = cell_text(size = "11px"), locations = cells_column_labels(columns = everything())) |> 
+  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rct, nrsi, rct_new, nrsi_new))) |>
+  tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(estimate_95_percent_ci, measure, prior_est), rows = str_detect(measure, "RD"))) |>
+  tab_footnote("RCT: randomized controlled trial; NRSI: non-randomized study of intervention; GRADE: Grading of Recommendations Assessment, Development and Evaluation; Est: effect estimate; CI: confidence interval; RR: risk ratio; RD: risk difference.") 
+
+    # tab_footnote("Revised estimate from raw data; still approximate owing to pruning in those studies using propensity matching but more consistent with when a risk ratio was used.", locations = cells_body(columns = prior_est, rows = prior_est %in% c("-1.9 (3.0 to -0.7)", "0.62 (-1.23 to 3.49)", "-0.05 (-0.61 to 0.57)", "-7.1 (-21.8 to 21.8", "0.33 (0.14 to 0.57)", "-0.53 (-0.82 to -0.20)"))) 
+
+
 
 ```
 
@@ -158,7 +245,7 @@ Among older patients anticipating surgery and anesthesia, does expanded preopera
 <caption_mg> Benefits, harms, and strength of evidence (GRADE) for expanded versus standard preoperative evaluation. </caption_mg>
 
 ```{r reg_gen_balance}
-kq1_balance_main() |> 
+kq1_balance_main("include") |> 
   text_replace("See Appendix", "See below", locations = cells_body()) 
   # text_replace("See Appendix", "See Appendix", locations = cells_body())
 ```
@@ -639,7 +726,7 @@ expanded_combined |>
 
 ### Intervention Frequency
 
-<caption_mg> `r table_ref()` Frequency of intervention components following expanded screening.  </caption_mg>
+<caption_mg> `r table_ref()` Intervention components following expanded screening.  </caption_mg>
 
 ```{r component_tables}
 #| layout: [[1, 1]]
@@ -647,9 +734,9 @@ expanded_combined |>
 interventions_dat <- study_arm_dat |>
   filter(!refid %in% c(1263, 17155)) |> # second hempenius and shyu
   filter(arm == "Exp") |>
-  select(staff_comorbid, staff_inappmed, staff_geriatrician, staff_multidisc, staff_supplement, staff_treatplan, staff_other, pacu_screen, pt_nutr, pt_mobility, pt_social, pt_surgery, pt_other) |> 
+  select(staff_comorbid, staff_inappmed, staff_geriatrician, staff_multidisc, staff_supplement, staff_treatplan, staff_haloperidol, pacu_screen, pt_nutr, pt_mobility, pt_social, pt_expect, pt_surgery, pt_palliative) |>
   mutate(
-    across(staff_comorbid:staff_other, ~ ifelse(!is.na(.x), 1, 0)),
+    across(staff_comorbid:pt_palliative, ~ ifelse(!is.na(.x), 1, 0)),
     pacu_screen = pacu_screen * 1, 
   )
 
@@ -661,21 +748,22 @@ study_arm_dat |>
 study_arm_dat |>
   select(refid, study, kq1_pt_other_spec) |>
   filter(!is.na(kq1_pt_other_spec)) -> pt_other
-# 
+ 
 # writexl::write_xlsx(pt_other, "/Users/mgrant/Desktop/pt_other.xlsx")
 # writexl::write_xlsx(staff_other, "/Users/mgrant/Desktop/staff_other.xlsx")
 
 interventions_1 <- interventions_dat |>
-  select(staff_multidisc, staff_treatplan, staff_geriatrician, staff_inappmed, staff_supplement, staff_comorbid, pacu_screen, staff_other) |>
+  select(staff_multidisc, staff_treatplan, staff_geriatrician, staff_inappmed, staff_supplement, staff_comorbid, pacu_screen, staff_haloperidol) |>
   tbl_summary(
     label = list(
       staff_comorbid       = "Rx/comorbidities",
-      staff_inappmed       = "Deprescribing",
+      staff_inappmed       = "Medication Review/Deprescribing",
       staff_geriatrician   = "Geriatric Visits",
       staff_multidisc      = "Multidisciplinary",
       staff_supplement     = "Nutritional Supplement",
       staff_treatplan      = "Treatment Plan",
-      staff_other          = "Other",
+      staff_haloperidol    = "Haloperidol Prophylaxis",
+      # staff_other          = "Other",
       pacu_screen          = "Active Delirium Screen"
     ),
     type = list(
@@ -685,7 +773,8 @@ interventions_1 <- interventions_dat |>
       staff_multidisc      ~ "dichotomous",
       staff_supplement     ~ "dichotomous",
       staff_treatplan      ~ "dichotomous",
-      staff_other          ~ "dichotomous",
+      staff_haloperidol    ~ "dichotomous",
+      # staff_other          ~ "dichotomous",
       pacu_screen          ~ "dichotomous"
     ),
     missing = "no",
@@ -703,22 +792,25 @@ interventions_1 <- interventions_dat |>
   )
 
 interventions_2 <- interventions_dat |>
-  select(pt_mobility, pt_nutr, pt_social, pt_surgery, pt_other) |>
-  mutate(across(everything(), ~ifelse(!is.na(.x), 1, 0))) |>
+  select(pt_mobility, pt_nutr, pt_social, pt_expect, pt_surgery, pt_palliative) |>
   tbl_summary(
     label = list(
-      pt_mobility          = "Physical Activity",
+      pt_mobility          = "Physical activity",
       pt_nutr              = "Nutrition",
-      pt_surgery           = "Procedure",
       pt_social            = "Social Ties",
-      pt_other             = "Other"
+      pt_expect            = "Surgery/recovery expectations",
+      pt_surgery           = "Procedure",
+      pt_palliative        = "Palliative care discussion"
+      # pt_other             = "Other"
     ),
     type = list(
       pt_mobility          ~ "dichotomous",
       pt_nutr              ~ "dichotomous",
-      pt_surgery           ~ "dichotomous",
       pt_social            ~ "dichotomous",
-      pt_other             ~ "dichotomous"
+      pt_expect            ~ "dichotomous",
+      pt_surgery           ~ "dichotomous",
+      pt_palliative        ~ "dichotomous"
+      # pt_other           ~ "dichotomous"
     ),
     missing = "no",
   ) |>
@@ -736,47 +828,6 @@ interventions_2 <- interventions_dat |>
 
 interventions_2
 interventions_1
-```
-
-<caption_mg> `r table_ref()` Frequency of components/domains of expanded evaluation in included studies.  </caption_mg>
-
-```{r evaluation_tables}
-
-expanded_dat |> 
-  select(gen_multi:gen_nutrition, kq1_frail:kq1_psych) |> 
-  mutate(across(gen_multi:kq1_psych, ~ifelse(!is.na(.x), 1, 0))) |> 
-  tbl_summary(
-    label = list(
-      gen_multi             = "Multidisciplinary",
-      gen_comorbid          = "Meds/Comorbidity Evaluation",
-      gen_nutrition         = "Nutrtional Assessment",
-      kq1_frail             = "Frailty Assessment or Screening",
-      kq1_cog               = "Cognitive Assessment",
-      kq1_phys_func         = "Physical Function",
-      kq1_psych             = "Psychological Assessment"
-    ),
-    type = list(
-      gen_multi             ~ "dichotomous",
-      gen_comorbid          ~ "dichotomous",
-      gen_nutrition         ~ "dichotomous",
-      kq1_frail             ~ "dichotomous",
-      kq1_cog               ~ "dichotomous",
-      kq1_phys_func         ~ "dichotomous"
-    ),
-    missing = "no",
-  ) |>
-  # add_n() |>
-  modify_header(label = "Component(s)") |>
-  as_gt(id = "one") |>
-  cols_width(
-    label             ~ px(300),
-    stat_0            ~ px(80)
-  ) |>
-  gt_theme_mg() |> 
-  tab_header(
-    title = "Components and Domains"
-  )
-
 ```
 
 ## **Delirium Incidence**
@@ -942,6 +993,8 @@ delirium_tab |>
   tab_footnote("2007.", locations = cells_body(columns = c(arm), rows = study == "Vochteloo 2011" & arm_id %in% c(3)), placement = "right")
 ```
 
+<a id="kq1_delirium_rct"></a>
+
 ### *Pooled*
 
 ```{r delirium_meta}
@@ -955,12 +1008,12 @@ pairwise_all_dat <- pairwise(
   studlab = study,
   data = delirium_meta_all_dat,
   sm = "RR") |> 
-  select(studlab:surg_f) 
+  select(refid, studlab:surg_f) 
 
 del_meta_rct_dat <- pairwise_all_dat |>
   filter(str_detect(design_f_lab, "Randomized")) |> 
   left_join(rob2_meta_dat, by = "refid") |>
-  select(study, year, event2, n2, event1, n1, D1:Overall, surg_f) |>
+  select(refid, study, year, event2, n2, event1, n1, D1:Overall, surg_f) |>
   mutate(
     sample_size = n1 + n2,
   )
@@ -968,7 +1021,7 @@ del_meta_rct_dat <- pairwise_all_dat |>
 del_meta_nrsi_dat <- pairwise_all_dat |>
   filter(!str_detect(design_f_lab, "Randomized")) |>
   left_join(robinsi_meta_dat, by = "refid") |>
-  select(study, year, event2, n2, event1, n1, D1:Overall, surg_f) |>
+  select(refid, study, year, event2, n2, event1, n1, D1:Overall, surg_f) |>
   mutate(
     sample_size = n1 + n2
   )
@@ -987,6 +1040,9 @@ delirium_rct_meta <- metabin(event1, n1, event2, n2,
   # method.random.ci = "classic",
   # subgroup = surg_f
 )
+
+# soe_meta_result_rr_or(delirium_rct_meta, "RR")
+# soe_meta_rd_rr(delirium_rct_meta, digits = 1, scale = 100)
 
 # temp <- update(delirium_rct_meta, sm = "OR", subgroup = NULL)
 # DescTools::ORToRelRisk(0.81, 0.36)
@@ -1015,9 +1071,10 @@ delirium_nrsi_meta <- metabin(event1, n1, event2, n2,
   # subgroup = surg_f
 )
 
-```
+# soe_meta_result_rr_or(delirium_nrsi_meta, "RR")
+# soe_meta_rd_rr(delirium_nrsi_meta, digits = 1, scale = 100)
 
-<a id="kq1_delirium_rct"></a>
+```
 
 <font size = 4> `r figure_ref()` Delirium incidence following expanded compared with standard preoperative evaluation in randomized clinical trials.   </font>
 
@@ -1056,13 +1113,47 @@ dev.off()
 
 ![](assets/kq1_delirium_rct.png){fig.align="left" width="78%"}
 
-<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .</foot_mg>
+<foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
+Too few studies to adequately examine small study effects, but funnel suggests potential exists.</foot_mg>
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <caption_mg> `r figure_ref()` Delirium incidence (small study effects). </caption_mg>
+
+```{r kq4_delirium_nrsi_funnel_limit} 
+#| echo: false
+#| include: false
+
+# FIXME: delirium meta-analysis funnel plot
+delirium_meta_or <- update(delirium_rct_meta, sm = "OR")
+
+png("assets/kq1_delirium_or_rct_funnel.png", width = 8.5, height = 5.5, units = "in", res = 300)
+par(mar = c(4, 4, 2, 1))
+limit_colors <- c("#AAB7B8", "#D5DBDB", "#F4F6F6")
+# text(1.2, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .9)
+par(bty = "n", xaxt = "s", yaxt = "s")
+funnel(delirium_meta_or, pch = 20, xlim = c(0.3, 1.6), contour = c(0.9, 0.95, 0.99), col.contour = limit_colors, studlab = TRUE, pos.studlab = 4, fs.smlab = 6, ff.smlab = "italic")
+legend(0.3, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#AAB7B8", "#D5DBDB", "#F4F6F6"), bty = "n")
+dev.off()
+
+```
+
+![](assets/kq1_delirium_or_rct_funnel.png){width="70%"}
+:::
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <caption_mg> `r figure_ref()` Delirium incidence summary risk of bias in nonrandomized studies (weighted). </caption_mg>
+
+```{r robinsi_summary_nrsi_delirium, fig.height = 3, out.width = "60%"}
+rob_summary_meta_weighted_nrsi_fun(delirium_nrsi_meta)
+# rob_summary_fun(delirium_meta_dat$refid)
+```
+:::
 
 <a id="kq1_delirium_nrsi"></a>
 
 <br/>
 
-<font size = 4> `r figure_ref()` Delirium incidence following expanded compared with standard preoperative evaluation in nonrandomized designs. </font>
+<font size = 4> `r figure_ref()` Delirium incidence following expanded compared with standard preoperative evaluation in nonrandomized studies. </font>
 
 ```{r delirium_meta_nrsi_forest}
 #| echo: false
@@ -1099,6 +1190,26 @@ dev.off()
 
 <foot_mg> RR: risk ratio; D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable.<br/> Sensitivity analysis including Vochteloo 2011 assuming effectively equal numbers of participants studied each year, obtained RR 0.70 (95% CI, 0.53-0.95; PI, 0.35–1.42). </foot_mg>
 
+```{r kq1_delirium_nrsi_funnel_limit} 
+#| echo: false
+#| include: false
+
+# FIXME: delirium meta-analysis funnel plot
+delirium_meta_or <- update(delirium_nrsi_meta, sm = "OR")
+
+png("assets/kq1_delirium_or_nrsi_funnel.png", width = 8.5, height = 5.5, units = "in", res = 300)
+par(mar = c(4, 4, 2, 1))
+limit_colors <- c("#AAB7B8", "#D5DBDB", "#F4F6F6")
+# text(1.2, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .9)
+par(bty = "n", xaxt = "s", yaxt = "s")
+funnel(delirium_meta_or, pch = 20, contour = c(0.9, 0.95, 0.99), col.contour = limit_colors, studlab = TRUE, pos.studlab = 4, fs.smlab = 6, ff.smlab = "italic")
+legend(0.15, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#AAB7B8", "#D5DBDB", "#F4F6F6"), bty = "n")
+dev.off()
+
+```
+
+![](assets/kq1_delirium_or_nrsi_funnel.png){width="70%"}
+:::
 
 ## **Delayed Neurocognitive Recovery**
 
@@ -1275,7 +1386,6 @@ if (nrow(temp) > 0) {
 
 ```
 
-
 ## **Physical Function**
 
 <font size = 4> `r table_ref()` Physical functional status for expanded versus standard preoperative evaluation (randomized\* and nonrandomized designs). </font>
@@ -1440,7 +1550,8 @@ adl_scales_dat <- tribble(
   "Richter 2005", "SF-36 physical", "0→100",
   "Deschodt 2011", "Katz index", "0→18",
   "Shyu 2005", "Chinese Barthel Index", "0→100",
-  "Shyu 2008", "Chinese Barthel Index", "0→100"
+  "Shyu 2008", "Chinese Barthel Index", "0→100",
+  "Smoor 2023", "SF-12 Physical", "0→100"
 )
 
 adl_long_dat <- left_join(
@@ -1612,11 +1723,11 @@ forest(adl_rct_meta,
 )
 dev.off()
 
-temp_refid <- study_char_dat |> 
-  filter(study %in% adl_meta_lte180_dat$study & design_f == "rct") |> 
-  pull(refid)
+# temp_refid <- study_char_dat |> 
+#   filter(study %in% adl_meta_lte180_dat$study & design_f == "rct") |> 
+#   pull(refid)
 
-rob2_traffic_light_refid(temp_refid)
+# rob2_traffic_light_refid(temp_refid)
 
 
 ```
@@ -1917,7 +2028,7 @@ adverse_events_gt_dat |>
   ) |> 
   group_by(complication) |>
   gt(id = "one") |>
-  row_group_order(groups = c("Cardiac Arrest – Randomized Clinical Trial", "Cardiac Arrest – Before-After/Time Series", "MI – Randomized Clinical Trial", "MI – Before-After/Time Series", "Other Cardiac – Randomized Clinical Trial", "Other Cardiac – Before-After/Time Series", "Pulmonary – Randomized Clinical Trial", "Pulmonary – Retrospective Cohort", "Pneumonia – Randomized Clinical Trial", "Pneumonia – Before-After/Time Series", "Respiratory Failure – Before-After/Time Series", "Ventilator >48hr – Before-After/Time Series", "PE – Before-After/Time Series", "Acute Kidney Injury – Randomized Clinical Trial", "Acute Kidney Injury – Before-After/Time Series", "Acute Kidney Injury – Before-After/Time Series")) |>
+  row_group_order(groups = c("MI – Randomized Clinical Trial", "MI – Before-After/Time Series", "Cardiac Arrest – Randomized Clinical Trial", "Cardiac Arrest – Before-After/Time Series", "Other Cardiac – Randomized Clinical Trial", "Other Cardiac – Before-After/Time Series", "Acute Kidney Injury – Randomized Clinical Trial", "Acute Kidney Injury – Before-After/Time Series", "Acute Kidney Injury – Before-After/Time Series", "Pulmonary – Randomized Clinical Trial", "Pulmonary – Retrospective Cohort", "Pneumonia – Randomized Clinical Trial", "Pneumonia – Before-After/Time Series", "Respiratory Failure – Before-After/Time Series", "Ventilator >48hr – Before-After/Time Series", "PE – Before-After/Time Series")) |>
   cols_hide(c(refid, year, study, arm_id, n, study, study_compl, rr_ci, adjcrude, est, low, high, effect, detail_cardiac, detail_pulmonary)) |>
   cols_label(
     study_l          = "Study",
@@ -1956,8 +2067,7 @@ adverse_events_gt_dat |>
   tab_footnote("MI, cardiac arrest, ventricular fibrillation, dysrhythmia, or heart failure.", locations = cells_body(columns = c(study_l), rows = detail_cardiac == "acute MI, cardiac arrest and ventricular fibrillation, cardiac dysrhythmia, and acute CHF combined" & arm_id == 1)) |> 
   tab_footnote("Unspecified.",                          locations = cells_body(columns = c(study_l), rows = detail_pulmonary == "unspecified" & arm_id == 1)) |> 
   tab_footnote("Pneumonia, infectious exacerbation of chronic obstructive pulmonary disease (COPD).", locations = cells_body(columns = c(study_l), rows = detail_pulmonary == "pneumonia, infective exacerbation of chronic obstructive pulmonary disease (COPD)" & arm_id == 1)) |> 
-  tab_footnote("Pulmonary embolism or pneumothorax.",   locations = cells_body(columns = c(study_l), rows = detail_pulmonary == "pulmonary embolism, pneumothorax" & arm_id == 1)) |> 
-  tab_footnote("Described as renal failure.",           locations = cells_row_groups(groups = starts_with("Acute Kidney Injury")))
+  tab_footnote("Pulmonary embolism or pneumothorax.",   locations = cells_body(columns = c(study_l), rows = detail_pulmonary == "pulmonary embolism, pneumothorax" & arm_id == 1)) 
 
 
 # TODO: add footnotes pulmonary complications
@@ -1985,7 +2095,7 @@ adverse_meta_wide_dat <- adverse_meta_wide_dat |>
     study = ifelse(design == "Randomized", paste0(study, "*"), study)
     )
 
-complication_meta_fun <- function(compl_label, use_hakn = FALSE, predictive = TRUE){
+complication_meta_fun <- function(compl_label, use_hakn = FALSE, predictive = TRUE, ...){
 use_hakn_predict <- ifelse(use_hakn, "HK", "HTS")
 use_hakn <- ifelse(use_hakn, "HK", "classic")
   
@@ -2009,6 +2119,7 @@ metabin(
   method.random.ci = use_hakn,
   method.predict = use_hakn_predict,
   allstudies = FALSE,
+  ...
 )
 }
 
@@ -2071,9 +2182,54 @@ forest(adverse_meta,
 )
 }
 
+# to add to tables will place in clipboard
+complication_summary_rr_or <- function(compl_label){
+  temp <- adverse_meta_wide_dat |> 
+    filter(complication_nodesign == compl_label) |>
+    filter(n_Exp + n_Std != 0) |>
+    summarize(
+      n_studies = n_distinct(refid),
+      n_Exp_events = sum(n_Exp),
+      n_Std_events = sum(n_Std),
+      n_Exp = sum(arm_n_Exp),
+      n_Std = sum(arm_n_Std),
+      n_patients = sum(arm_n_Exp) + sum(arm_n_Std),
+    ) |> 
+    unlist() |> 
+    toString() 
+    # str_replace_all(",", "")
+  
+    clipr::write_clip(temp)
+    temp
+}
+
+complication_summary_rd <- function(compl_label){
+  temp <- adverse_meta_wide_dat |> 
+    filter(complication_nodesign == compl_label) |>
+    summarize(
+      n_studies = n_distinct(refid),
+      n_Exp_events = sum(n_Exp),
+      n_Std_events = sum(n_Std),
+      n_Exp = sum(arm_n_Exp),
+      n_Std = sum(arm_n_Std),
+      n_patients = sum(arm_n_Exp) + sum(arm_n_Std),
+    ) |> 
+    unlist() |> 
+    toString()
+  
+    clipr::write_clip(temp)
+    temp
+}
+
+designs_summary <- function(temp_meta){
+  study_char_dat |> 
+    filter(refid %in% temp_meta$data$refid) |> 
+    select(refid, study, design) 
+}
+
 ```
 
-<a id="myocardial_infarction"></a>
+<a id="fig-myocardial_infarction"></a>
 
 #### Myocardial Infarction
 
@@ -2090,51 +2246,41 @@ temp_meta <- complication_meta_fun("MI", use_hakn = TRUE, predictive = TRUE)
 complication_forest_fun(temp_meta, use_predictive = TRUE, text.addline1 = "*Randomized clinical trial", text.addline2 = risk_diff_meta_rr())
 dev.off()
 
+# meta_rob_traffic_light_refid(temp_meta)
+# complication_summary_rr_or("MI")
+# soe_meta_result_rr_or(temp_meta, "RR")
+# soe_meta_rd_rr(temp_meta, digits = 1)
+
 ```
 
 ![](assets/kq1_complication_mi.png){fig.align="left" width="66%"}
 
-<a id="fig-pneumonia"></a>
 
-#### Pneumonia
+<a id="fig-cardiac_arrest"></a>
 
-<foot_mg>    </foot_mg>
-
-<font size = 4> `r figure_ref()` Risk ratio for pneumonia (randomized and nonrandomized designs). </font>
-
-```{r complication_pneumonia}
-#| echo: false
-#| include: false
-
-png("assets/kq1_complication_pneumonia.png", width = 9.22, height = 4.6, units = "in", res = 300)
-temp_meta <- complication_meta_fun("Pneumonia", use_hakn = TRUE, predictive = TRUE)
-complication_forest_fun(temp_meta, use_predictive = TRUE, text.addline1 = "*Randomized clinical trial", text.addline2 = risk_diff_meta_rr())
-dev.off()
-
-```
-
-![](assets/kq1_complication_pneumonia.png){fig.align="left" width="67%"}
-
-<a id="fig-pulmonary-embolism"></a>
-
-#### Pulmonary Embolism
+#### Cardiac Arrest
 
 <foot_mg>    </foot_mg>
 
-<font size = 4> `r figure_ref()` Risk ratio for pneumonia (randomized and nonrandomized designs). </font>
+<font size = 4> `r figure_ref()` Risk ratio for cardiac arrest (randomized and nonrandomized designs). </font>
 
-```{r complication_pe}
+```{r complication_cardiac_arrest}
 #| echo: false
 #| include: false
 
-png("assets/kq1_complication_pe.png", width = 9.22, height = 3.6, units = "in", res = 300)
-temp_meta <- complication_meta_fun("PE", use_hakn = FALSE, predictive = TRUE)
-complication_forest_fun(temp_meta, use_predictive = TRUE, text.addline1 = "*Randomized clinical trial", text.addline2 = risk_diff_meta_rr())
+png("assets/kq1_complication_cardiac_arrest.png", width = 8.87, height = 3.0, units = "in", res = 300)
+temp_meta <- complication_meta_fun("Cardiac Arrest", use_hakn = FALSE, predictive = FALSE, random = FALSE)
+complication_forest_fun(temp_meta, use_predictive = FALSE, text.addline1 = "*Randomized clinical trial", text.addline2 = risk_diff_meta_rr())
 dev.off()
+
+# meta_rob_traffic_light_refid(temp_meta)
+# complication_summary_rr_or("Cardiac Arrest")
+# soe_meta_result_rr_or(temp_meta, "RR")
+# soe_meta_rd_rr(temp_meta, digits = 1)
 
 ```
 
-![](assets/kq1_complication_pe.png){fig.align="left" width="68%"}
+![](assets/kq1_complication_cardiac_arrest){fig.align="left" width="66%"}
 
 <a id="fig-renal"></a>
 
@@ -2153,9 +2299,70 @@ temp_meta <- complication_meta_fun("Acute Kidney Injury", use_hakn = TRUE, predi
 complication_forest_fun(temp_meta, use_predictive = TRUE, text.addline1 = "*Randomized clinical trial", text.addline2 = risk_diff_meta_rr())
 dev.off()
 
+# meta_rob_traffic_light_refid(temp_meta)
+# complication_summary_rr_or("Acute Kidney Injury")
+# soe_meta_result_rr_or(temp_meta, "RR")
+# soe_meta_rd_rr(temp_meta, digits = 1)
+# designs_summary(temp_meta)
+
 ```
 
 ![](assets/kq1_complication_aki.png){fig.align="left" width="66%"}
+
+<a id="fig-pneumonia"></a>
+
+#### Pneumonia
+
+<foot_mg>    </foot_mg>
+
+<font size = 4> `r figure_ref()` Risk ratio for pneumonia (randomized and nonrandomized designs). </font>
+
+```{r complication_pneumonia}
+#| echo: false
+#| include: false
+
+png("assets/kq1_complication_pneumonia.png", width = 9.22, height = 4.6, units = "in", res = 300)
+temp_meta <- complication_meta_fun("Pneumonia", use_hakn = TRUE, predictive = TRUE)
+complication_forest_fun(temp_meta, use_predictive = TRUE, text.addline1 = "*Randomized clinical trial", text.addline2 = risk_diff_meta_rr())
+dev.off()
+
+# meta_rob_traffic_light_refid(temp_meta)
+# complication_summary_rr_or("Pneumonia")
+# soe_meta_result_rr_or(temp_meta, "RR")
+# soe_meta_rd_rr(temp_meta, digits = 1)
+# designs_summary(temp_meta)
+
+```
+
+![](assets/kq1_complication_pneumonia.png){fig.align="left" width="67%"}
+
+<a id="fig-pulmonary-embolism"></a>
+
+#### Pulmonary Embolism
+
+<foot_mg>    </foot_mg>
+
+<font size = 4> `r figure_ref()` Risk ratio for pneumonia (randomized and nonrandomized designs). </font>
+
+```{r complication_pe}
+#| echo: false
+#| include: false
+
+png("assets/kq1_complication_pe.png", width = 9.22, height = 3.4, units = "in", res = 300)
+temp_meta <- complication_meta_fun("PE", use_hakn = FALSE, predictive = TRUE)
+complication_forest_fun(temp_meta, use_predictive = TRUE, text.addline1 = risk_diff_meta_rr())
+dev.off()
+
+# meta_rob_traffic_light_refid(temp_meta)
+# complication_summary_rr_or("PE")
+# soe_meta_result_rr_or(temp_meta, "RR")
+# soe_meta_rd_rr(temp_meta, digits = 1)
+# designs_summary(temp_meta)
+
+```
+
+![](assets/kq1_complication_pe.png){fig.align="left" width="68%"}
+
 
 ## **Patient Satisfaction**
 
@@ -2254,7 +2461,6 @@ satis_dat_gt |>
 <font size = 4> `r table_ref()` Length of stay according to procedure classification and type of preoperative evaluation. </font>
 
 ```{r length_of_stay}
-#| eval: true
 
 los_tab <- contin_dat |>
   mutate(los_for_tables(contin_dat)) |>
@@ -2631,7 +2837,7 @@ dc_loc_meta <- metabin(
   allstudies = FALSE,
   )
 
-png("assets/kq1_dc_loc_meta.png", width = 10.19, height = 6.0, units = "in", res = 300)
+png("assets/kq1_dc_loc_meta.png", width = 10.19, height = 6.4, units = "in", res = 300)
 forest(dc_loc_meta,
   allstudies = TRUE,
   common = TRUE,
@@ -2646,6 +2852,7 @@ forest(dc_loc_meta,
   print.I2.ci = TRUE,
   prediction = TRUE,
   print.subgroup.name = FALSE,
+  prediction.subgroup = TRUE,
   common.subgroup = FALSE,
   pooled.events = TRUE,
   test.subgroup = FALSE,
@@ -2913,6 +3120,8 @@ mortality_dat |>
   # tab_footnote("Different lengths of follow-up from the same trial.", locations = cells_body(columns = study_l, rows = study %in% c("Su 2016", "Zhang 2019b"))) 
 ```
 
+<a id="fig-mortality_hosp_30d_rct"></a>
+
 ### *Pooled*
 
 ```{r mortality_hosp_30d_meta}
@@ -2929,6 +3138,11 @@ mortality_nrsi_meta_dat <- mortality_dat |>
   filter(!(study == "T-Santabalbina 2019" & mort_period == "Hospital")) |> 
   select(refid, study, arm, mort_n, arm_n, mort_period, surgs)
 
+mortality_rct_meta_1yr_dat <- mortality_dat |>
+  filter(str_detect(design_f_lab, "Rand")) |> 
+  filter(mort_period %in% c("1-year")) |>
+  select(refid, study, arm, mort_n, arm_n, mort_period, surgs)
+
 mortality_nrsi_meta_1yr_dat <- mortality_dat |>
   filter(!str_detect(design_f_lab, "Rand")) |> 
   filter(mort_period %in% c("1-year")) |>
@@ -2941,6 +3155,17 @@ pairwise_rct_mort_dat <- pairwise(
   studlab = study,
   allstudies = TRUE,
   data = mortality_rct_meta_dat,
+  sm = "RR",
+  keep.all.comparisons = TRUE
+)
+
+pairwise_rct_mort_1yr_dat <- pairwise(
+  treat = arm,
+  event = mort_n,
+  n = arm_n,
+  studlab = study,
+  allstudies = TRUE,
+  data = mortality_rct_meta_1yr_dat,
   sm = "RR",
   keep.all.comparisons = TRUE
 )
@@ -2969,7 +3194,11 @@ pairwise_nrsi_mort_1yr_dat <- pairwise(
 
 ```
 
+<a id="fig-mortality_hosp_30d_nrsi"></a>
+
 <font size = 4> `r figure_ref()` Risk ratio for hospital or 30-day mortality in randomized clinical trials. </font>
+
+<foot_mg>    </foot_mg> 
 
 ```{r mort_rct_meta}
 #| echo: false
@@ -3023,13 +3252,17 @@ forest(mort_rct_meta,
   text.addline2 = risk_diff_meta_rr(mort_rct_meta)
 )
 dev.off()
+
 # PI: (0.0067, 157.1841) 
+# soe_meta_result_rr_or(mort_rct_meta, "RR")
+# soe_meta_rd_rr(mort_rct_meta, digits = 1)
+
 ```
-![](assets/kq1_mort_rct.png){fig.align="left" width="64%"}
+![](assets/kq1_mort_rct.png){fig.align="left" width="63%"}
 
 <br/>
 
-<font size = 4> `r figure_ref()` Risk ratio for hospital or 30-day mortality in nonrandomized designs. </font>
+<font size = 4> `r figure_ref()` Risk ratio for hospital or 30-day mortality in nonrandomized studies. </font>
 
 ```{r mort_nrsi_meta}
 #| echo: false
@@ -3079,60 +3312,141 @@ forest(mort_nrsi_meta,
 )
 dev.off()
 
+# soe_meta_result_rr_or(mort_nrsi_meta, "RR")
+# soe_meta_rd_rr(mort_nrsi_meta, digits = 1)
+
 ```
 ![](assets/kq1_mort_nrsi.png){fig.align="left" width="67%"}
 
-<!-- <br/> -->
+<a id="fig-mort_rct_1yr"></a>
 
-<!-- <font size = 4> `r figure_ref()` Risk ratio for 1-year mortality (expanded preoperative evaluation versus standard; nonrandomized designs). </font> -->
+<br/>
 
-<!-- ```{r mort_nrsi_1yr_meta, fig.width = 14, fig.height = 4, fig.align = "center"} -->
-<!-- mort_meta_dat <- pairwise_nrsi_mort_1yr_dat |>  -->
-<!--   mutate(year = str_extract(study, "\\d{4}")) |>  -->
-<!--   left_join(robinsi_meta_dat, by = "refid") |>  -->
-<!--   left_join(surgs |> select(refid, surgs_single), by = "refid") |>  -->
-<!--   select(study, year, event2, n2, event1, n1, surgs, D1:Overall, mort_period, refid) -->
+<font size = 4> `r figure_ref()` Risk ratio for 1-year mortality in randomized clinical trials. </font>
 
-<!-- # total_meta(mort_meta_dat) -->
-<!-- # refid_meta_fun(mort_meta_dat) -->
+```{r mort_rct_1yr_meta}
+#| echo: false
+#| include: false
 
-<!-- mort_nrsi_1yr_meta <- metabin(event2, n2, event1, n1, -->
-<!--   data = mort_meta_dat, -->
-<!--   studlab = study, -->
-<!--   # cluster = refid, -->
-<!--   sm = "RR", -->
-<!--   method = "MH", -->
-<!--   method.tau = "REML", -->
-<!--   hakn = TRUE, -->
-<!--   prediction = FALSE, -->
-<!--   allstudies = TRUE, -->
-<!-- ) -->
+mort_meta_dat <- pairwise_rct_mort_1yr_dat |>
+  mutate(year = str_extract(study, "\\d{4}")) |>
+  left_join(surgs |> select(refid, surgs_single), by = "refid") |>
+  select(study, year, event2, n2, event1, n1, surgs, mort_period, refid)
 
-<!-- # summary(plac_meta) -->
-<!-- forest(mort_nrsi_1yr_meta, -->
-<!--   allstudies = TRUE, -->
-<!--   # random = FALSE, -->
-<!--   label.e = "Expanded  ", -->
-<!--   label.c = "Standard  ", -->
-<!--   rightcols = c("effect", "ci", "surgs"), -->
-<!--   rightlabs = c("RR", "(95% CI)", "Surgery"), -->
-<!--   just.addcols.right = "left", -->
-<!--   digits.TE = 3, -->
-<!--   digits.tau2 = 1, -->
-<!--   overall.hetstat = TRUE, -->
-<!--   print.I2.ci = TRUE, -->
-<!--   prediction = TRUE, -->
-<!--   fs.xlab = 11, -->
-<!--   pooled.events = TRUE, -->
-<!--   # pscale = 1000, -->
-<!--   digits = 2,  -->
-<!--   print.pval.Q = FALSE, -->
-<!--   xlim = c(0.1, 10), -->
-<!--   xlab = "Favors: Expanded                         Standard        ", -->
-<!--   addrows.below.overall = 4 -->
-<!-- ) -->
-<!-- ``` -->
+# total_meta(mort_meta_dat)
+# refid_meta_fun(mort_meta_dat)
 
+mort_rct_1yr_meta <- metabin(event2, n2, event1, n1,
+  data = mort_meta_dat,
+  studlab = study,
+  sm = "RR",
+  method = "MH",
+  method.tau = "REML",
+  method.random.ci = "classic",
+  method.predict = "HTS",
+  prediction = FALSE,
+  allstudies = TRUE,
+)
+
+png("assets/kq1_mort_rct_1yr.png", width = 8.68, height = 2.6, units = "in", res = 300)
+forest(mort_rct_1yr_meta,
+  allstudies = TRUE,
+  random = FALSE,
+  label.e = "Expanded  ",
+  label.c = "Standard  ",
+  rightcols = c("effect", "ci", "surgs"),
+  rightlabs = c("RR", "(95% CI)", "Surgery"),
+  just.addcols.right = "left",
+  digits.TE = 3,
+  digits.tau2 = 1,
+  overall.hetstat = TRUE,
+  print.I2.ci = TRUE,
+  prediction = TRUE,
+  fs.xlab = 11,
+  pooled.events = TRUE,
+  # pscale = 1000,
+  digits = 2,
+  print.pval.Q = FALSE,
+  xlim = c(0.2, 4),
+  xlab = "Favors: Expanded                         Standard        ",
+  addrows.below.overall = 4,
+  text.addline2 = risk_diff_meta_rr(mort_rct_1yr_meta)
+)
+dev.off()
+
+# soe_meta_result_rr_or(mort_rct_1yr_meta, "RR")
+# soe_meta_rd_rr(mort_rct_1yr_meta, digits = 1)
+
+```
+![](assets/kq1_mort_rct_1yr.png){fig.align="left" width="65%"}
+
+<a id="fig-mort_nrsi_1yr"></a>
+
+<br/>
+
+<font size = 4> `r figure_ref()` Risk ratio for 1-year mortality in nonrandomized studies. </font>
+
+```{r mort_nrsi_1yr_meta}
+#| echo: false
+#| include: false
+
+mort_meta_dat <- pairwise_nrsi_mort_1yr_dat |>
+  mutate(year = str_extract(study, "\\d{4}")) |>
+  left_join(robinsi_meta_dat, by = "refid") |>
+  left_join(surgs |> select(refid, surgs_single), by = "refid") |>
+  select(study, year, event2, n2, event1, n1, surgs, D1:Overall, mort_period, refid) |> 
+  arrange(year)
+
+# total_meta(mort_meta_dat)
+# refid_meta_fun(mort_meta_dat)
+
+mort_nrsi_1yr_meta <- metabin(event2, n2, event1, n1,
+  data = mort_meta_dat,
+  studlab = study,
+  sm = "RR",
+  method = "MH",
+  method.tau = "REML",
+  method.random.ci = "HK",
+  method.predict = "HK",
+  prediction = FALSE,
+  allstudies = TRUE,
+)
+
+png("assets/kq1_mort_nrsi_1yr.png", width = 8.72, height = 3.6, units = "in", res = 300)
+forest(mort_nrsi_1yr_meta,
+  allstudies = TRUE,
+  # random = FALSE,
+  label.e = "Expanded  ",
+  label.c = "Standard  ",
+  rightcols = c("effect", "ci", "surgs"),
+  rightlabs = c("RR", "(95% CI)", "Surgery"),
+  just.addcols.right = "left",
+  digits.TE = 3,
+  digits.tau2 = 1,
+  overall.hetstat = TRUE,
+  print.I2.ci = TRUE,
+  prediction = TRUE,
+  fs.xlab = 11,
+  pooled.events = TRUE,
+  # pscale = 1000,
+  digits = 2,
+  print.pval.Q = FALSE,
+  xlim = c(0.2, 4),
+  xlab = "Favors: Expanded                         Standard        ",
+  addrows.below.overall = 4,
+  text.addline2 = risk_diff_meta_rr(mort_nrsi_1yr_meta)
+)
+
+dev.off()
+
+# soe_meta_result_rr_or(mort_nrsi_1yr_meta, "RR")
+# soe_meta_rd_rr(mort_nrsi_1yr_meta, digits = 1)
+
+```
+
+![](assets/kq1_mort_nrsi_1yr.png){fig.align="left" width="65%"}
+
+<br/>
 
 ## **Risk of Bias**
 

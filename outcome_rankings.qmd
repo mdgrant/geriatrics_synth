@@ -111,19 +111,19 @@ outcome_tab_all(rankings_dat, 77)
 
 ### Outcomes reported across all studies and questions (abstracted as of 2023-01-21)
 
-<font size = 4> `r table_ref()` Dichotomous or count outcomes. </font>
+<font size = 4> `r table_ref()` Publications reporting dichotomous or count outcomes (not unique studies).. </font>
 
 ```{r dichot_outcome_freq}
 dichot_freq_fun(dichot_dat)
 ```
 
-<font size = 4> `r table_ref()` Continuous outcomes. </font>
+<font size = 4> `r table_ref()` Publications reporting continuous outcomes (not unique studies). </font>
 
 ```{r cont_outcome_freq}
 contin_freq_fun(contin_dat)
 ```
 
-<font size = 4> `r table_ref()` Likert or ordinal outcomes. </font>
+<font size = 4> `r table_ref()` Publications reporting likert or ordinal outcomes (not unique studies). </font>
 
 ```{r likert_outcome_freq}
 likert_freq_fun(likert_dat)
