@@ -1117,9 +1117,9 @@ dev.off()
 Too few studies to adequately examine small study effects, but funnel suggests potential exists.</foot_mg>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <caption_mg> `r figure_ref()` Delirium incidence (small study effects). </caption_mg>
+#### <caption_mg> `r figure_ref()` Delirium incidence RCTs — small study effects). </caption_mg>
 
-```{r kq4_delirium_nrsi_funnel_limit} 
+```{r kq1_delirium_rct_funnel} 
 #| echo: false
 #| include: false
 
@@ -1141,10 +1141,10 @@ dev.off()
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <caption_mg> `r figure_ref()` Delirium incidence summary risk of bias in nonrandomized studies (weighted). </caption_mg>
+#### <caption_mg> `r figure_ref()` Delirium incidence summary risk of bias in RCTs (weighted). </caption_mg>
 
 ```{r robinsi_summary_nrsi_delirium, fig.height = 3, out.width = "60%"}
-rob_summary_meta_weighted_nrsi_fun(delirium_nrsi_meta)
+rob_summary_meta_weighted_fun(delirium_rct_meta)
 # rob_summary_fun(delirium_meta_dat$refid)
 ```
 :::
@@ -1189,6 +1189,10 @@ dev.off()
 ![](assets/kq1_delirium_nrsi.png){fig.align="left" width="84%"}
 
 <foot_mg> RR: risk ratio; D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable.<br/> Sensitivity analysis including Vochteloo 2011 assuming effectively equal numbers of participants studied each year, obtained RR 0.70 (95% CI, 0.53-0.95; PI, 0.35–1.42). </foot_mg>
+
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <caption_mg> `r figure_ref()` Delirium incidence nonrandomized studies — small study effects. </caption_mg>
 
 ```{r kq1_delirium_nrsi_funnel_limit} 
 #| echo: false
