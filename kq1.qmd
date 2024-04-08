@@ -734,11 +734,15 @@ expanded_combined |>
 interventions_dat <- study_arm_dat |>
   filter(!refid %in% c(1263, 17155)) |> # second hempenius and shyu
   filter(arm == "Exp") |>
-  select(staff_comorbid, staff_inappmed, staff_geriatrician, staff_multidisc, staff_supplement, staff_treatplan, staff_haloperidol, pacu_screen, pt_nutr, pt_mobility, pt_social, pt_expect, pt_surgery, pt_palliative) |>
+  select(pacu_screen, staff_comorbid, staff_inappmed, staff_geriatrician, staff_multidisc, staff_supplement, staff_treatplan, staff_haloperidol, pt_nutr, pt_mobility, pt_social, pt_expect, pt_surgery, pt_palliative) |>
+  mutate(
+    pacu_screen = pacu_screen * 1,
+  ) |>
   mutate(
     across(staff_comorbid:pt_palliative, ~ ifelse(!is.na(.x), 1, 0)),
-    pacu_screen = pacu_screen * 1, 
-  )
+    pacu_screen = pacu_screen * 1,
+  ) |>
+  select(staff_comorbid, staff_inappmed, staff_geriatrician, staff_multidisc, staff_supplement, staff_treatplan, pacu_screen, staff_haloperidol, pt_nutr, pt_mobility, pt_social, pt_expect, pt_surgery, pt_palliative)
 
 # other list
 study_arm_dat |>
@@ -993,8 +997,6 @@ delirium_tab |>
   tab_footnote("2007.", locations = cells_body(columns = c(arm), rows = study == "Vochteloo 2011" & arm_id %in% c(3)), placement = "right")
 ```
 
-<a id="kq1_delirium_rct"></a>
-
 ### *Pooled*
 
 ```{r delirium_meta}
@@ -1076,6 +1078,10 @@ delirium_nrsi_meta <- metabin(event1, n1, event2, n2,
 
 ```
 
+<a id="kq1_delirium_rct"></a>
+
+#### Randomized
+
 <font size = 4> `r figure_ref()` Delirium incidence following expanded compared with standard preoperative evaluation in randomized clinical trials.   </font>
 
 ```{r delirium_meta_rct_forest, warning = TRUE}
@@ -1117,7 +1123,7 @@ dev.off()
 Too few studies to adequately examine small study effects, but funnel suggests potential exists.</foot_mg>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <caption_mg> `r figure_ref()` Delirium incidence RCTs — small study effects). </caption_mg>
+#### <caption_mg> `r figure_ref()` Delirium incidence RCTs — small study effects. </caption_mg>
 
 ```{r kq1_delirium_rct_funnel} 
 #| echo: false
@@ -1151,7 +1157,7 @@ rob_summary_meta_weighted_fun(delirium_rct_meta)
 
 <a id="kq1_delirium_nrsi"></a>
 
-<br/>
+#### Nonrandomized
 
 <font size = 4> `r figure_ref()` Delirium incidence following expanded compared with standard preoperative evaluation in nonrandomized studies. </font>
 
