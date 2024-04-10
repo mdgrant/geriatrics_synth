@@ -132,7 +132,7 @@ domain_summary <- soe_kq1_dat |>
 
 soe_summary |>
   mutate(across(grade:result_links, ~ replace_na(., "")),
-    design = ifelse(design %in% c("Before/after", "Non-randomized"), "NRSI", design),
+    design = ifelse(design %in% c("Before-after", "Non-randomized"), "NRSI", design),
     outcome = ifelse(outcome == lag(outcome) & row_number() > 1, "", outcome)
   ) |>
   gt(id = "one") |>
@@ -190,6 +190,8 @@ kq1_domain_summary <- domain_summary |>
   select(-summary) |>
   mutate(
     design = str_replace(design, "Rct", "RCT"),
+    design = str_replace(design, "Nrsi", "NRSI"),
+    design = str_replace(design, "RCT/nrsi", "RCT/NRSI"),
   )
          
 foot_unique <- kq1_domain_summary |> 
@@ -227,7 +229,7 @@ domain_footnotes <- glue_collapse(domain_footnotes, sep = "<br>")
 kq1_domain |> 
   filter(!design == "No studies") |> 
   mutate(n_s = paste0(n_studies, "<br>(", n_pts, ")"),
-         design = ifelse(design %in% c("Before/after", "Non-randomized"), "NRSI", design),
+         design = ifelse(design %in% c("Before-after", "Non-randomized"), "NRSI", design),
          # outcome = str_replace(outcome, "Cognitive dysfunction", "Cognitive dysfunction<br/>"),
          outcome = ifelse(outcome == lag(outcome) & row_number() > 1, "", outcome)) |> 
   mutate(space = "") |> 
