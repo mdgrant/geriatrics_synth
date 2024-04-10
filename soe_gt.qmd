@@ -25,6 +25,8 @@ tables:
 |:------------------------|:-----------------------------------------------|
 | 2024-01-02 | Updated regional versus general for consistent language, removed *I* <sup>2</sup> (can be found in forest plots), and added prediction intervals where relevant.|
 | 2024-01-06 | Regional now only neuraxial. Updated summaries to be consistent with revised analyses.|
+| 2024-04-10 | Updated expanded preoperative evaluation. |    
+
 :::
 
 
