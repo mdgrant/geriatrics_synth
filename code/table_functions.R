@@ -540,7 +540,7 @@ kq1_balance_main <- function(inc_exclude = "exclude") {
       event_e ~ px(110),
       event_c ~ px(110),
       grade ~ px(100),
-      measure ~ px(65),
+      measure ~ px(70),
       est ~ px(140)
     ) |>
     sub_missing(columns = everything(), missing_text = "") |>
@@ -552,6 +552,9 @@ kq1_balance_main <- function(inc_exclude = "exclude") {
     tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(n, grade, rct, nrsi))) |>
     tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(est, measure))) |>
     tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(grade, rct, nrsi))) |>
+    tab_style(style = cell_text(size = px(12)), locations = cells_body(columns = c(measure), rows = measure == "RD/1000")) |>
+    tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(rct:est), rows = str_detect(measure, "RD"))) |>
+    tab_style(style = list(cell_text(color = "black")), locations = cells_body(columns = c(rct:est), rows = str_detect(measure, "RD") & str_detect(outcome, "satis"))) |>
     tab_footnote(md("RCT: randomized clinical trial; NRSI: nonrandomized studies of interventions (non-randomized trial, before-after and cohort studies);  GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; MD: mean difference.")) |>
     tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
     tab_footnote("Cardiovascular, pulmonary, and renal.", locations = cells_body(columns = c(outcome), rows = outcome == "Complications")) |>
@@ -614,7 +617,7 @@ kq1_complications <- function() {
       event_e ~ px(110),
       event_c ~ px(110),
       grade ~ px(100),
-      measure ~ px(65),
+      measure ~ px(70),
       est ~ px(140)
     ) |>
     sub_missing(columns = everything(), missing_text = "") |>
@@ -636,7 +639,6 @@ kq1_complications <- function() {
     tab_footnote("Complications reported variously across the 13 studies. ", locations = cells_body(columns = c(rct), rows = outcome == "Complications"), placement = "right") |>
     tab_footnote("One study no events; the other two. ", locations = cells_body(columns = c(est), rows = outcome == "cardiac arrest"), placement = "right") |>
     tab_footnote("Unspecified in 2 studies and COPD exacerabation or pneumonia in the other.", locations = cells_body(columns = c(outcome), rows = outcome == "Pulmonary complications"), placement = "right")
-
 }
 
 kq3_balance_main <- function(exclude = "RD") {
