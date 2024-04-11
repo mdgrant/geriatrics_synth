@@ -768,7 +768,7 @@ temp <- print(delirium_meta_rct) |>
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <caption_mg> `r figure_ref()` Delirium incidence (randomized clinical trials; risk difference per 100). </caption_mg> <a id="kq4_delirium_risk-diff"></a>
+#### <caption_mg> `r figure_ref()` Delirium incidence in randomized clinical trials — risk difference per 100. . </caption_mg> <a id="kq4_delirium_risk-diff"></a>
 
 ```{r kq4_delirium_meta_forest_rd}
 #| echo: false

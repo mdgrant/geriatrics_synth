@@ -2245,9 +2245,9 @@ dev.off()
 
 <a id="fig-renal"></a>
 
-#### AKI/Renal Failure
+#### Acute Kidney Injury
 
-<caption_mg> `r figure_ref()` **Risk ratio** for acute kidney injury or renal failure. </caption_mg>
+<caption_mg> `r figure_ref()` **Risk ratio** for acute kidney injury. </caption_mg>
 
 ```{r complication_renal}
 #| echo: false

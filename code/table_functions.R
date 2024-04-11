@@ -491,6 +491,11 @@ kq1_balance_main <- function(inc_exclude = "exclude") {
     rename(est = estimate_95_percent_ci) |>
     filter(!if_all(rct:est, ~ is.na(.x))) |>
     mutate(
+      high     = paste0("[", vlow, "]",     "(soe_gt.html#exp-std-grade)"),
+      mod      = paste0("[", mod, "]",      "(soe_gt.html#exp-std-grade)"),
+      low      = paste0("[", low, "]",      "(soe_gt.html#exp-std-grade)"),
+      vlow     = paste0("[", vlow, "]",     "(soe_gt.html#exp-std-grade)"),
+      low_very = paste0("[", low_very, "]", "(soe_gt.html#exp-std-grade)"),
       # group = ifelse(outcome == "Patient satisfaction", "Patient-reported", "Clinical"),
       across(everything(), ~ str_remove(.x, "‡|†|\\*")),
       grade = case_when(
@@ -501,12 +506,14 @@ kq1_balance_main <- function(inc_exclude = "exclude") {
         grade == "Low/very low" ~ low_very,
         .default = grade
       ),
-      event_e = ifelse(!is.na(n_exp), paste0(events_exp, " (", n_exp, ")"), NA),
-      event_c = ifelse(!is.na(n_std), paste0(events_std, " (", n_std, ")"), NA),
+      event_e = ifelse(!is.na(n_exp), paste0(formattable::comma(events_exp), " (", formattable::comma(n_exp), ")"), NA),
+      event_c = ifelse(!is.na(n_std), paste0(formattable::comma(events_std), " (", formattable::comma(n_std), ")"), NA),
+      # event_e = ifelse(!is.na(n_exp), paste0(events_exp, " (", n_exp, ")"), NA),
+      # event_c = ifelse(!is.na(n_std), paste0(events_std, " (", n_std, ")"), NA),
       across(c(event_e, event_c), ~ str_remove(.x, "NA "))
     ) |>
     relocate(c(event_e, event_c), .after = nrsi) |>
-    select(-c(events_exp:n_std, exclude, grade_2))
+    select(-c(events_exp:n_std, exclude, grade_2, high, mod, low, vlow, low_very))
 
   expanded_dat |>
     gt(id = "one") |>
@@ -558,6 +565,11 @@ kq1_complications <- function() {
     rename(est = estimate_95_percent_ci) |>
     filter(!if_all(rct:est, ~ is.na(.x))) |>
     mutate(
+      high     = paste0("[", vlow, "]",     "(soe_gt.html#exp-std-grade)"),
+      mod      = paste0("[", mod, "]",      "(soe_gt.html#exp-std-grade)"),
+      low      = paste0("[", low, "]",      "(soe_gt.html#exp-std-grade)"),
+      vlow     = paste0("[", vlow, "]",     "(soe_gt.html#exp-std-grade)"),
+      low_very = paste0("[", low_very, "]", "(soe_gt.html#exp-std-grade)"),
       # group = ifelse(outcome == "Patient satisfaction", "Patient-reported", "Clinical"),
       across(everything(), ~ str_remove(.x, "‡|†|\\*")),
       grade = case_when(
@@ -568,12 +580,14 @@ kq1_complications <- function() {
         grade == "Low/very low" ~ low_very,
         .default = grade
       ),
-      event_e = ifelse(!is.na(n_exp), paste0(events_exp, " (", n_exp, ")"), NA),
-      event_c = ifelse(!is.na(n_std), paste0(events_std, " (", n_std, ")"), NA),
+      event_e = ifelse(!is.na(n_exp), paste0(formattable::comma(events_exp), " (", formattable::comma(n_exp), ")"), NA),
+      event_c = ifelse(!is.na(n_std), paste0(formattable::comma(events_std), " (", formattable::comma(n_std), ")"), NA),
+      # event_e = ifelse(!is.na(n_exp), paste0(events_exp, " (", n_exp, ")"), NA),
+      # event_c = ifelse(!is.na(n_std), paste0(events_std, " (", n_std, ")"), NA),
       across(c(event_e, event_c), ~ str_remove(.x, "NA "))
     ) |>
     relocate(c(event_e, event_c), .after = nrsi) |>
-    select(-c(events_exp:n_std, grade_2))
+    select(-c(events_exp:n_std, grade_2, high, mod, low, vlow, low_very))
 
   expanded_dat |>
     gt(id = "one") |>
@@ -650,8 +664,10 @@ kq3_balance_main <- function(exclude = "RD") {
         grade == "Low/very low" ~ low_very,
         .default = grade
       ),
-    event_e = ifelse(!is.na(n_reg), paste0(events_reg, " (", n_reg, ")"), NA),
-    event_c = ifelse(!is.na(n_gen), paste0(events_gen, " (", n_gen, ")"), NA),
+    event_e = ifelse(!is.na(n_reg), paste0(formattable::comma(events_reg), " (", formattable::comma(n_reg), ")"), NA),
+    event_c = ifelse(!is.na(n_gen), paste0(formattable::comma(events_gen), " (", formattable::comma(n_gen), ")"), NA),
+    # event_e = ifelse(!is.na(n_reg), paste0(events_reg, " (", n_reg, ")"), NA),
+    # event_c = ifelse(!is.na(n_gen), paste0(events_gen, " (", n_gen, ")"), NA),
     across(c(event_e, event_c), ~ str_remove(.x, "NA "))
   ) |>
   relocate(c(event_e, event_c), .after = rct) |>
@@ -729,8 +745,10 @@ kq3_complications <- function() {
         grade == "Low/very low" ~ low_very,
         .default = grade
       ),
-      event_e = ifelse(!is.na(n_reg), paste0(events_reg, " (", n_reg, ")"), NA),
-      event_c = ifelse(!is.na(n_gen), paste0(events_gen, " (", n_gen, ")"), NA),
+      event_e = ifelse(!is.na(n_reg), paste0(formattable::comma(events_reg), " (", formattable::comma(n_reg), ")"), NA),
+      event_c = ifelse(!is.na(n_gen), paste0(formattable::comma(events_gen), " (", formattable::comma(n_gen), ")"), NA),
+      # event_e = ifelse(!is.na(n_reg), paste0(events_reg, " (", n_reg, ")"), NA),
+      # event_c = ifelse(!is.na(n_gen), paste0(events_gen, " (", n_gen, ")"), NA),
       across(c(event_e, event_c), ~ str_remove(.x, "NA "))
     ) |>
     relocate(c(event_e, event_c), .after = rct) |>

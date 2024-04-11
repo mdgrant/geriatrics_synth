@@ -28,8 +28,6 @@ website:
         menu:
           - href: kq1.html
             text: "Expanded Preop Evaluation"
-          - href: kq2.html
-            text: "Prehabilitation"
           - href: kq3.html
             text: "Neuraxial versus General Anesthesia"
           - href: kq4.html
