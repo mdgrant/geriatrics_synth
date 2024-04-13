@@ -270,7 +270,8 @@ study_char_dat <- study_char_dat |>
   left_join(targets_linked_refids |> select(refid, refid_to_link_to, study_l_w_linked, study_w_linked), by = "refid") |>
   mutate(
     study_l_w_linked = if_else(is.na(study_l_w_linked), study_l, study_l_w_linked),
-    linked_references_all_refid = if_else(!is.na(linked_references), linked_references, as.character(refid))
+    linked_references_all_refid = if_else(!is.na(linked_references), linked_references, as.character(refid)),
+    refid_to_link_to = if_else(!is.na(refid_to_link_to), refid_to_link_to, refid)
   ) |>
   relocate(study_l_w_linked, study_w_linked, refid_to_link_to, linked_references_all_refid, .after = study_l)
 
