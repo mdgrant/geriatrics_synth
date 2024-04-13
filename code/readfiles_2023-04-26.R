@@ -257,15 +257,22 @@ targets_linked_refids <- linked_refids |>
   select(refid, year, study, study_l, refid_to_link_to) |>
   filter(!is.na(refid_to_link_to)) |>
   left_join(study_l_link_add, by = c("refid_to_link_to")) |>
-  mutate(study_l_w_linked = paste0(study_l, " (", (study_l_to_link_to), ")"))
+  mutate(
+    study_l_w_linked = paste0(study_l, " (", (study_l_to_link_to), ")"),
+    study_w_linked = str_remove(study_l_w_linked, "\\(.*\\) \\("),
+    study_w_linked = str_remove(study_w_linked, "\\(.*"),
+    study_w_linked = str_remove(study_w_linked, "^\\["),
+    study_w_linked = str_replace(study_w_linked, "\\]\\[", ", "),
+    study_w_linked = str_remove(study_w_linked, "\\]$")
+  )
 
 study_char_dat <- study_char_dat |>
-  left_join(targets_linked_refids |> select(refid, refid_to_link_to, study_l_w_linked), by = "refid") |>
+  left_join(targets_linked_refids |> select(refid, refid_to_link_to, study_l_w_linked, study_w_linked), by = "refid") |>
   mutate(
     study_l_w_linked = if_else(is.na(study_l_w_linked), study_l, study_l_w_linked),
     linked_references_all_refid = if_else(!is.na(linked_references), linked_references, as.character(refid))
   ) |>
-  relocate(study_l_w_linked, refid_to_link_to, linked_references_all_refid, .after = study_l)
+  relocate(study_l_w_linked, study_w_linked, refid_to_link_to, linked_references_all_refid, .after = study_l)
 
 rm(targets_linked_refids, study_l_link_add)
 
