@@ -90,7 +90,7 @@ outcome_tab(outcome_dat, 11)
 dichot_freq_fun(dichot_dat)
 ```
 
-<font size = 4> `r table_ref()` Continuous outcomes. </font>
+<font size = 4> `r table_ref()` Publications reporting continuous outcomes (not unique studies). </font>
 
 ```{r cont_outcome_freq}
 contin_freq_fun(contin_dat)
@@ -154,6 +154,8 @@ study_char_dat |>
 ```{r drugs_by_study}
 # DATA: drug_classes_by_study — refid, arm_up is pim drug class
 ## drug_classes_by_study concatenated; by study ------- (2023-09-29 13:12) @----
+# RESUME: drug_classes_by_study — refid, arm_up is pim drug class
+
 drug_classes_by_study <- study_arm_dat |>
   select(refid, design_f, study, arm_id, arm_n, kq5_antichol:kq5_benzo_shortlong) |>
   filter(if_any(starts_with("kq"), ~ !is.na(.))) |> # arms with relevant drugs; other all NA
@@ -169,14 +171,16 @@ drug_classes_by_study <- study_arm_dat |>
       "any_ns" ~ "Benzodiazepine (any/ns)",
     )
   ) |>
-  unite(agents, antichol:nonbenzo, na.rm = TRUE, sep = "|") |> # multiple PIMs
+  unite(agents, c(antichol:nonbenzo, gabapentin_drug), na.rm = TRUE, sep = "|") |> # multiple PIMs
   mutate(
     agents = str_replace(agents, "antichol", "Anticholinergics"),
     agents = str_replace(agents, "antipsych", "Antipsychotics"),
     agents = str_replace(agents, "corticoster", "Corticosteroids"),
     agents = str_replace(agents, "nsaid", "NSAIDs"),
     agents = str_replace(agents, "h2antag", "H2 blockers"),
-    agents = str_replace(agents, "nonbenzo", "Nonbenzodiazepine hypnotics")
+    agents = str_replace(agents, "nonbenzo", "Nonbenzodiazepine hypnotics"),
+    agents = str_replace(agents, "benzo_any", "Benzodiazepines (any)"),
+    agents = str_replace(agents, "gabapentin", "Gabapentin"),
   ) |>
   select(refid, study, agents) |>
   distinct() |>
@@ -185,7 +189,7 @@ drug_classes_by_study <- study_arm_dat |>
     agents_up = paste0(agents, collapse = "|"),
     # clean up multiple categories consequence of data structure
     agents_up = str_replace(agents_up, "Benzodiazepine \\(any\\)\\|Benzodiazepine \\(sa\\)\\|Benzodiazepine \\(la\\)", "Benzodiazepine (sa)|Benzodiazepine (la)"),
-    agents_up = ifelse(study == "Memtsoudis 2019a", "Benzodiazepine (sa)|Benzodiazepine (la)|Corticosteroids|NSAIDs", agents_up)
+    agents_up = ifelse(str_detect(study, "Memtsoudis"), "Benzodiazepine (any)|Benzodiazepine (sa)|Benzodiazepine (la)|Corticosteroids|NSAIDs", agents_up)
   ) |>
   slice(1) |>
   ungroup() |>
@@ -239,6 +243,7 @@ included_dat |>
   cols_hide(c(non_vh_hdi, year, study)) |>
   fmt_markdown(columns = c(study_l, agents_up, surgs)) |>
   fmt_number(columns = c(n_enroll, centers), use_seps = TRUE, drop_trailing_zeros = TRUE) |> 
+  sub_missing(columns = everything(), missing_text = "") |>
   tab_footnote(
     footnote = md("Non very-high [Human Development Index](https://en.wikipedia.org/wiki/List_of_countries_by_Human_Development_Index) country."),
     locations = cells_column_labels(columns = country)
@@ -291,6 +296,7 @@ drug_f_labels <- read_csv("data/kq5_levels_labels.csv") |> pull(label)
 # by arm pim and comparators -------------------------- (2023-01-15 15:24) @----
 # CODE: 2023-09-29 11:48 verified and updated all _drug variable not missing (corrected Distiller)
 drug_by_arm <- study_arm_dat |> 
+  # filter(refid == 2730) |> 
   select(refid, year, design_f_lab, study, study_l, arm_id, arm_n, contains(c("kq5", "kq6")), starts_with("inapp"), anesth_type) |>
   filter(!(study == "Duprey 2022" & arm_id %in% c(1,2,3,4))) |> 
   # select(refid, contains("nsaid")) |> filter(if_any(contains("nsaid"), ~ !is.na(.x))) #verify by class drug category and drug entered:
@@ -313,7 +319,7 @@ drug_by_arm <- study_arm_dat |>
     none = ifelse(str_detect(none, "other"), tolower(coalesce(other_spec_kq5, other_spec_kq6)), none)
   ) |>
   rename_with(~ str_replace(.x, "^kq[5-6]_", "")) |> # update kq5&6 study kq5 arms with kq6 data
-  unite("arm_up", none, antichol, antipsych, any_cort_drug, nsaid, h2antag, benzo, nonbenzo, dexmed, ketamine, melatonin, ramelteon, sep = "|", na.rm = TRUE, remove = TRUE) |>
+  unite("arm_up", none, antichol, antipsych, any_cort_drug, nsaid, h2antag, benzo, nonbenzo, dexmed, ketamine, melatonin, ramelteon, gabapentin_drug, sep = "|", na.rm = TRUE, remove = TRUE) |>
   unite("drug", contains("drug"), sep = "|", na.rm = TRUE, remove = TRUE) |>
   unite("other_spec", contains("other_spec"), sep = "|", na.rm = TRUE, remove = TRUE) |>
   unite("control_desc", contains("control_desc"), sep = "|", na.rm = TRUE, remove = TRUE) |>
@@ -335,6 +341,7 @@ drug_by_arm <- study_arm_dat |>
       arm_up == "cort_methylpred" ~ "Methylprednisolone",
       arm_up == "dexmedetomidine" ~ "Dexmedetomidine",
       arm_up == "omeprazole" ~ "Omeprazole",
+      arm_up == "gabapentin" ~ "Gabapentin",
       drug == "antichol_any" ~ "Anticholinergic (any)",
       drug == "antichol_other" ~ firstup(other_spec),
       drug == "antipsych_other" ~ firstup(other_spec),
@@ -357,6 +364,7 @@ drug_by_arm <- study_arm_dat |>
       drug == "h2antag_famo" ~ "Famotidine",
       drug == "nsaid_keto" ~ "Ketoprofen",
       drug == "h2antag_famo|benzo_midaz" ~ "Famotidine/Midzolam/Dexamethasone",
+      drug == "gabapentin" ~ "Gabapentin",
       .default = firstup(arm_up)
     ),
   ) |>  
@@ -377,7 +385,8 @@ dosing_ps_anesth_age_mmse <- study_arm_dat |>
     dose_sched = str_replace_all(dose_sched, "×NAd|NA×|NAd|NA", ""),
     dose_sched = str_replace_all(dose_sched, "\\(\\)", ""),
     dose_sched = str_replace(dose_sched, "\\_", "/"),
-    dose_sched = ifelse(str_detect(dose_sched, "dose"), "NR", dose_sched)
+    dose_sched = ifelse(str_detect(dose_sched, "dose"), "NR", dose_sched),
+    dose_sched = ifelse(refid == 7522 & arm_id == 2, "0.5-1.0mg", dose_sched), # Leigheb 2022
     ) |> 
   select(refid, arm_id, dose_sched) |> 
   left_join(table_age_mn_med, by = c("refid", "arm_id")) |> 
@@ -433,6 +442,9 @@ kq5_by_arm_tab <- kq5_by_arm_tab |>
 
 ```{r save_pim_drug}
 #| eval: false
+
+# RESUME: save pim arms for KQ6
+
 # save file for use in KQ6
 # write_csv(kq5_by_arm_tab |>
 #   filter(refid %in% kq56_refid) |>
@@ -509,11 +521,11 @@ kq5_by_arm_tab |>
     tiva_tab ~ px(30),
     regional_tab ~ px(30),
     sedation_only_tab ~ px(30),
-    age_table ~ px(80),
+    age_table ~ px(85),
     pre_mmse ~ px(80),
     dose_sched ~ px(130),
-    timing_all ~ px(85),
-    surgs_single_f ~ px(80)
+    timing_all ~ px(80),
+    surgs_single_f ~ px(75)
   ) |>
   gt_theme_mg() |> 
   fmt_markdown(columns = c(study_l, age_table, pre_mmse, timing_all)) |>
@@ -521,6 +533,7 @@ kq5_by_arm_tab |>
   sub_missing(columns = everything(), missing_text = "") |>
   tab_spanner(label = "ASA", columns = c(asa_ps_incl)) |>
   tab_spanner(label = "Anesthetic", columns = c(volatile_tab:sedation_only_tab)) |>
+  tab_style(style = cell_text(size = "10px"), locations = cells_column_labels(columns = c(tiva_tab, volatile_tab, regional_tab, sedation_only_tab))) |> 
   tab_style(style = cell_text(font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
   tab_style(style = cell_text(align = "left"),         locations = cells_column_labels(columns = c("study_l", "drug_up", "dose_sched", "timing_all", "surgs_single_f"))) |>
   tab_style(style = cell_text(align = "center"),       locations = cells_column_labels(columns = c("age_table", "pre_mmse"))) |>
@@ -609,6 +622,15 @@ kq5_char_drugs_tab("nsaid", "NSAIDs") |>
 <!-- kq5_char_drugs_tab("Multiple", "PIM: potentially inappropriate medication; Preop:preopertive; Postop: postoperative.") -->
 <!-- ``` -->
 
+### Gabapentin
+
+<font size = 4> `r table_ref()` Studies examining gabapentin, dose, and timing according to study design. </font>
+
+```{r gabapentin}
+kq5_char_drugs_tab("gabapentin", "Gabapentin") |> 
+  tab_footnote("PS: physical status; Vol: volatile; TIVA: total intravenous anesthesia; Reg: regional; Sed: sedation; MMSE: Mini-Mental State Exam.") 
+```
+
 ## **Delirium Incidence**
 
 ```{r delirium}
@@ -648,10 +670,11 @@ delirium_meta_dat <- dichot_dat |>
   left_join(surgs |> select(refid, surgs_single_f), by = c("refid")) |>
   left_join(kq5_by_arm_tab |> select(refid, arm_id, arm_id_pim, arm_up, drug_up), by = c("refid", "arm_id")) |> 
   rename(surg_f = surgs_single_f) |> 
-  select(refid, study, arm_id, arm_id_pim, arm_up, drug_up, year, design_f_lab, surg_f, delitotal_n, arm_n, delirium_inc_prop, delitotal_time:delitotal_95high, deli_cam:deli_scale_otherspec) 
+  select(refid, study, arm_id, arm_id_pim, arm_up, drug_up, year, design_f_lab, surg_f, delitotal_n, arm_n, delirium_inc_prop, delitotal_time:delitotal_95high, deli_scale_cam:deli_scale_otherspec) 
 
 # write to csv for nma w/kq5 data
 # write_csv(delirium_meta_dat |> select(refid:arm_n), "data/delirium_meta_kq5_dat.csv")
+write_csv(delirium_meta_dat |> select(refid:arm_n), "/Users/mgrant/Desktop/delirium_meta_kq5_dat.csv")
 
 ## collapse arms code from kq3 ------------------------ (2023-10-02 09:30) @----
 # NOTE: collapse arms code from kq3
@@ -698,11 +721,11 @@ delirium_rr_ref <- delirium_meta_dat |>
   ) 
 
 delirium_tab <- delirium_meta_dat |>
-  # select(refid, refid, year, arm_id_pim, design_f_lab, study, study_l, arm_n, delitotal_time:delitotal_95high, deli_cam:deli_scale_otherspec) |>
+  # select(refid, refid, year, arm_id_pim, design_f_lab, study, study_l, arm_n, delitotal_time:delitotal_95high, deli_scale_cam:deli_scale_otherspec) |>
   mutate(
     across(starts_with("deli_"), ~ str_remove_all(.x, "scale_")),
     across(starts_with("deli_"), ~ str_remove_all(.x, "deli_")),
-    across(deli_cam:deli_scale_icdsc, ~ toupper(.x)),
+    across(deli_scale_cam:deli_scale_icdsc, ~ toupper(.x)),
   ) |>
   rename_with(~ gsub("scale_", "", .x, fixed = TRUE)) |>
   rename_with(~ gsub("deli_", "", .x, fixed = TRUE)) |>
@@ -719,6 +742,7 @@ delirium_tab <- delirium_meta_dat |>
   ) |>
   relocate(calc_percent, .after = delitotal_perc) |>
   unite(scale_delirium, cam:other, remove = TRUE, sep = "/", na.rm = TRUE) |>
+# VARIABLE: changed delirium index variable name  
   mutate(
     scale_delirium = ifelse(scale_delirium == "unspec", "NR", scale_delirium),
     scale_delirium = ifelse(scale_delirium == "DELIRIUM INDEX (DI)", "DI", scale_delirium),
@@ -805,11 +829,88 @@ delirium_tab |>
     tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(delitotal_time, rr_ci))) |>
     tab_style(style = cell_text(align = "right"),  locations = cells_body(columns = c(n_percent))) |>
     tab_style(style = cell_text(align = "right"),  locations = cells_column_labels(columns = c(n_percent))) |>
-    tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:rr_ci), rows = arm_up %in% pim_arm_up)) |>  
+    tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:rr_ci), rows = !drug_up %in% c("None", "Placebo"))) |>  
     sub_missing(columns = delitotal_time, missing_text = "Note") |> 
     tab_footnote("Day(s) over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |>
     tab_footnote("Maximum of reported daily incidence.", locations = cells_body(columns = delitotal_time, rows = delitotal_time == "Note"))
 }  
+
+delirium_tab_fun_sa_benzo <- function(drugs, title, design, rr_format){
+delirium_tab |>
+  arrange(year, study, arm_id_pim) |>
+  group_by(refid) |>
+  filter(any(arm_up %in% drugs)) |> 
+  mutate(
+    study_l = first_row(study_l),
+    surg_f = first_row(surg_f)
+    ) |> 
+  ungroup() |> 
+  filter(str_detect(design_f_lab, design)) |> 
+    mutate(
+      scale_delirium = ifelse(scale_delirium == "neech", "NEECHAM", scale_delirium),
+      scale_delirium = ifelse(scale_delirium == "other", "Other", scale_delirium),
+      delitotal_time = ifelse(delitotal_time == 999, "Stay", as.character(delitotal_time)),
+      delitotal_time = ifelse(is.na(delitotal_time), "Note", delitotal_time),
+      study_l = ifelse(row_number() > 1, "", study_l),
+      delitotal_time = ifelse(row_number() > 1, "", delitotal_time),
+      scale_delirium = ifelse(row_number() > 1, "", scale_delirium),
+      bar = case_when(
+        arm_id_pim == 1 ~ bar_prop(calc_percent, "#969696"),
+        !arm_up %in% drugs ~ bar_prop(calc_percent, "#90B0C5"),
+        .default = bar_prop(calc_percent, "#A93226")),
+      .by = study
+    ) |>
+    mutate(
+      bar = ifelse(study == "Duprey 2022", "", bar)
+    ) |> 
+    # filter(!drug_up %in% c("Benzodiazepine (any la)", "Benzodiazepine (any sa/la)")) |>
+  group_by(design_f_lab) |> 
+    gt(id = "one") |>
+    tab_header(title = title) |>
+    # row_group_order(groups = c("Ortho", "GI/Abd", "Headneck", "Spine", "Various")) |>
+    cols_hide(c(year, refid, design_f_lab, study, arm_id, arm_id_pim, age_table, pre_mmse, calc_percent, arm_up)) |>
+    cols_label(
+      study_l = "Study",
+      arm_n = " N",
+      # age_table = "  Age",
+      drug_up = md("Arm"),
+      # pre_mmse = md("  MMSE<br/>(preop)"),
+      surg_f = "Surgery",
+      scale_delirium = "Scale",
+      delitotal_time = "Day(s)",
+      n_percent = "N (%)",
+      bar = "0 – 100%",
+      rr_ci = md(rr_format),
+    ) |>
+    cols_width(
+      study_l ~ px(165),
+      arm_n ~ px(75),
+      # age_table ~ px(100),
+      drug_up ~ px(170),
+      # pre_mmse ~ px(95),
+      surg_f ~ px(80),
+      scale_delirium ~ px(105),
+      delitotal_time ~ px(55),
+      n_percent ~ px(90),
+      bar ~ px(100),
+      rr_ci ~ px(140)
+    ) |>
+    gt_theme_mg() |>
+    fmt_markdown(columns = c(study_l, pre_mmse, bar, rr_ci)) |>
+    fmt_number(columns = c(arm_n), drop_trailing_zeros = TRUE) |>
+    tab_spanner(label = "Incidence Proportion", columns = c(n_percent, bar)) |>
+    tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(study, drug_up, scale_delirium))) |>
+    tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(delitotal_time, n_percent, rr_ci))) |>
+    tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(drug_up, scale_delirium, bar))) |>
+    tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(delitotal_time, rr_ci))) |>
+    tab_style(style = cell_text(align = "right"),  locations = cells_body(columns = c(n_percent))) |>
+    tab_style(style = cell_text(align = "right"),  locations = cells_column_labels(columns = c(n_percent))) |>
+    tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:rr_ci), rows = drug_up %in% c("Benzodiazepine (any sa)", "Midazolam", "Remimazolam"))) |>  
+    sub_missing(columns = delitotal_time, missing_text = "Note") |> 
+    tab_footnote("Day(s) over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |>
+    tab_footnote("Maximum of reported daily incidence.", locations = cells_body(columns = delitotal_time, rows = delitotal_time == "Note"))
+}  
+
 
 # tab_footnote("RR: risk ratio; CAM: Confusion Assessment Method; DI: Delirium Index; DRS: Delirium Rating Scale; DSM: Diagnostic and Statistical Manual of Mental Disorders; NEECHAM: Neelon and Champagne confusion scale; NR: not reported.")
 ```
@@ -819,16 +920,17 @@ delirium_tab |>
 <font size = 4> `r table_ref()` Delirium incidence and ascertainment during hospitalization in studies examining benzodiazepines. </font>
 
 ```{r pim_delirium_gt_benzo}
-delirium_tab_fun("benzo_short", "Benzodiazepines (short-acting) — randomized designs", "Rand", "RR (95% CI)") |> 
+delirium_tab_fun_sa_benzo("benzo_short", "Benzodiazepines (short-acting) — randomized designs", "Rand", "RR (95% CI)") |> 
   tab_footnote("RR: risk ratio; CAM: Confusion Assessment Method; NR: not reported.")
 
-delirium_tab_fun("benzo_short", "Benzodiazepines (short-acting) — nonrandomized designs", "Coh", "RR <u>aOR</u> (95% CI)") |> 
+delirium_tab_fun_sa_benzo("benzo_short", "Benzodiazepines (short-acting) — nonrandomized designs", "Coh", "RR <u>aOR</u> (95% CI)") |> 
   sub_values(values = "0.72 (0.69-0.75)", replacement = "<u>0.79 (0.72-0.87)</u>", escape = FALSE) |> 
   sub_values(values = "2.66 (2.48-2.84)", replacement = "<u>2.10 (1.82-2.42)</u>", escape = FALSE) |> 
   sub_values(values = "2.12 (2.02-2.22)", replacement = "<u>1.74 (1.56-1.94)</u>", escape = FALSE) |> 
   sub_values(values = "0.78 (0.76-0.81)", replacement = "<u>0.82 (0.77-0.88)</u>", escape = FALSE) |> 
   sub_values(values = "2.75 (2.62-2.90)", replacement = "<u>2.24 (2.01-2.49)</u>", escape = FALSE) |> 
   sub_values(values = "2.21 (2.13-2.28)", replacement = "<u>1.78 (1.64-1.92)</u>", escape = FALSE) |> 
+  
   tab_footnote("RR: risk ratio; aOR: adjusted odds ratio; ns: not specified; sa: short-acting; la: long-acting; CAM: Confusion Assessment Method; THA: total hip arthroplasty; TKA: total knee arthroplasty.") |> 
   tab_footnote(md("[Claims-based algorithm.](https://pubmed.ncbi.nlm.nih.gov/28485014/)"), locations = cells_body(columns = scale_delirium, rows = scale_delirium == "Other"))
 
@@ -1111,7 +1213,8 @@ rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind", weighted = FALS
 
 <font size = 4> `r figure_ref()` Risk of bias assessments for randomized clinical trials. </font>
 
-```{r rob_overall_study, out.width = "55%", fig.height = 6.5}
+```{r rob_overall_study, out.width = "55%", fig.height = 8.5}
+#| warning: false
 rob_traffic_light(rob_temp_dat, psize = 4, tool = "ROB2", colour = "colourblind")
 ```
 
@@ -1129,7 +1232,8 @@ rob_summary(robinsi_temp_dat, tool = "ROBINS-I", colour = "colourblind", weighte
 
 <font size = 4> `r figure_ref()` Risk of bias assessments for nonrandomized studies. </font>
 
-```{r nrsi_overall_study, out.width = "55%", fig.height = 5.25}
+```{r nrsi_overall_study, out.width = "55%", fig.height = 8.0}
+#| warning: false
 rob_traffic_light(robinsi_temp_dat, psize = 4, tool = "ROBINS-I", colour = "colourblind")
 ```
 
