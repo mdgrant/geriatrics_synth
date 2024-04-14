@@ -472,7 +472,7 @@ studychar_tab |>
   group_by(surg_design) |>
   gt(id = "one") |> 
   row_group_order(groups_kq1) |> 
-  cols_hide(c(refid, arm_id, study, year, design_f_lab, surgs_single, pacu_screen, cog_imp_n, cog_imp)) |>
+  cols_hide(c(refid, arm_id, study, year, design_f_lab, surgs_single, pacu_screen, cog_imp_n, cog_imp, design_f_abbrev)) |>
   cols_label(
     study_l          = "Study",
     arm_n            = "N ",
