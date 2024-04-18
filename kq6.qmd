@@ -3782,7 +3782,7 @@ adverse_dex_meta_wide_dat <- adverse_dex_meta_dat |>
 
 <caption_mg> `r figure_ref()` **Risk ratio** for bradycardia (dexmedetomidine versus placebo or no interventions; randomized clinical trials). </caption_mg>
 
-```{r complication_brady_meta, fig.width = 16, fig.height = 6, fig.align = "left"}
+```{r complication_brady_meta, fig.width = 16, fig.height = 8, fig.align = "left"}
 #| warning: false
 # RESUME: complications risk difference meta-analysis
 # add bradycardia definition
@@ -3859,7 +3859,7 @@ text(5.5, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .
 
 <caption_mg> `r figure_ref()` **Risk difference** for bradycardia (dexmedetomidine versus placebo or no interventions; randomized clinical trials). </caption_mg>
 
-```{r complication_brady_meta_rd, fig.width = 16, fig.height = 6, fig.align = "left"}
+```{r complication_brady_meta_rd, fig.width = 16, fig.height = 8, fig.align = "left"}
 adverse_meta_rd <- update(adverse_meta, sm = "RD")
 
 forest(adverse_meta_rd,
@@ -3890,7 +3890,7 @@ forest(adverse_meta_rd,
 
 <caption_mg> `r figure_ref()` **Risk ratio** for hypotension (dexmedetomidine versus placebo or no interventions; randomized clinical trials). </caption_mg>
 
-```{r complication_hypo_meta, fig.width = 16.5, fig.height = 6.75, fig.align = "left"}
+```{r complication_hypo_meta, fig.width = 16.5, fig.height = 8.75, fig.align = "left"}
 #| warning: false 
 # RESUME: hypotension
 # add hypotension definition
@@ -3971,7 +3971,7 @@ text(4, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .9)
 
 <caption_mg> `r figure_ref()` **Risk difference** for hypotension (dexmedetomidine versus placebo or no interventions; randomized clinical trials). </caption_mg>
 
-```{r complication_hypo_meta_rd, fig.width = 16, fig.height = 6.8, fig.align = "left"}
+```{r complication_hypo_meta_rd, fig.width = 16, fig.height = 8.8, fig.align = "left"}
 adverse_meta_rd <- update(adverse_meta, sm = "RD")
 
 forest(adverse_meta_rd,
@@ -4002,7 +4002,7 @@ forest(adverse_meta_rd,
 
 <caption_mg> `r figure_ref()` **Risk differences** for other complications --- myocardial infarction, other arrhythmia (excludes bradycardia), stroke, pulmonary, and renal (dexmedetomidine versus placebo or no interventions; randomized clinical trials). </caption_mg>
 
-```{r complication_meta,  fig.width = 16, fig.height = 12, fig.align = "left"}
+```{r complication_meta,  fig.width = 16, fig.height = 14, fig.align = "left"}
 adverse_meta <- metabin(
   n_Dex, arm_n_Dex, n_Plac, arm_n_Plac,
   data = adverse_dex_meta_wide_dat,
@@ -4076,7 +4076,7 @@ adverse_ram_meta_wide_dat <- adverse_ram_meta_dat |>
 
 <caption_mg> `r figure_ref()` **Risk difference** in pneumonia (ramelteon versus no interventions; before-after studies). </caption_mg>
 
-```{r complication_ram_meta,  fig.width = 16, fig.height = 2.5, fig.align = "left"}
+```{r complication_ram_meta,  fig.width = 16, fig.height = 4.5, fig.align = "left"}
 adverse_ram_meta <- metabin(
   n_Ram, arm_n_Ram, n_None, arm_n_None,
   data = adverse_ram_meta_wide_dat,
@@ -4198,7 +4198,7 @@ los_tab |>
 
 ### *Pooled*
 
-```{r los_meta, fig.width = 16, fig.height = 3, fig.align = "left"}
+```{r los_meta, fig.width = 16, fig.height = 6, fig.align = "left"}
 los_meta_dat <- contin_dat |>
   left_join(drugs_dat |> select(refid, arm_id, drug_recode_abbr), by = c("refid", "arm_id")) |>
   relocate(drug_recode_abbr, .after = arm_id) |>
@@ -4256,7 +4256,7 @@ los_mel_ram_meta_dat <- los_meta_dat |>
 
 <caption_mg> `r figure_ref()` Mean difference in lengths of stay (dexmedetomidine versus placebo; randomized clinical trials). </caption_mg>
 
-```{r los_dex_meta, fig.width = 16, fig.height = 5.5, fig.align = "left"}
+```{r los_dex_meta, fig.width = 16, fig.height = 7.5, fig.align = "left"}
 los_dex_meta <- metacont(
   n.e = arm_n_Dex, 
   n.c = arm_n_Plac,
@@ -4318,7 +4318,7 @@ forest(los_dex_meta,
 
 <caption_mg> `r figure_ref()` Mean difference in lengths of stay (melatonin or ramelteon versus placebo; randomized clinical trials). </caption_mg>
 
-```{r los_mel_ram_meta, fig.width = 14, fig.height = 3.5, fig.align = "left"}
+```{r los_mel_ram_meta, fig.width = 14, fig.height = 4.5, fig.align = "left"}
 los_mel_ram_meta <- metacont(
   n.e = arm_n_MelRam, 
   n.c = arm_n_Plac,
@@ -4711,7 +4711,7 @@ mortality_dat |>
 
 <caption_mg> `r figure_ref()` Risk difference for hospital and 30-day mortality -- dexmedetomidine compared with placebo or no intervention. </caption_mg>
 
-```{r dex_mort_meta, fig.dim = c(16, 6), fig.align = "center"}
+```{r dex_mort_meta, fig.dim = c(16, 8), fig.align = "center"}
 dex_mort_meta_dat <- pairwise_mort_dex_dat |> 
   mutate(year = str_extract(study, "\\d{4}")) |> 
   left_join(rob2_meta_dat, by = "refid") |> 
@@ -4803,7 +4803,7 @@ legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#A
 
 <caption_mg> `r figure_ref()` Risk difference for hospital and 30-day mortality -- melatonin or ramelteon compared with placebo or no intervention. </caption_mg>
 
-```{r mel_ram_mort_meta, fig.dim = c(16, 5.5), fig.align = "center"}
+```{r mel_ram_mort_meta, fig.dim = c(16, 7.5), fig.align = "center"}
 # ```{r nma_dat, out.width = 50%, out.height = 100%}
 mel_ram_mort_meta_dat <- pairwise_mort_mel_ram_dat |> 
   mutate(year = str_extract(study, "\\d{4}")) |> 
