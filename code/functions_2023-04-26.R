@@ -673,10 +673,10 @@ png_fun <- function(name, width, height){
 ## for baseline risk plot for RR or OR ---------------- (2023-12-27 10:50) @----
 bubble_plot_data <- function(meta_object) {
   yi_meta <- meta_object$TE
-  vi_meta <- meta_object$seTE
+  sei_meta <- meta_object$seTE
   control_event_rate <- meta_object$event.c / meta_object$n.c
   slab <- meta_object$studlab
-  tibble(yi_meta, vi_meta, control_event_rate, slab)
+  tibble(yi_meta, sei_meta, control_event_rate, slab)
 }
 
 # usage
