@@ -345,6 +345,15 @@ delirium_total_tab_fun <- function(refids){
       other = ifelse(str_detect(otherspec, "AMT"), "AMT", other),
       other = ifelse(str_detect(otherspec, "Psychiatrist consultation"), "Psych", other),
       other = ifelse(str_detect(otherspec, "Chinese"), "Note", other),
+      other = ifelse(str_detect(otherspec, "clinical observation of trained nurse"), "Clinical", other),
+      other = ifelse(str_detect(otherspec, "Clinical symptoms"), "Clinical", other),
+      other = ifelse(str_detect(otherspec, "Clinical"), "Clinical", other), # Clinical symptoms Cheng 2016
+      other = ifelse(str_detect(otherspec, "Disturbance of consciousness assessment"), "DOC", other), #	Disturbance of consciousness assessment Hu 2022
+      other = ifelse(str_detect(otherspec, "Nu-DESC"), "Nu-DESC", other),
+      other = ifelse(str_detect(otherspec, "Nursing delirium screening scale"), "Nu-DESC", other),
+      other = ifelse(str_detect(otherspec, "ICD"), "ICD", other),
+      other = ifelse(str_detect(study, "Memtsoudis"), "Other", other),
+      other = ifelse(study == "Liu 2023b", "Clinical", other), # chart review: psychiatrist diagnosis; use of antipsychotics; >=2 anesthesiologists agreed with trained nurse screening results
       other = ifelse(other == "other", NA_character_ , other),
       calc_percent = delitotal_n/arm_n * 100,
       n_percent = n_per_fun(delitotal_n, arm_n, 1),
@@ -384,7 +393,7 @@ delirium_total_gt_fun <- function(drug_f_abbr){
       study_l = "Study",
       arm_n = " N",
       # age_table = "  Age",
-      drug_recode = md("Drug"),
+      drug_recode = md("Arm"),
       # pre_mmse = md("  MMSE<br/>  (preop)"),
       scale_delirium = "Scale",
       delitotal_time = "Day(s)",
@@ -406,7 +415,7 @@ delirium_total_gt_fun <- function(drug_f_abbr){
       study_l ~ px(165),
       arm_n ~ px(45),
       # age_table ~ px(100),
-      drug_recode ~ px(70),
+      drug_recode ~ px(60),
       # pre_mmse ~ px(95),
       scale_delirium ~ px(105),
       delitotal_time ~ px(55),
