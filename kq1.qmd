@@ -655,7 +655,7 @@ expanded_combined |>
   cols_width(
     study_l        ~ px(165),
     kq1_eras       ~ px(25),
-    gen_comp       ~ px(33),
+    gen_comp       ~ px(35),
     gen_multi:pacu_screen ~ px(25),
   ) |> 
   tab_spanner(label = "General", columns = c(gen_comp:gen_nutrition), level = 1) |>
@@ -1261,7 +1261,7 @@ dev.off()
 
 temp <- bubble_plot_data(delirium_meta_rct) 
 
-fitted_meta <- metafor::rma(yi_meta, vi_meta, mods = ~ control_event_rate, slab = slab, data = temp)
+fitted_meta <- metafor::rma(yi = yi_meta, sei = sei_meta, mods = ~ control_event_rate, slab = slab, data = temp)
 
 png("assets/kq1_delirium_meta_bubble.png", width = 8, height = 6, units = "in", res = 300)
 par(bty = "n", xaxt = "s", yaxt = "s", mar = c(4, 4, 2, 1))
@@ -1424,7 +1424,7 @@ dev.off()
 
 temp <- bubble_plot_data(delirium_meta_nrsi) 
 
-fitted_meta <- metafor::rma(yi_meta, vi_meta, mods = ~ control_event_rate, slab = slab, data = temp)
+fitted_meta <- metafor::rma(yi = yi_meta, sei = sei_meta, mods = ~ control_event_rate, slab = slab, data = temp)
 
 png("assets/kq1_delirium_meta_nrsi_bubble.png", width = 8, height = 6, units = "in", res = 300)
 par(bty = "n", xaxt = "s", yaxt = "s", mar = c(4, 4, 2, 1))
