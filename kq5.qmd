@@ -674,7 +674,7 @@ delirium_meta_dat <- dichot_dat |>
 
 # write to csv for nma w/kq5 data
 # write_csv(delirium_meta_dat |> select(refid:arm_n), "data/delirium_meta_kq5_dat.csv")
-write_csv(delirium_meta_dat |> select(refid:arm_n), "/Users/mgrant/Desktop/delirium_meta_kq5_dat.csv")
+# write_csv(delirium_meta_dat |> select(refid:arm_n), "/Users/mgrant/Desktop/delirium_meta_kq5_dat.csv")
 
 ## collapse arms code from kq3 ------------------------ (2023-10-02 09:30) @----
 # NOTE: collapse arms code from kq3
@@ -1086,6 +1086,90 @@ delirium_tab |>
     sub_missing(columns = delitotal_time, missing_text = "Note") |> 
     tab_footnote("RR: relative risk; aOR: adjusted odds ratio; CAM: Confusion Assessment Method; DOS: delirium observation screening; THA: total hip arthroplasty; TKA: total knee arthroplasty.") |> 
     tab_footnote("Day(s) over which incidence proportion assessed. Stay indicates duration of hospitalization.", locations = cells_column_labels(columns = delitotal_time)) |>
+    tab_footnote("Maximum of reported daily incidence.", locations = cells_body(columns = delitotal_time, rows = delitotal_time == "Note")) |> 
+    tab_footnote(md("[Claims-based algorithm.](https://pubmed.ncbi.nlm.nih.gov/28485014/)"), locations = cells_body(columns = scale_delirium, rows = scale_delirium == "Other" & str_detect(study, "Memtsoudis 2019")))
+
+```
+
+### Gabapentin
+
+```{r gabapentinoids}
+#| eval: true
+
+delirium_tab |>
+  arrange(year, study, arm_id_pim) |>
+  group_by(study_l) |>
+  filter(any(arm_up %in% "gabapentin")) |> 
+  mutate(
+    study_l = first_row(study_l),
+    surg_f = first_row(surg_f)
+    ) |> 
+  ungroup() |> 
+  arrange(refid, arm_id_pim) |>
+  # filter(str_detect(design_f_lab, "Coh")) |> 
+    mutate(
+      scale_delirium = ifelse(scale_delirium == "neech", "NEECHAM", scale_delirium),
+      scale_delirium = ifelse(scale_delirium == "other", "Other", scale_delirium),
+      delitotal_time = ifelse(delitotal_time == 999, "Stay", as.character(delitotal_time)),
+      delitotal_time = ifelse(is.na(delitotal_time), "Note", delitotal_time),
+      # study_l = ifelse(row_number() > 1, "", study_l),
+      delitotal_time = ifelse(row_number() > 1, "", delitotal_time),
+      scale_delirium = ifelse(row_number() > 1, "", scale_delirium),
+      bar = case_when(
+        arm_id_pim == 1 ~ bar_prop(calc_percent, "#969696"),
+        !arm_up %in% "nsaid" ~ bar_prop(calc_percent, "#90B0C5"),
+        .default = bar_prop(calc_percent, "#A93226")),
+      .by = study
+    ) |>
+  group_by(design_f_lab) |> 
+    gt(id = "one") |>
+    tab_header(title = "Gabapentin") |>
+    # row_group_order(groups = c("Ortho", "GI/Abd", "Headneck", "Spine", "Various")) |>
+    cols_hide(c(year, refid, design_f_lab, study, arm_id, arm_id_pim, age_table, pre_mmse, calc_percent, arm_up)) |>
+    cols_label(
+      study_l = "Study",
+      arm_n = " N",
+      # age_table = "  Age",
+      drug_up = md("Arm"),
+      # pre_mmse = md("  MMSE<br/>(preop)"),
+      surg_f = "Surgery",
+      scale_delirium = "Scale",
+      delitotal_time = "Day(s)",
+      n_percent = "N (%)",
+      bar = "0 – 100%",
+      rr_ci = md("RR <u>aOR</u> (95% CI)"),
+    ) |>
+    cols_width(
+      study_l ~ px(165),
+      arm_n ~ px(60),
+      # age_table ~ px(100),
+      drug_up ~ px(170),
+      # pre_mmse ~ px(95),
+      surg_f ~ px(80),
+      scale_delirium ~ px(105),
+      delitotal_time ~ px(55),
+      n_percent ~ px(90),
+      bar ~ px(100),
+      rr_ci ~ px(140)
+    ) |>
+    gt_theme_mg() |>
+    fmt_markdown(columns = c(study_l, pre_mmse, bar, rr_ci)) |>
+    fmt_number(columns = c(arm_n), drop_trailing_zeros = TRUE) |>
+    tab_spanner(label = "Incidence Proportion", columns = c(n_percent, bar)) |>
+    tab_style(style = cell_text(align = "left"),   locations = cells_column_labels(columns = c(study, drug_up, scale_delirium))) |>
+    tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(delitotal_time, n_percent, rr_ci))) |>
+    tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(drug_up, scale_delirium, bar))) |>
+    tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(delitotal_time, rr_ci))) |>
+    tab_style(style = cell_text(align = "right"),  locations = cells_body(columns = c(n_percent))) |>
+    tab_style(style = cell_text(align = "right"),  locations = cells_column_labels(columns = c(n_percent))) |>
+    tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:rr_ci), rows = arm_up %in% pim_arm_up)) |>  
+    sub_values(values = "0.72 (0.69-0.74)", replacement = "<u>0.85 (0.79-0.91)</u>", escape = FALSE) |>
+    sub_values(values = "0.74 (0.71-0.76)", replacement = "<u>0.82 (0.77-0.89)</u>", escape = FALSE) |>
+    sub_values(values = "0.73 (0.72-0.75)", replacement = "<u>0.84 (0.80-0.88)</u>", escape = FALSE) |>
+    sub_values(values = "0.86 (0.84-0.88)", replacement = "<u>0.83 (0.79-0.88)</u>", escape = FALSE) |>
+    sub_missing(columns = delitotal_time, missing_text = "Note") |> 
+    tab_footnote("RR: relative risk.") |> 
+    tab_footnote("Day(s) over which incidence proportion assessed.", locations = cells_column_labels(columns = delitotal_time)) |>
     tab_footnote("Maximum of reported daily incidence.", locations = cells_body(columns = delitotal_time, rows = delitotal_time == "Note")) |> 
     tab_footnote(md("[Claims-based algorithm.](https://pubmed.ncbi.nlm.nih.gov/28485014/)"), locations = cells_body(columns = scale_delirium, rows = scale_delirium == "Other" & str_detect(study, "Memtsoudis 2019")))
 
