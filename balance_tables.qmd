@@ -15,7 +15,7 @@ tables:
         pre: "Table "
         sep: " -- "
 # bibliography: "bib/kq6.bib"
-# csl: jama.csl
+# csl: anesthesiology.csl
 # link-citations: false
 # nocite: '@*'
 ---
@@ -269,11 +269,14 @@ dex_plac_dat |>
 
 <br/>
 
+::: {.callout-important collapse="true"}
+#### Complicaitons NOT updated
+
 <font size = 4> `r table_ref()` Included complications and strength of evidence (GRADE) for dexmedetomidine versus placebo. </font>
 
 ```{r dex_plaaled_preop_complications}
 #| warning: false
-dex_plac_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "DeliriumProph", range = "B18:M29") |>
+dex_plac_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "DeliriumProph", range = "B19:M28") |>
   remove_empty(which = "cols") |>
   clean_names() |>
   rename(est = estimate_95_percent_ci) |>
@@ -293,7 +296,7 @@ dex_plac_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx",
     event_c = ifelse(!is.na(n_pla), paste0(formattable::comma(events_pla), " (", formattable::comma(n_pla), ")"), NA),
     across(c(event_e, event_c), ~ str_remove(.x, "NA "))
   ) |> 
-  relocate(c(event_e, event_c), .after = nrsi) |> 
+  # relocate(c(event_e, event_c), .after = nrsi) |> 
   select(-c(events_dex:n_pla, grade_2))
 
 dex_plac_dat |>
@@ -301,7 +304,7 @@ dex_plac_dat |>
   cols_label(
     outcome  = "Outcome",
     rct      = "RCT",
-    nrsi     = "NRSI",
+    # nrsi     = "NRSI",
     event_e  = "N (Total)",
     event_c  = "N (Total)",
     # n        = "    N",
@@ -316,7 +319,7 @@ dex_plac_dat |>
   cols_width(
     outcome ~ px(210),
     rct     ~ px(40),
-    nrsi    ~ px(45),
+    # nrsi    ~ px(45),
     # n       ~ px(65),
     event_e ~ px(110),
     event_c ~ px(110),
@@ -329,10 +332,10 @@ dex_plac_dat |>
   tab_spanner(label = "Placebo", columns = c(event_c), level = 1) |>
   opt_footnote_marks(marks = "standard") |> 
   tab_style(style = cell_text(align = "center"),        locations = cells_column_labels(columns = c(event_c, event_e))) |>
-  tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(n, grade, rct, nrsi))) |>
+  tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c(n, grade, rct))) |>
   # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c(est))) |>
   # tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(est))) |>
-  tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(grade, measure, rct, nrsi))) |>
+  tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(grade, measure, rct))) |>
   tab_footnote(md("RCT: randomized clinical trial; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; MD: mean difference.")) |>
   tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
   # tab_footnote("Complications bradycardia (3 studies); atrial fibrillation (1 study); cardiac dysfunction (1 study).", locations = cells_body(columns = c(outcome), rows = outcome == "Cardiac complications")) |>
@@ -344,6 +347,8 @@ dex_plac_dat |>
   tab_footnote("Complications reported as heart failure (1 study), arrhythmia (1 study), or bradycardia (17 studies).", locations = cells_body(columns = c(outcome), rows = outcome == "Cardiac complications"))
   
 ```
+:::
+
 
 ### Ketamine
 
