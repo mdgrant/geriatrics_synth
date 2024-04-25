@@ -15,7 +15,7 @@ tables:
         pre: "Table "
         sep: " -- "
 bibliography: "bib/kq6.bib"
-csl: jama.csl
+csl: anesthesiology.csl
 link-citations: false
 nocite: '@*'
 ---
@@ -41,15 +41,14 @@ Among older patients undergoing surgery and anesthesia, does dexmedetomidine, ke
 source("code/load_data.R")
 settings.meta(CIbracket = "(")
 conflicts_prefer(dplyr::lag)
-# NOTE: keeping Gao 2021 until verifying a duplicate of 1819
-kq6_refid <- kq6_refid[!kq6_refid %in% c(13734, 13630, 2314, 17151, 16753, 13171, 18900, 18493, 2396)] # Fan 2017b rhythim, Gao 2021 5269 ? duplicate of Gao 2020 1819, Xuan 2016 "Eligible patients were more than 60 years old with joint replacement surgery in ICU."; Sun 2019 2314 retracted; Ding 2015 16753 retracted; Xu 2022 17151 case control study no informative data; 13171 Mahrose 2021 nrc melatonin+dexmedetomidine vs dexmedetomidine; Wittwer 2023 ketamine+dexmedetomidine vs dexmedetomidine; 18493 Javaherforooshzadeh 2023 dex vs dex-melatonin; 2396 Shehabi dex vs MS
+# kq6_refid <- kq6_refid[!kq6_refid %in% c(13734, 13630, 2314, 17151, 16753, 13171, 18900, 18493, 2396, 17556)] # Fan 2017b rhythim, Gao 2021 5269 overlap with Gao 2020 1819, Xuan 2016 "Eligible patients were more than 60 years old with joint replacement surgery in ICU."; Sun 2019 2314 retracted; Ding 2015 16753 retracted; Xu 2022 17151 case control study no informative data; 13171 Mahrose 2021 nrc melatonin+dexmedetomidine vs dexmedetomidine; Wittwer 2023 ketamine+dexmedetomidine vs dexmedetomidine; 18493 Javaherforooshzadeh 2023 dex vs dex-melatonin; 2396 Shehabi dex vs MS; 17556 He 2022 in chinese; 2024-04-23 all excluded: kq6_refid[kq6_refid %in% c(13734, 13630, 2314, 17151, 16753, 13171, 18900, 18493, 2396, 17556)]
 
 study_char_dat <- data_kq(study_char_dat, kq6_refid)
 study_arm_dat <- data_kq(study_arm_dat, kq6_refid) 
 contin_dat <- data_kq(contin_dat, kq6_refid) 
 likert_dat <- data_kq(likert_dat, kq6_refid) 
-# VARIABLE: delirium_inc_prop <lgl> neurocog_inc_prop <lgl> [dichot_dat] reported incidence proportion
-# VARIABLE: delirium_day_max <num>  neurocog_day_max <num>  [dichot_dat] max of daily 
+# delirium_inc_prop <lgl> neurocog_inc_prop <lgl> [dichot_dat] reported incidence proportion
+# delirium_day_max <num>  neurocog_day_max <num>  [dichot_dat] max of daily 
 
 dichot_dat <- data_kq(dichot_dat, kq6_refid) |>
   mutate(
@@ -137,8 +136,8 @@ study_char_dat |>
 
 ```{r drugs_by_arm}
 #| message: false
-# CODE: * drugs & recode drugs/comparators so that usable; "other" category recode to comparator 
-# DATA: drugs_dat <- study_arm_dat include drug arm data; adds kq5/6 arms
+# drugs & recode drugs/comparators so that usable; "other" category recode to comparator 
+# drugs_dat <- study_arm_dat include drug arm data; adds kq5/6 arms
 
 ## drug levels and abbreviations ---------------------- (2024-04-14 08:45) @----
 drug_recode_levels <- c("Dexmedetomidine",
@@ -155,7 +154,7 @@ drug_recode_levels <- c("Dexmedetomidine",
 "Midazolam/sevoflurane",
 "Remimazolam",
 "Oxazepam",
-"Morphine",
+# "Morphine",
 "Sufentanil",
 "Pregabalin",
 "Propofol",
@@ -177,7 +176,7 @@ Mid = "Midazolam",
 "Mid/Sevo" = "Midazolam/sevoflurane",
 Rem = "Remimazolam",
 Oxaz = "Oxazepam",
-MS = "Morphine",
+# MS = "Morphine",
 Suf = "Sufentanil",
 Preg = "Pregabalin",
 Prop = "Propofol",
@@ -246,7 +245,7 @@ drugs_dat <- drugs_dat_prelim |>
       str_detect(other_spec, "[Mm]idazolam") ~ "Midazolam",
       str_detect(other_spec, "[Ss]ufentanil") ~ "Sufentanil",
       str_detect(other_spec, "[Pp]ropofol") ~ "Propofol",
-      str_detect(other_spec, "[Mm]orphine") ~ "Morphine",
+      # str_detect(other_spec, "[Mm]orphine") ~ "Morphine",
       str_detect(other_spec, "[Pp]regabalin") ~ "Pregabalin",
       # str_detect(other_spec, "[Rr]hythim") ~ "Rhythim",
       .default = drug
@@ -795,6 +794,9 @@ rm(mel_ram_group_levels)
 ```{r melatonin_ramelteon_table}
 mel_ram_by_arm |>
   arrange(mel_ram_groups, year, study) |>
+  mutate(
+    dose = ifelse(study == "Ishibashi-Kanno 2020a" & arm_n == 35, "NR", dose),
+  ) |> # filter(study == "Ishibashi-Kanno 2020a")
   group_by(refid) |>
   mutate(
     study_l = ifelse(row_number() > 1, "", study_l),
@@ -822,7 +824,6 @@ mel_ram_by_arm |>
   fmt_markdown(columns = c(study_l, pre_mmse, age_table, timing_all)) |>
   tab_spanner(label = "ASA", columns = c(asa_ps_incl)) |>
   tab_spanner(label = "Anesthetic", columns = c(volatile_tab:regional_tab)) |>
-
   sub_missing(columns = everything(), rows = everything(), missing_text = "") |>
   sub_values(values = c("NS"), replacement = "—") |>
   gt_theme_mg() |>
@@ -845,11 +846,12 @@ mel_ram_by_arm |>
   tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(study_l, drug_recode_abbr, dose, timing_all))) |>
   tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:timing_all), rows = drug_recode_abbr %in% c("Mel", "Mel/Dex", "Ram"))) |>
   tab_style(style = cell_text(size = px(9)), locations = cells_column_labels(columns = c(volatile_tab:regional_tab))) |>
-  tab_footnote("GI: gastrointestinal; Abd: abdominal (includes hepatic); Ortho: orthopedic; Various: more that one procedure category; PS: physical status; Vol: volatile; TIVA: total intravenous anesthesia; Reg: regional; MMSE: Mini-Mental State Exam; Mel: melatonin; Ram: ramelteon; Oxaz: oxazepam; Dex: dexmedetomidine; Mid: midazolam; Plac; placebo.") |> 
+  tab_footnote("GI: gastrointestinal; Abd: abdominal (includes hepatic); Ortho: orthopedic; Various: more that one procedure category; PS: physical status; Vol: volatile; TIVA: total intravenous anesthesia; Reg: regional; MMSE: Mini-Mental State Exam; Mel: melatonin; Ram: ramelteon; Oxaz: oxazepam; Dex: dexmedetomidine; Mid: midazolam; Plac; placebo; NR: not reported.") |> 
   tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |> 
   tab_footnote("No studies reported including cognitively impaired patients.", locations = cells_column_labels(columns = pre_mmse)) |>  
   tab_footnote(md("ASA Physical Status of patients included (proportions can be found here[link to table add])."), locations = cells_column_labels(columns = c(asa_ps_incl))) |> 
-  tab_footnote("Bars indicate adminstration times from left to right: preoperative and postoperative.", locations = cells_column_labels(columns = c(timing_all)))
+  tab_footnote("Bars indicate adminstration times from left to right: preoperative and postoperative.", locations = cells_column_labels(columns = c(timing_all))) 
+  
 
 ```
 
@@ -857,12 +859,9 @@ mel_ram_by_arm |>
 
 ```{r delirium_meta_data}
 
-# VARIABLE: postop_only <lgl> from study arm only post-op administration [postop_only_dat]
 postop_only_dat <- study_arm_dat |> 
   select(refid, study, proph_med_pre, proph_med_induct, proph_med_intra, proph_med_postop) |> 
-  # missing preop, induction, intraop
-  filter(if_all(c(proph_med_pre, proph_med_induct, proph_med_intra), ~ is.na(.x))) |> 
-  # not missing postop
+  filter(if_all(c(proph_med_pre, proph_med_induct, proph_med_intra), ~ is.na(.x))) |>
   filter(!is.na(proph_med_postop)) |> 
   mutate(postop_only = TRUE) |> 
   select(refid, postop_only) |> 
@@ -870,7 +869,6 @@ postop_only_dat <- study_arm_dat |>
 
 postop_any_dat <- study_arm_dat |> 
   select(refid, study, proph_med_pre, proph_med_induct, proph_med_intra, proph_med_postop) |> 
-  # missing preop, induction, intraop
   filter(!is.na(proph_med_postop)) |> 
   mutate(postop_any = TRUE) |> 
   select(refid, postop_any) |> 
@@ -885,9 +883,7 @@ delirium_meta_dat <- dichot_dat |>
   left_join(postop_only_dat, by = "refid") |> 
   left_join(postop_any_dat, by = "refid") |> 
   select(refid, refid_c, arm_id, year, study, design_f_lab, country, surg_f, postop_only, postop_any, arm, delitotal_n, arm_n, deli_update_arm_n, delitotal_perc, delirium_inc_prop) |>
-  arrange(refid_c, arm_id) |>
-  # collapse arms
-  # group_by(refid) |>  filter(n() > 2) |>  ungroup() |> # verify collapsed arms; verified 2023-03-09
+  arrange(refid_c, arm_id) |> # group_by(refid) |>filter(n() > 2) |> filter(arm %in% c("Plac", "Dex", "Ket", "Mel", "Ram")) # arms to collapse Lee 2018a, Avidan 2017, Zhao 2020 2024-04-24
   mutate(
     arm_n = ifelse(!is.na(deli_update_arm_n), deli_update_arm_n, arm_n),
     delirium_inc_prop = ifelse(delirium_inc_prop == TRUE, "Incidence Proportion", "Maximum Daily"),
@@ -906,17 +902,17 @@ delirium_meta_dat <- dichot_dat |>
       .default = arm_n
     )
   ) |>
-# TODO: He 2018 midazolam arm and Sultan 2010; keep for delirium incidence in kq56 file below
-  filter(!(study == "He 2018" & arm_id == 2)) |>
-  filter(!(study %in% c("Lee 2018a", "Avidan 2017") & arm_id == 3)) |>
-  filter(!(study %in% c("Zhao 2020") & arm_id %in% c(3, 4))) |>
+  filter(!(study %in% c("Lee 2018a", "Avidan 2017") & arm_id == 3)) |> 
+  filter(!(study %in% c("Zhao 2020") & arm_id %in% c(3, 4))) |> 
+  # keep arms ↓ when creating kq56 file following
+  filter(!(study == "He 2018" & arm_id == 2)) |> # midazolam arm
   filter(!(study %in% c("Lee 2018b") & arm_id %in% c(2, 4))) |> # remove pregabalin, pregabaline/dex arms
   filter(!(study %in% c("Hollinger 2021") & arm_id %in% c(2))) |> # remove haldol arm
   filter(!(study %in% c("Sultan 2010") & arm_id %in% c(2))) # remove midazolam arm
+  
 
-
-## calculated vs reported percentages; 2023-04-08 ----- (2023-04-24 18:21) @----
-# calculated vs reported percentages; verified 2024-04-15
+## calculated vs reported percentages ----------------- (2024-04-24 14:29) @----
+# verified 2024-04-24
 # temp <- delirium_meta_dat |>
 #   mutate(
 #     calc_percent = delitotal_n / arm_n * 100,
@@ -932,8 +928,7 @@ delirium_meta_dat <- dichot_dat |>
 
 ```{r delirium_meta_dat_kq56}
 #| eval: false
-# # TODO: Change He 2018 midazolam arm above; keep for delirium incidence in kq56 file
-# combine with kq5 data saved 2023-10-27
+
 delirium_meta_kq5_dat <- read_csv("data/delirium_meta_kq5_dat.csv") |> 
   rename(arm = arm_up) |> 
   select(refid, study, arm_id, arm, drug_up, year, design_f_lab, surg_f, delitotal_n, arm_n)
@@ -956,13 +951,13 @@ delirium_combined <- bind_rows(delirium_meta_kq5_dat, delirium_meta_kq6_dat) |>
       arm == "Ram" ~ "Ramelteon",
       arm == "Mel" ~ "Melatonin",
       arm == "Ket" ~ "Ketamine",
-      arm == "MS" ~ "Morphine Sulfate",
+      # arm == "MS" ~ "Morphine Sulfate",
       .default = drug_up
     )
   )
 
 # for appendix nma
-write_csv(delirium_combined, "data/delirium_combined.csv", na = "")
+# write_csv(delirium_combined, "data/delirium_combined.csv", na = "")
 ```
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
@@ -985,6 +980,7 @@ plac_none_to_boxplot_dat <- delirium_meta_dat |>
   mutate(deli_prop = delitotal_n / arm_n,
          surg_f = "Plac/None") 
 
+set.seed(333)
 delirium_meta_dat |>
   # filter(arm == "Plac/None") |>
   filter(design_f_lab == "Randomized Clinical Trial") |>
@@ -995,12 +991,14 @@ delirium_meta_dat |>
   bind_rows(plac_none_to_boxplot_dat) |> 
   filter(arm != "Other") |> # He 2022 sevoflurane
   mutate(
-    surg_f = fct_rev(factor(surg_f, levels = c("Ortho", "Cardiac", "GI/Abd", "Thoracic", "Oralmax", "ENT", "Spine", "Various", "Any", "Plac/None")))
+    surg_f = fct_rev(factor(surg_f, levels = c("Ortho", "Cardiac", "GI/Abd", "Thoracic", "Oralmax", "ENT", "Spine", "Various", "Any", "Plac/None"))),
+    surg_f = fct_recode(surg_f, Plac = "Plac/None"),
+    arm = fct_recode(arm, Plac = "Plac/None")
   ) |>
   ggplot(aes(deli_prop, surg_f)) +
-  geom_boxplot(width = 0.2, outlier.size = 1.3) +
+  geom_boxplot(width = 0.2, outliers = FALSE) +
   geom_jitter(aes(color = arm)) + # geom_point(aes(color = arm)) 
-  scale_colour_manual(values = c("#e41a1c", "#8B0000", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00", "#D4AC0D", "#a65628", "#946F33", "#273746")) +
+  scale_colour_manual(values = c("#e41a1c", "#8B0000", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00", "#D4AC0D", "#a65628")) +
   labs(y = "", x = "Incidence Proportion") +
   scale_x_continuous(limits = c(0, 1), labels = scales::percent) +
   theme(
@@ -1013,7 +1011,7 @@ delirium_meta_dat |>
 
 ```
 
-<foot_mg>Dex: dexmedetomidine; Ket: ketamine; Mel: melatonin; Ram: ramelteon; Oxaz: oxazepam; MS: morphine sulfate; Prop: propofol; Plac/None: placebo or no active comparator. <br/> Note that the "Any" and "Plac/None" box plots are not mutually exclusive. </foot_mg>
+<foot_mg>Dex: dexmedetomidine; Ket: ketamine; Mel: melatonin; Ram: ramelteon; Oxaz: oxazepam; MS: morphine sulfate; Prop: propofol; Plac: placebo or no active comparator. <br/> The "Any" and "Plac" box plots are not mutually exclusive. <br/> Outliers not designated. </foot_mg>
 :::
 
 ### Dexmedetomidine
@@ -1021,7 +1019,7 @@ delirium_meta_dat |>
 <caption_mg> `r table_ref()` Delirium incidence and ascertainment during hospitalization in trials of dexmedetomidine. </caption_mg>
 
 ```{r delirium_total_dex_tab}
-# CODE: delirium incidence dexmedetomidine
+
 delirium_total_tab <- delirium_total_tab_fun(dex_refid) |> 
   left_join(dex_by_arm |> select(refid, dex_groups) |> distinct(), by = c("refid")) |> 
   rename(compare_groups = dex_groups) |> 
@@ -1033,10 +1031,7 @@ refid_max_of_days <- delirium_total_tab |>
   select(refid) |> 
   distinct() |> 
   pull(refid)
-  
-```
 
-```{r delirium_total_dex_gt}
 delirium_total_gt_fun("Dex") |>
   tab_footnote("RR: risk ratio; Dex: dexmedetomidine; Mid: midazolam; Prop: propofol; MS: morphine sulfate; Preg: pregabalin; Plac: placebo; DSM: Diagnostic and Statistical Manual of Mental Disorders; ICDSC: Intensive Care Delirium Screening Checklist; Psych: psychiatrist interview; Nu-DESC: Nursing Delirium Screening Scale; NS: not specified.") |>
   # tab_footnote(md("Mean <u>Med</u> (SD)[Range]{IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
@@ -1055,23 +1050,9 @@ rm(refid_max_of_days)
 <caption_mg> `r table_ref()` Delirium incidence and days of ascertainment during hospitalization in ketamine studies. </caption_mg>
 
 ```{r delirium_total_ket_tab}
-# CODE: delirium incidence ketamine
 delirium_total_ket_dat <- delirium_total_tab_fun(ket_refid) |> 
   left_join(ket_by_arm |> select(refid, ket_groups) |> distinct(), by = c("refid")) |> 
   rename(compare_groups = ket_groups)
-```
-
-```{r delirium_total_ket_gt}
-# old code
-# delirium_total_ket_gt <- delirium_total_gt_fun("Ket")
-# tab_info(delirium_total_gt_ket)
-# delirium_total_ket_gt |>
-#   tab_footnote("RR: risk ratio; Ket: ketamine; Plac: placebo; Prop: propofol; Hal: haloperidol; ICDSC: Intensive Care Delirium Screening Checklist;  CAM: Confusion Assessment Method.") |>
-#   # tab_footnote(md("Mean <u>Med</u> (SD) {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse))) |>
-#   tab_footnote("Days over which incidence assessed. Stay indicates duration of hospital stay.", locations = cells_column_labels(columns = delitotal_time)) |> 
-#   tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:n_percent), rows = str_detect(drug_recode, "Ket"))) 
-
-# TODO: update scales
 
 delirium_total_ket_dat |>
     arrange(year, study, arm_id) |>
@@ -1138,13 +1119,6 @@ delirium_total_ket_dat |>
 <caption_mg> `r table_ref()` Delirium incidence and days of ascertainment during hospitalization in melatonin and ramelteon studies. </caption_mg>
 
 ```{r delirium_total_mel_ram_tab}
-# CODE: delirium incidence melatonin ramelteon
-delirium_total_tab <- delirium_total_tab_fun(mel_ram_refid) |> 
-    left_join(mel_ram_by_arm |> select(refid, mel_ram_groups) |> distinct(), by = c("refid")) |> 
-  mutate(scale_delirium = ifelse(refid == 3841, "CAM/DRS/DSM", scale_delirium)) |> 
-  rename(compare_groups = mel_ram_groups) |> 
-  mutate(delitotal_time = ifelse(is.na(delitotal_time), "Note", delitotal_time))
-
 refid_max_of_days <- delirium_total_tab |> 
   filter(delitotal_time == "Note") |> 
   mutate(refid = as.numeric(refid)) |> 
@@ -1152,12 +1126,14 @@ refid_max_of_days <- delirium_total_tab |>
   distinct() |> 
   pull(refid)
 
-```
+delirium_total_tab <- delirium_total_tab_fun(mel_ram_refid) |> 
+    left_join(mel_ram_by_arm |> select(refid, mel_ram_groups) |> distinct(), by = c("refid")) |> 
+  mutate(scale_delirium = ifelse(refid == 3841, "CAM/DRS/DSM", scale_delirium)) |> 
+  rename(compare_groups = mel_ram_groups) |> 
+  mutate(delitotal_time = ifelse(is.na(delitotal_time), "Note", delitotal_time))
 
-```{r delirium_total_mel_ram_gt}
 delirium_total_mel_ram_gt <- delirium_total_gt_fun("Mel|Ram|Mel/Dex") 
 
-# tab_info(delirium_total_gt_mel_ram_gt)
 delirium_total_mel_ram_gt |>
   row_group_order(groups = c("Cardiac - Randomized Clinical Trial", "Ortho - Randomized Clinical Trial", "Various - Randomized Clinical Trial", "Thoracic - Randomized Clinical Trial", "GI/Abd - Before-After/Time Series", "Thoracic - Before-After/Time Series")) |> 
   tab_footnote("RR: risk ratio; MMSE: Mini-Mental State Examination; Mel: melatonin; Ram: ramelteon; Dex: dexmedetomidine; Oxaz: oxazepam; Mid: midazolam; AMT: Abbreviated Mental Test; DRS: Delirium Rating Scale; DSM: Diagnostic and Statistical Manual of Mental Disorders; CAM: Confusion Assessment Method; ICDSC: Intensive Care Delirium Screening Checklist.") |>
@@ -1214,9 +1190,6 @@ pairwise_dat <- pairs_dat |>
   unite(to_select, treat1:treat2, sep = "|", remove = FALSE) |> 
   arrange(year, study) 
 
-# function to select subset pairwise data
-# filter(str_detect(to_select, "Plac") & str_detect(to_select, "Dex"))
-
 # combine ramelteon and melatonin
 nma_rct_melram_dat <- nma_rct_dat |> 
   mutate(arm = fct_collapse(arm, "Mel/Ram" = c("Mel", "Ram")))
@@ -1246,14 +1219,13 @@ netmeta_melram_nma <- netmeta(
 
 #### Comparator Network
 
-<caption_mg> `r figure_ref()` Randomized clinical trials and comparators reporting overall incidence of delirium. </caption_mg>
+<caption_mg> `r figure_ref()` Randomized clinical trials and comparators reporting delirium incidence. </caption_mg>
 
 ```{r delirium_nma_plot, warning = TRUE, fig.dim = c(6, 5), out.width = "50%", fig.align = "center"}
 #| eval: true
 #| warning: false
-# CODE: network plot
-# FIXME: adjust offsets 
-## Modify current setting for position of treatment labels
+
+## Modifying current setting for position of treatment labels
 ## (argument 'offset')
 # tmp <- netgraph(net1)
 # names(tmp)
@@ -1288,13 +1260,13 @@ netgraph(netmeta_melram_nma,
 
 ```
 
-<foot_mg> Dex: dexmedetomidine; Ket: ketamine; Mel/Ram: melatonin or ramelteon; Benz: benzodiazepine (midazolam or oxazepam); MS: morphine sulfate; Plac/None: placebo or no intervention; Prop: propofol.</foot_mg>
+<foot_mg> Dex: dexmedetomidine; Ket: ketamine; Mel/Ram: melatonin or ramelteon; Benz: benzodiazepine (midazolam or oxazepam); Plac/None: placebo or no intervention; Prop: propofol.</foot_mg>
 
 #### Dexmedetomidine
 
 <caption_mg> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention. </caption_mg>
 
-```{r nma_dat, fig.width = 14, fig.height = 9.5, fig.align = "left", warning = TRUE}
+```{r dex_meta}
 dex_plac_refid <- pairwise_dat |> 
   filter(str_detect(to_select, "Plac") & str_detect(to_select, "Dex")) |> 
   pull(refid)
@@ -1332,30 +1304,20 @@ dex_plac_meta <- metabin(event2, n2, event1, n1,
   allstudies = TRUE
 )
 
-# for sensitivity analysis
-# dex_sens_dat <- metafor::escalc(measure = "RR", ai = event2, bi = n2 - event2, ci = event1, di = n1 - event1, data = dex_meta_dat, append = TRUE) |> select(study, yi, vi)
-# write_csv(dex_sens_dat, "/Users/mgrant/Desktop/dex_sens_dat.csv")
+dex_plac_country_meta <- update(dex_plac_meta, subgroup = china_vs_other)
+dex_plac_china_meta <- update(dex_plac_meta, subset = china_vs_other == "China", subgroup = NULL)
+dex_plac_other_meta <- update(dex_plac_meta, subset = china_vs_other != "China", subgroup = NULL)
 
-dex_plac_china_meta <- update(dex_plac_meta, subset = china_vs_other == "China")
-dex_plac_other_meta <- update(dex_plac_meta, subset = china_vs_other != "China")
+# small study effects using OR (temp)
+temp_meta <- update(dex_plac_meta, subgroup = NULL, sm = "OR")
+temp_china_meta <- update(dex_plac_meta, subgroup = NULL, sm = "OR", subset = china_vs_other == "China")
+temp_other_meta <- update(dex_plac_meta, subgroup = NULL, sm = "OR", subset = china_vs_other != "China")
 
-# small study effects; here to have result of Harbord test
-temp_meta <- dex_plac_meta
-# temp_meta <- update(temp_meta, subgroup = NULL, sm = "OR")
 temp_metabias <- metabias(temp_meta, method.bias = "Harbord", k.min = 10)
-
-# small study effects for china; here to have result of Harbord test; china only
-temp_china_meta <- update(dex_plac_meta, subgroup = NULL, sm = "RR", subset = china_vs_other == "China")
 temp_china_metabias <- metabias(temp_china_meta, method.bias = "Harbord", k.min = 10)
+temp_other_metabias <- metabias(temp_other_meta, method.bias = "Harbord", k.min = 10)
 
-# small study effects other; here to have result of Harbord test; china only
-temp_other_meta <- update(dex_plac_meta, subgroup = NULL, sm = "RR", subset = china_vs_other != "China")
-
-# summary(dex_plac_meta)
-
-# functions to produce forest plots
-# no subgroups
-dex_meta_forest_nosub_fun <- function(data_meta, ...) {
+dex_meta_forest <- function(data_meta, ...) {
 forest(data_meta,
   allstudies = TRUE,
   common = TRUE,
@@ -1379,8 +1341,7 @@ forest(data_meta,
 )  
 }
 
-# forest with subgroups
-dex_meta_forest_fun <- function(data_meta) {
+dex_meta_forest_sub <- function(data_meta) {
 forest(data_meta,
   allstudies = TRUE,
   common = TRUE,
@@ -1406,61 +1367,74 @@ forest(data_meta,
 )  
 }
 
-dex_meta_forest_nosub_fun(dex_plac_meta)
 # summary(update(dex_plac_meta, subset = study != c("Turan 2020")))
-
 # bias table
 # tabyl(dex_plac_meta$dat$Overall)
-```
-
-```{r ancred}
-#| eval: false
 # meta_ancred(update(dex_plac_meta, subset = china_vs_other == "China"))
 # meta_ancred(dex_plac_meta)
+
 ```
 
-<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <a id="figure-4"></a><br/> `r paste0("Harbord test for small study effects P = ", formatC(temp_metabias$pval, digits = 4, format = "f"), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, dex_plac_refid), "; a secondary outcome in ", prim_sec_out_fun(sec_delirium, dex_plac_refid), ".")`<br/> Excluding Turan 2020 reduced heterogeneity substantially --- *I*<sup> 2</sup> = 21%, $\tau$<sup>2</sup> = 0.04, and pooled RR 0.55 (95% CI, 0.48-0.65). <br/>\*Trials conducted in China.</foot_mg><br/>
+```{r dex_delirium_all_forest}
+#| echo: false
+#| include: false
 
-<caption_mg> `r figure_ref()`Dexmedetomidine compared with placebo or no intervention --- trials from China vs. other countries. </caption_mg>
+png("assets/kq6_dex_delirium_all.png", width = 9.81, height = 8.8, units = "in", res = 300)
+dex_meta_forest(dex_plac_meta)
+dev.off()
 
-```{r nma_dat_china, fig.width = 14, fig.height = 13, fig.align = "left"}
-china_meta <- update(dex_plac_meta, subgroup = china_vs_other)
-dex_meta_forest_fun(china_meta)
+```
 
-temp_metareg <- update(china_meta, tau.common = TRUE, common = FALSE, method.tau = "REML", method.random.ci = "HK")
+![](assets/kq6_dex_delirium_all.png){fig.align="left" width="70%"}
+
+<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <a id="figure-4"></a><br/> `r paste0("Harbord test for small study effects P = ", formatC(temp_metabias$pval, digits = 5, format = "f"), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, dex_plac_refid), "; a secondary outcome in ", prim_sec_out_fun(sec_delirium, dex_plac_refid), ".")`<br/> Excluding Turan 2020: RR 0.56 (95% CI, 0.49-0.64; *I*<sup> 2</sup> = 21%, $\tau$<sup>2</sup>. <br/>\*Trials conducted in China.</foot_mg><br/>
+
+<caption_mg> `r figure_ref()`Dexmedetomidine compared with placebo or no intervention --- China vs. other countries. </caption_mg>
+
+```{r dex_delirium_country}
+#| echo: false
+#| include: false
+
+png("assets/kq6_dex_delirium_country.png", width = 9.81, height = 11.5, units = "in", res = 300)
+dex_meta_forest_sub(dex_plac_country_meta)
+dev.off()
+
+temp_metareg <- update(dex_plac_country_meta, tau.common = TRUE, common = FALSE, method.tau = "REML", method.random.ci = "HK")
 temp_metareg <- metareg(temp_metareg)
+
 ```
 
-<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/> Meta-regression (China vs. Other), *I*<sup> 2</sup> = `r paste0(digit0(temp_metareg$I2), "%.")` `r rm(temp_metareg, china_meta)`<br/> \*Trials conducted in China. </foot_mg>
+![](assets/kq6_dex_delirium_country.png){fig.align="left" width="70%"}
+
+<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/> Meta-regression (China vs. Other), *I*<sup> 2</sup> = `r paste0(digit0(temp_metareg$I2), "%.")` <br/> \*Trials conducted in China. </foot_mg>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <caption_mg> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention --- **small study effects**. </caption_mg>
 
 ```{r dex_plac_meta_funnel_limit, fig.dim = c(7, 5.5), out.width = "70%", fig.align = "center"}
-par(mar = c(4, 4, 2, 1))
+#| echo: false
+#| include: false
 
-temp_meta <- update(dex_plac_meta, sm = "RR")
-# temp_meta <- update(dex_plac_meta, sm = "RR", subset = study != "Turan 2020")
-
-# metabias(temp_meta, method = "Harbord") = 0.0029 no Turan
-
+temp_meta <- update(dex_plac_meta, sm = "OR")
+temp_limit_meta <- limitmeta(temp_meta, method.adjust = "beta0")
 limit_colors <- c("#AAB7B8", "#D5DBDB", "#F4F6F6")
 
-temp_limit_meta <- limitmeta(temp_meta, method.adjust = "betalim")
-
-par(bty = "n", xaxt = "s", yaxt = "s")
-
-funnel(temp_limit_meta, ylim = c(0.8, 0.0), xlim = c(0.1, 5), pch = 20, contour = c(0.9, 0.95, 0.99), col.contour = limit_colors, studlab = TRUE, pos.studlab = 4, fs.smlab = 6, ff.smlab = "italic")
-
+png("assets/kq6_dex_delirium_all_funnel.png", width = 8.5, height = 5.5, units = "in", res = 300)
+par(bty = "n", xaxt = "s", yaxt = "s", mar = c(4, 4, 2, 1))
+funnel(temp_limit_meta, ylim = c(0.9, 0.0), xlim = c(0.1, 5), pch = 20, contour = c(0.9, 0.95, 0.99), col.contour = limit_colors, studlab = TRUE, pos.studlab = 4, cex.studlab = 0.6, ff.smlab = "italic")
 legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#AAB7B8", "#D5DBDB", "#F4F6F6"), bty = "n")
-
-text(1.2, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .9)
+text(1.15, 0.05, labels = "Adjusted estimate", col = "#5a5a5a", pos = 3, cex = .9)
+dev.off()
 
 # copas(temp_meta)
 # trimfill(temp_meta)
-# metabias(dex_plac_meta, method = "Harbord")
+# temp_limit_meta <- limitmeta(temp_meta, method.adjust = "betalim")
+# metabias(temp_meta, method = "Harbord")$pval
+# metabias(update(temp_meta, subset = study != "Turan 2020"), method = "Harbord") = 0.0006 no Turan
 
 ```
+
+![](assets/kq6_dex_delirium_all_funnel.png){width="70%"}
 
 <foot_mg> Estimates (risk ratio and 95% CI) from random effects models --- unadjusted `r paste0(digit2(exp(temp_limit_meta$TE.random)), " (", digit2(exp(temp_limit_meta$lower.random)), "–", digit2(exp(temp_limit_meta$upper.random)), ")")`; adjusted for small study effects: `r paste0(digit2(exp(temp_limit_meta$TE.adjust)), " (", digit2(exp(temp_limit_meta$lower.adjust)), "–", digit2(exp(temp_limit_meta$upper.adjust)), ")")`.<br/> \*Trials conducted in China.</foot_mg>
 :::
@@ -1473,7 +1447,9 @@ par(mar = c(4, 4, 2, 1))
 
 limit_colors <- c("#AAB7B8", "#D5DBDB", "#F4F6F6")
 
+temp_limit_china_meta <- limitmeta(temp_china_meta, method.adjust = "beta0") # note RR 2024-04-15
 temp_limit_china_meta <- limitmeta(temp_china_meta, method.adjust = "betalim") # note RR 2024-04-15
+
 
 par(bty = "n", xaxt = "s", yaxt = "s")
 
@@ -1493,13 +1469,13 @@ text(1.2, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .
 ```{r dex_plac_other_meta_funnel, fig.dim = c(7, 5.5), out.width = "70%", fig.align = "center"}
 par(mar = c(4, 4, 2, 1))
 
-temp_limit_meta <- limitmeta(temp_other_meta, method.adjust = "betalim") # note RR 2024-04-1511
+temp_limit_meta <- limitmeta(temp_other_meta, method.adjust = "beta0") # note RR 2024-04-1511
 
 limit_colors <- c("#AAB7B8", "#D5DBDB", "#F4F6F6")
 
 par(bty = "n", xaxt = "s", yaxt = "s")
 
-funnel(temp_limit_meta, ylim = c(0.8, 0.0), xlim = c(0.1, 5), pch = 20, contour = c(0.9, 0.95, 0.99), col.contour = limit_colors, studlab = TRUE, pos.studlab = 4, fs.smlab = 6, ff.smlab = "italic")
+funnel(temp_limit_meta, ylim = c(0.9, 0.0), xlim = c(0.1, 5), pch = 20, contour = c(0.9, 0.95, 0.99), col.contour = limit_colors, studlab = TRUE, pos.studlab = 4, fs.smlab = 6, ff.smlab = "italic")
 
 legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#AAB7B8", "#D5DBDB", "#F4F6F6"), bty = "n")
 
@@ -1509,10 +1485,10 @@ text(1.2, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .
 
 <foot_mg> Estimates (risk ratio and 95% CI) from random effects models --- unadjusted `r paste0(digit2(exp(temp_limit_meta$TE.random)), " (", digit2(exp(temp_limit_meta$lower.random)), "–", digit2(exp(temp_limit_meta$upper.random)), ")")`; adjusted for small study effects: `r paste0(digit2(exp(temp_limit_meta$TE.adjust)), " (", digit2(exp(temp_limit_meta$lower.adjust)), "–", digit2(exp(temp_limit_meta$upper.adjust)), ")")`.<br/> `r paste0("Harbord test for small study effects P = ", formatC(temp_metabias$pval, digits = 4, format = "f"), ".")`<br/></foot_mg>
 
-# TODO: fix harbor 
+<!-- # TODO: fix harbor test -->
+<!-- # RESUME: 2024-04-22 -->
 
 :::
-
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <caption_mg> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention --- **postoperative administration only or at other times**. </caption_mg>
@@ -1520,7 +1496,7 @@ text(1.2, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .
 ```{r meta_dat_postop_only, fig.width = 14, fig.height = 12.5, fig.align = "left"}
 dex_plac_meta_postop <- update(dex_plac_meta, subgroup = postop_only)
 
-dex_meta_forest_fun(dex_plac_meta_postop)
+dex_meta_forest(dex_plac_meta_postop)
 
 rm(dex_plac_meta_postop)
 ```
@@ -1534,7 +1510,7 @@ rm(dex_plac_meta_postop)
 ```{r meta_postop_any, fig.width = 14, fig.height = 12.5, fig.align = "left"}
 dex_plac_meta_postop_any <- update(dex_plac_meta, subgroup = postop_any)
 
-dex_meta_forest_fun(dex_plac_meta_postop_any)
+dex_meta_forest(dex_plac_meta_postop_any)
 
 rm(dex_plac_meta_postop_any)
 ```
@@ -1548,7 +1524,7 @@ rm(dex_plac_meta_postop_any)
 ```{r nma_dat_postop, fig.width = 14, fig.height = 17.3, fig.align = "left"}
 dex_plac_meta_surgs <- update(dex_plac_meta, hakn = FALSE, subgroup = surg_f)
 
-dex_meta_forest_fun(dex_plac_meta_surgs)
+dex_meta_forest(dex_plac_meta_surgs)
 
 rm(dex_plac_meta_surgs)
 ```
@@ -1562,7 +1538,7 @@ rm(dex_plac_meta_surgs)
 ```{r dex_meta_sens_incidence_prop, fig.width = 14, fig.height = 13.5, fig.align = "left"}
 delirium_inc_pro_meta <- update(dex_plac_meta, subgroup = delirium_inc_prop, hakn = FALSE)
 
-dex_meta_forest_fun(delirium_inc_pro_meta)
+dex_meta_forest(delirium_inc_pro_meta)
 
 rm(delirium_inc_pro_meta)
 ```
@@ -1617,7 +1593,7 @@ rm(temp, fitted_meta)
 ```{r nma_dat_rob, fig.width = 14, fig.height = 13.5, fig.align = "left"}
 rob_meta <- update(dex_plac_meta, subgroup = rob)
 
-dex_meta_forest_fun(rob_meta)
+dex_meta_forest(rob_meta)
 
 rm(rob_meta)
 ```
@@ -1751,7 +1727,7 @@ library(netmeta)
 component_nma_dat <- delirium_dex_comp_meta_dat 
 
 # trts <- unique(component_nma_dat$arm_time)
-trts <- c("Preop/Induct/Intra", "Preop/Induct/Intra|Postop", "Postop", "Mid", "MS", "Prop", "Plac")
+trts <- c("Preop/Induct/Intra", "Preop/Induct/Intra|Postop", "Postop", "Mid", "Prop", "Plac")
 
 # trts <- unique(component_nma_rct_dat$arm)
 tabyl(component_nma_dat$arm_time) |>
@@ -1783,7 +1759,7 @@ net1 <- netmeta(TE, seTE, treat1, treat2, studlab,
   data = pairwise_comp_dat,
   ref = "Plac",
   sm = "OR",
-  trts = c("Preop/Induct/Intra", "Preop/Induct/Intra|Postop", "Postop", "Mid", "MS", "Prop", "Plac", "Other")
+  trts = c("Preop/Induct/Intra", "Preop/Induct/Intra|Postop", "Postop", "Mid", "Prop", "Plac")
 )
 
 net_comb <- netcomb(net1, inactive = "Plac")
@@ -1805,7 +1781,7 @@ netgraph(net1,
   col = "azure3",
   col.points = "#F39C12",
   number.of.studies = TRUE,
-  seq = c("Preop/Induct/Intra", "Preop/Induct/Intra|Postop", "Postop", "Mid", "MS", "Prop", "Plac", "Other"),
+  seq = c("Preop/Induct/Intra", "Preop/Induct/Intra|Postop", "Postop", "Mid", "Prop", "Plac"),
   rescale.pointsize = TRUE,
   # cex.points = c(1, 2, 3, 4, 5),
   # cex.points = node_size$n/40,
@@ -2077,6 +2053,8 @@ forest(netmeta_melram_nma,
 
 <caption_mg> `r table_ref()` League table of risk ratios and 95% confidence intervals from network meta-analysis (random effects model). Comparisons from direct evidence displayed in the upper diagonal; network comparisons shown on the lower diagonal. </caption_mg>
 
+<!-- # RESUME: fix trts -->
+
 ```{r leagueTable}
 #| results: asis
 nma_melram_league <- netleague(netmeta_melram_nma,
@@ -2088,9 +2066,9 @@ nma_melram_league <- netleague(netmeta_melram_nma,
 
 as_tibble(nma_melram_league$random) |>
   mutate(
-    across(V1:V7, ~ str_replace(.x, " \\(", "<br>\\(")),
+    across(V1:V6, ~ str_replace(.x, " \\(", "<br>\\(")),
     # across(V1:V8, ~ str_replace(.x, "\\]", "\\)")),
-    across(V1:V7, ~ ifelse(.x == ".", "", .x))
+    across(V1:V6, ~ ifelse(.x == ".", "", .x))
   ) |>
   gt(id = "one") |>
   fmt_markdown(columns = everything()) |>
@@ -2100,12 +2078,12 @@ as_tibble(nma_melram_league$random) |>
   tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V4, rows = V4 %in% trts_melram)) |>
   tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V5, rows = V5 %in% trts_melram)) |>
   tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V6, rows = V6 %in% trts_melram)) |>
-  tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V7, rows = V7 %in% trts_melram)) |>
+  # tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V7, rows = V7 %in% trts_melram)) |>
   # tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V8, rows = V8 %in% trts_melram)) |>
   rm_stubhead() |>
   gt_theme_mg() |>
   tab_options(column_labels.hidden = TRUE, table.font.size = px(14)) |>
-  tab_style(style = cell_text(align = "center"), locations = cells_body(V1:V7)) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_body(V1:V6)) |>
   tab_footnote("Dex: Dexmedetomidine; Ket: Ketamine; Mel/Ram: Melatonin or Ramelteon; Mid: Midazolam; MS: Morphine; Prop: Propofol; Plac/None: Placebo or no comparator.")
 
 # tab_info(temp)
@@ -3476,11 +3454,17 @@ arrange(complication, surgs_single, year, study, arm_id) |>
   select(refid, year, arm_id, study, study_l, study_compl, arm_n, arm, n, age_table, surgs_single, n_per, bar, rd_ci, complication, design_f_lab)
 
 # for summary table
-# adverse_events_dat |>
-#   group_by(refid, arm_id) |>
-#   slice(1) |>
-#   ungroup() |>
-#   summarise(total = sum(arm_n))
+adverse_events_dat |>
+  group_by(refid, arm_id) |>
+  slice(1) |>
+  ungroup() |>
+  summarise(total = sum(arm_n))
+
+adverse_events_dat |> 
+  group_by(refid) |> 
+  slice(1) |> 
+  ungroup() |>
+  tabyl(design_f_lab)
 
 ```
 
@@ -3691,7 +3675,8 @@ adverse_events_dat |>
   ) |>
   group_by(complication) |>
   gt(id = "one") |>
-  row_group_order(groups = c("Other Arrhythmia", "MI", "Cardiac Arrest", "Stroke", "Renal", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "Reintubation")) |>
+# FIXME: row group order
+  # row_group_order(groups = c("Other Arrhythmia", "MI", "Cardiac Arrest", "Stroke", "Renal", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "Reintubation")) |>
   cols_hide(c(refid, year, study, arm_id, n, study, study_compl, design_f_lab)) |>
   cols_label(
     study_l          = "Study",
@@ -3888,7 +3873,7 @@ temp_meta <- update(temp_meta, sm = "OR")
 temp_metabias <- metabias(temp_meta, method.bias = "Harbord", k.min = 10)
 
 forest(adverse_meta,
-  allstudies = TRUE,
+  allstudies = FALSE,
   random = TRUE,
   label.e = "Dex",
   label.c = "Placebo",
@@ -3997,7 +3982,7 @@ temp_meta <- update(temp_meta, sm = "OR")
 temp_metabias <- metabias(temp_meta, method.bias = "Harbord", k.min = 10)
 
 forest(adverse_meta,
-  allstudies = TRUE,
+  allstudies = FALSE,
   random = TRUE,
   label.e = "Dex",
   label.c = "Placebo",
@@ -4277,15 +4262,19 @@ los_tab |>
 
 ### *Pooled*
 
-```{r los_meta, fig.width = 16, fig.height = 6, fig.align = "left"}
+```{r los_meta, fig.width = 16, fig.height = 10, fig.align = "left"}
 los_meta_dat <- contin_dat |>
   left_join(drugs_dat |> select(refid, arm_id, drug_recode_abbr), by = c("refid", "arm_id")) |>
+  left_join(study_char_dat |> select(refid, country), by = "refid") |>
   relocate(drug_recode_abbr, .after = arm_id) |>
   rename(arm = drug_recode_abbr) |>
   filter(refid %in% los_tab$refid) |> 
-  select(refid, study, design_f_lab, arm, arm_n, los_m, los_sd, los_med, los_rl, los_ru, los_iqrl, los_iqru, los_95l, los_95u) |> 
+  select(refid, study, design_f_lab, arm, arm_n, los_m, los_sd, los_med, los_rl, los_ru, los_iqrl, los_iqru, los_95l, los_95u, country) |> 
+  mutate(
+    los_sd = ifelse(is.na(los_sd) & !is.na(los_95l + los_95u), se_ci_fun(los_95u, los_95l) * sqrt(arm_n), los_sd),
+  ) |> 
   rename_with(~ str_remove(.x, "los_")) |> 
-  select(!matches("95"))
+  select(!matches("95")) 
 
 los_dex_meta_dat <- los_meta_dat |> 
   filter(arm %in% c("Dex", "Plac", "None")) |> 
@@ -4335,7 +4324,7 @@ los_mel_ram_meta_dat <- los_meta_dat |>
 
 <caption_mg> `r figure_ref()` Mean difference in lengths of stay (dexmedetomidine versus placebo; randomized clinical trials). </caption_mg>
 
-```{r los_dex_meta, fig.width = 16, fig.height = 7.5, fig.align = "left"}
+```{r los_dex_meta, fig.width = 16, fig.height = 10, fig.align = "left"}
 los_dex_meta <- metacont(
   n.e = arm_n_Dex, 
   n.c = arm_n_Plac,
@@ -4359,6 +4348,7 @@ los_dex_meta <- metacont(
   method.tau = "REML",
   hakn = FALSE,
   prediction = TRUE,
+  subgroup = country,
   studlab = study
 )
 
@@ -4377,6 +4367,7 @@ forest(los_dex_meta,
   # digits.pval.Q = 2,
   print.I2.ci = TRUE,
   fs.xlab = 10,
+  subgroup.name = FALSE,
   just.addcols.right = "right",
   print.pval.Q = FALSE,
   # sortvar = -TE,
@@ -4388,6 +4379,13 @@ forest(los_dex_meta,
   smlab = "Mean Difference (days)",
   addrows.below.overall = 4
 )
+
+# update(los_dex_meta, subset = study != "Guo 2022")
+# 
+# par(bty = "n", xaxt = "s", yaxt = "s", mar = c(4, 4, 2, 1))
+# funnel(los_dex_meta, pch = 20, contour = c(0.9, 0.95, 0.99), col.contour = limit_colors, studlab = TRUE, pos.studlab = 4, cex.studlab = 0.6, ff.smlab = "italic")
+# legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#AAB7B8", "#D5DBDB", "#F4F6F6"), bty = "n")
+# text(1.15, 0.05, labels = "Adjusted estimate", col = "#5a5a5a", pos = 3, cex = .9)
 
 ```
 
@@ -4817,6 +4815,8 @@ dex_plac_mort_meta <- metabin(event2, n2, event1, n1,
 # temp_meta <- dex_plac_mort_meta
 # temp_meta <- update(temp_meta, subgroup = NULL, sm = "OR")
 # temp_metabias <- metabias(temp_meta, method.bias = "Harbord", k.min = 10)
+
+forest(update(dex_plac_mort_meta, sm = "RR", prediction = TRUE, allstudies = FALSE), allstudies = FALSE)
 
 # summary(dex_plac_meta)
 forest(dex_plac_mort_meta,
