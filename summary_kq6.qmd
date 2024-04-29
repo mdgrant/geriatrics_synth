@@ -1,0 +1,1181 @@
+---
+title: "Study/Patient Characteristics Delirium Prophylaxis"
+date: "`r format(Sys.time(), '%d %B, %Y (%H:%M)')`"
+editor: source
+toc-title: "**Delirium Prophylaxis**"
+toc-location: "left"
+cap-location: "top"
+toc-depth: 3
+page-layout: full
+css: styles.css
+tables:
+      style: Table
+      caption:
+        pre: "Table "
+        sep: " -- "
+---
+
+```{r read_data}
+#| include: false
+source("code/load_data.R")
+
+study_char_dat <- study_char_dat |>
+  mutate(
+  funding = ifelse(refid == 13367, "NR", funding),
+  arms = ifelse(refid == 120, 1, arms),
+  )
+
+linked_refid <- study_char_dat |>
+  filter(refid %in% kq6_refid) |>
+  arrange(year) |> 
+  group_by(linked_references_all_refid) |> # count 1 for multiple pubs from single study
+  slice(2) |> 
+  pull(refid) 
+
+asa_class <- asa_combine |>
+  mutate(asa = str_trim(asa_ps_incl)) |>
+  select(refid, asa) |>
+  slice(1, .by = "refid")
+
+```
+
+```{r drugs_by_arm}
+#| message: false
+# drugs & recode drugs/comparators so that usable; "other" category recode to comparator 
+# drugs_dat <- study_arm_dat include drug arm data; adds kq5/6 arms
+
+## drug levels and abbreviations ---------------------- (2024-04-14 08:45) @----
+drug_recode_levels <- c("Dexmedetomidine",
+"Dexmedetomidine/Pregabalin",
+"Dexmedetomidine/Ulinastatin",
+"Ulinastatin",
+"Haloperidol",
+"Ketamine",
+"Melatonin",
+"Ramelteon",
+"Gabapentin",
+"Midazolam",
+"Midazolam/propofol",
+"Midazolam/sevoflurane",
+"Remimazolam",
+"Oxazepam",
+# "Morphine",
+"Sufentanil",
+"Pregabalin",
+"Propofol",
+"Placebo",
+"None",
+"Other")
+
+drug_recode_abbr <- c(Dex = "Dexmedetomidine",
+"Dex/Preg" = "Dexmedetomidine/Pregabalin",
+"Dex/Ulin" = "Dexmedetomidine/Ulinastatin",
+Ulin = "Ulinastatin",
+Hal = "Haloperidol",
+Ket = "Ketamine",
+Mel = "Melatonin",
+Ram = "Ramelteon",
+Gab = "Gabapentin",
+Mid = "Midazolam",
+"Mid/Prop" = "Midazolam/propofol",
+"Mid/Sevo" = "Midazolam/sevoflurane",
+Rem = "Remimazolam",
+Oxaz = "Oxazepam",
+# MS = "Morphine",
+Suf = "Sufentanil",
+Preg = "Pregabalin",
+Prop = "Propofol",
+Plac = "Placebo",
+None = "None",
+Other = "Other")
+
+## drugs; from kq6, add kq5 arm drugs ----------------- (2023-01-16 13:46) @----
+# drugs for kq5 studies; needed to fill in "missings" for kq6 arms coded as kq5 arms with detail there
+kq5_drug_by_arm <- read_csv("data/kq56_drug_by_arm.csv") |>
+  rename(drug = drug_f) |> # arm drug
+  mutate(drug = as.character(drug)) |> 
+  select(refid, arm_id, drug, control_desc) |> 
+  rename(control_desc_kq5 = control_desc, drug_kq5 = drug)
+
+## combine data from kq5 and kq6 ---------------------- (2024-04-14 08:45) @----
+drugs_dat_prelim <- study_arm_dat |>
+  select(refid, design_f_lab, study, study_l, study_l_w_linked, study_id, arm_id, arm_n, arm_kq6_proph_meds, kq6_control_desc:kq6_notes, multiple_kq) |>
+  rename_with(~ str_replace(., "kq6_", ""), everything()) |>
+  rename_with(~ str_replace(., "dex_", "dexmed_"), everything()) |> # dexmed to avoid confusion w/dexamethasone
+  mutate(
+    drug = case_when(
+      !is.na(dexmed) ~ dexmed,
+      !is.na(ketamine) ~ ketamine,
+      !is.na(melatonin) ~ melatonin,
+      !is.na(ramelteon) ~ ramelteon,
+      !is.na(gabapentin) ~ gabapentin,
+      !is.na(ulinastatin) ~ ulinastatin, # all missing
+      !is.na(none) ~ none
+    ),
+    drug = str_replace(drug, "kq6_", ""),
+    drug = firstup(drug)
+  ) |>
+  relocate(drug, .after = arm_n) |>
+  left_join(kq5_drug_by_arm, by = c("refid", "arm_id")) |>  # select(refid, study, arm_id, drug, drug_kq5, control_desc, control_desc_kq5)
+  # populate drug and control description when recorded only in kq6 arms
+  mutate( 
+    drug = coalesce(drug, drug_kq5), 
+    control_desc = coalesce(control_desc, control_desc_kq5),
+    control_desc = firstup(control_desc),
+    arm_proph_meds = ifelse(is.na(arm_proph_meds), "kq5_arm", arm_proph_meds), # for origin of data; bookeeping
+  ) 
+
+## convert to factors with clean labels for analysis -- (2024-04-14 08:45) @----
+drugs_dat <- drugs_dat_prelim |>
+  mutate(
+    drug_f = fct(drug, levels = c("Dexmedetomidine", "Ketamine", "Melatonin", "Ramelteon", "Ulinastatin", "Midazolam", "Oxazepam", "Haloperidol", "Gabapentin", "Remimazolam", "None", "Placebo", "Other")),
+    drug_f = fct_collapse(drug_f, "Control" = c("None", "Placebo", "Other"))
+  ) |>
+  group_by(refid) |>
+  mutate(
+    drug_study = case_when( # study drug
+      if_any(drug_f, ~ . == "Dexmedetomidine") ~ "Dexmedetomidine",
+      if_any(drug_f, ~ . == "Ketamine") ~ "Ketamine",
+      if_any(drug_f, ~ . == "Melatonin") ~ "Melatonin",
+      if_any(drug_f, ~ . == "Ramelteon") ~ "Ramelteon",
+      if_any(drug_f, ~ . == "Remimazolam") ~ "Remimazolam",
+      if_any(drug_f, ~ . == "Gabapentin") ~ "Gabapentin",
+      if_any(drug_f, ~ . == "Ulinastatin") ~ "Ulinastatin"
+      # TRUE ~ "MISSING" # NA_character_ for verification
+    ),
+    drug_study = fct(drug_study, levels = c("Dexmedetomidine", "Ketamine", "Melatonin", "Ramelteon", "Remimazolam", "Gabapentin", "Ulinastatin")),
+    drug_recode = case_when(
+      str_detect(other_spec, "Midazolam and propofol") ~ "Midazolam/propofol",
+      str_detect(other_spec, "Midazolam and sevoflurane") ~ "Midazolam/sevoflurane",
+      str_detect(other_spec, "[Mm]idazolam") ~ "Midazolam",
+      str_detect(other_spec, "[Ss]ufentanil") ~ "Sufentanil",
+      str_detect(other_spec, "[Pp]ropofol") ~ "Propofol",
+      # str_detect(other_spec, "[Mm]orphine") ~ "Morphine",
+      str_detect(other_spec, "[Pp]regabalin") ~ "Pregabalin",
+      # str_detect(other_spec, "[Rr]hythim") ~ "Rhythim",
+      .default = drug
+    ),
+    drug_recode = ifelse(refid == 2748 & arm_id == 4, "Dexmedetomidine/Pregabalin", drug_recode),
+    drug_recode = ifelse(refid == 13406 & arm_id == 3, "Dexmedetomidine/Ulinastatin", drug_recode),
+    drug_recode = ifelse(refid == 13393 & arm_id == 1, "Dexmedetomidine/Ulinastatin", drug_recode),
+    # drug_recode = ifelse(refid == 13171 & arm_id == 2, "Melatonin/Dexmedetomidine", drug_recode), # exclude nrc
+    # drug_recode = ifelse(refid == 13171 & arm_id == 1, "Dexmedetomidine", drug_recode),
+    drug_recode = fct(drug_recode, levels = drug_recode_levels),
+    drug_recode_abbr = fct_recode(drug_recode, !!!drug_recode_abbr)
+  ) |>
+  ungroup() |>
+  relocate(c(drug, drug_f, drug_recode, drug_recode_abbr, drug_study), .after = arm_id) |>
+  relocate(c(other_spec, interv_desc, control_desc), .after = last_col()) |>
+  arrange(refid, drug_study) |>
+  fill(drug_study) |>
+  arrange(refid, arm_id)
+```
+
+```{r refids}
+
+dex_refid <- drugs_dat |> 
+  filter(drug == "Dexmedetomidine") |> 
+  filter(!refid %in% linked_refid) |>
+  pull(refid) 
+
+mel_ram_refid <- drugs_dat |> 
+  filter(drug %in% c("Melatonin", "Ramelteon")) |> 
+  filter(!refid %in% linked_refid) |>
+  pull(refid)
+
+ket_refid <- drugs_dat |> 
+  filter(drug == "Ketamine") |> 
+  filter(!refid %in% linked_refid) |>
+  pull(refid)
+
+```
+
+# **Dexmedetomidine**
+
+## Randomized Clinical Trials
+
+<font size = 4> `r table_ref()` Study and patient characteristics — randomized clinical trials of dexmedetomidine. </font>
+
+```{r dex_rct}
+#| layout: [[35, 30, 35]]
+
+summary_study_char_tab_rct(dex_refid)
+
+summary_surg_tab_rct(dex_refid)
+
+## table data ----
+pt_char_tab <- study_arm_dat |>
+  filter(refid %in% pt_char_tab_refids_rct(dex_refid)) |> 
+  mutate(
+    wgt = arm_n / sum(arm_n, na.rm = TRUE),
+    N = sum(arm_n),
+    .by = refid
+  ) |>
+  group_by(refid) |>
+  summarize(
+    across(
+      c(
+        age_mean,
+        age_med,
+        female_perc,
+        white,
+        black,
+        asian,
+        bmi_m,
+        bmi_med,
+        pre_mmse_m,
+        pre_mmse_med,
+        living_independent,
+        living_dependent,
+        # housing_home,
+        # housing_assisted,
+        cog_imp,
+        malnourish,
+        dm,
+        cardiac,
+        # cancer,
+        # ortho,
+        # gi,
+        # neuro,
+        # pulm,
+        # endo,
+        # renal,
+        # hepatic
+      ),
+      ~ pt_sum(.x, wgt)
+    ),
+    N = sum(arm_n)
+  ) |>
+  mutate(
+    age_mean_med = coalesce(age_mean, age_med),
+    bmi_mean_med = coalesce(bmi_m, bmi_med),
+    pre_mmse_mean_med = coalesce(pre_mmse_m, pre_mmse_med),
+  ) |>
+  select(-c(bmi_m, bmi_med, pre_mmse_m, pre_mmse_med, age_mean, age_med)) |>
+  left_join(asa_class, by = "refid")
+
+## summary table ----
+pt_char_tab |>
+  select(age_mean_med, bmi_mean_med, female_perc, asa, white, black, asian, pre_mmse_mean_med, cog_imp, dm, cardiac) |>
+  mutate(
+    # asian = ifelse(asian == 100, "100%", NA),
+    asa = ifelse(asa == "NR", NA, asa),
+  ) |>
+  tbl_summary(
+    label = list(
+      age_mean_med = "Age (mean/med)",
+      bmi_mean_med = "BMI (mean/med)",
+      female_perc = "Female (%)",
+      asa = "ASA Physical Status, N (%)",
+      white = "White (%)",
+      black = "Black (%)",
+      asian = "Asian (%)",
+      # living_independent = "Lives Independently (%)",
+      # living_dependent = "Lives Dependent (%)",
+      # housing_home = "Living at Home (%)",
+      # housing_assisted = "Assisted Living (%)",
+      cog_imp = "Cognitive Impairment (%)",
+      pre_mmse_mean_med = "Preop MMSE (mean/med)",
+      dm = "Diabetes (%)",
+      cardiac = "Cardiac (%)"
+      # malnourish = "Malnourished (%)"
+    ),
+    digits = list(
+      age_mean_med ~ 1,
+      bmi_mean_med ~ 1,
+      female_perc ~ 1,
+      asa ~ c(0, 1),
+      white ~ 1,
+      black ~ 1,
+      asian ~ 0,
+      # living_independent ~ 1,
+      # living_dependent ~ 1,
+      # housing_home ~ 1,
+      # housing_assisted ~ 1,
+      pre_mmse_mean_med ~ 1,
+      cog_imp ~ 1,
+      dm ~ 1,
+      cardiac ~ 1
+      # malnourish ~ 1
+    ),
+    statistic = list(
+      age_mean_med ~ "{mean} <u>{median}</u> ({min} - {max})",
+      bmi_mean_med ~ "{median} ({min} - {max})",
+      female_perc ~ "{median} ({min} - {max})",
+      asa ~ "{n} ({p})",
+      white ~ "{median} ({min} - {max})",
+      black ~ "{median}",
+      asian ~ "{median} ({min} - {max})",
+      # living_independent ~ "{mean} ({min} - {max})",
+      # living_dependent ~ "{mean} ({min} - {max})",
+      # housing_home ~ "{mean} ({min} - {max})",
+      # housing_assisted ~ "{mean} ({min} - {max})",
+      pre_mmse_mean_med ~ "{mean} ({min} - {max})",
+      cog_imp ~ "{mean} ({min} - {max})",
+      dm ~ "{mean} ({min} - {max})",
+      cardiac ~ "{mean} ({min} - {max})"
+      # malnourish ~ "{mean} ({min} - {max})"
+    ),
+    type = list(
+      age_mean_med ~ "continuous",
+      bmi_mean_med ~ "continuous",
+      female_perc ~ "continuous",
+      asa ~ "categorical",
+      white ~ "continuous",
+      black ~ "continuous",
+      asian ~ "continuous",
+      # living_independent ~ "continuous",
+      # living_dependent ~ "continuous",
+      # housing_home ~ "continuous",
+      # housing_assisted ~ "continuous",
+      pre_mmse_mean_med ~ "continuous",
+      cog_imp ~ "continuous",
+      dm ~ "continuous",
+      cardiac ~ "continuous"
+      # malnourish ~ "continuous"
+    ),
+    # missing_text = "Not reported"
+    missing = "no"
+  ) |>
+  add_n() |>
+  modify_header(stat_0 = "**Mean<u> Med </u>(Range) <br/> or N (%)**") |>
+  modify_footnote(update = stat_0 ~ NA) |>
+  as_gt(id = "one") |>
+  cols_width(
+    3 ~ px(170),
+    # 5 ~ px(60),
+    6 ~ px(110)
+  ) |>
+  fmt_markdown(stat_0) |>
+  gt_theme_mg() |>
+  tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(stat_0))) |>
+  # tab_footnote("Number of trials reporting from the 9 included (11 publications).", locations = cells_column_labels(columns = c(n)), placement = "right") |>
+  # tab_footnote("Mean, median, or range of the mean/med reported in trials.", locations = cells_column_labels(columns = c(stat_0)), placement = "right") |>
+  tab_footnote(paste0("N of the ", length(pt_char_tab_refids_rct(dex_refid)), " studies reporting characteristic allowing description."), locations = cells_column_labels(columns = c(n)), placement = "right") |> 
+  as_raw_html()
+
+
+```
+
+## Nonrandomized Studies
+
+<font size = 4> `r table_ref()` Study and patient characteristics — nonrandomized studies of dexmedetomidine. </font>
+
+```{r dex_nrsi}
+#| layout: [[35, 30, 35]]
+
+summary_study_char_tab_nrsi(dex_refid)
+
+summary_surg_tab_nrsi(dex_refid)
+
+## table data ----
+pt_char_tab <- study_arm_dat |>
+  filter(refid %in% pt_char_tab_refids_nrsi(dex_refid)) |> 
+  mutate(
+    wgt = arm_n / sum(arm_n, na.rm = TRUE),
+    N = sum(arm_n),
+    .by = refid
+  ) |>
+  group_by(refid) |>
+  summarize(
+    across(
+      c(
+        age_mean,
+        age_med,
+        female_perc,
+        white,
+        black,
+        asian,
+        bmi_m,
+        bmi_med,
+        pre_mmse_m,
+        pre_mmse_med,
+        living_independent,
+        living_dependent,
+        # housing_home,
+        # housing_assisted,
+        cog_imp,
+        malnourish,
+        dm,
+        cardiac,
+        # cancer,
+        # ortho,
+        # gi,
+        # neuro,
+        # pulm,
+        # endo,
+        # renal,
+        # hepatic
+      ),
+      ~ pt_sum(.x, wgt)
+    ),
+    N = sum(arm_n)
+  ) |>
+  mutate(
+    age_mean_med = coalesce(age_mean, age_med),
+    bmi_mean_med = coalesce(bmi_m, bmi_med),
+    pre_mmse_mean_med = coalesce(pre_mmse_m, pre_mmse_med),
+  ) |>
+  select(-c(bmi_m, bmi_med, pre_mmse_m, pre_mmse_med, age_mean, age_med)) |>
+  left_join(asa_class, by = "refid")
+
+## summary table ----
+pt_char_tab |>
+  select(age_mean_med, bmi_mean_med, female_perc, asa, white, black, asian, pre_mmse_mean_med, cog_imp, dm, cardiac) |>
+  mutate(
+    # asian = ifelse(asian == 100, "100%", NA),
+    asa = ifelse(asa == "NR", NA, asa),
+  ) |>
+  tbl_summary(
+    label = list(
+      age_mean_med = "Age (mean/med)",
+      bmi_mean_med = "BMI (mean/med)",
+      female_perc = "Female (%)",
+      asa = "ASA Physical Status, N (%)",
+      white = "White (%)",
+      black = "Black (%)",
+      asian = "Asian (%)",
+      # living_independent = "Lives Independently (%)",
+      # living_dependent = "Lives Dependent (%)",
+      # housing_home = "Living at Home (%)",
+      # housing_assisted = "Assisted Living (%)",
+      cog_imp = "Cognitive Impairment (%)",
+      pre_mmse_mean_med = "Preop MMSE (mean/med)",
+      dm = "Diabetes (%)",
+      cardiac = "Cardiac (%)"
+      # malnourish = "Malnourished (%)"
+    ),
+    digits = list(
+      age_mean_med ~ 1,
+      bmi_mean_med ~ 1,
+      female_perc ~ 1,
+      asa ~ c(0, 1),
+      white ~ 1,
+      black ~ 1,
+      asian ~ 0,
+      # living_independent ~ 1,
+      # living_dependent ~ 1,
+      # housing_home ~ 1,
+      # housing_assisted ~ 1,
+      pre_mmse_mean_med ~ 1,
+      cog_imp ~ 1,
+      dm ~ 1,
+      cardiac ~ 1
+      # malnourish ~ 1
+    ),
+    statistic = list(
+      age_mean_med ~ "{mean} <u>{median}</u> ({min} - {max})",
+      bmi_mean_med ~ "{median} ({min} - {max})",
+      female_perc ~ "{median} ({min} - {max})",
+      asa ~ "{n} ({p})",
+      white ~ "{median} ({min} - {max})",
+      black ~ "{mean}",
+      asian ~ "{median} ({min} - {max})",
+      # living_independent ~ "{mean} ({min} - {max})",
+      # living_dependent ~ "{mean} ({min} - {max})",
+      # housing_home ~ "{mean} ({min} - {max})",
+      # housing_assisted ~ "{mean} ({min} - {max})",
+      pre_mmse_mean_med ~ "{mean} ({min} - {max})",
+      cog_imp ~ "{mean}",
+      dm ~ "{mean} ({min} - {max})",
+      cardiac ~ "{mean} ({min} - {max})"
+      # malnourish ~ "{mean} ({min} - {max})"
+    ),
+    type = list(
+      age_mean_med ~ "continuous",
+      bmi_mean_med ~ "continuous",
+      female_perc ~ "continuous",
+      asa ~ "categorical",
+      white ~ "continuous",
+      black ~ "continuous",
+      asian ~ "continuous",
+      # living_independent ~ "continuous",
+      # living_dependent ~ "continuous",
+      # housing_home ~ "continuous",
+      # housing_assisted ~ "continuous",
+      pre_mmse_mean_med ~ "continuous",
+      cog_imp ~ "continuous",
+      dm ~ "continuous",
+      cardiac ~ "continuous"
+      # malnourish ~ "continuous"
+    ),
+    # missing_text = "Not reported"
+  missing = "no"
+  ) |>
+  add_n() |>
+  modify_header(stat_0 = "**Mean<u> Med </u>(Range) <br/> or N (%)**") |>
+  modify_footnote(update = stat_0 ~ NA) |>
+  as_gt(id = "one") |>
+  cols_width(
+    3 ~ px(170),
+    # 5 ~ px(60),
+    6 ~ px(110)
+  ) |>
+  fmt_markdown(stat_0) |>  
+  gt_theme_mg() |>
+  tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(stat_0))) |>
+  tab_footnote(paste0("N of the ", length(pt_char_tab_refids_nrsi(dex_refid)), " studies reporting characteristic allowing description."), locations = cells_column_labels(columns = c(n)), placement = "right") |> 
+  as_raw_html()
+  # tab_info()
+
+```
+
+# **Melatonin and Ramelteon**
+
+## Randomized Clinical Trials
+
+<font size = 4> `r table_ref()` Study and patient characteristics — randomized clinical trials of melatonin and ramelteon. </font>
+
+```{r met_ram_rct}
+#| layout: [[35, 30, 35]]
+
+summary_study_char_tab_rct(mel_ram_refid)
+
+summary_surg_tab_rct(mel_ram_refid)
+
+## table data ----
+pt_char_tab <- study_arm_dat |>
+  filter(refid %in% pt_char_tab_refids_rct(mel_ram_refid)) |> 
+  mutate(
+    wgt = arm_n / sum(arm_n, na.rm = TRUE),
+    N = sum(arm_n),
+    .by = refid
+  ) |>
+  group_by(refid) |>
+  summarize(
+    across(
+      c(
+        age_mean,
+        age_med,
+        female_perc,
+        white,
+        black,
+        asian,
+        bmi_m,
+        bmi_med,
+        pre_mmse_m,
+        pre_mmse_med,
+        living_independent,
+        living_dependent,
+        # housing_home,
+        # housing_assisted,
+        cog_imp,
+        malnourish,
+        dm,
+        cardiac,
+        # cancer,
+        # ortho,
+        # gi,
+        # neuro,
+        # pulm,
+        # endo,
+        # renal,
+        # hepatic
+      ),
+      ~ pt_sum(.x, wgt)
+    ),
+    N = sum(arm_n)
+  ) |>
+  mutate(
+    age_mean_med = coalesce(age_mean, age_med),
+    bmi_mean_med = coalesce(bmi_m, bmi_med),
+    pre_mmse_mean_med = coalesce(pre_mmse_m, pre_mmse_med),
+  ) |>
+  select(-c(bmi_m, bmi_med, pre_mmse_m, pre_mmse_med, age_mean, age_med)) |>
+  left_join(asa_class, by = "refid")
+
+## summary table ----
+pt_char_tab |>
+  select(age_mean_med, bmi_mean_med, female_perc, asa, white, black, asian, pre_mmse_mean_med, cog_imp, dm, cardiac) |>
+  mutate(
+    # asian = ifelse(asian == 100, "100%", NA),
+    asa = ifelse(asa == "NR", NA, asa),
+  ) |>
+  tbl_summary(
+    label = list(
+      age_mean_med = "Age (mean/med)",
+      bmi_mean_med = "BMI (mean/med)",
+      female_perc = "Female (%)",
+      asa = "ASA Physical Status, N (%)",
+      white = "White (%)",
+      black = "Black (%)",
+      asian = "Asian (%)",
+      # living_independent = "Lives Independently (%)",
+      # living_dependent = "Lives Dependent (%)",
+      # housing_home = "Living at Home (%)",
+      # housing_assisted = "Assisted Living (%)",
+      cog_imp = "Cognitive Impairment (%)",
+      pre_mmse_mean_med = "Preop MMSE (mean/med)",
+      dm = "Diabetes (%)",
+      cardiac = "Cardiac (%)"
+      # malnourish = "Malnourished (%)"
+    ),
+    digits = list(
+      age_mean_med ~ 1,
+      bmi_mean_med ~ 1,
+      female_perc ~ 1,
+      asa ~ c(0, 1),
+      white ~ 1,
+      black ~ 1,
+      asian ~ 0,
+      # living_independent ~ 1,
+      # living_dependent ~ 1,
+      # housing_home ~ 1,
+      # housing_assisted ~ 1,
+      pre_mmse_mean_med ~ 1,
+      cog_imp ~ 1,
+      dm ~ 1,
+      cardiac ~ 1
+      # malnourish ~ 1
+    ),
+    statistic = list(
+      age_mean_med ~ "{mean} <u>{median}</u> ({min} - {max})",
+      bmi_mean_med ~ "{median} ({min} - {max})",
+      female_perc ~ "{median} ({min} - {max})",
+      asa ~ "{n} ({p})",
+      white ~ "{median}",
+      black ~ "{median}",
+      asian ~ "all {median}",
+      # living_independent ~ "{mean} ({min} - {max})",
+      # living_dependent ~ "{mean} ({min} - {max})",
+      # housing_home ~ "{mean} ({min} - {max})",
+      # housing_assisted ~ "{mean} ({min} - {max})",
+      pre_mmse_mean_med ~ "{mean} ({min} - {max})",
+      cog_imp ~ "{mean} ({min} - {max})",
+      dm ~ "{mean} ({min} - {max})",
+      cardiac ~ "{mean} ({min} - {max})"
+      # malnourish ~ "{mean} ({min} - {max})"
+    ),
+    type = list(
+      age_mean_med ~ "continuous",
+      bmi_mean_med ~ "continuous",
+      female_perc ~ "continuous",
+      asa ~ "categorical",
+      white ~ "continuous",
+      black ~ "continuous",
+      asian ~ "continuous",
+      # living_independent ~ "continuous",
+      # living_dependent ~ "continuous",
+      # housing_home ~ "continuous",
+      # housing_assisted ~ "continuous",
+      pre_mmse_mean_med ~ "continuous",
+      cog_imp ~ "continuous",
+      dm ~ "continuous",
+      cardiac ~ "continuous"
+      # malnourish ~ "continuous"
+    ),
+    # missing_text = "Not reported"
+  missing = "no"
+  ) |>
+  add_n() |>
+  modify_header(stat_0 = "**Mean<u> Med </u>(Range) <br/> or N (%)**") |>
+  modify_footnote(update = stat_0 ~ NA) |>
+  as_gt(id = "one") |>
+  cols_width(
+    3 ~ px(170),
+    # 5 ~ px(60),
+    6 ~ px(110)
+  ) |>
+  fmt_markdown(stat_0) |>
+  gt_theme_mg() |>
+  tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(stat_0))) |>
+  # tab_footnote("Number of trials reporting from the 9 included (11 publications).", locations = cells_column_labels(columns = c(n)), placement = "right") |>
+  # tab_footnote("Mean, median, or range of the mean/med reported in trials.", locations = cells_column_labels(columns = c(stat_0)), placement = "right") |>
+  tab_footnote(paste0("N of the ", length(pt_char_tab_refids_rct(mel_ram_refid)), " trials reporting characteristic allowing description."), locations = cells_column_labels(columns = c(n)), placement = "right") |> 
+  as_raw_html()
+
+```
+
+## Nonrandomized Studies
+
+<font size = 4> `r table_ref()` Study and patient characteristics — nonrandomized studies of melatonin and ramelteon. </font>
+
+```{r mel_ram_nrsi}
+#| layout: [[35, 30, 35]]
+
+summary_study_char_tab_nrsi(mel_ram_refid)
+
+summary_surg_tab_nrsi(mel_ram_refid)
+
+## table data ----
+pt_char_tab <- study_arm_dat |>
+  filter(refid %in% pt_char_tab_refids_nrsi(mel_ram_refid)) |> 
+  mutate(
+    wgt = arm_n / sum(arm_n, na.rm = TRUE),
+    N = sum(arm_n),
+    .by = refid
+  ) |>
+  group_by(refid) |>
+  summarize(
+    across(
+      c(
+        age_mean,
+        age_med,
+        female_perc,
+        white,
+        black,
+        asian,
+        bmi_m,
+        bmi_med,
+        pre_mmse_m,
+        pre_mmse_med,
+        living_independent,
+        living_dependent,
+        # housing_home,
+        # housing_assisted,
+        cog_imp,
+        malnourish,
+        dm,
+        cardiac,
+        # cancer,
+        # ortho,
+        # gi,
+        # neuro,
+        # pulm,
+        # endo,
+        # renal,
+        # hepatic
+      ),
+      ~ pt_sum(.x, wgt)
+    ),
+    N = sum(arm_n)
+  ) |>
+  mutate(
+    age_mean_med = coalesce(age_mean, age_med),
+    bmi_mean_med = coalesce(bmi_m, bmi_med),
+    pre_mmse_mean_med = coalesce(pre_mmse_m, pre_mmse_med),
+  ) |>
+  select(-c(bmi_m, bmi_med, pre_mmse_m, pre_mmse_med, age_mean, age_med)) |>
+  left_join(asa_class, by = "refid")
+
+## summary table ----
+pt_char_tab |>
+  select(age_mean_med, bmi_mean_med, female_perc, asa, white, black, asian, pre_mmse_mean_med, cog_imp, dm, cardiac) |>
+  mutate(
+    # asian = ifelse(asian == 100, "100%", NA),
+    asa = ifelse(asa == "NR", NA, asa),
+  ) |>
+  tbl_summary(
+    label = list(
+      age_mean_med = "Age (mean/med)",
+      bmi_mean_med = "BMI (mean/med)",
+      female_perc = "Female (%)",
+      asa = "ASA Physical Status, N (%)",
+      white = "White (%)",
+      black = "Black (%)",
+      asian = "Asian (%)",
+      # living_independent = "Lives Independently (%)",
+      # living_dependent = "Lives Dependent (%)",
+      # housing_home = "Living at Home (%)",
+      # housing_assisted = "Assisted Living (%)",
+      cog_imp = "Cognitive Impairment (%)",
+      pre_mmse_mean_med = "Preop MMSE (mean/med)",
+      dm = "Diabetes (%)",
+      cardiac = "Cardiac (%)"
+      # malnourish = "Malnourished (%)"
+    ),
+    digits = list(
+      age_mean_med ~ 1,
+      bmi_mean_med ~ 1,
+      female_perc ~ 1,
+      asa ~ c(0, 1),
+      white ~ 1,
+      black ~ 1,
+      asian ~ 0,
+      # living_independent ~ 1,
+      # living_dependent ~ 1,
+      # housing_home ~ 1,
+      # housing_assisted ~ 1,
+      pre_mmse_mean_med ~ 1,
+      cog_imp ~ 1,
+      dm ~ 1,
+      cardiac ~ 1
+      # malnourish ~ 1
+    ),
+    statistic = list(
+      age_mean_med ~ "{mean} <u>{median}</u> ({min} - {max})",
+      bmi_mean_med ~ "{median} ({min} - {max})",
+      female_perc ~ "{median} ({min} - {max})",
+      asa ~ "{n} ({p})",
+      white ~ "",
+      black ~ "",
+      asian ~ "all {median}",
+      # living_independent ~ "{mean} ({min} - {max})",
+      # living_dependent ~ "{mean} ({min} - {max})",
+      # housing_home ~ "{mean} ({min} - {max})",
+      # housing_assisted ~ "{mean} ({min} - {max})",
+      pre_mmse_mean_med ~ "",
+      cog_imp ~ "{mean} ({min} - {max})",
+      dm ~ "{mean} ({min} - {max})",
+      cardiac ~ "{mean} ({min} - {max})"
+      # malnourish ~ "{mean} ({min} - {max})"
+    ),
+    type = list(
+      age_mean_med ~ "continuous",
+      bmi_mean_med ~ "continuous",
+      female_perc ~ "continuous",
+      asa ~ "categorical",
+      white ~ "dichotomous",
+      black ~ "dichotomous",
+      asian ~ "continuous",
+      # living_independent ~ "continuous",
+      # living_dependent ~ "continuous",
+      # housing_home ~ "continuous",
+      # housing_assisted ~ "continuous",
+      pre_mmse_mean_med ~ "dichotomous",
+      cog_imp ~ "continuous",
+      dm ~ "continuous",
+      cardiac ~ "continuous"
+      # malnourish ~ "continuous"
+    ),
+    # missing_text = "Not reported"
+  missing = "no"
+  ) |>
+  add_n() |>
+  modify_header(stat_0 = "**Mean<u> Med </u>(Range) <br/> or N (%)**") |>
+  modify_footnote(update = stat_0 ~ NA) |>
+  as_gt(id = "one") |>
+  cols_width(
+    3 ~ px(170),
+    # 5 ~ px(60),
+    6 ~ px(110)
+  ) |>
+  fmt_markdown(stat_0) |>  
+  gt_theme_mg() |>
+  tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(stat_0))) |>
+  tab_footnote(paste0("N of the ", length(pt_char_tab_refids_nrsi(mel_ram_refid)), " studies reporting characteristic allowing description."), locations = cells_column_labels(columns = c(n)), placement = "right") |> 
+  as_raw_html()
+  # tab_info()
+
+```
+
+# **Ketamine**
+
+## Randomized Clinical Trials
+
+<font size = 4> `r table_ref()` Study and patient characteristics — randomized clinical trials of ketamine. </font>
+  
+```{r study_char_ket_rct}
+#| layout: [[35, 30, 35]]
+
+summary_study_char_tab_rct(ket_refid)
+
+summary_surg_tab_rct(ket_refid)
+
+# table data ----
+pt_char_tab <- study_arm_dat |>
+  filter(refid %in% pt_char_tab_refids_rct(ket_refid)) |> 
+  mutate(
+    wgt = arm_n / sum(arm_n, na.rm = TRUE),
+    N = sum(arm_n),
+    .by = refid
+  ) |>
+  group_by(refid) |>
+  summarize(
+    across(
+      c(
+        age_mean,
+        age_med,
+        female_perc,
+        white,
+        black,
+        asian,
+        bmi_m,
+        bmi_med,
+        pre_mmse_m,
+        pre_mmse_med,
+        living_independent,
+        living_dependent,
+        # housing_home,
+        # housing_assisted,
+        cog_imp,
+        malnourish,
+        dm,
+        cardiac,
+        # cancer,
+        # ortho,
+        # gi,
+        # neuro,
+        # pulm,
+        # endo,
+        # renal,
+        # hepatic
+      ),
+      ~ pt_sum(.x, wgt)
+    ),
+    N = sum(arm_n)
+  ) |>
+  mutate(
+    age_mean_med = coalesce(age_mean, age_med),
+    bmi_mean_med = coalesce(bmi_m, bmi_med),
+    pre_mmse_mean_med = coalesce(pre_mmse_m, pre_mmse_med),
+  ) |>
+  select(-c(bmi_m, bmi_med, pre_mmse_m, pre_mmse_med, age_mean, age_med)) |>
+  left_join(asa_class, by = "refid")
+
+## summary table ----
+pt_char_tab |>
+  select(age_mean_med, bmi_mean_med, female_perc, asa, white, black, asian, pre_mmse_mean_med, cog_imp, dm, cardiac) |>
+  mutate(
+    # asian = ifelse(asian == 100, "100%", NA),
+    asa = ifelse(asa == "NR", NA, asa),
+  ) |>
+  tbl_summary(
+    label = list(
+      age_mean_med = "Age (mean/med)",
+      bmi_mean_med = "BMI (mean/med)",
+      female_perc = "Female (%)",
+      asa = "ASA Physical Status, N (%)",
+      white = "White (%)",
+      black = "Black (%)",
+      asian = "Asian (%)",
+      # living_independent = "Lives Independently (%)",
+      # living_dependent = "Lives Dependent (%)",
+      # housing_home = "Living at Home (%)",
+      # housing_assisted = "Assisted Living (%)",
+      cog_imp = "Cognitive Impairment (%)",
+      pre_mmse_mean_med = "Preop MMSE (mean/med)",
+      dm = "Diabetes (%)",
+      cardiac = "Cardiac (%)"
+      # malnourish = "Malnourished (%)"
+    ),
+    digits = list(
+      age_mean_med ~ 1,
+      bmi_mean_med ~ 1,
+      female_perc ~ 1,
+      asa ~ c(0, 1),
+      white ~ 1,
+      black ~ 1,
+      asian ~ 0,
+      # living_independent ~ 1,
+      # living_dependent ~ 1,
+      # housing_home ~ 1,
+      # housing_assisted ~ 1,
+      pre_mmse_mean_med ~ 1,
+      cog_imp ~ 1,
+      dm ~ 1,
+      cardiac ~ 1
+      # malnourish ~ 1
+    ),
+    statistic = list(
+      age_mean_med ~ "{mean} <u>{median}</u> ({min} - {max})",
+      bmi_mean_med ~ "{median} ({min} - {max})",
+      female_perc ~ "{median} ({min} - {max})",
+      asa ~ "{n} ({p})",
+      white ~ "{median}",
+      black ~ "",
+      asian ~ "all {median}",
+      # living_independent ~ "{mean} ({min} - {max})",
+      # living_dependent ~ "{mean} ({min} - {max})",
+      # housing_home ~ "{mean} ({min} - {max})",
+      # housing_assisted ~ "{mean} ({min} - {max})",
+      pre_mmse_mean_med ~ "{mean} ({min} - {max})",
+      cog_imp ~ "all {mean}",
+      dm ~ "{mean} ({min} - {max})",
+      cardiac ~ "{mean} ({min} - {max})"
+      # malnourish ~ "{mean} ({min} - {max})"
+    ),
+    type = list(
+      age_mean_med ~ "continuous",
+      bmi_mean_med ~ "continuous",
+      female_perc ~ "continuous",
+      asa ~ "categorical",
+      white ~ "continuous",
+      black ~ "dichotomous",
+      asian ~ "continuous",
+      # living_independent ~ "continuous",
+      # living_dependent ~ "continuous",
+      # housing_home ~ "continuous",
+      # housing_assisted ~ "continuous",
+      pre_mmse_mean_med ~ "continuous",
+      cog_imp ~ "continuous",
+      dm ~ "continuous",
+      cardiac ~ "continuous"
+      # malnourish ~ "continuous"
+    ),
+    # missing_text = "Not reported"
+    missing = "no"
+  ) |>
+  add_n() |>
+  modify_header(stat_0 = "**Mean<u> Med </u>(Range) <br/> or N (%)**") |>
+  modify_footnote(update = stat_0 ~ NA) |>
+  as_gt(id = "one") |>
+  cols_width(
+    3 ~ px(170),
+    # 5 ~ px(60),
+    6 ~ px(110)
+  ) |>
+  fmt_markdown(stat_0) |>
+  gt_theme_mg() |>
+  tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(stat_0))) |>
+  # tab_footnote("Number of trials reporting from the 9 included (11 publications).", locations = cells_column_labels(columns = c(n)), placement = "right") |>
+  # tab_footnote("Mean, median, or range of the mean/med reported in trials.", locations = cells_column_labels(columns = c(stat_0)), placement = "right") |>
+  tab_footnote(paste0("N of the ", length(pt_char_tab_refids_rct(ket_refid)), " trials reporting characteristic allowing description."), locations = cells_column_labels(columns = c(n)), placement = "right") |> 
+  as_raw_html()
+
+```
+
+## Nonrandomized Studies
+
+<font size = 4> `r table_ref()` Study and patient characteristics — nonrandomized studies of ketamine. </font>
+  
+```{r study_char_ket_nrsi}
+#| layout: [[35, 30, 35]]
+
+summary_study_char_tab_nrsi(ket_refid)
+
+summary_surg_tab_nrsi(ket_refid)
+
+## table data ----
+pt_char_tab <- study_arm_dat |>
+  filter(refid %in% pt_char_tab_refids_nrsi(ket_refid)) |> 
+  mutate(
+    wgt = arm_n / sum(arm_n, na.rm = TRUE),
+    N = sum(arm_n),
+    .by = refid
+  ) |>
+  group_by(refid) |>
+  summarize(
+    across(
+      c(
+        age_mean,
+        age_med,
+        female_perc,
+        white,
+        black,
+        asian,
+        bmi_m,
+        bmi_med,
+        pre_mmse_m,
+        pre_mmse_med,
+        living_independent,
+        living_dependent,
+        # housing_home,
+        # housing_assisted,
+        cog_imp,
+        malnourish,
+        dm,
+        cardiac,
+        # cancer,
+        # ortho,
+        # gi,
+        # neuro,
+        # pulm,
+        # endo,
+        # renal,
+        # hepatic
+      ),
+      ~ pt_sum(.x, wgt)
+    ),
+    N = sum(arm_n)
+  ) |>
+  mutate(
+    age_mean_med = coalesce(age_mean, age_med),
+    bmi_mean_med = coalesce(bmi_m, bmi_med),
+    pre_mmse_mean_med = coalesce(pre_mmse_m, pre_mmse_med),
+  ) |>
+  select(-c(bmi_m, bmi_med, pre_mmse_m, pre_mmse_med, age_mean, age_med)) |>
+  left_join(asa_class, by = "refid")
+
+## summary table ----
+pt_char_tab |>
+  select(age_mean_med, bmi_mean_med, female_perc, asa, white, black, asian, pre_mmse_mean_med, cog_imp, dm, cardiac) |>
+  mutate(
+    # asian = ifelse(asian == 100, "100%", NA),
+    asa = ifelse(asa == "NR", NA, asa),
+  ) |>
+  tbl_summary(
+    label = list(
+      age_mean_med = "Age (mean/med)",
+      bmi_mean_med = "BMI (mean/med)",
+      female_perc = "Female (%)",
+      asa = "ASA Physical Status, N (%)",
+      white = "White (%)",
+      black = "Black (%)",
+      asian = "Asian (%)",
+      # living_independent = "Lives Independently (%)",
+      # living_dependent = "Lives Dependent (%)",
+      # housing_home = "Living at Home (%)",
+      # housing_assisted = "Assisted Living (%)",
+      cog_imp = "Cognitive Impairment (%)",
+      pre_mmse_mean_med = "Preop MMSE (mean/med)",
+      dm = "Diabetes (%)",
+      cardiac = "Cardiac (%)"
+      # malnourish = "Malnourished (%)"
+    ),
+    digits = list(
+      age_mean_med ~ 1,
+      bmi_mean_med ~ 1,
+      female_perc ~ 1,
+      asa ~ c(0, 1),
+      white ~ 1,
+      black ~ 1,
+      asian ~ 0,
+      # living_independent ~ 1,
+      # living_dependent ~ 1,
+      # housing_home ~ 1,
+      # housing_assisted ~ 1,
+      pre_mmse_mean_med ~ 1,
+      cog_imp ~ 1,
+      dm ~ 1,
+      cardiac ~ 1
+      # malnourish ~ 1
+    ),
+    statistic = list(
+      age_mean_med ~ "{mean} <u>{median}</u> ({min} - {max})",
+      bmi_mean_med ~ "",
+      female_perc ~ "{median} ({min} - {max})",
+      asa ~ "{n} ({p})",
+      white ~ "",
+      black ~ "{median}",
+      asian ~ "",
+      # living_independent ~ "{mean} ({min} - {max})",
+      # living_dependent ~ "{mean} ({min} - {max})",
+      # housing_home ~ "{mean} ({min} - {max})",
+      # housing_assisted ~ "{mean} ({min} - {max})",
+      pre_mmse_mean_med ~ "",
+      cog_imp ~ "{mean}",
+      dm ~ "",
+      cardiac ~ ""
+      # malnourish ~ "{mean} ({min} - {max})"
+    ),
+    type = list(
+      age_mean_med ~ "continuous",
+      bmi_mean_med ~ "dichotomous",
+      female_perc ~ "continuous",
+      asa ~ "categorical",
+      white ~ "dichotomous",
+      black ~ "continuous",
+      asian ~ "dichotomous",
+      # living_independent ~ "continuous",
+      # living_dependent ~ "continuous",
+      # housing_home ~ "continuous",
+      # housing_assisted ~ "continuous",
+      pre_mmse_mean_med ~ "dichotomous",
+      cog_imp ~ "continuous",
+      dm ~ "dichotomous",
+      cardiac ~ "dichotomous"
+      # malnourish ~ "continuous"
+    ),
+    # missing_text = "Not reported"
+    missing = "no"
+  ) |>
+  add_n() |>
+  modify_header(stat_0 = "**Mean <u>Med</u> (Range) <br/> or N (%)**") |>
+  modify_footnote(update = stat_0 ~ NA) |>
+  as_gt(id = "one") |>
+  cols_width(
+    3 ~ px(170),
+    # 5 ~ px(60),
+    6 ~ px(110)
+  ) |>
+  fmt_markdown(stat_0) |>  
+  gt_theme_mg() |>
+  tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(stat_0))) |>
+  tab_footnote(paste0("N of the ", length(pt_char_tab_refids_nrsi(ket_refid)), " studies reporting characteristic allowing description."), locations = cells_column_labels(columns = c(n)), placement = "right") |> 
+  as_raw_html()
+
+
+```
+
+

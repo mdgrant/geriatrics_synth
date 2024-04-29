@@ -2,7 +2,7 @@
 title: "Study/Patient Characteristics Neuraxial versus General Anesthesia"
 date: "`r format(Sys.time(), '%d %B, %Y (%H:%M)')`"
 editor: source
-toc-title: "**Characteristics**"
+toc-title: "**Neuraxial versus General Anesthesia**"
 toc-location: "left"
 cap-location: "top"
 toc-depth: 3
@@ -63,150 +63,27 @@ no_linked_refids <- study_char_dat |>
   slice(1) |> 
   pull(refid)
 
-```
-
-### Trial Characteristics 
-
-<font size = 4> `r table_ref()` Characteristics of included randomized clinical trials. </font>
-
-```{r study_char_rct}
-study_char_tab <- study_char_dat |> 
-  filter(refid %in% kq3_refid) |> 
-  filter(design == "rct") |> 
-  mutate(
-    low_r = if_else(non_vh_hdi == "yes", 1, 0, missing = 0),
-    pilot = if_else(pilot == "yes", 1, 0, missing = 0),
-    ambulatory = !is.na(ambulatory),
-    one_center = centers == 1,
-    multi_center = centers > 1,
-    general = !is.na(general),
-    regional = !is.na(regional),
-    sedation = !is.na(sedation),
-    non_vh_hdi = ifelse(is.na(non_vh_hdi), 0, 1),
-    funding = case_when(
-      funding == "industry" ~ "Industry",
-      funding == "pub_indus" ~ "Public and industry",
-      funding == "public" ~ "Public",
-      funding == "NR" ~ "Not reported",
-      TRUE ~ "Other"
-    ),
-    author_coi = author_coi == "author_coi",
-    registered = if_else(registered == "yes", TRUE, FALSE, missing = FALSE),
-    across(c(ambulatory, one_center, multi_center, general, regional, sedation, registered, author_coi), ~ .x * 1)
-  ) |> 
-  select(refid, study, country, low_r, non_vh_hdi, pilot, ambulatory, centers, funding, registered, n_enroll, arms, author_coi) 
-
-study_char_gt <- study_char_tab |>
-  select(n_enroll, arms, pilot, ambulatory, centers, country, non_vh_hdi, funding, author_coi, registered) |>
-  tbl_summary(
-    label = list(
-      n_enroll = "Patients enrolled",
-      arms = "Arms",
-      pilot = "Pilot study",
-      ambulatory = "Ambulatory",
-      centers = "Centers",
-      country = "Country",
-      non_vh_hdi = "Low resource country",
-      funding = "Funding",
-      author_coi = "Author conflict of interest",
-      registered = "Registered"
-    ),
-    digits = list(
-      n_enroll ~ 0
-    ),
-    type = list(
-      n_enroll ~ "continuous",
-      arms ~ "categorical"
-    ),
-    statistic = list(
-    # calculate percentages including missing values in the denominator
-      n_enroll ~ "{mean} [<u>{median}</u>] ({min} - {max})",
-      arms ~ "{n} ({p})"
-    ),
-    missing_text = "Not reported",
-    sort = list(everything() ~ "frequency")
-  ) |>
-  as_gt(id = "one") |>
-  fmt_markdown(stat_0) |>
-  cols_width(
-    5 ~ px(320),
-    6 ~ px(140)
-  ) |> 
-  gt_theme_mg()
-
-study_char_gt
-
-```
-
-### Surgical Procedures
-
-<font size = 4> `r table_ref()` Surgical procedures performed. </font>
-
-```{r surg_rct}
-
-# number of hipfx only trials
-n_hip_only <- ortho_proc |>
-  filter(refid %in% kq3_refid) |>
-  filter(ortho == "HipFx") |> 
-  summarize(n = n_distinct(refid)) 
-
-surg_tab <- surgs |>
-  filter(refid %in% study_char_tab$refid) |> # only kq4 rcts
-  select(refid, surgs) |>
-  tabyl(surgs) |> # summarise(total = sum(n))
-  arrange(desc(percent)) |>
-  rename(per = percent) |>
-  mutate(
-    per = paste0("(", format(round(100 * per, 1), nsmall = 1), ")"),
-    per = str_replace(per, " ", ""),
-    n = as.character(n),
-    n_per = paste(n, per)
-  ) |>
-  select(surgs, n_per) |>
-  rename(result = n_per, characteristic = surgs)
-
-surgs_gt <- surgs |>
-  filter(refid %in% study_char_tab$refid) |> # only kq4 rcts
-  select(surgs) |> 
-  tbl_summary(
-    label = list(
-      surgs = "Procedure(s)"
-    ),
-    statistic = list(
-      surgs ~ "{n} ({p})"
-    ),
-    type = list(
-      surgs ~ "categorical"
-    ),
-    missing_text = "Not reported",
-    sort = list(everything() ~ "frequency")
-  ) |>
-  as_gt(id = "one") |>
-  gt_theme_mg() |>
-  cols_width(
-    5 ~ px(320),
-    6 ~ px(100)
-  ) |> 
-  tab_footnote("If reported as various/mixed or included more than 4 types of procedures.",  locations = cells_body(columns = label, rows = label == "Various"), placement = "right") |> 
-  tab_footnote(paste0("Hip fracture only in ", n_hip_only, "."), locations = cells_body(columns = label, rows = label == "Ortho"), placement = "right") 
-
-surgs_gt
-
-```
-
-### Patient Charcteristics
-
-<font size = 4> `r table_ref()` Patient characteristics in randomized clinical trials. </font>
-
-```{r pt_rct}
 asa_class <- asa_combine |>
   mutate(asa = str_trim(asa_ps_incl)) |>
-  select(refid, asa) |> 
+  select(refid, asa) |>
   slice(1, .by = "refid")
 
-# summaries for individual studies combining arms
+```
+
+## Randomized Clinical Trials
+
+<font size = 4> `r table_ref()` Study and patient characteristics. </font>
+
+```{r dex_rct}
+#| layout: [[35, 30, 35]]
+
+summary_study_char_tab_rct(kq3_refid)
+
+summary_surg_tab_rct(kq3_refid)
+
+## table data ----
 pt_char_tab <- study_arm_dat |>
-  filter(refid %in% study_char_tab$refid) |> # only kq3 rcts
+  filter(refid %in% pt_char_tab_refids_rct(kq3_refid)) |> 
   mutate(
     wgt = arm_n / sum(arm_n, na.rm = TRUE),
     N = sum(arm_n),
@@ -255,50 +132,67 @@ pt_char_tab <- study_arm_dat |>
   select(-c(bmi_m, bmi_med, pre_mmse_m, pre_mmse_med, age_mean, age_med)) |>
   left_join(asa_class, by = "refid")
 
-pt_char_gt <- pt_char_tab |>
-  select(age_mean_med, bmi_mean_med, female_perc, asa, white, black, asian, cog_imp, pre_mmse_mean_med, dm, cardiac) |>
+## summary table ----
+pt_char_tab |>
+  select(age_mean_med, bmi_mean_med, female_perc, asa, white, black, asian, pre_mmse_mean_med, cog_imp, dm, cardiac) |>
   mutate(
-    asian = ifelse(asian == 100, "100%", NA),
+    # asian = ifelse(asian == 100, "100%", NA),
     asa = ifelse(asa == "NR", NA, asa),
-  ) |> 
+  ) |>
   tbl_summary(
     label = list(
-      age_mean_med = "Age (mean or median)",
-      bmi_mean_med = "BMI (mean or median)",
+      age_mean_med = "Age (mean/med)",
+      bmi_mean_med = "BMI (mean/med)",
       female_perc = "Female (%)",
-      asa = "ASA Physical Status",
+      asa = "ASA Physical Status, N (%)",
       white = "White (%)",
       black = "Black (%)",
-      asian = "Asian",
-      cog_imp = "Dementia (%)",
-      pre_mmse_mean_med = "Preoperative MMSE (mean or median)",
+      asian = "Asian (%)",
+      # living_independent = "Lives Independently (%)",
+      # living_dependent = "Lives Dependent (%)",
+      # housing_home = "Living at Home (%)",
+      # housing_assisted = "Assisted Living (%)",
+      cog_imp = "Cognitive Impairment (%)",
+      pre_mmse_mean_med = "Preop MMSE (mean/med)",
       dm = "Diabetes (%)",
       cardiac = "Cardiac (%)"
+      # malnourish = "Malnourished (%)"
     ),
     digits = list(
       age_mean_med ~ 1,
       bmi_mean_med ~ 1,
       female_perc ~ 1,
-      asa ~ 1,
+      asa ~ c(0, 1),
       white ~ 1,
       black ~ 1,
       asian ~ 0,
+      # living_independent ~ 1,
+      # living_dependent ~ 1,
+      # housing_home ~ 1,
+      # housing_assisted ~ 1,
       pre_mmse_mean_med ~ 1,
+      cog_imp ~ 1,
       dm ~ 1,
       cardiac ~ 1
+      # malnourish ~ 1
     ),
     statistic = list(
-      age_mean_med ~ "{mean} [<u>{median}</u>] ({min} - {max})",
+      age_mean_med ~ "{mean} <u>{median}</u> ({min} - {max})",
       bmi_mean_med ~ "{median} ({min} - {max})",
       female_perc ~ "{median} ({min} - {max})",
-      asa ~ "{n} ({p}%)",
+      asa ~ "{n} ({p})",
       white ~ "{median} ({min} - {max})",
       black ~ "{median} ({min} - {max})",
-      asian ~ "{n}",
-      cog_imp ~ "{median} ({min} - {max})",
-      pre_mmse_mean_med ~ "{median} ({min} - {max})",
-      dm ~ "{median} ({min} - {max})",
-      cardiac ~ "{median} ({min} - {max})"
+      asian ~ "all {median}",
+      # living_independent ~ "{mean} ({min} - {max})",
+      # living_dependent ~ "{mean} ({min} - {max})",
+      # housing_home ~ "{mean} ({min} - {max})",
+      # housing_assisted ~ "{mean} ({min} - {max})",
+      pre_mmse_mean_med ~ "{mean} ({min} - {max})",
+      cog_imp ~ "{mean} ({min} - {max})",
+      dm ~ "{mean} ({min} - {max})",
+      cardiac ~ "{mean} ({min} - {max})"
+      # malnourish ~ "{mean} ({min} - {max})"
     ),
     type = list(
       age_mean_med ~ "continuous",
@@ -307,35 +201,46 @@ pt_char_gt <- pt_char_tab |>
       asa ~ "categorical",
       white ~ "continuous",
       black ~ "continuous",
-      asian ~ "categorical",
-      cog_imp ~ "continuous",
+      asian ~ "continuous",
+      # living_independent ~ "continuous",
+      # living_dependent ~ "continuous",
+      # housing_home ~ "continuous",
+      # housing_assisted ~ "continuous",
       pre_mmse_mean_med ~ "continuous",
+      cog_imp ~ "continuous",
       dm ~ "continuous",
       cardiac ~ "continuous"
+      # malnourish ~ "continuous"
     ),
-    missing_text = "Not reported"
+    # missing_text = "Not reported"
+    missing = "no"
   ) |>
-  as_gt(id = "one") |> 
+  add_n() |>
+  modify_header(stat_0 = "**Mean <u>Med</u> (Range) <br/> or N (%)**") |>
+  modify_footnote(update = stat_0 ~ NA) |>
+  as_gt(id = "one") |>
+  cols_width(
+    3 ~ px(170),
+    # 5 ~ px(60),
+    6 ~ px(110)
+  ) |>
   fmt_markdown(stat_0) |>
-    cols_width(
-    5 ~ px(320),
-    6 ~ px(140)
-  ) |> 
-  gt_theme_mg() |> 
-  tab_footnote("Shin 2020, Li 2022, and Neuman 2021 included patients with dementia.", locations = cells_body(columns = label, rows = label == "Dementia (%)"), placement = "right") 
-
-pt_char_gt
-# gtsave(pt_char_gt, "/Users/mgrant/Documents/_projects01/asa/_geriatric/geriatrics_synth/@@/summary_docx/kq3_pt_char.png")
+  gt_theme_mg() |>
+  tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(stat_0))) |>
+  # tab_footnote("Number of trials reporting from the 9 included (11 publications).", locations = cells_column_labels(columns = c(n)), placement = "right") |>
+  # tab_footnote("Mean, median, or range of the mean/med reported in trials.", locations = cells_column_labels(columns = c(stat_0)), placement = "right") |>
+  tab_footnote(paste0("N of the ", length(pt_char_tab_refids_rct(kq3_refid)), " studies reporting characteristic allowing description."), locations = cells_column_labels(columns = c(n)), placement = "right") |> 
+  tab_footnote("Shin 2020, Li 2022, and Neuman 2021 included patients with dementia.", locations = cells_body(columns = label, rows = label == "Dementia (%)"), placement = "right") |> 
+  as_raw_html()
 
 ```
 
 ## Outcomes
 
-### Primary
+<font size = 4> `r table_ref()` Primary, secondard, and other outcomes. </font>
 
-<font size = 4> `r table_ref()` Primary outcomes. </font>
-
-```{r outcome_prim_sec}
+```{r outcomes}
+#| layout: [[33, 33, 33]]
 #| echo: false
 
 other_foot <- study_char_dat |> 
@@ -393,25 +298,17 @@ study_char_dat |>
       by = design_f_abbrev,
       missing = "no"
     ) |> 
-    modify_header(label = "**Outcome**") |>
+    modify_header(label = "**Primary Outcome**") |>
     # modify_footnote(update = everything() ~ NA) |>
     as_gt(id = "one") |> 
     cols_width(
-      label          ~ px(350),
+      label          ~ px(225),
       stat_1         ~ px(90),
     ) |> 
     gt_theme_mg() |>
     sub_values(values = c("0 (0%)"), replacement = "—") |> 
     tab_footnote(md(other_foot), locations = cells_body(columns = c(stat_1), rows = label == "Other")) 
 
-```
-
-### Secondary
-
-<font size = 4> `r table_ref()` Secondary outcomes. </font>
-
-```{r outcome_sec}
-#| echo: false
 
 other_foot <- study_char_dat |> 
   select(sec_oth_specify) |> 
@@ -469,43 +366,16 @@ study_char_dat |>
       by = design_f_abbrev,
       missing = "no"
     ) |> 
-    modify_header(label = "**Outcome**") |>
+    modify_header(label = "**Secondary Outcome**") |>
     # modify_footnote(update = everything() ~ NA) |>
     as_gt(id = "one") |> 
     cols_width(
-      label          ~ px(350),
+      label          ~ px(225),
       stat_1         ~ px(90),
     ) |> 
     gt_theme_mg() |>
     sub_values(values = c("0 (0%)"), replacement = "—") |> 
     tab_footnote(md(other_foot), locations = cells_body(columns = c(stat_1), rows = label == "Other")) 
-
-```
-
-### Other
-
-<font size = 4> `r table_ref()` Outcomes not specified as primary or secondary. </font>
-
-```{r outcome_other}
-#| echo: false
-
-# other_foot <- study_char_dat |> 
-#   select(sec_oth_other) |> 
-#   filter(!is.na(sec_oth_other)) |> 
-#   mutate(
-#     oth_out_specify = firstup(sec_oth_other),
-#     sec_oth_other = str_replace_all(sec_oth_other, "acceptibility", "[A]cceptibility"),
-#     sec_oth_other = str_replace_all(sec_oth_other, ";$", ""),
-#     sec_oth_other = str_replace_all(sec_oth_other, "$", "\\."),
-#     sec_oth_other = paste0(sec_oth_other, "<br/>TT"),
-#     sec_oth_other = str_replace_all(sec_oth_other, "; B", "; b"),
-#     sec_oth_other = str_replace_all(sec_oth_other, "; H", "; h"),
-#     sec_oth_other = str_replace_all(sec_oth_other, "homo", "hemo"),
-#   ) |> 
-#   pull(sec_oth_other) |> 
-#   toString()
-# 
-# other_foot <- gsub("TT,|TT", "", other_foot)
 
 study_char_dat |> 
   group_by(linked_references_all_refid) |>
@@ -544,11 +414,11 @@ study_char_dat |>
       by = design_f_abbrev,
       missing = "no"
     ) |> 
-    modify_header(label = "**Outcome**") |>
+    modify_header(label = "**Other Outcome**") |>
     # modify_footnote(update = everything() ~ NA) |>
     as_gt(id = "one") |> 
     cols_width(
-      label          ~ px(350),
+      label          ~ px(225),
       stat_1         ~ px(90),
     ) |> 
     gt_theme_mg() 
