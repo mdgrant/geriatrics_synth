@@ -15,7 +15,7 @@ tables:
         pre: "Table "
         sep: " -- "
 bibliography: "bib/kq5.bib"
-csl: "bib/jama.csl"
+csl: "bib/anesthesiology.csl"
 link-citations: false
 nocite: '@*'
 ---

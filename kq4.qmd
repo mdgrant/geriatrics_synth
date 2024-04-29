@@ -18,7 +18,7 @@ tables:
         pre: "Table "
         sep: " -- "
 bibliography: "bib/kq4.bib"
-csl: jama.csl
+csl: anesthesiology.csl
 link-citations: false
 nocite: '@*'
 ---
@@ -842,7 +842,7 @@ dev.off()
 
 temp <- bubble_plot_data(delirium_meta_rct) 
 
-fitted_meta <- metafor::rma(yi_meta, vi_meta, mods = ~ control_event_rate, slab = slab, data = temp)
+fitted_meta <- metafor::rma(yi = yi_meta, sei = sei_meta, mods = ~ control_event_rate, slab = slab, data = temp)
 
 png("assets/kq4_delirium_meta_bubble.png", width = 8, height = 6, units = "in", res = 300)
 par(bty = "n", xaxt = "s", yaxt = "s", mar = c(4, 4, 2, 1))

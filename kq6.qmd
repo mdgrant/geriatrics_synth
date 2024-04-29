@@ -128,6 +128,36 @@ study_char_dat |>
   tab_style(style = list(cell_text(align = "left")), locations = cells_body(columns = design_f_lab)
     ) |> 
   tab_footnote("Studies with multiple publications counted only once (applied to 1 trial with 2 publications).")
+
+
+# TODO: revise by design
+#     tbl_summary(
+#       by = design_f_abbrev,
+#       missing = "no"
+#     ) 
+# 
+#     
+# study_char_dat |>
+#   filter(refid %in% ket_refid) |>
+#   arrange(year) |>
+#   group_by(linked_references_all_refid) |> # count 1 for multiple pubs from single study
+#   slice(1) |>
+#   ungroup() |>
+#   # select(refid, study, linked_references_all_refid, design_f_lab) |> # to check studies > 1 report
+#   select(refid, study, design_f_lab) |>
+#   group_by(design_f_lab, .drop = TRUE) |>
+#   summarise(total = n()) |>
+#   adorn_totals("row") |>
+#   gt(id = "one") |>
+#   cols_label(design_f_lab = "Design", total = "Studies") |>
+#   cols_width(
+#     # design_f_lab ~ px(200),
+#     design_f_lab ~ "1.8in",
+#     total ~ ".5in"
+#   ) |>
+#   gt_theme_mg()
+
+
 ```
 
 ### Design, centers, country, and surgery

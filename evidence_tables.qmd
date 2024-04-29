@@ -17,7 +17,7 @@ tables:
         pre: "Table "
         sep: " -- "
 bibliography: "bib/allrefs.bib"
-csl: jama.csl
+csl: anesthesiology.csl
 link-citations: false
 nocite: '@*'
 ---

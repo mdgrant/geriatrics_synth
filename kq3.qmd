@@ -19,7 +19,7 @@ tables:
         pre: "Table "
         sep: " -- "
 bibliography: "bib/kq3.bib"
-csl: "bib/jama.csl"
+csl: "bib/anesthesiology.csl"
 link-citations: false
 nocite: '@*'
 ---
@@ -968,7 +968,7 @@ hipfx_study <- study_char_dat |>
 temp <- bubble_plot_data(gen_reg_delirium_meta) |> 
   mutate(slab = ifelse(slab %in% hipfx_study, paste0(slab, "*"), slab))
 
-fitted_meta <- metafor::rma(yi_meta, vi_meta, mods = ~ control_event_rate, slab = slab, data = temp)
+fitted_meta <- metafor::rma(yi = yi_meta, sei = sei_meta, mods = ~ control_event_rate, slab = slab, data = temp)
 
 png("assets/kq3_delirium_meta_bubble.png", width = 8, height = 6, units = "in", res = 300)
 par(bty = "n", xaxt = "s", yaxt = "s", mar = c(4, 4, 2, 1))

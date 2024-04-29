@@ -46,13 +46,15 @@ editor: source
 Brief summaries by study design of inclusion/exclusion criteria, results, and comment when relevant.   
 Includes links to publications. 
 
-Study/patient characteristics and primary outcome summaries  
+Study/patient characteristics 
 
 [   Expanded Preoperative Evaluation](summary_kq1.html)
 
 [   Neuraxial versus General Anesthesia](summary_kq3.html)
 
 [   TIVA versus Inhaled Anesthesia](summary_kq4.html)
+
+[   Delirium Prophylaxis](summary_kq6.html)
 
 [Outcome Importance Rankings](outcome_rankings.html)
 

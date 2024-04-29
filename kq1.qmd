@@ -13,7 +13,7 @@ tables:
         pre: "Table "
         sep: " -- "
 bibliography: "bib/kq18.bib"
-csl: jama.csl
+csl: anesthesiology.csl
 link-citations: false
 nocite: '@*'
 ---
@@ -679,8 +679,8 @@ expanded_combined |>
   tab_style(style = list(cell_text(color = color_3)), locations = cells_column_spanners(spanners = "Patient Education")) |> 
   tab_style(style = list(cell_text(color = color_4)), locations = cells_column_spanners(spanners = "Staff")) |> 
   tab_footnote(md("ERAS: enhanced recovery after surgery; CGA: comprehensive geriatric assessment; GI: gastrointestinal; Abd: abdominal; Suppl: supplement;  \U25D0 expanded evaluation only; \U25CF in expanded and standard evaluation arms; \U25D1 in standard evaluation arms only.")) |> 
-  tab_footnote("When a comprehensive geriatric assessment (CGA) was conducted, all components were presumed included. ", locations = cells_body(columns = "gen_comp", rows = !is.na(gen_comp))) |> 
-  tab_footnote("Selective comprehensive geriatric assessment in standard arm.", locations = cells_body(columns = c("gen_comp"), rows = study == "Giannotti 2022")) 
+  tab_footnote("When a comprehensive geriatric assessment (CGA) was conducted, all components were presumed included. ", locations = cells_column_spanners(spanners = c("General", "Targeted")), placement = "right") |> 
+  tab_footnote("Selective comprehensive geriatric assessment in standard arm.", locations = cells_body(columns = c(study_l), rows = study == "Giannotti 2022")) 
 
 ```
 
