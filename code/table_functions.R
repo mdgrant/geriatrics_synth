@@ -361,7 +361,7 @@ delirium_total_tab_fun <- function(refids){
     ) |>
     relocate(calc_percent, .after = delitotal_perc) |>
     unite(scale_delirium, cam:other, remove = TRUE, sep = "/", na.rm = TRUE) |>
-    mutate(scale_delirium = ifelse(scale_delirium == "unspec", "NS", scale_delirium)) |>
+    mutate(scale_delirium = ifelse(scale_delirium == "unspecified", "NS", scale_delirium)) |>
     select(year, refid, refid_c, design_f_lab, study, study_l, arm_id, arm_n, drug_recode_abbr, scale_delirium, delitotal_time, n_percent, calc_percent, rr_ci) |>
     arrange(year, study, refid_c, arm_id) |>
     left_join(table_mn_med |> select(refid, arm_id, pre_mmse), by = c("refid", "arm_id")) |>
@@ -977,3 +977,300 @@ kq4_complications <- function(){
     tab_footnote("No events in 1 study; 3 in the other.", locations = cells_body(columns = c(est), rows = str_detect(est, "—")), placement = "right")
 }
 
+## summary table functions ---------------------------- (2024-04-28 07:41) @----
+summary_study_char_tab_rct <- function(refids) {
+  study_char_tab <- study_char_dat |>
+  filter(refid %in% refids) |>
+  filter(design == "rct") |>
+  mutate(
+    low_r = if_else(non_vh_hdi == "yes", 1, 0, missing = 0),
+    pilot = if_else(pilot == "yes", 1, 0, missing = 0),
+    ambulatory = !is.na(ambulatory),
+    one_center = centers == 1,
+    multi_center = centers > 1,
+    general = !is.na(general),
+    regional = !is.na(regional),
+    sedation = !is.na(sedation),
+    non_vh_hdi = ifelse(is.na(non_vh_hdi), 0, 1),
+    funding = case_when(
+      funding == "industry" ~ "Industry",
+      funding == "pub_indus" ~ "Public and industry",
+      funding == "public" ~ "Public",
+      funding == "NR" ~ "Not reported",
+      funding == "none" ~ "None",
+    ),
+    # funding = ordered(funding, levels = c("Public", "Industry", "Public and industry", "Not reported")),
+    # funding = factor(funding, levels = c("public", "industry", "pub_indus", "NR"), labels = c("Public", "Industry", "Public and industry", "Not reported")),
+    author_coi = author_coi == "author_coi",
+    registered = if_else(registered == "yes", TRUE, FALSE, missing = FALSE),
+    across(c(ambulatory, one_center, multi_center, general, regional, sedation, registered, author_coi), ~ .x * 1)
+  ) |>
+  select(refid, study, country, low_r, non_vh_hdi, pilot, ambulatory, centers, funding, registered, n_enroll, arms, author_coi)
+
+n_studies <- nrow(study_char_tab)
+
+study_char_tab |>
+  select(n_enroll, arms, pilot, ambulatory, centers, country, non_vh_hdi, funding, author_coi, registered) |>
+  tbl_summary(
+    label = list(
+      n_enroll = "Patients enrolled",
+      arms = "Arms, N (%)",
+      pilot = "Pilot study, N (%)",
+      ambulatory = "Ambulatory, N (%)",
+      centers = "Centers, N (%)",
+      country = "Country, N (%)",
+      non_vh_hdi = "Low resource country, N (%)",
+      funding = "Funding, N (%)",
+      author_coi = "Author conflict of interest, N (%)",
+      registered = "Registered, N (%)"
+    ),
+    digits = list(
+      n_enroll ~ 0,
+      arms = c(0, 1),
+      pilot = c(0, 1),
+      ambulatory = c(0, 1),
+      centers = c(0, 1),
+      country = c(0, 1),
+      non_vh_hdi = c(0, 1),
+      funding = c(0, 1),
+      author_coi = c(0, 1),
+      registered = c(0, 1)
+    ),
+    type = list(
+      n_enroll ~ "continuous",
+      arms ~ "categorical"
+    ),
+    statistic = list(
+    # calculate percentages including missing values in the denominator
+      n_enroll ~ "{mean} <u>{median}</u> ({min} - {max})",
+      arms ~ "{n} ({p})",
+      pilot = "{n} ({p})",
+      ambulatory = "{n} ({p})",
+      centers = "{n} ({p})",
+      country = "{n} ({p})",
+      non_vh_hdi = "{n} ({p})",
+      funding = "{n} ({p})",
+      author_coi = "{n} ({p})",
+      registered = "{n} ({p})"
+    ),
+    missing_text = "Not reported",
+    sort = list(everything() ~ "frequency")
+  ) |>
+  modify_header(stat_0 = "**Mean <u>Med</u> (Range) <br/> or N (%)**") |>
+  modify_footnote(update = stat_0 ~ NA) |>
+  modify_header(label = paste0("Characteristic", "<br/>[", n_studies, " trials]")) |>
+  as_gt(id = "one") |>
+  cols_width(
+      # 5 ~ px(200),
+      6 ~ px(135)
+    ) |>
+  fmt_markdown(stat_0) |>
+  gt_theme_mg()
+  # tab_footnote("Mean, median, or range of the mean or median reported in trials.", locations = cells_column_labels(columns = c(stat_0)), placement = "right")
+}
+
+summary_study_char_tab_nrsi <- function(refids) {
+  study_char_tab <- study_char_dat |>
+    filter(refid %in% refids) |>
+    filter(!design == "rct") |>
+    mutate(
+      low_r = if_else(non_vh_hdi == "yes", 1, 0, missing = 0),
+      pilot = if_else(pilot == "yes", 1, 0, missing = 0),
+      ambulatory = !is.na(ambulatory),
+      one_center = centers == 1,
+      multi_center = centers > 1,
+      general = !is.na(general),
+      regional = !is.na(regional),
+      sedation = !is.na(sedation),
+      non_vh_hdi = ifelse(is.na(non_vh_hdi), 0, 1),
+      funding = case_when(
+        funding == "industry" ~ "Industry",
+        funding == "pub_indus" ~ "Public and industry",
+        funding == "public" ~ "Public",
+        funding == "NR" ~ "Not reported",
+        funding == "none" ~ "None",
+      ),
+      author_coi = author_coi == "author_coi",
+      registered = if_else(registered == "yes", TRUE, FALSE, missing = FALSE),
+      across(c(ambulatory, one_center, multi_center, general, regional, sedation, registered, author_coi), ~ .x * 1)
+    ) |>
+    select(refid, study, design_f_lab, country, low_r, non_vh_hdi, pilot, ambulatory, centers, funding, registered, n_enroll, arms, author_coi)
+
+  n_studies <- nrow(study_char_tab)
+
+  study_char_tab |>
+    mutate(design_f_lab = fct_drop(design_f_lab)) |>
+    select(n_enroll, design_f_lab, arms, pilot, ambulatory, centers, country, non_vh_hdi, funding, author_coi, registered) |>
+    tbl_summary(
+      label = list(
+        n_enroll = "Patients enrolled",
+        design_f_lab = "Design, N (%)",
+        arms = "Arms, N (%)",
+        pilot = "Pilot study, N (%)",
+        ambulatory = "Ambulatory, N (%)",
+        centers = "Centers, N (%)",
+        country = "Country, N (%)",
+        non_vh_hdi = "Low resource country, N (%)",
+        funding = "Funding, N (%)",
+        author_coi = "Author conflict of interest, N (%)",
+        registered = "Registered, N (%)"
+      ),
+      digits = list(
+        n_enroll ~ 0,
+        design_f_lab ~ c(0, 1),
+        arms = c(0, 1),
+        pilot = c(0, 1),
+        ambulatory = c(0, 1),
+        centers = c(0, 1),
+        country = c(0, 1),
+        non_vh_hdi = c(0, 1),
+        funding = c(0, 1),
+        author_coi = c(0, 1),
+        registered = c(0, 1)
+      ),
+      type = list(
+        n_enroll ~ "continuous",
+        arms ~ "categorical"
+      ),
+      statistic = list(
+        # calculate percentages including missing values in the denominator
+        n_enroll ~ "{mean} <u>{median}</u> ({min} - {max})",
+        design_f_lab ~ "{n} ({p})",
+        arms ~ "{n} ({p})",
+        pilot = "{n} ({p})",
+        ambulatory = "{n} ({p})",
+        centers = "{n} ({p})",
+        country = "{n} ({p})",
+        non_vh_hdi = "{n} ({p})",
+        funding = "{n} ({p})",
+        author_coi = "{n} ({p})",
+        registered = "{n} ({p})"
+      ),
+      missing_text = "Not reported",
+      sort = list(c(design_f_lab, country, funding) ~ "frequency")
+    ) |>
+    modify_header(stat_0 = "**Mean <u>Med</u> (Range) <br/> or N (%)**") |>
+    modify_footnote(update = stat_0 ~ NA) |>
+    modify_header(label = paste0("Characteristic", "<br/>[", n_studies, " studies]")) |>
+    as_gt(id = "one") |>
+    cols_width(
+      # 5 ~ px(200),
+      6 ~ px(135)
+    ) |>
+    fmt_markdown(stat_0) |>
+    gt_theme_mg()
+}
+
+summary_surg_tab_rct <- function(refids) {
+  surg_refids <- study_char_dat |>
+    filter(refid %in% refids) |>
+    filter(design == "rct") |>
+    pull(refid)
+
+  # convenience
+  surg_tab <- surgs |>
+    filter(refid %in% surg_refids) |>
+    select(refid, surgs) |>
+    tabyl(surgs) |>
+    arrange(desc(percent)) |>
+    rename(per = percent) |>
+    mutate(
+      per = paste0("(", format(round(100 * per, 1), nsmall = 1), ")"),
+      per = str_replace(per, " ", ""),
+      n = as.character(n),
+      n_per = paste(n, per)
+    ) |>
+    select(surgs, n_per) |>
+    rename(result = n_per, characteristic = surgs)
+
+  surgs |>
+    filter(refid %in% surg_refids) |>
+    select(surgs) |>
+    tbl_summary(
+      label = list(
+        surgs = "Procedure(s), N (%)"
+      ),
+      statistic = list(
+        surgs ~ "{n} ({p})"
+      ),
+      type = list(
+        surgs ~ "categorical"
+      ),
+      missing_text = "Not reported",
+      sort = list(everything() ~ "frequency")
+    ) |>
+    modify_header(label = "<br/>Surgery") |>
+    modify_footnote(update = stat_0 ~ NA) |>
+    as_gt(id = "one") |>
+    gt_theme_mg() |>
+    cols_width(
+      5 ~ px(200),
+      6 ~ px(80)
+    ) |>
+    tab_footnote("If reported as various/mixed or included more than 4 types of procedures.", locations = cells_body(columns = label, rows = label == "Various"), placement = "right")
+}
+
+summary_surg_tab_nrsi <- function(refids) {
+  surg_refids <- study_char_dat |>
+    filter(refid %in% refids) |>
+    filter(design != "rct") |>
+    pull(refid)
+
+  # convenience
+  surg_tab <- surgs |>
+    filter(refid %in% surg_refids) |>
+    select(refid, surgs) |>
+    tabyl(surgs) |>
+    arrange(desc(percent)) |>
+    rename(per = percent) |>
+    mutate(
+      per = paste0("(", format(round(100 * per, 1), nsmall = 1), ")"),
+      per = str_replace(per, " ", ""),
+      n = as.character(n),
+      n_per = paste(n, per)
+    ) |>
+    select(surgs, n_per) |>
+    rename(result = n_per, characteristic = surgs)
+
+  surgs |>
+    filter(refid %in% surg_refids) |>
+    select(surgs) |>
+    tbl_summary(
+      label = list(
+        surgs = "Procedure(s), N (%)"
+      ),
+      statistic = list(
+        surgs ~ "{n} ({p})"
+      ),
+      type = list(
+        surgs ~ "categorical"
+      ),
+      missing_text = "Not reported",
+      sort = list(everything() ~ "frequency")
+    ) |>
+    modify_header(label = "<br/>Surgery") |>
+    modify_footnote(update = stat_0 ~ NA) |>
+    as_gt(id = "one") |>
+    gt_theme_mg() |>
+    cols_width(
+      5 ~ px(200),
+      6 ~ px(80)
+    ) |>
+    tab_footnote("If reported as various/mixed or included more than 4 types of procedures.", locations = cells_body(columns = label, rows = label == "Various"), placement = "right")
+}
+
+pt_char_tab_refids_rct <- function(refids) {
+  study_char_dat |>
+    filter(refid %in% refids) |>
+    filter(design %in% c("rct")) |>
+    pull(refid)
+}
+
+pt_char_tab_refids_nrsi <- function(refids) {
+  study_char_dat |>
+    filter(refid %in% refids) |>
+    filter(design %in% c("prospect_coh", "retrospect_coh", "nr_trial", "quasi_exp", "crossover", "case_control")) |>
+    pull(refid)
+}
+
+## next ----------------------------------------------- (2024-04-28 08:25) @----
