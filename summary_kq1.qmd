@@ -122,8 +122,8 @@ pt_char_tab |>
   ) |>
   tbl_summary(
     label = list(
-      age_mean_med = "Age (mean or median)",
-      bmi_mean_med = "BMI (mean or median)",
+      age_mean_med = "Age (mean/med)",
+      bmi_mean_med = "BMI (mean/med)",
       female_perc = "Female (%)",
       asa = "ASA Physical Status, N (%)",
       white = "White (%)",
@@ -134,7 +134,7 @@ pt_char_tab |>
       # housing_home = "Living at Home (%)",
       # housing_assisted = "Assisted Living (%)",
       cog_imp = "Cognitive Impairment (%)",
-      pre_mmse_mean_med = "Preoperative MMSE (mean or median)",
+      pre_mmse_mean_med = "Preop MMSE (mean/med)",
       dm = "Diabetes (%)",
       cardiac = "Cardiac (%)",
       malnourish = "Malnourished (%)"
@@ -158,22 +158,22 @@ pt_char_tab |>
       malnourish ~ 1
     ),
     statistic = list(
-      age_mean_med ~ "{mean} [<u>{median}</u>] ({min} - {max})",
+      age_mean_med ~ "{mean} <u>{median}</u> ({min} - {max})",
       bmi_mean_med ~ "{median} ({min} - {max})",
-      female_perc ~ "{median} ({min} - {max})",
+      female_perc ~ "{mean} <u>{median}</u> ({min} - {max})",
       asa ~ "{n} ({p})",
       white ~ "{median}",
       # black ~ "          — ",
       black ~ "",
       asian ~ "both {median}",
-      living_independent ~ "{mean} ({min} - {max})",
+      living_independent ~ "{mean} <u>{median}</u> ({min} - {max})",
       living_dependent ~ "{mean}",
       # housing_home ~ "{mean} ({min} - {max})",
       # housing_assisted ~ "{mean} ({min} - {max})",
-      pre_mmse_mean_med ~ "{mean} ({min} - {max})",
-      cog_imp ~ "{mean} ({min} - {max})",
-      dm ~ "{mean} ({min} - {max})",
-      cardiac ~ "{mean} ({min} - {max})",
+      pre_mmse_mean_med ~ "{mean}",
+      cog_imp ~ "{mean} <u>{median}</u> ({min} - {max})",
+      dm ~ "{mean} <u>{median}</u> ({min} - {max})",
+      cardiac ~ "{mean} <u>{median}</u> ({min} - {max})",
       malnourish ~ "{mean}"
     ),
     type = list(
@@ -287,8 +287,8 @@ pt_char_tab |>
   ) |>
   tbl_summary(
     label = list(
-      age_mean_med = "Age (mean or median)",
-      bmi_mean_med = "BMI (mean or median)",
+      age_mean_med = "Age (mean/med)",
+      bmi_mean_med = "BMI (mean/med)",
       female_perc = "Female (%)",
       asa = "ASA Physical Status, N (%)",
       white = "White (%)",
@@ -299,7 +299,7 @@ pt_char_tab |>
       # housing_home = "Living at Home (%)",
       # housing_assisted = "Assisted Living (%)",
       cog_imp = "Cognitive Impairment (%)",
-      pre_mmse_mean_med = "Preoperative MMSE (mean or median)",
+      pre_mmse_mean_med = "Preop MMSE (mean/med)",
       dm = "Diabetes (%)",
       cardiac = "Cardiac (%)",
       malnourish = "Malnourished (%)"
@@ -323,21 +323,21 @@ pt_char_tab |>
       malnourish ~ 1
     ),
     statistic = list(
-      age_mean_med ~ "{mean} [<u>{median}</u>] ({min} - {max})",
-      bmi_mean_med ~ "{median} ({min} - {max})",
-      female_perc ~ "{median} ({min} - {max})",
+      age_mean_med ~ "{mean} <u>{median}</u> ({min} - {max})",
+      bmi_mean_med ~ "{mean} <u>{median}</u> ({min} - {max})",
+      female_perc ~ "{mean} <u>{median}</u> ({min} - {max})",
       asa ~ "{n} ({p})",
-      white ~ "{median} ({min} - {max})",
+      white ~ "{mean} <u>{median}</u> ({min} - {max})",
       black ~ "{median} ({min} - {max})",
       asian ~ "{median}",
-      living_independent ~ "{mean} ({min} - {max})",
-      living_dependent ~ "{mean} ({min} - {max})",
+      living_independent ~ "{mean} <u>{median}</u> ({min} - {max})",
+      living_dependent ~ "{mean} <u>{median}</u> ({min} - {max})",
       # housing_home ~ "{mean} ({min} - {max})",
       # housing_assisted ~ "{mean} ({min} - {max})",
-      pre_mmse_mean_med ~ "{mean} ({min} - {max})",
-      cog_imp ~ "{mean} ({min} - {max})",
-      dm ~ "{mean} ({min} - {max})",
-      cardiac ~ "{mean} ({min} - {max})",
+      pre_mmse_mean_med ~ "{mean} <u>{median}</u> ({min} - {max})",
+      cog_imp ~ "{mean} <u>{median}</u> ({min} - {max})",
+      dm ~ "{mean} <u>{median}</u> ({min} - {max})",
+      cardiac ~ "{mean} <u>{median}</u> ({min} - {max})",
       malnourish ~ "{mean} ({min} - {max})"
     ),
     type = list(

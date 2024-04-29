@@ -1283,97 +1283,542 @@ ul.task-list li input[type="checkbox"] {
 <div class="cell-output-display quarto-layout-cell" style="flex-basis: 35.0%;justify-content: center;">
 
 <div id="one" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-  
-  <table class="gt_table" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: 'Source Sans Pro'; display: table; border-collapse: collapse; line-height: normal; margin-left: 0; margin-right: auto; color: #000000; font-size: 13px; font-weight: normal; font-style: none; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 1.7px; border-top-color: #9A9EA1; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: none; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3; table-layout: fixed;" data-quarto-disable-processing="false" data-quarto-bootstrap="false" bgcolor="#FFFFFF">
+<style>#one table {
+  font-family: 'Source Sans Pro';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#one thead, #one tbody, #one tfoot, #one tr, #one td, #one th {
+  border-style: none;
+}
+
+#one p {
+  margin: 0;
+  padding: 0;
+}
+
+#one .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: 0;
+  margin-right: auto;
+  color: #000000;
+  font-size: 13px;
+  font-weight: normal;
+  font-style: none;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 1.7px;
+  border-top-color: #9A9EA1;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#one .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#one .gt_title {
+  color: #000000;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#one .gt_subtitle {
+  color: #000000;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#one .gt_heading {
+  background-color: #FFFFFF;
+  text-align: left;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#one .gt_bottom_border {
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#one .gt_col_headings {
+  border-top-style: none;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 1.3px;
+  border-bottom-color: #9A9EA1;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#one .gt_col_heading {
+  color: #000000;
+  background-color: #FFFFFF;
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 3px;
+  padding-bottom: 4px;
+  padding-left: 10px;
+  padding-right: 10px;
+  overflow-x: hidden;
+}
+
+#one .gt_column_spanner_outer {
+  color: #000000;
+  background-color: #FFFFFF;
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#one .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#one .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#one .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 1.3px;
+  border-bottom-color: #9A9EA1;
+  vertical-align: bottom;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#one .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#one .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+  color: #000000;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: none;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#one .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #000000;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: none;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#one .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#one .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#one .gt_row {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin: 10px;
+  border-top-style: none;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#one .gt_stub {
+  color: #000000;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#one .gt_stub_row_group {
+  color: #000000;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 10px;
+  padding-right: 10px;
+  vertical-align: top;
+}
+
+#one .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#one .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#one .gt_summary_row {
+  color: #000000;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#one .gt_first_summary_row {
+  border-top-style: none;
+  border-top-color: #D3D3D3;
+}
+
+#one .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#one .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#one .gt_grand_summary_row {
+  color: #000000;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#one .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-top-style: none;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#one .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-bottom-style: none;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#one .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#one .gt_table_body {
+  border-top-style: none;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 1.7px;
+  border-bottom-color: #9A9EA1;
+}
+
+#one .gt_footnotes {
+  color: #000000;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#one .gt_footnote {
+  margin: 0px;
+  font-size: 12px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#one .gt_sourcenotes {
+  color: #000000;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#one .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#one .gt_left {
+  text-align: left;
+}
+
+#one .gt_center {
+  text-align: center;
+}
+
+#one .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#one .gt_font_normal {
+  font-weight: normal;
+}
+
+#one .gt_font_bold {
+  font-weight: bold;
+}
+
+#one .gt_font_italic {
+  font-style: italic;
+}
+
+#one .gt_super {
+  font-size: 65%;
+}
+
+#one .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#one .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#one .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#one .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#one .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#one .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#one .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#one .gt_footnote_marks {
+  font-style: normal;
+  font-weight: normal;
+  font-size: 85%;
+  vertical-align: 0px;
+}
+</style>
+<table class="gt_table" style="table-layout: fixed;" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
   <colgroup>
     <col style="width:170px;">
     <col>
     <col>
   </colgroup>
-  <thead style="border-style: none;">
+  <thead>
     
-    <tr class="gt_col_headings" style="border-style: none; border-top-style: none; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 1.3px; border-bottom-color: #9A9EA1; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;">
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="<strong>Characteristic</strong>" style="border-style: none; color: #000000; background-color: #FFFFFF; font-size: 13px; font-weight: bold; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 3px; padding-bottom: 4px; padding-left: 10px; padding-right: 10px; overflow-x: hidden; text-align: left;" bgcolor="#FFFFFF" valign="bottom" align="left"><strong>Characteristic</strong></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>N</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:normal;font-weight:normal;&quot;><sup>a</sup></span>" style="border-style: none; color: #000000; background-color: #FFFFFF; font-size: 13px; font-weight: bold; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 3px; padding-bottom: 4px; padding-left: 10px; padding-right: 10px; overflow-x: hidden; text-align: center;" bgcolor="#FFFFFF" valign="bottom" align="center"><strong>N</strong><span class="gt_footnote_marks" style="position: initial; font-size: 85%; vertical-align: 0px; white-space: nowrap; font-style: normal; font-weight: normal;"><sup>a</sup></span></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>Mean<u> Med </u>(Range) <br/> or N (%)</strong>" style="border-style: none; color: #000000; background-color: #FFFFFF; font-size: 13px; font-weight: bold; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 3px; padding-bottom: 4px; padding-left: 10px; padding-right: 10px; overflow-x: hidden; text-align: center;" bgcolor="#FFFFFF" valign="bottom" align="center"><strong>Mean<u> Med </u>(Range) <br> or N (%)</strong></th>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="<strong>Characteristic</strong>"><strong>Characteristic</strong></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>N</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:normal;font-weight:normal;&quot;><sup>a</sup></span>"><strong>N</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:normal;font-weight:normal;"><sup>a</sup></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>Mean<u> Med </u>(Range) <br/> or N (%)</strong>"><strong>Mean<u> Med </u>(Range) <br> or N (%)</strong></th>
     </tr>
   </thead>
-  <tbody class="gt_table_body" style="border-style: none; border-top-style: none; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 1.7px; border-bottom-color: #9A9EA1;">
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">Age (mean/med)</td>
-<td headers="n" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: center;" valign="middle" align="center">33</td>
-<td headers="stat_0" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" align="left" valign="middle"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">70.0 <u>70.3</u> (64.5 - 76.9)</p>
+  <tbody class="gt_table_body">
+    <tr><td headers="label" class="gt_row gt_left">Age (mean/med)</td>
+<td headers="n" class="gt_row gt_center">33</td>
+<td headers="stat_0" class="gt_row gt_center" style="text-align: left;"><div class="gt_from_md"><p>70.0 <u>70.3</u> (64.5 - 76.9)</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">BMI (mean/med)</td>
-<td headers="n" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: center;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="center">17</td>
-<td headers="stat_0" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" align="left" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">25.4 (22.5 - 35.3)</p>
+    <tr><td headers="label" class="gt_row gt_left gt_striped">BMI (mean/med)</td>
+<td headers="n" class="gt_row gt_center gt_striped">17</td>
+<td headers="stat_0" class="gt_row gt_center gt_striped" style="text-align: left;"><div class="gt_from_md"><p>25.9 <u>25.4</u> (22.5 - 35.3)</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">Female (%)</td>
-<td headers="n" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: center;" valign="middle" align="center">32</td>
-<td headers="stat_0" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" align="left" valign="middle"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">38.0 (3.2 - 72.6)</p>
+    <tr><td headers="label" class="gt_row gt_left">Female (%)</td>
+<td headers="n" class="gt_row gt_center">32</td>
+<td headers="stat_0" class="gt_row gt_center" style="text-align: left;"><div class="gt_from_md"><p>37.8 <u>38.0</u> (3.2 - 72.6)</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">ASA Physical Status, N (%)</td>
-<td headers="n" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: center;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="center">23</td>
-<td headers="stat_0" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" align="left" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)"></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">&nbsp;&nbsp;&nbsp;&nbsp;12</td>
-<td headers="n" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: center;" valign="middle" align="center"></td>
-<td headers="stat_0" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" align="left" valign="middle"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">6 (26.1)</p>
+    <tr><td headers="label" class="gt_row gt_left gt_striped">ASA Physical Status, N (%)</td>
+<td headers="n" class="gt_row gt_center gt_striped">23</td>
+<td headers="stat_0" class="gt_row gt_center gt_striped" style="text-align: left;"></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;12</td>
+<td headers="n" class="gt_row gt_center"></td>
+<td headers="stat_0" class="gt_row gt_center" style="text-align: left;"><div class="gt_from_md"><p>6 (26.1)</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">&nbsp;&nbsp;&nbsp;&nbsp;123</td>
-<td headers="n" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: center;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="center"></td>
-<td headers="stat_0" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" align="left" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">9 (39.1)</p>
+    <tr><td headers="label" class="gt_row gt_left gt_striped">&nbsp;&nbsp;&nbsp;&nbsp;123</td>
+<td headers="n" class="gt_row gt_center gt_striped"></td>
+<td headers="stat_0" class="gt_row gt_center gt_striped" style="text-align: left;"><div class="gt_from_md"><p>9 (39.1)</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">&nbsp;&nbsp;&nbsp;&nbsp;1234</td>
-<td headers="n" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: center;" valign="middle" align="center"></td>
-<td headers="stat_0" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" align="left" valign="middle"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">2 (8.7)</p>
+    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;1234</td>
+<td headers="n" class="gt_row gt_center"></td>
+<td headers="stat_0" class="gt_row gt_center" style="text-align: left;"><div class="gt_from_md"><p>2 (8.7)</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">&nbsp;&nbsp;&nbsp;&nbsp;23</td>
-<td headers="n" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: center;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="center"></td>
-<td headers="stat_0" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" align="left" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">2 (8.7)</p>
+    <tr><td headers="label" class="gt_row gt_left gt_striped">&nbsp;&nbsp;&nbsp;&nbsp;23</td>
+<td headers="n" class="gt_row gt_center gt_striped"></td>
+<td headers="stat_0" class="gt_row gt_center gt_striped" style="text-align: left;"><div class="gt_from_md"><p>2 (8.7)</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">&nbsp;&nbsp;&nbsp;&nbsp;234</td>
-<td headers="n" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: center;" valign="middle" align="center"></td>
-<td headers="stat_0" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" align="left" valign="middle"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">2 (8.7)</p>
+    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;234</td>
+<td headers="n" class="gt_row gt_center"></td>
+<td headers="stat_0" class="gt_row gt_center" style="text-align: left;"><div class="gt_from_md"><p>2 (8.7)</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">&nbsp;&nbsp;&nbsp;&nbsp;3</td>
-<td headers="n" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: center;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="center"></td>
-<td headers="stat_0" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" align="left" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">1 (4.3)</p>
+    <tr><td headers="label" class="gt_row gt_left gt_striped">&nbsp;&nbsp;&nbsp;&nbsp;3</td>
+<td headers="n" class="gt_row gt_center gt_striped"></td>
+<td headers="stat_0" class="gt_row gt_center gt_striped" style="text-align: left;"><div class="gt_from_md"><p>1 (4.3)</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">&nbsp;&nbsp;&nbsp;&nbsp;34</td>
-<td headers="n" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: center;" valign="middle" align="center"></td>
-<td headers="stat_0" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" align="left" valign="middle"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">1 (4.3)</p>
+    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;34</td>
+<td headers="n" class="gt_row gt_center"></td>
+<td headers="stat_0" class="gt_row gt_center" style="text-align: left;"><div class="gt_from_md"><p>1 (4.3)</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">White (%)</td>
-<td headers="n" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: center;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="center">2</td>
-<td headers="stat_0" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" align="left" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">87.1 (83.5 - 90.7)</p>
+    <tr><td headers="label" class="gt_row gt_left gt_striped">White (%)</td>
+<td headers="n" class="gt_row gt_center gt_striped">2</td>
+<td headers="stat_0" class="gt_row gt_center gt_striped" style="text-align: left;"><div class="gt_from_md"><p>87.1 (83.5 - 90.7)</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">Black (%)</td>
-<td headers="n" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: center;" valign="middle" align="center">0</td>
-<td headers="stat_0" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" align="left" valign="middle"><div class="gt_from_md"></div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">Asian (%)</td>
-<td headers="n" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: center;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="center">11</td>
-<td headers="stat_0" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" align="left" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">all 100</p>
+    <tr><td headers="label" class="gt_row gt_left">Black (%)</td>
+<td headers="n" class="gt_row gt_center">0</td>
+<td headers="stat_0" class="gt_row gt_center" style="text-align: left;"><div class="gt_from_md"></div></td></tr>
+    <tr><td headers="label" class="gt_row gt_left gt_striped">Asian (%)</td>
+<td headers="n" class="gt_row gt_center gt_striped">11</td>
+<td headers="stat_0" class="gt_row gt_center gt_striped" style="text-align: left;"><div class="gt_from_md"><p>all 100</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">Preop MMSE (mean/med)</td>
-<td headers="n" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: center;" valign="middle" align="center">19</td>
-<td headers="stat_0" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" align="left" valign="middle"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">28.0 (24.8 - 30.0)</p>
+    <tr><td headers="label" class="gt_row gt_left">Preop MMSE (mean/med)</td>
+<td headers="n" class="gt_row gt_center">19</td>
+<td headers="stat_0" class="gt_row gt_center" style="text-align: left;"><div class="gt_from_md"><p>28.0 <u>28.2</u> (24.8 - 30.0)</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">Cognitive Impairment (%)</td>
-<td headers="n" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: center;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="center">4</td>
-<td headers="stat_0" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" align="left" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">1.1 (0.0 - 4.5)</p>
+    <tr><td headers="label" class="gt_row gt_left gt_striped">Cognitive Impairment (%)</td>
+<td headers="n" class="gt_row gt_center gt_striped">4</td>
+<td headers="stat_0" class="gt_row gt_center gt_striped" style="text-align: left;"><div class="gt_from_md"><p>1.1 <u>0.0</u> (0.0 - 4.5)</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">Diabetes (%)</td>
-<td headers="n" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: center;" valign="middle" align="center">11</td>
-<td headers="stat_0" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" align="left" valign="middle"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">25.3 (8.5 - 46.5)</p>
+    <tr><td headers="label" class="gt_row gt_left">Diabetes (%)</td>
+<td headers="n" class="gt_row gt_center">11</td>
+<td headers="stat_0" class="gt_row gt_center" style="text-align: left;"><div class="gt_from_md"><p>25.3 <u>22.3</u> (8.5 - 46.5)</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">Cardiac (%)</td>
-<td headers="n" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: center;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="center">9</td>
-<td headers="stat_0" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" align="left" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">13.8 (0.0 - 36.0)</p>
+    <tr><td headers="label" class="gt_row gt_left gt_striped">Cardiac (%)</td>
+<td headers="n" class="gt_row gt_center gt_striped">9</td>
+<td headers="stat_0" class="gt_row gt_center gt_striped" style="text-align: left;"><div class="gt_from_md"><p>13.8 <u>13.5</u> (0.0 - 36.0)</p>
 </div></td></tr>
   </tbody>
   
-  <tfoot class="gt_footnotes" style="border-style: none; color: #000000; background-color: #FFFFFF; border-bottom-style: none; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3;" bgcolor="#FFFFFF">
-    <tr style="border-style: none;">
-      <td class="gt_footnote" colspan="3" style="border-style: none; margin: 0px; font-size: 12px; padding-top: 0px; padding-bottom: 0px; padding-left: 10px; padding-right: 10px;"><span class="gt_footnote_marks" style="position: initial; font-size: 85%; vertical-align: 0px; white-space: nowrap; font-style: normal; font-weight: normal;"><sup>a</sup></span> N of the 34 trials reporting characteristic allowing description.</td>
+  <tfoot class="gt_footnotes">
+    <tr>
+      <td class="gt_footnote" colspan="3"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:normal;font-weight:normal;"><sup>a</sup></span> N of the 34 trials reporting characteristic allowing description.</td>
     </tr>
   </tfoot>
 </table>
@@ -2433,88 +2878,533 @@ ul.task-list li input[type="checkbox"] {
 <div class="cell-output-display quarto-layout-cell" style="flex-basis: 35.0%;justify-content: center;">
 
 <div id="one" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-  
-  <table class="gt_table" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: 'Source Sans Pro'; display: table; border-collapse: collapse; line-height: normal; margin-left: 0; margin-right: auto; color: #000000; font-size: 13px; font-weight: normal; font-style: none; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 1.7px; border-top-color: #9A9EA1; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: none; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3; table-layout: fixed;" data-quarto-disable-processing="false" data-quarto-bootstrap="false" bgcolor="#FFFFFF">
+<style>#one table {
+  font-family: 'Source Sans Pro';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#one thead, #one tbody, #one tfoot, #one tr, #one td, #one th {
+  border-style: none;
+}
+
+#one p {
+  margin: 0;
+  padding: 0;
+}
+
+#one .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: 0;
+  margin-right: auto;
+  color: #000000;
+  font-size: 13px;
+  font-weight: normal;
+  font-style: none;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 1.7px;
+  border-top-color: #9A9EA1;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#one .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#one .gt_title {
+  color: #000000;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#one .gt_subtitle {
+  color: #000000;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#one .gt_heading {
+  background-color: #FFFFFF;
+  text-align: left;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#one .gt_bottom_border {
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#one .gt_col_headings {
+  border-top-style: none;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 1.3px;
+  border-bottom-color: #9A9EA1;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#one .gt_col_heading {
+  color: #000000;
+  background-color: #FFFFFF;
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 3px;
+  padding-bottom: 4px;
+  padding-left: 10px;
+  padding-right: 10px;
+  overflow-x: hidden;
+}
+
+#one .gt_column_spanner_outer {
+  color: #000000;
+  background-color: #FFFFFF;
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#one .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#one .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#one .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 1.3px;
+  border-bottom-color: #9A9EA1;
+  vertical-align: bottom;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#one .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#one .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+  color: #000000;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: none;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#one .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #000000;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: none;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#one .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#one .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#one .gt_row {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin: 10px;
+  border-top-style: none;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#one .gt_stub {
+  color: #000000;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#one .gt_stub_row_group {
+  color: #000000;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 10px;
+  padding-right: 10px;
+  vertical-align: top;
+}
+
+#one .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#one .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#one .gt_summary_row {
+  color: #000000;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#one .gt_first_summary_row {
+  border-top-style: none;
+  border-top-color: #D3D3D3;
+}
+
+#one .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#one .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#one .gt_grand_summary_row {
+  color: #000000;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#one .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-top-style: none;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#one .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-bottom-style: none;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#one .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#one .gt_table_body {
+  border-top-style: none;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 1.7px;
+  border-bottom-color: #9A9EA1;
+}
+
+#one .gt_footnotes {
+  color: #000000;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#one .gt_footnote {
+  margin: 0px;
+  font-size: 12px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#one .gt_sourcenotes {
+  color: #000000;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#one .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#one .gt_left {
+  text-align: left;
+}
+
+#one .gt_center {
+  text-align: center;
+}
+
+#one .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#one .gt_font_normal {
+  font-weight: normal;
+}
+
+#one .gt_font_bold {
+  font-weight: bold;
+}
+
+#one .gt_font_italic {
+  font-style: italic;
+}
+
+#one .gt_super {
+  font-size: 65%;
+}
+
+#one .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#one .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#one .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#one .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#one .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#one .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#one .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#one .gt_footnote_marks {
+  font-style: normal;
+  font-weight: normal;
+  font-size: 85%;
+  vertical-align: 0px;
+}
+</style>
+<table class="gt_table" style="table-layout: fixed;" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
   <colgroup>
     <col style="width:170px;">
     <col>
     <col>
   </colgroup>
-  <thead style="border-style: none;">
+  <thead>
     
-    <tr class="gt_col_headings" style="border-style: none; border-top-style: none; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 1.3px; border-bottom-color: #9A9EA1; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;">
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="<strong>Characteristic</strong>" style="border-style: none; color: #000000; background-color: #FFFFFF; font-size: 13px; font-weight: bold; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 3px; padding-bottom: 4px; padding-left: 10px; padding-right: 10px; overflow-x: hidden; text-align: left;" bgcolor="#FFFFFF" valign="bottom" align="left"><strong>Characteristic</strong></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>N</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:normal;font-weight:normal;&quot;><sup>a</sup></span>" style="border-style: none; color: #000000; background-color: #FFFFFF; font-size: 13px; font-weight: bold; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 3px; padding-bottom: 4px; padding-left: 10px; padding-right: 10px; overflow-x: hidden; text-align: center;" bgcolor="#FFFFFF" valign="bottom" align="center"><strong>N</strong><span class="gt_footnote_marks" style="position: initial; font-size: 85%; vertical-align: 0px; white-space: nowrap; font-style: normal; font-weight: normal;"><sup>a</sup></span></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>Mean<u> Med </u>(Range) <br/> or N (%)</strong>" style="border-style: none; color: #000000; background-color: #FFFFFF; font-size: 13px; font-weight: bold; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 3px; padding-bottom: 4px; padding-left: 10px; padding-right: 10px; overflow-x: hidden; text-align: center;" bgcolor="#FFFFFF" valign="bottom" align="center"><strong>Mean<u> Med </u>(Range) <br> or N (%)</strong></th>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="<strong>Characteristic</strong>"><strong>Characteristic</strong></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>N</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:normal;font-weight:normal;&quot;><sup>a</sup></span>"><strong>N</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:normal;font-weight:normal;"><sup>a</sup></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>Mean<u> Med </u>(Range) <br/> or N (%)</strong>"><strong>Mean<u> Med </u>(Range) <br> or N (%)</strong></th>
     </tr>
   </thead>
-  <tbody class="gt_table_body" style="border-style: none; border-top-style: none; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 1.7px; border-bottom-color: #9A9EA1;">
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">Age (mean/med)</td>
-<td headers="n" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: center;" valign="middle" align="center">17</td>
-<td headers="stat_0" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" align="left" valign="middle"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">70.4 <u>70.0</u> (61.6 - 84.8)</p>
+  <tbody class="gt_table_body">
+    <tr><td headers="label" class="gt_row gt_left">Age (mean/med)</td>
+<td headers="n" class="gt_row gt_center">17</td>
+<td headers="stat_0" class="gt_row gt_center" style="text-align: left;"><div class="gt_from_md"><p>70.4 <u>70.0</u> (61.6 - 84.8)</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">BMI (mean/med)</td>
-<td headers="n" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: center;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="center">7</td>
-<td headers="stat_0" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" align="left" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">24.0 (21.6 - 28.3)</p>
+    <tr><td headers="label" class="gt_row gt_left gt_striped">BMI (mean/med)</td>
+<td headers="n" class="gt_row gt_center gt_striped">7</td>
+<td headers="stat_0" class="gt_row gt_center gt_striped" style="text-align: left;"><div class="gt_from_md"><p>24.4 <u>24.0</u> (21.6 - 28.3)</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">Female (%)</td>
-<td headers="n" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: center;" valign="middle" align="center">15</td>
-<td headers="stat_0" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" align="left" valign="middle"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">46.1 (32.2 - 81.4)</p>
+    <tr><td headers="label" class="gt_row gt_left">Female (%)</td>
+<td headers="n" class="gt_row gt_center">15</td>
+<td headers="stat_0" class="gt_row gt_center" style="text-align: left;"><div class="gt_from_md"><p>47.7 <u>46.1</u> (32.2 - 81.4)</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">ASA Physical Status, N (%)</td>
-<td headers="n" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: center;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="center">10</td>
-<td headers="stat_0" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" align="left" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)"></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">&nbsp;&nbsp;&nbsp;&nbsp;12</td>
-<td headers="n" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: center;" valign="middle" align="center"></td>
-<td headers="stat_0" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" align="left" valign="middle"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">1 (10.0)</p>
+    <tr><td headers="label" class="gt_row gt_left gt_striped">ASA Physical Status, N (%)</td>
+<td headers="n" class="gt_row gt_center gt_striped">10</td>
+<td headers="stat_0" class="gt_row gt_center gt_striped" style="text-align: left;"></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;12</td>
+<td headers="n" class="gt_row gt_center"></td>
+<td headers="stat_0" class="gt_row gt_center" style="text-align: left;"><div class="gt_from_md"><p>1 (10.0)</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">&nbsp;&nbsp;&nbsp;&nbsp;123</td>
-<td headers="n" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: center;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="center"></td>
-<td headers="stat_0" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" align="left" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">3 (30.0)</p>
+    <tr><td headers="label" class="gt_row gt_left gt_striped">&nbsp;&nbsp;&nbsp;&nbsp;123</td>
+<td headers="n" class="gt_row gt_center gt_striped"></td>
+<td headers="stat_0" class="gt_row gt_center gt_striped" style="text-align: left;"><div class="gt_from_md"><p>3 (30.0)</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">&nbsp;&nbsp;&nbsp;&nbsp;1234</td>
-<td headers="n" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: center;" valign="middle" align="center"></td>
-<td headers="stat_0" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" align="left" valign="middle"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">4 (40.0)</p>
+    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;1234</td>
+<td headers="n" class="gt_row gt_center"></td>
+<td headers="stat_0" class="gt_row gt_center" style="text-align: left;"><div class="gt_from_md"><p>4 (40.0)</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">&nbsp;&nbsp;&nbsp;&nbsp;34</td>
-<td headers="n" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: center;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="center"></td>
-<td headers="stat_0" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" align="left" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">1 (10.0)</p>
+    <tr><td headers="label" class="gt_row gt_left gt_striped">&nbsp;&nbsp;&nbsp;&nbsp;34</td>
+<td headers="n" class="gt_row gt_center gt_striped"></td>
+<td headers="stat_0" class="gt_row gt_center gt_striped" style="text-align: left;"><div class="gt_from_md"><p>1 (10.0)</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">&nbsp;&nbsp;&nbsp;&nbsp;4</td>
-<td headers="n" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: center;" valign="middle" align="center"></td>
-<td headers="stat_0" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" align="left" valign="middle"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">1 (10.0)</p>
+    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;4</td>
+<td headers="n" class="gt_row gt_center"></td>
+<td headers="stat_0" class="gt_row gt_center" style="text-align: left;"><div class="gt_from_md"><p>1 (10.0)</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">White (%)</td>
-<td headers="n" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: center;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="center">0</td>
-<td headers="stat_0" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" align="left" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)"><div class="gt_from_md"></div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">Black (%)</td>
-<td headers="n" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: center;" valign="middle" align="center">0</td>
-<td headers="stat_0" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" align="left" valign="middle"><div class="gt_from_md"></div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">Asian (%)</td>
-<td headers="n" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: center;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="center">5</td>
-<td headers="stat_0" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" align="left" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">all 100</p>
+    <tr><td headers="label" class="gt_row gt_left gt_striped">White (%)</td>
+<td headers="n" class="gt_row gt_center gt_striped">0</td>
+<td headers="stat_0" class="gt_row gt_center gt_striped" style="text-align: left;"><div class="gt_from_md"></div></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">Black (%)</td>
+<td headers="n" class="gt_row gt_center">0</td>
+<td headers="stat_0" class="gt_row gt_center" style="text-align: left;"><div class="gt_from_md"></div></td></tr>
+    <tr><td headers="label" class="gt_row gt_left gt_striped">Asian (%)</td>
+<td headers="n" class="gt_row gt_center gt_striped">5</td>
+<td headers="stat_0" class="gt_row gt_center gt_striped" style="text-align: left;"><div class="gt_from_md"><p>all 100</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">Preop MMSE (mean/med)</td>
-<td headers="n" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: center;" valign="middle" align="center">3</td>
-<td headers="stat_0" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" align="left" valign="middle"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">27.4 (26.0 - 28.2)</p>
+    <tr><td headers="label" class="gt_row gt_left">Preop MMSE (mean/med)</td>
+<td headers="n" class="gt_row gt_center">3</td>
+<td headers="stat_0" class="gt_row gt_center" style="text-align: left;"><div class="gt_from_md"><p>27.4 <u>28.1</u> (26.0 - 28.2)</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">Cognitive Impairment (%)</td>
-<td headers="n" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: center;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="center">3</td>
-<td headers="stat_0" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" align="left" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">14.5 (2.5 - 23.5)</p>
+    <tr><td headers="label" class="gt_row gt_left gt_striped">Cognitive Impairment (%)</td>
+<td headers="n" class="gt_row gt_center gt_striped">3</td>
+<td headers="stat_0" class="gt_row gt_center gt_striped" style="text-align: left;"><div class="gt_from_md"><p>14.5 <u>17.4</u> (2.5 - 23.5)</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">Diabetes (%)</td>
-<td headers="n" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: center;" valign="middle" align="center">11</td>
-<td headers="stat_0" class="gt_row gt_center" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" align="left" valign="middle"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">26.6 (8.7 - 50.8)</p>
+    <tr><td headers="label" class="gt_row gt_left">Diabetes (%)</td>
+<td headers="n" class="gt_row gt_center">11</td>
+<td headers="stat_0" class="gt_row gt_center" style="text-align: left;"><div class="gt_from_md"><p>26.6 <u>23.6</u> (8.7 - 50.8)</p>
 </div></td></tr>
-    <tr style="border-style: none;"><td headers="label" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">Cardiac (%)</td>
-<td headers="n" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: center;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="center">9</td>
-<td headers="stat_0" class="gt_row gt_center gt_striped" style="border-style: none; padding-top: 2px; padding-bottom: 2px; padding-left: 10px; padding-right: 10px; margin: 10px; border-top-style: none; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" align="left" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)"><div class="gt_from_md"><p style="margin: 0; padding: 0; margin-top: 0; margin-bottom: 0;">12.3 (3.0 - 23.8)</p>
+    <tr><td headers="label" class="gt_row gt_left gt_striped">Cardiac (%)</td>
+<td headers="n" class="gt_row gt_center gt_striped">9</td>
+<td headers="stat_0" class="gt_row gt_center gt_striped" style="text-align: left;"><div class="gt_from_md"><p>12.3 <u>13.7</u> (3.0 - 23.8)</p>
 </div></td></tr>
   </tbody>
   
-  <tfoot class="gt_footnotes" style="border-style: none; color: #000000; background-color: #FFFFFF; border-bottom-style: none; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3;" bgcolor="#FFFFFF">
-    <tr style="border-style: none;">
-      <td class="gt_footnote" colspan="3" style="border-style: none; margin: 0px; font-size: 12px; padding-top: 0px; padding-bottom: 0px; padding-left: 10px; padding-right: 10px;"><span class="gt_footnote_marks" style="position: initial; font-size: 85%; vertical-align: 0px; white-space: nowrap; font-style: normal; font-weight: normal;"><sup>a</sup></span> N of the 17 studies reporting characteristic allowing description.</td>
+  <tfoot class="gt_footnotes">
+    <tr>
+      <td class="gt_footnote" colspan="3"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:normal;font-weight:normal;"><sup>a</sup></span> N of the 17 studies reporting characteristic allowing description.</td>
     </tr>
   </tfoot>
 </table>

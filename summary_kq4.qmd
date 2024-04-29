@@ -36,6 +36,8 @@ linked_refid <- study_char_dat |>
   slice(2) |> 
   pull(refid) 
 
+all_est <- "{mean} <u>{median}</u> ({min} - {max})"
+
 ```
 
 ## Randomized Clinical Trials
@@ -145,9 +147,9 @@ pt_char_tab |>
       # malnourish ~ 1
     ),
     statistic = list(
-      age_mean_med ~ "{mean} <u>{median}</u> ({min} - {max})",
-      bmi_mean_med ~ "{median} ({min} - {max})",
-      female_perc ~ "{median} ({min} - {max})",
+      age_mean_med ~ all_est,
+      bmi_mean_med ~ all_est,
+      female_perc ~ all_est,
       asa ~ "{n} ({p})",
       white ~ "{median} ({min} - {max})",
       black ~ "",
@@ -156,10 +158,10 @@ pt_char_tab |>
       # living_dependent ~ "{mean} ({min} - {max})",
       # housing_home ~ "{mean} ({min} - {max})",
       # housing_assisted ~ "{mean} ({min} - {max})",
-      pre_mmse_mean_med ~ "{mean} ({min} - {max})",
-      cog_imp ~ "{mean} ({min} - {max})",
-      dm ~ "{mean} ({min} - {max})",
-      cardiac ~ "{mean} ({min} - {max})"
+      pre_mmse_mean_med ~ all_est,
+      cog_imp ~ all_est,
+      dm ~ all_est,
+      cardiac ~ all_est
       # malnourish ~ "{mean} ({min} - {max})"
     ),
     type = list(
@@ -195,8 +197,7 @@ pt_char_tab |>
   fmt_markdown(stat_0) |>  
   gt_theme_mg() |>
   tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(stat_0))) |>
-  tab_footnote(paste0("N of the ", length(pt_char_tab_refids_rct(kq4_refid)), " trials reporting characteristic allowing description."), locations = cells_column_labels(columns = c(n)), placement = "right") |> 
-  as_raw_html()
+  tab_footnote(paste0("N of the ", length(pt_char_tab_refids_rct(kq4_refid)), " trials reporting characteristic allowing description."), locations = cells_column_labels(columns = c(n)), placement = "right") 
 
 ```
 
@@ -307,9 +308,9 @@ pt_char_tab |>
       # malnourish ~ 1
     ),
     statistic = list(
-      age_mean_med ~ "{mean} <u>{median}</u> ({min} - {max})",
-      bmi_mean_med ~ "{median} ({min} - {max})",
-      female_perc ~ "{median} ({min} - {max})",
+      age_mean_med ~ all_est,
+      bmi_mean_med ~ all_est,
+      female_perc ~ all_est,
       asa ~ "{n} ({p})",
       white ~ "",
       black ~ "",
@@ -318,10 +319,10 @@ pt_char_tab |>
       # living_dependent ~ "{mean} ({min} - {max})",
       # housing_home ~ "{mean} ({min} - {max})",
       # housing_assisted ~ "{mean} ({min} - {max})",
-      pre_mmse_mean_med ~ "{mean} ({min} - {max})",
-      cog_imp ~ "{mean} ({min} - {max})",
-      dm ~ "{mean} ({min} - {max})",
-      cardiac ~ "{mean} ({min} - {max})"
+      pre_mmse_mean_med ~ all_est,
+      cog_imp ~ all_est,
+      dm ~ all_est,
+      cardiac ~ all_est
       # malnourish ~ "{mean} ({min} - {max})"
     ),
     type = list(
@@ -357,73 +358,8 @@ pt_char_tab |>
   fmt_markdown(stat_0) |>  
   gt_theme_mg() |>
   tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(stat_0))) |>
-  tab_footnote(paste0("N of the ", length(pt_char_tab_refids_nrsi(kq4_refid)), " studies reporting characteristic allowing description."), locations = cells_column_labels(columns = c(n)), placement = "right") |> 
-  as_raw_html()
+  tab_footnote(paste0("N of the ", length(pt_char_tab_refids_nrsi(kq4_refid)), " studies reporting characteristic allowing description."), locations = cells_column_labels(columns = c(n)), placement = "right") 
 
 ```
 
 
-```{r old_nrsi}
-#| eval: false
-
-pt_char_tab |>
-  select(age_mean_med, bmi_mean_med, female_perc, asa, white, black, asian, pre_mmse_mean_med, dm, cardiac) |>
-  mutate(
-    asian = ifelse(asian == 100, "100%", NA),
-    asa = ifelse(asa == "NR", NA, asa),
-  ) |> 
-  tbl_summary(
-    label = list(
-      age_mean_med = "Age (mean or median)",
-      bmi_mean_med = "BMI (mean or median)",
-      female_perc = "Female (%)",
-      asa = "ASA Physical Status",
-      white = "White (%)",
-      black = "Black (%)",
-      asian = "Asian",
-      pre_mmse_mean_med = "Preoperative MMSE (mean or median)",
-      dm = "Diabetes (%)",
-      cardiac = "Cardiac (%)"
-    ),
-    digits = list(
-      age_mean_med ~ 1,
-      bmi_mean_med ~ 1,
-      female_perc ~ 1,
-      asa ~ 1,
-      white ~ 1,
-      black ~ 1,
-      asian ~ 0,
-      pre_mmse_mean_med ~ 1,
-      dm ~ 1,
-      cardiac ~ 1
-    ),
-    statistic = list(
-      age_mean_med ~ "{mean} [<u>{median}</u>] ({min} - {max})",
-      bmi_mean_med ~ "{median} ({min} - {max})",
-      female_perc ~ "{median} ({min} - {max})",
-      asa ~ "{n} ({p}%)",
-      white ~ " — ",
-      black ~ " — ",
-      asian ~ "{n}",
-      pre_mmse_mean_med ~ "{median} ({min} - {max})",
-      dm ~ "{median} ({min} - {max})",
-      cardiac ~ "{median} ({min} - {max})"
-    ),
-    type = list(
-      age_mean_med ~ "continuous",
-      bmi_mean_med ~ "continuous",
-      female_perc ~ "continuous",
-      asa ~ "categorical",
-      white ~ "dichotomous",
-      black ~ "dichotomous",
-      asian ~ "categorical",
-      pre_mmse_mean_med ~ "continuous",
-      dm ~ "continuous",
-      cardiac ~ "continuous"
-    ),
-    missing_text = "Not reported"
-  ) |>
-  as_gt(id = "one") |> 
-  fmt_markdown(stat_0) |>
-  gt_theme_mg()
-```

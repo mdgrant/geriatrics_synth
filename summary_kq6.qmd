@@ -37,6 +37,8 @@ asa_class <- asa_combine |>
   select(refid, asa) |>
   slice(1, .by = "refid")
 
+all_est <- "{mean} <u>{median}</u> ({min} - {max})"
+
 ```
 
 ```{r drugs_by_arm}
@@ -299,22 +301,22 @@ pt_char_tab |>
       # malnourish ~ 1
     ),
     statistic = list(
-      age_mean_med ~ "{mean} <u>{median}</u> ({min} - {max})",
-      bmi_mean_med ~ "{median} ({min} - {max})",
-      female_perc ~ "{median} ({min} - {max})",
+      age_mean_med ~ all_est,
+      bmi_mean_med ~ all_est,
+      female_perc ~ all_est,
       asa ~ "{n} ({p})",
-      white ~ "{median} ({min} - {max})",
+      white ~ all_est,
       black ~ "{median}",
-      asian ~ "{median} ({min} - {max})",
-      # living_independent ~ "{mean} ({min} - {max})",
-      # living_dependent ~ "{mean} ({min} - {max})",
-      # housing_home ~ "{mean} ({min} - {max})",
-      # housing_assisted ~ "{mean} ({min} - {max})",
-      pre_mmse_mean_med ~ "{mean} ({min} - {max})",
-      cog_imp ~ "{mean} ({min} - {max})",
-      dm ~ "{mean} ({min} - {max})",
-      cardiac ~ "{mean} ({min} - {max})"
-      # malnourish ~ "{mean} ({min} - {max})"
+      asian ~ all_est,
+      # living_independent ~ "{mean} <u>{median}</u> ({min} - {max})",
+      # living_dependent ~ "{mean} <u>{median}</u> ({min} - {max})",
+      # housing_home ~ "{mean} <u>{median}</u> ({min} - {max})",
+      # housing_assisted ~ "{mean} <u>{median}</u> ({min} - {max})",
+      pre_mmse_mean_med ~ all_est,
+      cog_imp ~ all_est,
+      dm ~ all_est,
+      cardiac ~ all_est
+      # malnourish ~ "{mean} <u>{median}</u> ({min} - {max})"
     ),
     type = list(
       age_mean_med ~ "continuous",
@@ -465,21 +467,21 @@ pt_char_tab |>
     ),
     statistic = list(
       age_mean_med ~ "{mean} <u>{median}</u> ({min} - {max})",
-      bmi_mean_med ~ "{median} ({min} - {max})",
-      female_perc ~ "{median} ({min} - {max})",
+      bmi_mean_med ~ "{mean} <u>{median}</u> ({min} - {max})",
+      female_perc ~ "{mean} <u>{median}</u> ({min} - {max})",
       asa ~ "{n} ({p})",
-      white ~ "{median} ({min} - {max})",
+      white ~ "{mean} ({min} - {max})",
       black ~ "{mean}",
-      asian ~ "{median} ({min} - {max})",
-      # living_independent ~ "{mean} ({min} - {max})",
-      # living_dependent ~ "{mean} ({min} - {max})",
-      # housing_home ~ "{mean} ({min} - {max})",
-      # housing_assisted ~ "{mean} ({min} - {max})",
-      pre_mmse_mean_med ~ "{mean} ({min} - {max})",
-      cog_imp ~ "{mean}",
-      dm ~ "{mean} ({min} - {max})",
-      cardiac ~ "{mean} ({min} - {max})"
-      # malnourish ~ "{mean} ({min} - {max})"
+      asian ~ "{mean} <u>{median}</u> ({min} - {max})",
+      # living_independent ~ "{mean} <u>{median}</u> ({min} - {max})",
+      # living_dependent ~ "{mean} <u>{median}</u> ({min} - {max})",
+      # housing_home ~ "{mean} <u>{median}</u> ({min} - {max})",
+      # housing_assisted ~ "{mean} <u>{median}</u> ({min} - {max})",
+      pre_mmse_mean_med ~ "{mean} <u>{median}</u> ({min} - {max})",
+      cog_imp ~ "all {mean}",
+      dm ~ "{mean} <u>{median}</u> ({min} - {max})",
+      cardiac ~ "{mean} <u>{median}</u>  ({min} - {max})"
+      # malnourish ~ "{mean} <u>{median}</u> ({min} - {max})"
     ),
     type = list(
       age_mean_med ~ "continuous",
@@ -636,15 +638,15 @@ pt_char_tab |>
       white ~ "{median}",
       black ~ "{median}",
       asian ~ "all {median}",
-      # living_independent ~ "{mean} ({min} - {max})",
-      # living_dependent ~ "{mean} ({min} - {max})",
-      # housing_home ~ "{mean} ({min} - {max})",
-      # housing_assisted ~ "{mean} ({min} - {max})",
-      pre_mmse_mean_med ~ "{mean} ({min} - {max})",
-      cog_imp ~ "{mean} ({min} - {max})",
-      dm ~ "{mean} ({min} - {max})",
-      cardiac ~ "{mean} ({min} - {max})"
-      # malnourish ~ "{mean} ({min} - {max})"
+      # living_independent ~ "{mean} <u>{median}</u> ({min} - {max})",
+      # living_dependent ~ "{mean} <u>{median}</u> ({min} - {max})",
+      # housing_home ~ "{mean} <u>{median}</u> ({min} - {max})",
+      # housing_assisted ~ "{mean} <u>{median}</u> ({min} - {max})",
+      pre_mmse_mean_med ~ "{mean} <u>{median}</u> ({min} - {max})",
+      cog_imp ~ "{mean} <u>{median}</u> ({min} - {max})",
+      dm ~ "{mean} <u>{median}</u> ({min} - {max})",
+      cardiac ~ "{mean} <u>{median}</u> ({min} - {max})"
+      # malnourish ~ "{mean} <u>{median}</u> ({min} - {max})"
     ),
     type = list(
       age_mean_med ~ "continuous",
@@ -793,22 +795,22 @@ pt_char_tab |>
       # malnourish ~ 1
     ),
     statistic = list(
-      age_mean_med ~ "{mean} <u>{median}</u> ({min} - {max})",
-      bmi_mean_med ~ "{median} ({min} - {max})",
-      female_perc ~ "{median} ({min} - {max})",
+      age_mean_med ~ all_est,
+      bmi_mean_med ~ "{mean}",
+      female_perc ~ all_est,
       asa ~ "{n} ({p})",
       white ~ "",
       black ~ "",
       asian ~ "all {median}",
-      # living_independent ~ "{mean} ({min} - {max})",
-      # living_dependent ~ "{mean} ({min} - {max})",
-      # housing_home ~ "{mean} ({min} - {max})",
-      # housing_assisted ~ "{mean} ({min} - {max})",
+      # living_independent ~ "{mean} <u>{median}</u> ({min} - {max})",
+      # living_dependent ~ "{mean} <u>{median}</u> ({min} - {max})",
+      # housing_home ~ "{mean} <u>{median}</u> ({min} - {max})",
+      # housing_assisted ~ "{mean} <u>{median}</u> ({min} - {max})",
       pre_mmse_mean_med ~ "",
       cog_imp ~ "{mean} ({min} - {max})",
-      dm ~ "{mean} ({min} - {max})",
+      dm ~ all_est,
       cardiac ~ "{mean} ({min} - {max})"
-      # malnourish ~ "{mean} ({min} - {max})"
+      # malnourish ~ "{mean} <u>{median}</u> ({min} - {max})"
     ),
     type = list(
       age_mean_med ~ "continuous",
@@ -843,8 +845,7 @@ pt_char_tab |>
   fmt_markdown(stat_0) |>  
   gt_theme_mg() |>
   tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(stat_0))) |>
-  tab_footnote(paste0("N of the ", length(pt_char_tab_refids_nrsi(mel_ram_refid)), " studies reporting characteristic allowing description."), locations = cells_column_labels(columns = c(n)), placement = "right") |> 
-  as_raw_html()
+  tab_footnote(paste0("N of the ", length(pt_char_tab_refids_nrsi(mel_ram_refid)), " studies reporting characteristic allowing description."), locations = cells_column_labels(columns = c(n)), placement = "right") 
   # tab_info()
 
 ```
@@ -958,22 +959,22 @@ pt_char_tab |>
       # malnourish ~ 1
     ),
     statistic = list(
-      age_mean_med ~ "{mean} <u>{median}</u> ({min} - {max})",
-      bmi_mean_med ~ "{median} ({min} - {max})",
-      female_perc ~ "{median} ({min} - {max})",
+      age_mean_med ~ all_est,
+      bmi_mean_med ~ all_est,
+      female_perc ~ all_est,
       asa ~ "{n} ({p})",
       white ~ "{median}",
       black ~ "",
       asian ~ "all {median}",
-      # living_independent ~ "{mean} ({min} - {max})",
-      # living_dependent ~ "{mean} ({min} - {max})",
-      # housing_home ~ "{mean} ({min} - {max})",
-      # housing_assisted ~ "{mean} ({min} - {max})",
-      pre_mmse_mean_med ~ "{mean} ({min} - {max})",
+      # living_independent ~ "{mean} <u>{median}</u> ({min} - {max})",
+      # living_dependent ~ "{mean} <u>{median}</u> ({min} - {max})",
+      # housing_home ~ "{mean} <u>{median}</u> ({min} - {max})",
+      # housing_assisted ~ "{mean} <u>{median}</u> ({min} - {max})",
+      pre_mmse_mean_med ~ all_est,
       cog_imp ~ "all {mean}",
-      dm ~ "{mean} ({min} - {max})",
+      dm ~ all_est,
       cardiac ~ "{mean} ({min} - {max})"
-      # malnourish ~ "{mean} ({min} - {max})"
+      # malnourish ~ "{mean} <u>{median}</u> ({min} - {max})"
     ),
     type = list(
       age_mean_med ~ "continuous",
@@ -1010,8 +1011,7 @@ pt_char_tab |>
   tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(stat_0))) |>
   # tab_footnote("Number of trials reporting from the 9 included (11 publications).", locations = cells_column_labels(columns = c(n)), placement = "right") |>
   # tab_footnote("Mean, median, or range of the mean/med reported in trials.", locations = cells_column_labels(columns = c(stat_0)), placement = "right") |>
-  tab_footnote(paste0("N of the ", length(pt_char_tab_refids_rct(ket_refid)), " trials reporting characteristic allowing description."), locations = cells_column_labels(columns = c(n)), placement = "right") |> 
-  as_raw_html()
+  tab_footnote(paste0("N of the ", length(pt_char_tab_refids_rct(ket_refid)), " trials reporting characteristic allowing description."), locations = cells_column_labels(columns = c(n)), placement = "right")
 
 ```
 
@@ -1129,15 +1129,15 @@ pt_char_tab |>
       white ~ "",
       black ~ "{median}",
       asian ~ "",
-      # living_independent ~ "{mean} ({min} - {max})",
-      # living_dependent ~ "{mean} ({min} - {max})",
-      # housing_home ~ "{mean} ({min} - {max})",
-      # housing_assisted ~ "{mean} ({min} - {max})",
+      # living_independent ~ "{mean} <u>{median}</u> ({min} - {max})",
+      # living_dependent ~ "{mean} <u>{median}</u> ({min} - {max})",
+      # housing_home ~ "{mean} <u>{median}</u> ({min} - {max})",
+      # housing_assisted ~ "{mean} <u>{median}</u> ({min} - {max})",
       pre_mmse_mean_med ~ "",
       cog_imp ~ "{mean}",
       dm ~ "",
       cardiac ~ ""
-      # malnourish ~ "{mean} ({min} - {max})"
+      # malnourish ~ "{mean} <u>{median}</u> ({min} - {max})"
     ),
     type = list(
       age_mean_med ~ "continuous",

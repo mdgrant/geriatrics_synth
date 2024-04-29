@@ -68,6 +68,8 @@ asa_class <- asa_combine |>
   select(refid, asa) |>
   slice(1, .by = "refid")
 
+all_est <- "{mean} <u>{median}</u> ({min} - {max})"
+
 ```
 
 ## Randomized Clinical Trials
@@ -178,8 +180,8 @@ pt_char_tab |>
     ),
     statistic = list(
       age_mean_med ~ "{mean} <u>{median}</u> ({min} - {max})",
-      bmi_mean_med ~ "{median} ({min} - {max})",
-      female_perc ~ "{median} ({min} - {max})",
+      bmi_mean_med ~ all_est,
+      female_perc ~ all_est,
       asa ~ "{n} ({p})",
       white ~ "{median} ({min} - {max})",
       black ~ "{median} ({min} - {max})",
@@ -188,10 +190,10 @@ pt_char_tab |>
       # living_dependent ~ "{mean} ({min} - {max})",
       # housing_home ~ "{mean} ({min} - {max})",
       # housing_assisted ~ "{mean} ({min} - {max})",
-      pre_mmse_mean_med ~ "{mean} ({min} - {max})",
-      cog_imp ~ "{mean} ({min} - {max})",
-      dm ~ "{mean} ({min} - {max})",
-      cardiac ~ "{mean} ({min} - {max})"
+      pre_mmse_mean_med ~ all_est,
+      cog_imp ~ all_est,
+      dm ~ all_est,
+      cardiac ~ all_est
       # malnourish ~ "{mean} ({min} - {max})"
     ),
     type = list(
@@ -230,8 +232,7 @@ pt_char_tab |>
   # tab_footnote("Number of trials reporting from the 9 included (11 publications).", locations = cells_column_labels(columns = c(n)), placement = "right") |>
   # tab_footnote("Mean, median, or range of the mean/med reported in trials.", locations = cells_column_labels(columns = c(stat_0)), placement = "right") |>
   tab_footnote(paste0("N of the ", length(pt_char_tab_refids_rct(kq3_refid)), " studies reporting characteristic allowing description."), locations = cells_column_labels(columns = c(n)), placement = "right") |> 
-  tab_footnote("Shin 2020, Li 2022, and Neuman 2021 included patients with dementia.", locations = cells_body(columns = label, rows = label == "Dementia (%)"), placement = "right") |> 
-  as_raw_html()
+  tab_footnote("Shin 2020, Li 2022, and Neuman 2021 included patients with dementia.", locations = cells_body(columns = label, rows = label == "Dementia (%)"), placement = "right") 
 
 ```
 
