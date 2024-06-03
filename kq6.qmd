@@ -2513,7 +2513,7 @@ dev.off()
 
 temp_limit_meta <- limitmeta(temp_meta)
 
-png("assets/mel_ram_plac_meta_funnel.png", width = 8.5, height = 5.5, units = "in", res = 300)
+png("assets/kq6_mel_ram_plac_meta_funnel.png", width = 8.5, height = 5.5, units = "in", res = 300)
 par(mar = c(4, 4, 2, 1), bty = "n", xaxt = "s", yaxt = "s")
 funnel(temp_limit_meta, ylim = c(1.2, 0.0), xlim = c(0.1, 5), pch = 20, contour = c(0.9, 0.95, 0.99), col.contour = limit_colors, studlab = TRUE, pos.studlab = 4, fs.smlab = 7, ff.smlab = "italic")
 legend(0.1, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#AAB7B8", "#D5DBDB", "#F4F6F6"), bty = "n")
@@ -2521,7 +2521,7 @@ text(1.2, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .
 dev.off()
 
 ```
-![](assets/mel_ram_plac_meta_funnel.png){fig.align="left" width="70%"}
+![](assets/kq6_mel_ram_plac_meta_funnel.png){fig.align="left" width="70%"}
 
 <foot_mg> Estimates (odds ratio and 95% CI) from random effects models --- unadjusted OR `r paste0(digit2(exp(temp_limit_meta$TE.random)), " (", digit2(exp(temp_limit_meta$lower.random)), "–", digit2(exp(temp_limit_meta$upper.random)), ")")`; adjusted for small study effects OR `r paste0(digit2(exp(temp_limit_meta$TE.adjust)), " (", digit2(exp(temp_limit_meta$lower.adjust)), "–", digit2(exp(temp_limit_meta$upper.adjust)), ")")`.</foot_mg>
 :::
