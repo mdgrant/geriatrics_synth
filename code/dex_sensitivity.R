@@ -3,14 +3,49 @@ library(phacking)
 library(multibiasmeta)
 library(metafor)
 
-dex_sens_dat <- read_csv(file = "data/dex_sens_dat.csv")
+dex_sens_dat <- read_csv("data/dex_meta_dat_sens.csv")
 
-rma(yi, vi, data = dex_sens_dat, method = "FE")
+dat <- escalc(measure = "RR", ai = event2, n1i = n2, ci = event1, n2i = n1, data = dex_sens_dat)
+
+dat <- escalc(measure = "RR", ai = event2, n1i = n2, ci = event1, n2i = n1, data = dex_sens_nonchina_dat)
+
+dat <- escalc(measure = "RR", ai = event2, n1i = n2, ci = event1, n2i = n1, data = mel_ram_sens_dat)
+
+significance_funnel(yi = dat$yi, vi = dat$vi, favor_positive = FALSE, alpha_select = 0.05)
+
+rma(yi = yi, vi = vi, data = dat, measure = "RR")
+
+# selection ratio to achieve a null result
+meta <- pubbias_meta(
+  yi = dat$yi,
+  vi = dat$vi,
+  selection_ratio = 50,
+  model_type = "fixed",
+  favor_positive = FALSE
+)
+
+summary(meta)
+
+meta <- pubbias_svalue(yi = -dat$yi, vi = dat$vi)
+
+summary(meta)
+
+dex_sens_dat <- tibble(
+  yi = -dex_plac_meta$TE,
+  vi = dex_plac_meta$seTE^2,
+  study = dex_plac_meta$studlab
+)
+
+# dex_sens <- escalc(yi = yi, sei = sei, data = dex_sens_dat)
+
+temp <- rma(yi = yi, vi = vi, slab = study, data = dex_sens_dat, measure = "OR")
+
+forest(temp)
 
 pubbias_dex_1 <- pubbias_meta(
   dex_sens_dat$yi,
   dex_sens_dat$vi,
-  model_type = "fixed",
+  model_type = "robust",
   selection_ratio = 1
 )
 
@@ -19,7 +54,7 @@ pubbias_dex_1$stats
 pubbias_dex_4 <- pubbias_meta(
   dex_sens_dat$yi,
   dex_sens_dat$vi,
-  model_type = "random",
+  model_type = "robust",
   selection_ratio = 4
 )
 
@@ -36,20 +71,16 @@ significance_funnel(dex_sens_dat$yi, dex_sens_dat$vi)
 
 phacking_dex <- phacking_meta(
   yi = dex_sens_dat$yi,
-  vi = dex_sens_dat$vi,
-  parallelize = FALSE)
+  sei = dex_sens_dat$vi,
+  parallelize = TRUE)
 
 phacking_dex$stats
 
 rtma_qqplot(phacking_dex)
 
-z_density(yi = dex_sens_dat$yi, vi = dex_sens_dat$vi)
+z_density(yi = dex_sens_dat$yi, sei = dex_sens_dat$sei)
 
 
-::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <caption_mg> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention --- **China versus other countries**. </caption_mg>
-
-```{r delirium_incidence_fig_country, out.width = "70%", out.height = "40%", fig.align = "left"}
 #| warning: false
 par(mar = c(1, 1, 1, 1))
 set.seed(1234)
@@ -80,8 +111,6 @@ dex_country |>
     legend.title = element_blank()
   )
 
-```
-:::
 
 ## cumulative by sample size -------------------------- (2023-10-27 04:13) @----
 
