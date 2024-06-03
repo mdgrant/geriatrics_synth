@@ -8,7 +8,7 @@ execute:
   echo: false
 
 website:
-  title: "Geriatrics Evidence Synthesis"
+  title: "Geriatrics Anesthesia Evidence Synthesis"
   search:
     location: navbar
     limit: 100
@@ -38,10 +38,6 @@ website:
             text: "Delirium Prophylaxis"
       - text: Appendix
         menu:
-          - href: evidence_tables.html
-            text: "Study-level evidence tables"
-          - href: outcome_rankings.html
-            text: "Outcome rankings"
           - href: summary_kq1.html
             text: "Expanded Preoperative Evaluation: study/patient characteristics"
           - href: summary_kq3.html
@@ -50,6 +46,10 @@ website:
             text: "TIVA versus Inhalation Anesthesia: study/patient characteristics"
           - href: summary_kq6.html
             text: "Delirium Prophylaxis: study/patient characteristics"
+          - href: evidence_tables.html
+            text: "Study-level evidence tables"
+          - href: outcome_rankings.html
+            text: "Outcome importance rankings"
           - href: protocol.html
             text: "Draft protocol"
       - about.qmd
