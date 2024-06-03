@@ -70,7 +70,8 @@ z <- matrix(c(
   paste(d, dichot_out_file),
   paste(e, likert_out_file),
   paste(g, study_refs_file),
-  paste(f, rob_file)
+  paste(f, rob_file),
+  paste(g, nrsi_file)
   ))
 # z
 
@@ -204,7 +205,9 @@ surgs <- study_char_dat |>
 # surgs |> tabyl(surgs_noabbr)
 
 study_char_dat <- study_char_dat |>
-  left_join(surgs, by = "refid")
+  left_join(surgs, by = "refid") |>
+  mutate(surgs_design = str_c(surgs_single_f, " - ", design_f_lab))
+
 
 ## ortho_proc ----------------------------------------- (2023-05-02 11:29) @----
 ortho_proc <- study_char_dat |>

@@ -910,3 +910,13 @@ meta_rob_traffic_light_refid <- function(refid_select) {
 
 ## summary weighted for pt characteristics ------------ (2023-12-27 10:50) @----
 pt_sum <- function(variable, wgt){sum(variable * wgt, na.rm = FALSE)}
+
+## trim whitespace from png --------------------------- (2023-12-27 10:50) @----
+trim_image <- function(file_png) {
+  file_png <- paste0("assets/", file_png)
+  image <- magick::image_read(file_png)
+  image_trimmed <- magick::image_trim(image)  # Adjust fuzz value if needed
+  magick::image_write(image_trimmed, path = file_png)
+}
+
+
