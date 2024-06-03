@@ -22,15 +22,8 @@ source("code/load_data.R")
 study_char_dat <- study_char_dat |>
   mutate(
   funding = ifelse(refid == 13367, "NR", funding),
-  arms = ifelse(refid == 120, 1, arms),
+  arms = ifelse(refid == 120, 2, arms),
   )
-
-linked_refid <- study_char_dat |>
-  filter(refid %in% kq6_refid) |>
-  arrange(year) |> 
-  group_by(linked_references_all_refid) |> # count 1 for multiple pubs from single study
-  slice(2) |> 
-  pull(refid) 
 
 asa_class <- asa_combine |>
   mutate(asa = str_trim(asa_ps_incl)) |>
@@ -171,9 +164,18 @@ drugs_dat <- drugs_dat_prelim |>
   arrange(refid, drug_study) |>
   fill(drug_study) |>
   arrange(refid, arm_id)
+
+# write_csv(drugs_dat, "data/drugs_dat.csv", na = "")
+
 ```
 
 ```{r refids}
+linked_refid <- study_char_dat |>
+  filter(refid %in% kq6_refid) |>
+  arrange(year) |> 
+  group_by(linked_references_all_refid) |> # count 1 for multiple pubs from single study
+  slice(2) |> 
+  pull(refid) 
 
 dex_refid <- drugs_dat |> 
   filter(drug == "Dexmedetomidine") |> 
