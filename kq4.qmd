@@ -1,7 +1,7 @@
 ---
-title: "TIVA versus Inhaled Anesthesia"
+title: "TIVA versus Inhaled (volatile) Anesthesia"
 editor: source
-toc-title: "**TIVA versus Inhaled Anesthesia**"
+toc-title: "**TIVA versus Inhaled (volatile) Anesthesia**"
 toc-location: "left"
 toc-depth: 4
 toc_float: 
@@ -78,12 +78,12 @@ dichot_dat <- data_kq(dichot_dat, kq4_refid) |>
 ```{r}
 #| tbl-cap: Overview of changes to primary outcomes following search update.
 #| html-table-processing: none
-tiva_inhaled_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "TIVAInhaled", range = "A4:R21")[, c(2:4, 10, 12, 13, 15:18)] |>
+tiva_inhaled_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "TIVAInhaled", range = "A4:R22")[, c(2:4, 10, 12, 13, 15:18)] |>
   remove_empty(which = "cols") |>
   clean_names() |>
   mutate(
     across(everything(), ~ replace(.x, is.na(.x), "")),
-    estimate_95_percent_ci = ifelse(estimate_95_percent_ci == "See Appendix", "See Below", estimate_95_percent_ci)
+    estimate_95_percent_ci = ifelse(estimate_95_percent_ci == "see Appendix", "see Below", estimate_95_percent_ci)
   )
 
 tiva_inhaled_dat |>
@@ -127,12 +127,12 @@ tiva_inhaled_dat |>
 ```{r}
 #| tbl-cap: Overview of changes to adverse events following search update.
 #| html-table-processing: none
-tiva_inhaled_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "TIVAInhaled", range = "A24:R43")[, c(2:4, 10, 12, 13, 15:18)] |>
+tiva_inhaled_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "TIVAInhaled", range = "A25:R44")[, c(2:4, 10, 12, 13, 15:18)] |>
   remove_empty(which = "cols") |>
   clean_names() |>
   mutate(
     across(everything(), ~ replace(.x, is.na(.x), "")),
-    estimate_95_percent_ci = ifelse(estimate_95_percent_ci == "See Appendix", "See Below", estimate_95_percent_ci)
+    estimate_95_percent_ci = ifelse(estimate_95_percent_ci == "see Appendix", "see Below", estimate_95_percent_ci)
     ) 
 
 tiva_inhaled_dat |>
@@ -184,8 +184,8 @@ Among older patients undergoing surgery with general anesthesia, does the use of
 
 ```{r reg_gen_balance}
 kq4_balance_main("include") |> 
-  text_replace("See Appendix", "See below", locations = cells_body()) 
-  # text_replace("See Appendix", "See Appendix", locations = cells_body())
+  text_replace("see Appendix", "see below", locations = cells_body()) 
+  # text_replace("see Appendix", "see Appendix", locations = cells_body())
 ```
 
 <caption_mg> Included complications and strength of evidence (GRADE) for TIVA versus inhalation anesthesia. </caption_mg>
@@ -207,20 +207,20 @@ outcome_tab(outcome_dat, 11)
 
 ## Outcomes Reported
 
-<caption_mg> `r table_ref()` Publications reporting dichotomous or count outcomes (not unique studies).. </caption_mg>
+<caption_mg> `r table_ref()` Publications reporting dichotomous or count outcomes (not necessarily unique studies).. </caption_mg>
 
 ```{r dichot_outcome_freq}
 # CODE: reporting frequency tabulation
 dichot_freq_fun(dichot_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
 ```
 
-<caption_mg> `r table_ref()` Publications reporting continuous outcomes (not unique studies). </caption_mg>
+<caption_mg> `r table_ref()` Publications reporting continuous outcomes (not necessarily unique studies). </caption_mg>
 
 ```{r cont_outcome_freq}
 contin_freq_fun(contin_dat)
 ```
 
-<caption_mg> `r table_ref()` Publications reporting likert or ordinal outcomes (not unique studies). </caption_mg>
+<caption_mg> `r table_ref()` Publications reporting likert or ordinal outcomes (not necessarily unique studies). </caption_mg>
 
 ```{r likert_outcome_freq}
 likert_freq_fun(likert_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
@@ -961,21 +961,20 @@ temp <- print(delirium_meta_nrsi) |>
 ## dncr_dat ------------------------------------------- (2023-04-15 15:55) @----
 dncr_dat <- dichot_dat |>
   filter(if_any(c(neurocog_n1, neurocog_n2, neurocog_n3, neurocog_last_n, neurocog_total_n), ~ !is.na(.x))) |>
-  # > 30 day exam
-  filter(if_any(matches("neurocog.*time.*"), ~ .x <= 30)) |> 
+  filter(if_any(matches("neurocog.*time.*"), ~ .x < 30)) |> 
   # select(refid, study, arm_n, neurocog_update_arm_n, neurocog_n1, neurocog_n2, neurocog_n3, neurocog_last_n, neurocog_total_n, matches("neurocog.*time"), contains("neurocog_update_arm")) |>
   mutate(
     across(contains("neurocog_update_arm"), \(x) as.numeric(x)),
-    neurocog_n1 = ifelse(neurocog_time1 > 30, NA, neurocog_n1),
-    neurocog_n2 = ifelse(neurocog_time2 > 30, NA, neurocog_n2),
-    neurocog_n3 = ifelse(neurocog_time3 > 30, NA, neurocog_n3),
-    neurocog_last_n = ifelse(neurocog_last_time > 30, NA, neurocog_last_n),
-    neurocog_total_n = ifelse(neurocog_total_time > 30, NA, neurocog_total_n),
-    neurocog_time1 = ifelse(neurocog_time1 > 30, NA, neurocog_time1),
-    neurocog_time2 = ifelse(neurocog_time2 > 30, NA, neurocog_time2),
-    neurocog_time3 = ifelse(neurocog_time3 > 30, NA, neurocog_time3),
-    neurocog_last_time = ifelse(neurocog_last_time > 30, NA, neurocog_last_time),
-    neurocog_total_time = ifelse(neurocog_total_time > 30, NA, neurocog_total_time),
+    neurocog_n1 = ifelse(neurocog_time1 >= 30, NA, neurocog_n1),
+    neurocog_n2 = ifelse(neurocog_time2 >= 30, NA, neurocog_n2),
+    neurocog_n3 = ifelse(neurocog_time3 >= 30, NA, neurocog_n3),
+    neurocog_last_n = ifelse(neurocog_last_time >= 30, NA, neurocog_last_n),
+    neurocog_total_n = ifelse(neurocog_total_time >= 30, NA, neurocog_total_n),
+    neurocog_time1 = ifelse(neurocog_time1 >= 30, NA, neurocog_time1),
+    neurocog_time2 = ifelse(neurocog_time2 >= 30, NA, neurocog_time2),
+    neurocog_time3 = ifelse(neurocog_time3 >= 30, NA, neurocog_time3),
+    neurocog_last_time = ifelse(neurocog_last_time >= 30, NA, neurocog_last_time),
+    neurocog_total_time = ifelse(neurocog_total_time >= 30, NA, neurocog_total_time),
     # select time furthest from surgery
     dncr_time = pmax(neurocog_time1, neurocog_time2, neurocog_time3, neurocog_last_time, neurocog_total_time, na.rm = TRUE),
     # select total corresponding to time
@@ -1086,8 +1085,8 @@ dncr_dat |>
   # tabyl(design_surg) |> arrange(desc(percent))
   group_by(design_surg) |>
   gt(id = "one") |>
-  row_group_order(groups = c("Randomized Clinical Trial — Gastrointestinal/Abdominal", "Randomized Clinical Trial — Thoracic", "Randomized Clinical Trial — Spine", "Randomized Clinical Trial — Vascular", "Prospective Cohort — Orthopedic")) |>
-  # row_group_order(groups = c("Randomized Clinical Trial — Gastrointestinal/Abdominal", "Randomized Clinical Trial — Thoracic", "Randomized Clinical Trial — Otolaryngological", "Randomized Clinical Trial — Spine", "Randomized Clinical Trial — Various", "Randomized Clinical Trial — Vascular", "Prospective Cohort — Orthopedic")) |> # if not excluding < 3 day ascertainment
+  row_group_order(groups = c("Randomized Clinical Trial — Gastrointestinal/Abdominal", "Randomized Clinical Trial — Thoracic", "Randomized Clinical Trial — Spine", "Prospective Cohort — Orthopedic")) |>
+  # row_group_order(groups = c("Randomized Clinical Trial — Gastrointestinal/Abdominal", "Randomized Clinical Trial — Thoracic", "Randomized Clinical Trial — Otolaryngological", "Randomized Clinical Trial — Spine", "Randomized Clinical Trial — Various", "Randomized Clinical Trial — Vascular", "Prospective Cohort — Orthopedic")) |> # if not excluding < 3 day ascertainment "Randomized Clinical Trial — Vascular", 
   cols_hide(c(refid, year, arm_id, study, design_f_lab, surg_f, neuro_threshold, surgs_noabbr_f)) |>
   cols_label(
     study_l          = "Study",
@@ -1232,7 +1231,7 @@ dncr_tiva_inhaled_meta_rct_rd <- update(dncr_tiva_inhaled_meta, sm = "RD", metho
 
 # summary(plac_meta)
 
-png("assets/kq4_dncr_meta.png", width = 10.67, height = 5.38, units = "in", res = 300) 
+png("assets/kq4_dncr_meta.png", width = 10.67, height = 4.8, units = "in", res = 300) 
 forest(dncr_tiva_inhaled_meta,
   allstudies = TRUE,
   common = TRUE,
@@ -1269,7 +1268,7 @@ Four trials conducted in China and one each in Norway (Lindholm 2013) and Japan 
 Including Geng 2017 assessments at day 3 — RR 0.66 (95% CI, 0.54–0.81; prediction interval, 0.54–0.91)</foot_mg><br/>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### Meta-analysis methods detail.
+#### Meta-analysis methods detail
 
 ```{r}
 #| include: false  
@@ -1291,7 +1290,7 @@ temp <- print(dncr_tiva_inhaled_meta,) |>
 ```{r kq4_dncr_meta_forest_rd}
 #| echo: false
 #| include: false
-png("assets/kq4_dncr_meta_forest_rd.png", width = 9.85, height = 5.65, units = "in", res = 300)
+png("assets/kq4_dncr_meta_forest_rd.png", width = 9.85, height = 5, units = "in", res = 300)
 forest(dncr_tiva_inhaled_meta_rct_rd,
   allstudies = TRUE,
   common = TRUE,
@@ -1336,7 +1335,7 @@ par(mar = c(4, 4, 2, 1))
 limit_colors <- c("#AAB7B8", "#D5DBDB", "#F4F6F6")
 # text(1.2, 0.05, labels = "Adjusted estimate", col = "darkgray", pos = 3, cex = .9)
 par(bty = "n", xaxt = "s", yaxt = "s")
-funnel(dncr_tiva_inhaled_meta_or,  pch = 20, contour = c(0.9, 0.95, 0.99), col.contour = limit_colors, studlab = TRUE, pos.studlab = 4, fs.smlab = 6, ff.smlab = "italic", xlim = c(0.2185, 2), ylim = c(0.66, 0.0))
+funnel(dncr_tiva_inhaled_meta_or,  pch = 20, contour = c(0.9, 0.95, 0.99), col.contour = limit_colors, studlab = TRUE, pos.studlab = 4, fs.smlab = 6, ff.smlab = "italic", xlim = c(0.21, 1.5), ylim = c(0.66, 0.0))
 legend(0.23, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#AAB7B8", "#D5DBDB", "#F4F6F6"), bty = "n")
 dev.off()
 
@@ -1369,30 +1368,29 @@ rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind", weighted = TRUE
 
 ## **Postoperative Neurocognitive Disorder**
 
-<caption_mg> `r table_ref()` Postoperative neurocognitive disorder (cognitive dysfunction after 30 days) and ascertainment (cohort studies). </caption_mg>
+<caption_mg> `r table_ref()` Postoperative neurocognitive disorder (cognitive dysfunction after 30 days) and ascertainment. </caption_mg>
 
 ```{r ncd_dat}
 ncd_dat <- dichot_dat |>
   filter(if_any(c(neurocog_n1, neurocog_n2, neurocog_n3, neurocog_last_n, neurocog_total_n), ~ !is.na(.x))) |>
-  # > 30 day exam
-  filter(if_any(matches("neurocog.*time.*"), ~ .x > 30)) |>
+  filter(if_any(matches("neurocog.*time.*"), ~ .x >= 30)) |>
   mutate(
     across(contains("neurocog_update_arm"), \(x) as.numeric(x)),
     arm_n = ifelse(!is.na(neurocog_update_arm_n), neurocog_update_arm_n, arm_n),
     ncd_time = case_when(
-      neurocog_time1 > 30 ~ neurocog_time1,
-      neurocog_time2 > 30 ~ neurocog_time2,
-      neurocog_time3 > 30 ~ neurocog_time3,
-      neurocog_last_time > 30 ~ neurocog_last_time,
-      neurocog_total_time > 30 ~ neurocog_total_time,
+      neurocog_time1 >= 30 ~ neurocog_time1,
+      neurocog_time2 >= 30 ~ neurocog_time2,
+      neurocog_time3 >= 30 ~ neurocog_time3,
+      neurocog_last_time >= 30 ~ neurocog_last_time,
+      neurocog_total_time >= 30 ~ neurocog_total_time,
       .default = NA
     ),
     neurocog_total_n = case_when(
-      neurocog_time1 > 30 ~ neurocog_n1,
-      neurocog_time2 > 30 ~ neurocog_n2,
-      neurocog_time3 > 30 ~ neurocog_n3,
-      neurocog_last_time > 30 ~ neurocog_last_n,
-      neurocog_total_time > 30 ~ neurocog_total_n
+      neurocog_time1 >= 30 ~ neurocog_n1,
+      neurocog_time2 >= 30 ~ neurocog_n2,
+      neurocog_time3 >= 30 ~ neurocog_n3,
+      neurocog_last_time >= 30 ~ neurocog_last_n,
+      neurocog_total_time >= 30 ~ neurocog_total_n
     ),
     # update arm_n corresponding to time if necessary 
     arm_n = case_when(
@@ -1462,7 +1460,7 @@ ncd_dat |>
   ) |>
   group_by(design_f_lab) |>
   gt(id = "one") |>
-  row_group_order(groups = c("Prospective Cohort")) |>
+  row_group_order(groups = c("Randomized Clinical Trial", "Prospective Cohort", "Retrospective Cohort")) |>
   cols_hide(c(refid, year, arm_id, study)) |>
   cols_label(
     study_l          = "Study",
@@ -1527,11 +1525,11 @@ ncd_dat |>
 <caption_mg> `r figure_ref()` Postoperative neurocognitive disorder (nonrandomized designs).  </caption_mg>
 
 ```{r ncd_meta}
-#| eval: true
 #| echo: false
 #| include: false
 
 ncd_meta_dat <- ncd_dat |>
+  filter(study != "Lindholm 2013") |> 
   mutate(n = as.numeric(str_extract(neurocog_nper, "\\d{1,2}"))) |>
   select(refid, study, arm, n, arm_n) |>
   pivot_wider(names_from = "arm", values_from = c("n", "arm_n")) |> 
@@ -1594,8 +1592,7 @@ dev.off()
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### Meta-analysis methods detail.
 
-```{r}
-#| include: false  
+```{r, include = FALSE}
 
 temp <- print(ncd_meta) |> 
   str_replace_all("\\n", "<br/> ") |>
@@ -1614,8 +1611,7 @@ No studies
     
 ## **Complications**
 
-```{r complications_check_to_excel}
-#| eval: false
+```{r complications_check_to_excel, eval = FALSE}
 
 # create excel file to inspect complications
 complication_fun <- function(var_prefix) {
@@ -1745,7 +1741,7 @@ adverse_events_dat <- adverse_events_dat |>
 ```
 
 ```{r complications_gt}
-#| eval: true
+
 # propensity matched for footnotes
 # Park 2020 (refid: 1134), Oh 2019 (refid: 132), Yoshimura 2022 (refid: 16890), Hasselberg 2021 (refid: 17551) 
 propensity_refid <- c(1134, 132, 16890, 17551)
@@ -2031,7 +2027,6 @@ complication_summary_rd <- function(compl_label){
 
 ```{r complication_mi}
 #| echo: false
-#| include: false
 
 png("assets/kq4_complication_mi.png", width = 8.9, height = 4.2, units = "in", res = 300)
 temp_meta <- complication_meta_or("Myocardial Infarction", use_hakn = TRUE, study_label = "study_design")
@@ -2047,8 +2042,7 @@ dev.off()
 
 ![](assets/kq4_complication_mi.png){fig.align="left" width="65%"}
 
-
-<a id="cardiac_arrest"></a>
+<a id="cardiac_arrest"></a>  
 
 #### Cardiac Arrest
 
@@ -2057,8 +2051,8 @@ dev.off()
 <caption_mg> `r figure_ref()` Risk ratio for cardiac arrest (randomized and nonrandomized studies). </caption_mg>
 
 ```{r complication_cardiac_arrest}
-#| echo: false
-#| include: false
+# <!-- #| echo: false -->
+
 png("assets/kq4_complication_cardiac_arrest.png", width = 8.1, height = 2.8, units = "in", res = 300)
 temp_meta <- complication_meta_rr("Cardiac Arrest", random = FALSE, use_hakn = FALSE)
 complication_forest_rr(temp_meta, random = FALSE, big.mark = ",", text.addline2 = risk_diff_meta_rr_kq4())
@@ -2081,7 +2075,7 @@ dev.off()
 
 ```{r complication_brady}
 #| echo: false
-#| include: false
+
 png("assets/kq4_complication_brady.png", width = 8.11, height = 3.8, units = "in", res = 300)
 temp_meta <- complication_meta_rr("Bradycardia", use_hakn = TRUE)
 complication_forest_rr(temp_meta, big.mark = ",", text.addline2 = risk_diff_meta_rr_kq4())

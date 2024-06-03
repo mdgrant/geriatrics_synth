@@ -90,7 +90,7 @@ outcome_tab(outcome_dat, 11)
 dichot_freq_fun(dichot_dat)
 ```
 
-<font size = 4> `r table_ref()` Publications reporting continuous outcomes (not unique studies). </font>
+<font size = 4> `r table_ref()` Publications reporting continuous outcomes (not necessarily unique studies). </font>
 
 ```{r cont_outcome_freq}
 contin_freq_fun(contin_dat)

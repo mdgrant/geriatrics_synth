@@ -109,7 +109,7 @@ likert_dat <- likert_dat |>
 | 2024-03-30 | •  Correction to link Shyu 2005 and 2008 (same trial). <br/> •   Added dementia to study characteristics table.<br/> •   Study and group ordering now consistent study characteristics and evaluation tables. |
 | 2024-04-10 | •   GRADE for delirium now low based on concern for small study effects and potential for publication bias ([see asymmetric funnel plot examining small study effects](kq1.html#fig-rct_funnel)). <br/> •   For manuscript [balance table](balance_tables.html#expanded-preoperative-evaluation), omitted results from non-randomized studies except for delayed neurocognitive recovery and patient satisfaction. However, note that for hospital and 30-day mortality the GRADE was higher for nonrandomized studies. <br/> •   Updated [table of evaluation and intervention components](kq1.html#evaluationintervention-components) to include discussion of expectations and palliative care discussion, as well as haloperidol for delirium prophylaxis. Replaced changed for clarity. <br/> •   Added [table of intervention frequency](kq1.html#intervention-frequency). <br/> •   Physical function pooled removed period subgroups; arranged by time in forest plots and added figures showing limited change over time [for RCTs](kq1.html#fig-adl-time) and [nonrandomized studies](kq1.html#fig-adl-time_nrsi). <br/> •   Consistent with other TIVA versus inhaled anesthesia, adverse event results were combined (naïvely) from randomized and nonrandomized designs when the GRADE from randomized clinical trials would have been low or very low. <br/> •   Deleted pooled pulmonary complications owing to inconsistent outcome definitions. <br/> •   Reorganized discharge location pooled results to show randomized and nonrandomized designs. <br/> •   Added funnel plots, forest plots of risk differences, and baseline risk vs. risk ratio. <br/> •   Added [sensitivity analysis for pooled odds ratio to forest plot footnote](kq1.html#t-santabalbina2019_sensitivity_delirium) from nonrandomized studies to include the adjusted result from Tarazona-Santabalbina 2019 (little difference from unadjusted).
 
-<caption_mg> Outcomes reported in additional publications (not unique studies).  </caption_mg>
+<caption_mg> Outcomes reported in additional publications (not necessarily unique studies).  </caption_mg>
 
 ```{r}
 tribble(
@@ -143,7 +143,7 @@ expanded_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx",
     clean_names() |>
   mutate(
     across(everything(), ~ replace(.x, is.na(.x), "")),
-    estimate_95_percent_ci = ifelse(estimate_95_percent_ci == "See Appendix", "See Below", estimate_95_percent_ci)
+    estimate_95_percent_ci = ifelse(estimate_95_percent_ci == "see Appendix", "see Below", estimate_95_percent_ci)
   )
 
 expanded_dat |>
@@ -194,7 +194,7 @@ expanded_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx",
     clean_names() |>
   mutate(
     across(everything(), ~ replace(.x, is.na(.x), "")),
-    estimate_95_percent_ci = ifelse(estimate_95_percent_ci == "See Appendix", "See Below", estimate_95_percent_ci)
+    estimate_95_percent_ci = ifelse(estimate_95_percent_ci == "see Appendix", "see Below", estimate_95_percent_ci)
   )
 
 expanded_dat |>
@@ -248,8 +248,8 @@ Among older patients anticipating surgery and anesthesia, does expanded preopera
 
 ```{r reg_gen_balance}
 kq1_balance_main("include") |> 
-  text_replace("See Appendix", "See below", locations = cells_body()) 
-  # text_replace("See Appendix", "See Appendix", locations = cells_body())
+  text_replace("see Appendix", "see below", locations = cells_body()) 
+  # text_replace("see Appendix", "see Appendix", locations = cells_body())
 ```
 
 <caption_mg> Included complications and strength of evidence (GRADE) for expanded versus standard preoperative evaluation. </caption_mg>
@@ -273,19 +273,19 @@ outcome_tab(outcome_dat, 11)
 
 ## **Outcomes Reported**
 
-<font size = 4> `r table_ref()` Publications reporting dichotomous or count outcomes (not unique studies). </font>
+<font size = 4> `r table_ref()` Publications reporting dichotomous or count outcomes (not necessarily unique studies). </font>
 
 ```{r dichot_outcome_freq}
 dichot_freq_fun(dichot_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
 ```
 
-<font size = 4> `r table_ref()` Publications reporting continuous outcomes (not unique studies). </font>
+<font size = 4> `r table_ref()` Publications reporting continuous outcomes (not necessarily unique studies). </font>
 
 ```{r cont_outcome_freq}
 contin_freq_fun(contin_dat)
 ```
 
-<font size = 4> `r table_ref()` Publications reporting likert or ordinal outcomes (not unique studies). </font>
+<font size = 4> `r table_ref()` Publications reporting likert or ordinal outcomes (not necessarily unique studies). </font>
 
 ```{r likert_outcome_freq}
 likert_freq_fun(likert_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
@@ -1185,6 +1185,23 @@ dev.off()
 
 <foot_mg> RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/>
 Too few studies to adequately examine small study effects, but funnel suggests potential exists.</foot_mg>
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### Meta-analysis methods detail.
+
+```{r}
+#| include: false  
+
+temp <- print(delirium_meta_rct) |> 
+  str_replace_all("\\n", "<br/> ") |>
+  str_remove("<br/> Details on meta-analytical method:<br/> ") |> 
+  str_replace_all("tau\\^2", "tau<sup>2</sup>") |> 
+  str_replace_all("tau", "&tau;")
+
+```
+
+<foot_mg> `r temp` </foot_mg>
+:::
 
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}

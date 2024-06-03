@@ -139,7 +139,7 @@ reg_gen_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", 
   clean_names() |>
   mutate(
     across(everything(), ~ replace(.x, is.na(.x), "")),
-    estimate_95_percent_ci = ifelse(estimate_95_percent_ci == "See Appendix", "See Below", estimate_95_percent_ci)
+    estimate_95_percent_ci = ifelse(estimate_95_percent_ci == "see Appendix", "see Below", estimate_95_percent_ci)
   )
 
 reg_gen_dat |>
@@ -188,7 +188,7 @@ reg_gen_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", 
   clean_names() |>
   mutate(
     across(everything(), ~ replace(.x, is.na(.x), "")),
-    estimate_95_percent_ci = ifelse(estimate_95_percent_ci == "See Appendix", "See Below", estimate_95_percent_ci)
+    estimate_95_percent_ci = ifelse(estimate_95_percent_ci == "see Appendix", "see Below", estimate_95_percent_ci)
     ) 
 
 reg_gen_dat |>
@@ -237,7 +237,7 @@ Among older patients undergoing surgery and anesthesia, does neuraxial anesthesi
 
 ```{r reg_gen_balance}
 kq3_balance_main() |> 
-  text_replace("See Appendix", "See Appendix", locations = cells_body()) |> 
+  text_replace("see Appendix", "see below", locations = cells_body()) |> 
   tab_footnote(md("RCT: randomized clinical trial; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; SMD: standardized mean difference; MD: mean difference; RD/1000: risk difference per 1000.")) 
 ```
 
@@ -260,21 +260,21 @@ outcome_tab(outcome_dat, 11)
 
 ## Outcomes Reported
 
-<caption_mg> `r table_ref()` Publications reporting dichotomous or count outcomes (not unique studies).. </caption_mg>
+<caption_mg> `r table_ref()` Publications reporting dichotomous or count outcomes (not necessarily unique studies).. </caption_mg>
 
 ```{r dichot_outcome_freq}
 dichot_freq_fun(dichot_dat, "ADL: activities of daily living; DNCR: delayed neurocognitive recovery; PND: postoperative neurocognitive disorder; QoR: quality of recovery; ") |>
   tab_footnote("Number of publications, not unique trials (see inlcuded studies below).", locations = cells_column_labels(columns = stat_1))
 ```
 
-<caption_mg> `r table_ref()` Publications reporting continuous outcomes (not unique studies). </caption_mg>
+<caption_mg> `r table_ref()` Publications reporting continuous outcomes (not necessarily unique studies). </caption_mg>
 
 ```{r cont_outcome_freq}
 contin_freq_fun(contin_dat) |>
   tab_footnote("Number of publications, not unique trials (see inlcuded studies below).", locations = cells_column_labels(columns = stat_1)) 
 ```
 
-<caption_mg> `r table_ref()` Publications reporting likert or ordinal outcomes (not unique studies). </caption_mg>
+<caption_mg> `r table_ref()` Publications reporting likert or ordinal outcomes (not necessarily unique studies). </caption_mg>
 
 ```{r likert_outcome_freq}
 likert_freq_fun(likert_dat, "ADL: activities of daily living; DNCR: delayed neurocognitive recovery; PND: postoperative neurocognitive disorder; QoR: quality of recovery; ") |>
@@ -1685,6 +1685,7 @@ adl_meta_dat <- adl_long_dat |>
 ```
 
 ```{r exp_std_adl_gt}
+
 adl_long_dat |>
   mutate(
     smd = ifelse(smd == "0.26 (-0.25 to 0.78)", "-0.26 (-0.78 to 0.25)", smd)

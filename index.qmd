@@ -15,13 +15,21 @@ editor: source
 
 <br/>
 
+<font size = 5> Evidence Summaries and GRADE </font>
+
+[Balance Tables](balance_tables.html)
+
+[GRADE](soe_gt.html)
+
+<br/>
+
 <font size = 5> Key Questions </font>
 
 [Expanded Preoperative Evaluation](kq1.html)
 
 [Neuraxial versus General Anesthesia](kq3.html)  
 
-[TIVA versus Inhaled Anesthesia](kq4.html)
+[TIVA versus Inhaled (volatile) Anesthesia](kq4.html)
 
 [Potentially Inappropriate Medications](kq5.html)
 
@@ -29,22 +37,7 @@ editor: source
 
 <br/>
 
-<font size = 5> Strength of Evidence and Summary of Findings </font>
-
-[Balance Tables](balance_tables.html)
-
-[GRADE](soe_gt.html)
-
-
-<br/>
-
-<font size = 5> Other </font>
-
-[Draft Protocol](protocol.html)
-
-[Study-level evidence tables](evidence_tables.html)  
-Brief summaries by study design of inclusion/exclusion criteria, results, and comment when relevant.   
-Includes links to publications. 
+<font size = 5> Appendix </font>
 
 Study/patient characteristics 
 
@@ -52,11 +45,17 @@ Study/patient characteristics
 
 [   Neuraxial versus General Anesthesia](summary_kq3.html)
 
-[   TIVA versus Inhaled Anesthesia](summary_kq4.html)
+[   TIVA versus Inhaled (volatile) Anesthesia](summary_kq4.html)
 
 [   Delirium Prophylaxis](summary_kq6.html)
 
+[Study-level evidence tables](evidence_tables.html)  
+Brief summaries by study design of inclusion/exclusion criteria, results, and comment when relevant.   
+Includes links to publications. 
+
 [Outcome Importance Rankings](outcome_rankings.html)
+
+[Draft Protocol](protocol.html)
 
 <br/>
 
