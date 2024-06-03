@@ -2738,7 +2738,7 @@ netgraph(netmeta_melram_nma,
   cex.number.of.studies = 1.5,
   col.highlight = "white",
   bg.number.of.studies = c("#FFFFFF"),
-  offset = c(.04, -.015),
+  offset = c(.01, -.015),
   cex = 1.5
   # offset = .02
 )
