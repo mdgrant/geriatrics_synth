@@ -600,7 +600,7 @@ neurocog_scale_dichot <- dichot_dat |>
   select(refid, study, neurocog_scale, neurocog_footnote)
 
 ## complication defn ---------------------------------- (2023-06-03 11:05) @----
-cardiac_compl <- readxl::read_xlsx("data/complications_defs_2023-05-22.xlsx", range = "A1:G68", sheet = "cardiac") |>
+cardiac_compl <- readxl::read_xlsx("data/complications_defs_2023-05-22.xlsx", range = "A1:G70", sheet = "cardiac") |>
   clean_names() |>
   mutate(cardiac_complications = firstlower(cardiac_complications)) |>
   rename(detail_cardiac = cardiac_complications) |>

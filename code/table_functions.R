@@ -977,7 +977,7 @@ kq4_complications <- function(){
 }
 
 kq6_balance_dex_main <- function(){
-  dex_plac_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "DeliriumProph", range = "B4:M12") |>
+  dex_plac_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "DeliriumProph", range = "B4:M13") |>
     remove_empty(which = "cols") |>
     # filter(exclude %notin% inc_exclude) |> # remove NRSI only; keep for complications; none excluded for main dexmedetomidine table
     clean_names() |>
@@ -1045,7 +1045,7 @@ kq6_balance_dex_main <- function(){
     # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c(est))) |>
     # tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(est))) |>
     tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(grade, measure, rct, nrsi))) |>
-    tab_footnote("RCT: randomized clinical trial; NRSI: nonrandomized studies of interventions; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; OR: odds ratio; MD: mean difference.") |>
+    tab_footnote("RCT: randomized clinical trial; NRSI: nonrandomized studies of interventions; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; OR: odds ratio; MD: mean difference; SMD: standardized mean difference.") |>
     tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
     tab_footnote("Neither study detected a difference.", locations = cells_body(columns = c(est), rows = outcome == "Neurocognitive disorders")) |>
     # tab_footnote("Cardiovascular, pulmonary, and acute kidney injury.", locations = cells_body(columns = c(outcome), rows = outcome == "Complications")) |>
@@ -1056,7 +1056,7 @@ kq6_balance_dex_main <- function(){
 }
 
 kq6_dex_complications <- function(){
-  dex_plac_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "DeliriumProph", range = "B19:M28") |>
+  dex_plac_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "DeliriumProph", range = "B20:M29") |>
     # remove_empty(which = "cols") |>
     clean_names() |>
     rename(est = estimate_95_percent_ci) |>
@@ -1130,7 +1130,7 @@ kq6_dex_complications <- function(){
 }
 
 kq6_ketamine <- function(){
-  ket_plac_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "DeliriumProph", range = "B41:M49") |>
+  ket_plac_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "DeliriumProph", range = "B42:M50") |>
     remove_empty(which = "cols") |>
     clean_names() |>
     rename(est = estimate_95_percent_ci) |>
@@ -1208,7 +1208,7 @@ kq6_ketamine <- function(){
 }
 
 kq6_balance_mel_ram_main <- function(){
-  mel_ram_plac_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "DeliriumProph", range = "B56:M63") |>
+  mel_ram_plac_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "DeliriumProph", range = "B57:M65") |>
     remove_empty(which = "cols") |>
     clean_names() |>
     rename(est = estimate_95_percent_ci) |>
@@ -1275,7 +1275,7 @@ kq6_balance_mel_ram_main <- function(){
     # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c(est))) |>
     # tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(est))) |>
     tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c(grade, measure, rct, nrsi))) |>
-    tab_footnote("RCT: randomized clinical trial; NRSI: nonrandomized studies of interventions; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; OR: odds ratio; MD: mean difference.") |>
+    tab_footnote("RCT: randomized clinical trial; NRSI: nonrandomized studies of interventions; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; OR: odds ratio; MD: mean difference; SMD: standardized mean difference.") |>
     tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
     tab_footnote("Neither study detected a difference.", locations = cells_body(columns = c(est), rows = outcome == "Neurocognitive disorders")) |>
     # tab_footnote("Cardiovascular, pulmonary, and acute kidney injury.", locations = cells_body(columns = c(outcome), rows = outcome == "Complications")) |>
@@ -1285,7 +1285,7 @@ kq6_balance_mel_ram_main <- function(){
 }
 
 kq6_balance_mel_ram_complications <- function() {
-  mel_ram_plac_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "DeliriumProph", range = "B69:M80") |>
+  mel_ram_plac_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "DeliriumProph", range = "B71:M82") |>
     remove_empty(which = "cols") |>
     clean_names() |>
     rename(est = estimate_95_percent_ci) |>
