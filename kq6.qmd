@@ -59,7 +59,7 @@ dichot_dat <- data_kq(dichot_dat, kq6_refid) |>
 ```
 
 ```{r drugs_by_arm}
-#| message: false
+
 # drugs & recode drugs/comparators so that usable; "other" category recode to comparator 
 # drugs_dat <- study_arm_dat include drug arm data; adds kq5/6 arms
 
@@ -74,6 +74,7 @@ drug_recode_levels <- c(
   "Melatonin",
   "Ramelteon",
   "Gabapentin",
+  "Pregabablin",
   "Midazolam",
   "Midazolam/propofol",
   "Midazolam/sevoflurane",
@@ -98,6 +99,7 @@ drug_recode_abbr <- c(
   Mel = "Melatonin",
   Ram = "Ramelteon",
   Gab = "Gabapentin",
+  Preg = "Pregabablin",
   Mid = "Midazolam",
   "Mid/Prop" = "Midazolam/propofol",
   "Mid/Sevo" = "Midazolam/sevoflurane",
@@ -121,7 +123,7 @@ kq5_drug_by_arm <- read_csv("data/kq56_drug_by_arm.csv") |>
   rename(control_desc_kq5 = control_desc, drug_kq5 = drug)
 
 ## combine data from kq5 and kq6 ---------------------- (2024-04-14 08:45) @----
-drugs_dat_prelim <- study_arm_dat |>
+drugs_dat_prelim <- study_arm_dat |> 
   select(refid, design_f_lab, study, study_l, study_l_w_linked, study_id, arm_id, arm_n, arm_kq6_proph_meds, kq6_control_desc:kq6_notes, multiple_kq) |>
   rename_with(~ str_replace(., "kq6_", ""), everything()) |>
   rename_with(~ str_replace(., "dex_", "dexmed_"), everything()) |> # dexmed to avoid confusion w/dexamethasone
@@ -152,7 +154,7 @@ drugs_dat_prelim <- study_arm_dat |>
 # only drug_study dex ket mel ranm
 drugs_dat <- drugs_dat_prelim |>
   mutate(
-    drug_f = fct(drug, levels = c("Dexmedetomidine", "Ketamine", "Melatonin", "Ramelteon", "Ulinastatin", "Midazolam", "Oxazepam", "Haloperidol", "Gabapentin", "Remimazolam", "None", "Placebo", "Other")),
+    drug_f = fct(drug, levels = c("Dexmedetomidine", "Ketamine", "Melatonin", "Ramelteon", "Ulinastatin", "Midazolam", "Oxazepam", "Haloperidol", "Gabapentin", "Pregabablin", "Remimazolam", "None", "Placebo", "Other")),
     drug_f = fct_collapse(drug_f, "Control" = c("None", "Placebo", "Other"))
   ) |>
   group_by(refid) |>
@@ -175,7 +177,10 @@ drugs_dat <- drugs_dat_prelim |>
       str_detect(other_spec, "[Pp]regabalin") ~ "Pregabalin",
       .default = drug
     ),
-    drug_recode = ifelse(refid == 2748 & arm_id == 4, "Dexmedetomidine/Pregabalin", drug_recode),
+    drug_recode = ifelse(refid == 2748 & arm_id == 3, "Dexmedetomidine/Pregabalin", drug_recode),
+    drug_recode = ifelse(refid == 2748 & arm_id == 2, "Pregabalin", drug_recode),
+    drug = if_else(refid == 2748 & arm_id == 2, "Pregabalin", drug),
+    # drug_f = ifelse(refid == 2748 & arm_id == 2, "Pregabalin", drug_f),
     drug_recode = ifelse(refid == 13406 & arm_id == 3, "Dexmedetomidine/Ulinastatin", drug_recode),
     drug_recode = ifelse(refid == 13393 & arm_id == 1, "Dexmedetomidine/Ulinastatin", drug_recode),
     drug_recode = fct(drug_recode, levels = drug_recode_levels),
@@ -414,18 +419,20 @@ drugs_dat |>
   filter(str_detect(design_f_lab, "Rand")) |> 
   labelled::set_variable_labels(drug_recode = "Drug(s)") |> # filter(drug_recode == "Remimazolam")
   select(drug_recode) |> 
+  mutate(drug_recode = as.character(drug_recode)) |>
   tbl_summary(
     label = list(drug_recode ~ "Comparator Arms"),
     sort = list(everything() ~ "frequency")
   ) |>
   modify_header(label ~ "RCTs", stat_0 = "Arms, N (%)") |> 
-  as_gt(id = "one") |>
+  as_gt(id = "one") |> 
   gt_theme_mg() 
 
 drugs_dat |>
   filter(!str_detect(design_f_lab, "Rand")) |>
   labelled::set_variable_labels(drug_recode = "Drug(s)") |>
   select(drug_recode) |>
+  mutate(drug_recode = as.character(drug_recode)) |>
   tbl_summary(
     label = list(drug_recode ~ "Comparator Arms"),
     sort = list(everything() ~ "frequency")
@@ -630,9 +637,9 @@ dex_group_levels <- c(
   "GI/Abd - Nonrandomized Trial", 
   "Thoracic - Nonrandomized Trial", 
   "GI/Abd - Prospective Cohort",
-  "Other - Prospective Cohort", 
+  # "Other - Prospective Cohort", 
   "Cardiac - Retrospective Cohort",
- "Ortho - Retrospective Cohort",
+  "Ortho - Retrospective Cohort",
   "Urol - Retrospective Cohort")
 
 dex_by_arm <- dex_by_arm |> 
@@ -697,7 +704,7 @@ dex_by_arm |>
     age_table ~ px(100),
     pre_mmse ~ px(80),
     loading ~ px(60),
-    maintain_range ~ px(90),
+    maintain_range ~ px(100),
     postdose ~ px(60),
     timing_all ~ px(85),
   ) |>
@@ -1027,7 +1034,6 @@ mel_ram_by_arm |>
 #   relocate(arm, .after = arm_id) 
 
 ```
-
 
 ## **Delirium Incidence**
 
@@ -1654,7 +1660,7 @@ temp_metareg <- metareg(temp_metareg)
 #| include: false
   
 temp_meta <- update(dex_plac_meta, sm = "OR")
-temp_limit_meta <- limitmeta(temp_meta, method.adjust = "beta0")
+temp_limit_meta <- limitmeta(temp_meta, method.adjust = "mulim")
 limit_colors <- c("#AAB7B8", "#D5DBDB", "#F4F6F6")
 
 png("assets/kq6_dex_delirium_all_funnel.png", width = 8.5, height = 5.5, units = "in", res = 300)
@@ -4443,6 +4449,7 @@ hypotension_dat <- dichot_dat |>
 adverse_events_dat |>
   filter(complication == "Bradycardia") |> 
   filter(study != "Lu 2017") |>  # remove Lu 2017 compares timing
+  filter(any(arm %in% "Dex"), .by = study) |> 
   left_join(cardiac_compl |> filter(detail_cardiac == "bradycardia") |> select(refid, brady_defn), by = c("refid")) |> 
   mutate(brady_defn = factor(brady_defn, levels = c("<40 bpm", "<50 bpm", "<55 bpm", "<60 bpm", "<45 bpm or ↓30%", "↓25%", "NR"))) |> 
   filter(!refid %in% mel_ram_refid) |> # tabyl(complication) |> arrange(n)
@@ -4529,7 +4536,8 @@ hypotension_foot_dat <- dichot_dat |>
 
 adverse_events_dat |>
   bind_rows(hypotension_dat) |>
-  left_join(hypotension_foot_dat |> select(refid, hypo_def), by = c("refid")) |> 
+  left_join(hypotension_foot_dat |> select(refid, hypo_def), by = c("refid")) |>
+  # filter(any(arm %in% "Dex"), .by = study) |> 
   mutate(
     hypo_def = factor(hypo_def, levels = c("MAP <60", "MAP ≤70", "↓MAP >20%", "SBP <90", "SBP <90 ≥5 min", "SBP <95", "↓SBP >20%", "↓SBP >20% or <80", "↓SBP >20% or <90", "↓SBP >20% or <95", "↓SBP >30%", "↓SBP >30% or <80", "↓SBP >30% or <90", "↓SPB >30% ≥15 min", "<20% from baseline", "NS"))) |> 
   arrange(hypo_def, year, study, arm_id) |> 
