@@ -35,6 +35,8 @@ Among older patients undergoing surgery and anesthesia, does dexmedetomidine, ke
 
 ```{r read_data}
 #| include: false
+#| echo: false
+#| warning: false
 source("code/load_data.R")
 settings.meta(CIbracket = "(")
 conflicts_prefer(dplyr::lag)
@@ -116,7 +118,7 @@ drug_recode_abbr <- c(
 
 ## drugs; from kq6, add kq5 arm drugs ----------------- (2023-01-16 13:46) @----
 # drugs for kq5 studies; needed to fill in "missings" for kq6 arms coded as kq5 arms with detail there
-kq5_drug_by_arm <- read_csv("data/kq56_drug_by_arm.csv") |>
+kq5_drug_by_arm <- read_csv("data/kq56_drug_by_arm.csv", col_types = c("n", "n", "c", "c")) |>
   rename(drug = drug_f) |> # arm drug
   mutate(drug = as.character(drug)) |> 
   select(refid, arm_id, drug, control_desc) |> 
@@ -645,15 +647,15 @@ dex_group_levels <- c(
 dex_by_arm <- dex_by_arm |> 
   mutate(  
   dex_groups = factor(dex_groups, levels = dex_group_levels)) |> 
-  select(refid, study, year, study_l, arm_n, drug_recode_abbr, asa_ps_incl, volatile_tab, tiva_tab, regional_tab, sedation_only_tab, age_table, pre_mmse, loading, maintain_range, postdose, timing_all, design_f_lab, dex_groups, surgs_single_f)
+  select(refid, study, year, study_l, arm_n, arm_id, drug_recode_abbr, asa_ps_incl, volatile_tab, tiva_tab, regional_tab, sedation_only_tab, age_table, pre_mmse, loading, maintain_range, postdose, timing_all, design_f_lab, dex_groups, surgs_single_f)
 
 rm(dex_group_levels)
 ```
 
 ```{r dex_table}
 #| echo = FALSE
-dex_by_arm |>
-  arrange(dex_groups, year, study) |>
+dex_by_arm |> 
+  arrange(dex_groups, year, study, arm_id) |>
   group_by(study_l) |>
   mutate(
     study_l = ifelse(row_number() > 1, "", study_l),
@@ -665,7 +667,7 @@ dex_by_arm |>
   ungroup() |>
   group_by(dex_groups) |>
   gt(id = "one") |> 
-  cols_hide(c(year, study, refid, design_f_lab, surgs_single_f)) |>
+  cols_hide(c(year, study, refid, design_f_lab, surgs_single_f, arm_id)) |>
   cols_label(
     study_l = "Study",
     arm_n = "N",
@@ -1086,7 +1088,7 @@ delirium_meta_dat <- dichot_dat |>
   filter(!(study %in% c("Zhao 2020") & arm_id %in% c(3, 4))) |> 
   # keep arms ↓ when creating kq56 file following
   filter(!(study == "He 2018" & arm_id == 2)) |> # midazolam arm
-  filter(!(study %in% c("Lee 2018b") & arm_id %in% c(2, 4))) |> # remove pregabalin, pregabaline/dex arms
+  filter(!(study %in% c("Lee 2018b") & arm_id %in% c(2, 3))) |> # remove pregabalin, pregabaline/dex arms
   filter(!(study %in% c("Hollinger 2021") & arm_id %in% c(2))) |> # remove haldol arm
   filter(!(study %in% c("Sultan 2010") & arm_id %in% c(2))) # remove midazolam arm
   
@@ -1178,7 +1180,7 @@ delirium_meta_dat |>
   ggplot(aes(deli_prop, surg_f)) +
   geom_boxplot(width = 0.2, outliers = FALSE) +
   geom_jitter(aes(color = arm)) + # geom_point(aes(color = arm)) 
-  scale_colour_manual(values = c("#e41a1c", "#8B0000", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00", "#D4AC0D", "#170a8a")) +
+  scale_colour_manual(values = c("#e41a1c", "#8B0000", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00", "#D4AC0D", "#170a8a", "black", "gray")) +
   labs(y = "", x = "Incidence Proportion") +
   scale_x_continuous(limits = c(0, 1), labels = scales::percent) +
   theme(
@@ -1421,7 +1423,6 @@ netmeta_melram_or_nma <- netmeta(
   sm = "OR",
   reference.group = "Plac/None"
 )
-
 
 ```
 
@@ -4502,7 +4503,7 @@ adverse_events_dat |>
 
 ```
 
-<caption_mg> `r table_ref()` Hypotension in randomized and nonrandomized* dexmedetomidine clinical trials. </caption_mg>
+<caption_mg> `r table_ref()` Hypotension in randomized and nonrandomized dexmedetomidine clinical trials. </caption_mg>
 
 ```{r hypotension_dex_gt}
 hypotension_foot_dat <- dichot_dat |>
@@ -4651,14 +4652,16 @@ adverse_events_dat |>
 
 ### Ketamine
 
-```{r}
+<caption_mg> `r table_ref()` Complications reported in ketamine randomized clinical trials --- bradycardia, hypotension and renal. </caption_mg>
+
+```{r complications_ket_gt}
 # RESUME: 2024-06-04 14:47 
+# Add Remerand 2009, Ma 2023
 ```
-Add Remerand 2009, Ma 2023
 
 ### Ramelteon
 
-<caption_mg> `r table_ref()` Report complications in ramelteon studies --- cardiac, MI, stroke, pulmonary, pneumonia, and renal (all before-after designs). </caption_mg>
+<caption_mg> `r table_ref()` Complications reported in ramelteon studies --- cardiac, MI, stroke, pulmonary, pneumonia, and renal (all before-after designs). </caption_mg>
 
 ```{r complications_mel_ram_gt}
 adverse_events_dat |>
