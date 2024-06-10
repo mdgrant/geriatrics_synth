@@ -1867,7 +1867,7 @@ complication_all <- c("cardiac", "myoinfarct", "cardarr", "stroke", "kidneyinj",
 
 ```
 
-<caption_mg> `r table_ref()` Reported complications for neuraxial versus general anesthesia --- cardiovascular, stroke, renal, pulmonary, and reintubation. </caption_mg>
+<caption_mg> `r table_ref()` Complications reported for neuraxial versus general anesthesia --- cardiovascular, stroke, renal, pulmonary, and reintubation. </caption_mg>
 
 ```{r complications}
 #| warning: false
