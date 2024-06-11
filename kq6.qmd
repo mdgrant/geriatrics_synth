@@ -4827,7 +4827,6 @@ adverse_dex_meta_dat <- adverse_meta_dat |>
   filter(!(study_compl %in% c("Liao 2023cardiac") & arm_id %in% c(2)))
 
 adverse_dex_meta_wide_dat <- adverse_dex_meta_dat |>
-  filter(!study %in% c("Li 2020a")) |> # not rcts
   arrange(refid, complication) |>
   pivot_wider(names_from = "arm", values_from = arm_n:n) |>
   group_by(study_compl) |>
@@ -4846,6 +4845,7 @@ adverse_dex_meta_wide_dat <- adverse_dex_meta_dat |>
 # RESUME: complications risk difference meta-analysis
 # add bradycardia definition
 brady_meta_dat <- adverse_dex_meta_wide_dat |> 
+  filter(refid %in% rct_refid) |> 
   left_join(cardiac_compl |> select(refid, brady_defn), by = c("refid"))
 
 adverse_meta <- metabin(
@@ -4867,8 +4867,9 @@ temp_meta <- adverse_meta
 temp_meta <- update(temp_meta, sm = "OR")
 temp_metabias <- metabias(temp_meta, method.bias = "Harbord", k.min = 10)
 
+png("assets/kq6_dex_brady_meta_rr.png", width = 10.5, height = 8.5, units = "in", res = 300)
 forest(adverse_meta,
-  allstudies = FALSE,
+  allstudies = TRUE,
   random = TRUE,
   label.e = "Dex",
   label.c = "Placebo",
@@ -4890,7 +4891,12 @@ forest(adverse_meta,
   addrows.below.overall = 4,
   text.addline1 = "NR: not reported; bpm: beats per minute."
 )
+dev.off()
+
+trim_image("kq6_dex_brady_meta_rr.png")
+
 ```
+![](assets/kq6_dex_brady_meta_rr.png){fig.align="left" width="68%"}
 
 <foot_mg> `r paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval), ".")`<br/> Similar arms combined in Li 2021b and Zhao 2020. </foot_mg>
 
@@ -4942,7 +4948,8 @@ forest(adverse_meta_rd,
   xlim = c(-20, 20),
   xlab = "Favors: Dexmedetomidine                     Plac/None",
   addrows.below.overall = 4,
-  text.addline1 = "NR: not reported; bpm: beats per minute."
+  text.addline1 = "NR: not reported; bpm: beats per minute.",
+  text.addline2 = risk_diff_meta_rr()
 )
 
 ```
