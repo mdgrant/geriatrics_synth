@@ -376,8 +376,8 @@ study_arm_dat <- study_arm_dat |> # filter(str_detect(study_id, "Lee 2018")) -> 
     study_l_w_linked = if_else(study == "O'Brien 2023 (no dementia)", "[O'Brien 2023 (no dementia)](evidence_tables.html#18678)", study_l_w_linked),
     study_l_w_linked = if_else(study == "O'Brien 2023 (dementia)", "[O'Brien 2023 (dementia)](evidence_tables.html#18678)", study_l_w_linked),
     study = if_else(study == "Zhang 2018b" & str_detect(refid_c, "-1"), paste0(study, " (prop)"), study),
-    study = if_else(study == "Zhang 2018b" & str_detect(refid_c, "-2"), paste0(study, " (sevo)"), study),
-    kq6_other_spec = if_else(study_id == "Lee 2018b-3", "pregabalin", kq6_other_spec)
+    study = if_else(study == "Zhang 2018b" & str_detect(refid_c, "-2"), paste0(study, " (sevo)"), study)
+    # kq6_other_spec = if_else(study_id == "Lee 2018b-3", "pregabalin", kq6_other_spec) # NOTE: last change 2024-06-06
     ) |>
   rename(kq1_staff_other_spec = staff_other_spec, kq1_staff_other_spec_std = staff_other_spec_std)
   # select(refid, starts_with("study"), subgroup)
@@ -889,6 +889,11 @@ if (temp == 0) {
 
 rm(temp)
 
+## rct refids ----------------------------------------- (2023-04-25 12:51) @----
+rct_refid <- study_char_dat |>
+  filter(design == "rct") |>
+  arrange(refid) |>
+  pull(refid)
 
 ## save for use --------------------------------------- (2023-03-13 22:53) @----
 limit_colors <- c("#AAB7B8", "#D5DBDB", "#F4F6F6")
