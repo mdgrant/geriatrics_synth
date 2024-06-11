@@ -3050,7 +3050,6 @@ dncr_dat |>
   ) |>
   tab_style(style = cell_text(align = "left"), locations = cells_column_labels(columns = c(study, arm))) |>
   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(starts_with("scale"), pre_mmse, dncr_time, neurocog_nper, rr_ci))) |>
-  # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c(neurocog_nper))) |>
   tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(study, arm, pre_mmse))) |>
   tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(starts_with("scale"), dncr_time, rr_ci))) |>
   tab_style(style = cell_text(align = "right"), locations = cells_body(columns = c(neurocog_nper))) |>
@@ -4322,6 +4321,7 @@ complications_kq6_fun <- function(var_prefix) {
 
 # adverse event data includes all reported complications
 adverse_events_dat <- map_df(complication_incl, complications_kq6_fun) |>
+  filter(!study %in% c("Lu 2017", "Deng 2023")) |> # compare dexmedetomidine at different times
   mutate(
     arm_n = ifelse(!is.na(comp_update_arm_n), comp_update_arm_n, arm_n),
     calc_per = n / arm_n * 100,
@@ -4389,27 +4389,31 @@ arrange(complication, surgs_single, year, study, arm_id) |>
 
 ## for summary table ---------------------------------- (2024-06-04 10:51) @----
 # adverse_events_dat |>
+#   filter(refid %in% dex_refid) |>
 #   group_by(refid, arm_id) |>
 #   slice(1) |>
 #   ungroup() |>
 #   summarise(total = sum(arm_n))
 # 
-# adverse_events_dat |> 
-#   group_by(refid) |> 
-#   slice(1) |> 
+# adverse_events_dat |>
+#   filter(refid %in% dex_refid) |>
+#   group_by(refid) |>
+#   slice(1) |>
 #   ungroup() |>
 #   tabyl(design_f_lab)
 
 ```
 
 ```{r hypotension}
-# add hypotension
+
 hypotension_dat <- dichot_dat |>
   filter(!(study == "Liao 2023" & arm_id == 2)) |>
+  # filter(study %in% c("Li 2023", "Wong 2020a", "Guo 2015", "Ma 2023", "Hong 2021")) |> 
   left_join(drugs_dat |> select(refid, arm_id, drug_recode_abbr), by = c("refid", "arm_id")) |>
   left_join(study_char_dat |> select(refid, design_f_lab, design_f_abbrev), by = "refid") |> # add design_f
   rename(arm = drug_recode_abbr) |>
   filter(if_any(starts_with("hypo_"), ~ !is.na(.x))) |>
+  arrange(study, arm_id) |>
   mutate(
     complication = "Hypotension",
     study_compl = paste0(study, "Hypotension"),
@@ -4438,12 +4442,15 @@ hypotension_dat <- dichot_dat |>
   ungroup() |>
   left_join(study_char_dat |> select(refid, surgs_single, design_f_lab), by = "refid") |>
   left_join(table_age_mn_med, by = c("refid", "arm_id")) |>
+  # select(refid, year, arm_id, study, study_l, study_compl, arm_n, arm, n_per, rd_ci, complication) 
   rename(n = hypo_n) |> 
   select(refid, year, arm_id, study, study_l, study_compl, arm_n, arm, n, age_table, surgs_single, n_per, bar, rd_ci, complication, design_f_lab)
 
 ```
 
-<caption_mg> `r table_ref()` Bradycardia in randomized and nonrandomized* dexmedetomidine clinical trials. </caption_mg>
+#### Bradycardia
+
+<caption_mg> `r table_ref()` Bradycardia in randomized and nonrandomized dexmedetomidine clinical trials. </caption_mg>
 
 ```{r bradycardia_dex_gt}
 ## table bradycardia ------------------------------------------ (2023-06-17 20:28) @----
@@ -4461,10 +4468,11 @@ adverse_events_dat |>
     surgs_single = ifelse(row_number() > 1, "", surgs_single), 
     .by = study_compl
   ) |>
-  group_by(complication) |>
+  filter(complication == "Bradycardia") |>
+  group_by(design_f_lab) |>
   gt(id = "one") |>
-  row_group_order(groups = c("Bradycardia")) |>
-  cols_hide(c(refid, year, study, arm_id, n, study, study_compl, design_f_lab)) |>
+  row_group_order(groups = c("Randomized Clinical Trial", "Nonrandomized Trial")) |>
+  cols_hide(c(refid, year, study, arm_id, n, study, study_compl, design_f_lab, complication)) |>
   cols_label(
     study_l          = "Study",
     arm_n            = " N",
@@ -4488,7 +4496,7 @@ adverse_events_dat |>
     n_per ~ px(80),
     bar ~ px(100),
     rd_ci ~ px(140),
-    brady_defn ~ px(130)
+    brady_defn ~ px(125)
   ) |>
   tab_style(style = cell_text(align = "left"), locations = cells_column_labels(columns = c(arm))) |>
   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, rd_ci))) |>
@@ -4502,6 +4510,8 @@ adverse_events_dat |>
   tab_footnote("RD: risk difference; Dex: Dexmedetomidine; Dex/Preg: Dexmedetomidine/Pregabalin; Mid: Midazolam; Prop: Propofol; Ram: ramelteon; Plac: placebo; None: no active or placebo comparator; GI/Abd: gastrointestinal/abdominal; Ortho: orthopedic; Oralmax: oral or maxilofacial.")
 
 ```
+
+#### Hypotension
 
 <caption_mg> `r table_ref()` Hypotension in randomized and nonrandomized dexmedetomidine clinical trials. </caption_mg>
 
@@ -4538,7 +4548,7 @@ hypotension_foot_dat <- dichot_dat |>
 adverse_events_dat |>
   bind_rows(hypotension_dat) |>
   left_join(hypotension_foot_dat |> select(refid, hypo_def), by = c("refid")) |>
-  # filter(any(arm %in% "Dex"), .by = study) |> 
+  filter(any(arm %in% "Dex"), .by = study) |>
   mutate(
     hypo_def = factor(hypo_def, levels = c("MAP <60", "MAP ≤70", "↓MAP >20%", "SBP <90", "SBP <90 ≥5 min", "SBP <95", "↓SBP >20%", "↓SBP >20% or <80", "↓SBP >20% or <90", "↓SBP >20% or <95", "↓SBP >30%", "↓SBP >30% or <80", "↓SBP >30% or <90", "↓SPB >30% ≥15 min", "<20% from baseline", "NS"))) |> 
   arrange(hypo_def, year, study, arm_id) |> 
@@ -4549,9 +4559,10 @@ adverse_events_dat |>
     hypo_def = ifelse(row_number() > 1, "", as.character(hypo_def)), 
     .by = study_compl
   ) |>
-  group_by(complication) |>
+  group_by(design_f_lab) |>
   gt(id = "one") |>
-  cols_hide(c(refid, year, study, arm_id, n, study, study_compl, design_f_lab)) |>
+  row_group_order(groups = c("Randomized Clinical Trial", "Nonrandomized Trial", "Retrospective Cohort")) |>
+  cols_hide(c(refid, year, study, arm_id, n, study, study_compl, design_f_lab, complication)) |>
   cols_label(
     study_l          = "Study",
     arm_n            = " N",
@@ -4585,10 +4596,13 @@ adverse_events_dat |>
   tab_style(style = list(cell_text(color = "#F39C12")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Ket|Mel|Ram"))) |>
   tab_style(style = list(cell_text(color = "#104E8B")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = !str_detect(arm, "Ket|Mel|Ram|Dex|Plac|None"))) |>
   tab_footnote(md("Nonrandomized Trial"), locations = cells_body(columns = study_l, rows = study_l != "" & design_f_lab == "Nonrandomized Trial")) |>
-  tab_footnote("RD: risk difference; MAP: mean arterial blood pressure; Dex: Dexmedetomidine; Dex/Preg: Dexmedetomidine/Pregabalin; Mid: Midazolam; Prop: Propofol; Ram: ramelteon; Plac: placebo; None: no active or placebo comparator; GI/Abd: gastrointestinal/abdominal; Ortho: orthopedic;  Urol: urologic; Oralmax: oral or maxilofacial; NS: not specified.")
+  tab_footnote("RD: risk difference; MAP: mean arterial blood pressure; Dex: Dexmedetomidine; Dex/Preg: Dexmedetomidine/Pregabalin; Mid: Midazolam; Prop: Propofol; Rem: remimazolam; Plac: placebo; None: no active or placebo comparator; GI/Abd: gastrointestinal/abdominal; Ortho: orthopedic;  Urol: urologic; Oralmax: oral or maxilofacial; NS: not specified.")
+
 ```
 
-<caption_mg> `r table_ref()` Other reported complications in dexmedetomidine studies --- cardiac, MI, stroke, renal, and respiratory (randomized clinical trials unless noted). </caption_mg>
+#### Other
+
+<caption_mg> `r table_ref()` Other complications reported in dexmedetomidine studies --- cardiac, MI, stroke, renal, and respiratory (randomized clinical trials unless noted). </caption_mg>
 
 ```{r other_compl_dex_gt}
 adverse_events_dat |> 
@@ -4655,8 +4669,60 @@ adverse_events_dat |>
 <caption_mg> `r table_ref()` Complications reported in ketamine randomized clinical trials --- bradycardia, hypotension and renal. </caption_mg>
 
 ```{r complications_ket_gt}
-# RESUME: 2024-06-04 14:47 
-# Add Remerand 2009, Ma 2023
+
+adverse_events_dat |>
+  filter(refid %in% ket_refid) |>
+  bind_rows(hypotension_dat |> filter(refid %in% ket_refid) |> arrange(arm_id)) |> 
+  left_join(hypotension_foot_dat |> select(refid, hypo_def), by = c("refid")) |>
+  left_join(cardiac_compl |> filter(detail_cardiac == "bradycardia") |> select(refid, brady_defn), by = c("refid")) |> 
+  mutate(
+    note = case_when(
+      complication == "Bradycardia" ~ brady_defn,
+      complication == "Hypotension" ~ hypo_def,
+      .default = NA),
+    complication = fct_drop(complication),
+  ) |>
+  select(-brady_defn, -hypo_def) |>
+  mutate(
+    study_l = ifelse(row_number() > 1, "", study_l),
+    note = ifelse(row_number() > 1, "", note),
+    surgs_single = ifelse(row_number() > 1, "", surgs_single), .by = study_compl
+  ) |>
+  group_by(complication) |>
+  gt(id = "one") |>
+  row_group_order(groups = c("Bradycardia", "Hypotension", "Renal")) |>
+  cols_hide(c(refid, year, study, arm_id, n, study, study_compl, design_f_lab)) |>
+  cols_label(
+    study_l          = "Study",
+    arm_n            = " N",
+    arm              =  "Arm",
+    age_table        = "    Age",
+    surgs_single     = "Surgery",
+    n_per            = "N (%)",
+    bar              = "0 – 100%",
+    rd_ci            = "RD (95% CI)",
+    note             = "Note"
+  ) |>
+  fmt_markdown(columns = c(study_l, bar, age_table)) |>
+  sub_missing(columns = everything(), missing_text = "") |>
+  gt_theme_mg() |>
+  cols_width(
+    study_l ~ px(140),
+    arm_n ~ px(45),
+    arm ~ px(60),
+    age_table ~ px(100),
+    surgs_single ~ px(80),
+    n_per ~ px(80),
+    bar ~ px(100),
+    rd_ci ~ px(140),
+    note ~ px(130)
+  ) |> 
+  tab_style(style = cell_text(align = "left"), locations = cells_column_labels(columns = c(arm))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, rd_ci))) |>
+  tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(arm, age_table, rd_ci, note))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rd_ci))) |>
+  tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Ket")))
+
 ```
 
 ### Ramelteon
@@ -4666,10 +4732,17 @@ adverse_events_dat |>
 ```{r complications_mel_ram_gt}
 adverse_events_dat |>
   filter(refid %in% mel_ram_refid) |>
-    mutate(
+  # left_join(hypotension_foot_dat |> select(refid, hypo_def), by = c("refid")) |>
+  # left_join(cardiac_compl |> filter(detail_cardiac == "bradycardia") |> select(refid, brady_defn), by = c("refid")) |>
+  mutate(
     complication = fct_drop(complication),
-    complication = fct_recode(complication, "Arrhythmia" = "Other arrhythmia")) |> 
-  mutate(study_l = ifelse(row_number() > 1, "", study_l), .by = study_compl) |>
+    complication = fct_recode(complication, "Arrhythmia" = "Other arrhythmia")
+  ) |>
+  mutate(
+    study_l = ifelse(row_number() > 1, "", study_l),
+    surgs_single = ifelse(row_number() > 1, "", surgs_single),
+    .by = study_compl
+  ) |>
   group_by(complication) |>
   gt(id = "one") |>
   row_group_order(groups = c("Arrhythmia", "Pulmonary", "Pneumonia")) |>
@@ -4684,9 +4757,7 @@ adverse_events_dat |>
     bar              = "0 – 100%",
     rd_ci            = "RD (95% CI)"
   ) |>
-  # tab_spanner(label = "", columns = c(VARIABLES), level = 1) |>
   fmt_markdown(columns = c(study_l, bar, age_table)) |>
-  # fmt_number(VARIABLE, decimals = 0) |>
   sub_missing(columns = everything(), missing_text = "") |>
   gt_theme_mg() |>
   cols_width(
@@ -4701,24 +4772,18 @@ adverse_events_dat |>
   ) |>
   tab_style(style = cell_text(align = "left"), locations = cells_column_labels(columns = c(arm))) |>
   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(arm_n, rd_ci))) |>
-  # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c())) |>
   tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(arm, age_table, rd_ci))) |>
   tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rd_ci))) |>
   tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Dex"))) |>
   tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Ket|Mel|Ram"))) |>
-  # tab_style(style = list(cell_text(color = "#969696")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = str_detect(arm, "Plac|None"))) |>
   tab_style(style = list(cell_text(color = "#104E8B")), locations = cells_body(columns = c(arm_n:age_table, n_per), rows = !str_detect(arm, "Ket|Mel|Ram|Dex|Plac|None"))) |>
-  # tab_style(style = cell_text(align = "right"),       locations = cells_body(columns = c())) |>
-  # tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
-  # tab_style(style = list(cell_text(color = color_1)), locations = cells_body(columns = c(), rows = str_detect())) |>
-  # tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(), rows = str_detect())) |>
-  # tab_style(style = list(cell_text(color = color_3)), locations = cells_body(columns = c(), rows = str_detect()))
   tab_footnote(md("Before-After/Time Series"), locations = cells_body(columns = study_l, rows = study_l != "" & design_f_lab == "Before-After/Time Series")) |>
-  tab_footnote(md("Nonrandomized Trial"), locations = cells_body(columns = study_l, rows = study_l != "" & design_f_lab == "Nonrandomized Trial"))
+  tab_footnote(md("Nonrandomized Trial"), locations = cells_body(columns = study_l, rows = study_l != "" & design_f_lab == "Nonrandomized Trial")) |>
+  tab_footnote("Not otherwise specified.", locations = cells_row_groups(groups = "Arrhythmia"))
   
 ```
 
-n### *Pooled*
+### *Pooled*
 
 ```{r compl_meta_dex}
 hypotension_meta_dat <-  hypotension_dat |> 
@@ -4734,9 +4799,8 @@ adverse_dex_meta_dat <- adverse_meta_dat |>
   filter(!arm %in% c("Dex/Preg", "Preg")) |>
   group_by(study_compl) |>
   filter(any(arm %in% c("Plac", "None"))) |>
-  ungroup() |>
+  ungroup() |> 
   mutate(
-    # complication = ifelse(complication == "Cardiac", "Bradycardia", complication),
     n = case_when(
       study_compl == "Zhao 2020cardiac" & arm_id == 2 ~ collapse_dichot_study_compl(adverse_meta_dat, "Zhao 2020cardiac", c(2, 3, 4), n),
       study_compl == "Zhao 2020pulm" & arm_id == 2 ~ collapse_dichot_study_compl(adverse_meta_dat, "Zhao 2020pulm", c(2, 3, 4), n),
@@ -4763,7 +4827,6 @@ adverse_dex_meta_dat <- adverse_meta_dat |>
   filter(!(study_compl %in% c("Liao 2023cardiac") & arm_id %in% c(2)))
 
 adverse_dex_meta_wide_dat <- adverse_dex_meta_dat |>
-  # mutate(study = ifelse(study %in% c("Li 2020a"), paste0(study, "*"), study)) |>
   filter(!study %in% c("Li 2020a")) |> # not rcts
   arrange(refid, complication) |>
   pivot_wider(names_from = "arm", values_from = arm_n:n) |>
