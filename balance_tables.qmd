@@ -20,16 +20,15 @@ tables:
 # nocite: '@*'
 ---
 
+<!-- ## Updates -->
+<!-- ::: {.callout-important collapse="true"} -->
+<!-- ### `r lubridate::today()` -->
 
-## Updates
-::: {.callout-important collapse="true"}
-### `r lubridate::today()`
+<!-- | Date               | Modification| -->
+<!-- |:------------------------|:-----------------------------------------------| -->
+<!-- | 2024-04-07 | Updated expanded versus standard preoperative evaluation. | -->
 
-| Date               | Modification|
-|:------------------------|:-----------------------------------------------|
-| 2024-04-07 | Updated expanded versus standard preoperative evaluation. |
-
-:::
+<!-- ::: -->
 
 ```{r preliminaries}
 #| include: false
@@ -122,6 +121,8 @@ kq6_balance_dex_main() |>
 <font size = 4> `r table_ref()` Included complications and strength of evidence (GRADE) for dexmedetomidine versus placebo. </font>
 
 ```{r dex_plac_preop_complications}
+#| eval: false
+
 kq6_dex_complications()
 ```
 
@@ -130,6 +131,8 @@ kq6_dex_complications()
 <font size = 4> `r table_ref()` Benefits, harms, and strength of evidence (GRADE) for ketamine versus placebo. </font>
 
 ```{r}
+#| eval: false
+
 kq6_ketamine()  |> 
   text_replace(replace_text, paste0("see Table ", table_n + 1), locations = cells_body())
 ```
@@ -139,6 +142,8 @@ kq6_ketamine()  |>
 <font size = 4> `r table_ref()` Benefits, harms, and strength of evidence (GRADE) for melatonin or ramelteon versus placebo. </font>
 
 ```{r mel_ram_main}
+#| eval: false
+
 kq6_balance_mel_ram_main() |> 
   text_replace(replace_text, paste0("see Table ", table_n + 1), locations = cells_body())
 ```
@@ -146,6 +151,8 @@ kq6_balance_mel_ram_main() |>
 <font size = 4> `r table_ref()` Included complications and strength of evidence (GRADE) for melatonin or ramelteon versus placebo. </font>
 
 ```{r mel_ram_plaaled_preop_complications}
+#| eval: false
+
 kq6_balance_mel_ram_complications()
 ```
 

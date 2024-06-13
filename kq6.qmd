@@ -20,14 +20,14 @@ link-citations: false
 nocite: '@*'
 ---
 
-::: {.callout-note collapse="true"}
-## Recent updates
+<!-- ::: {.callout-note collapse="true"} -->
+<!-- ## Recent updates -->
 
-| Date       | Modification                                                                                                                                                                    |
-|:-----------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 2024-06-03 | Updates through complications including additional sensitivity analyses for delirium (eg, see significance funnel plots).           |
+<!-- | Date       | Modification                                                                                                                                                                    | -->
+<!-- |:-----------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| -->
+<!-- | 2024-06-03 | Updates through complications including additional sensitivity analyses for delirium (eg, see significance funnel plots).           | -->
 
-:::
+<!-- ::: -->
 
 ## Key Question
 
@@ -6174,7 +6174,7 @@ harbord <- metabias(dex_plac_mort_meta, method.bias = "Harbord")$pval
 # temp_limit_meta <- limitmeta(dex_plac_mort_meta)
 # limit_colors <- c("#AAB7B8", "#D5DBDB", "#F4F6F6")
 
-png("assets/kq5_dex_plac_meta_funnel_limit_mort.png", width = 10.5, height = 7.5, units = "in", res = 300)
+png("assets/kq6_dex_plac_meta_funnel_limit_mort.png", width = 10.5, height = 7.5, units = "in", res = 300)
 par(bty = "n", xaxt = "s", yaxt = "s", mar = c(4, 4, 2, 1))
 funnel(dex_plac_mort_meta,
   ylim = c(2.0, 0.0), xlim = c(0.05, 10), 
@@ -6189,10 +6189,10 @@ funnel(dex_plac_mort_meta,
 legend(0.06, 0.02, c("0.1 > p > 0.05", "0.05 > p > 0.01", "< 0.01"), fill = c("#AAB7B8", "#D5DBDB", "#F4F6F6"), bty = "n")
 dev.off()
 
-trim_image("kq5_dex_plac_meta_funnel_limit_mort.png")
+trim_image("kq6_dex_plac_meta_funnel_limit_mort.png")
 
 ```
-![](assets/kq5_dex_plac_meta_funnel_limit_mort.png){fig.align="left" width="65%"}
+![](assets/kq6_dex_plac_meta_funnel_limit_mort.png){fig.align="left" width="65%"}
 :::
 
 #### Melatonin/Ramelteon
