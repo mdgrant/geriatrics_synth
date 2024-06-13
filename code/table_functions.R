@@ -415,7 +415,7 @@ delirium_total_gt_fun <- function(drug_f_abbr){
       study_l ~ px(165),
       arm_n ~ px(80),
       # age_table ~ px(100),
-      drug_recode ~ px(60),
+      drug_recode ~ px(70),
       # pre_mmse ~ px(95),
       scale_delirium ~ px(105),
       delitotal_time ~ px(55),
@@ -956,13 +956,13 @@ kq4_complications <- function(){
     tab_spanner(label = "TIVA", columns = c(event_e), level = 1) |>
     tab_spanner(label = "Inhaled", columns = c(event_c), level = 1) |>
     opt_footnote_marks(marks = "standard") |>
-    tab_style(style = cell_text(align = "center"),       locations = cells_column_labels(columns = c(event_c, event_e))) |>
-    tab_style(style = cell_text(align = "center"),       locations = cells_column_labels(columns = c(n, grade, rct, nrsi))) |>
-    tab_style(style = cell_text(align = "left"),         locations = cells_column_labels(columns = c(est, measure))) |>
-    # tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(est))) |>
-    tab_style(style = cell_text(align = "center"),       locations = cells_body(columns = c(grade, rct, nrsi))) |>
-    tab_style(style = cell_text(align = "left"),         locations = cells_body(columns = c(est, measure))) |>
-    tab_style(style = cell_text(size = px(12)),               locations = cells_body(columns = c(measure), rows = measure == "RD/1000")) |>
+    tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(event_c, event_e))) |>
+    tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(n, grade, rct, nrsi))) |>
+    tab_style(style = cell_text(align = "left"), locations = cells_column_labels(columns = c(est, measure))) |>
+    # tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(est))) |>
+    tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(grade, rct, nrsi))) |>
+    tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(est, measure))) |>
+    tab_style(style = cell_text(size = px(12)), locations = cells_body(columns = c(measure), rows = str_detect(measure, "RD"))) |>
     tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(rct:est), rows = str_detect(measure, "RD"))) |>
     tab_footnote(md("RCT: randomized clinical trial; NRSI: nonrandomized studies of interventions; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; OR: odds ratio; RD: risk difference.")) |>
     tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
@@ -976,14 +976,15 @@ kq4_complications <- function(){
     tab_footnote("No events in 1 study; 3 in the other.", locations = cells_body(columns = c(est), rows = str_detect(est, "—")), placement = "right")
 }
 
-kq6_balance_dex_main <- function(){
-  dex_plac_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "DeliriumProph", range = "B4:M13") |>
+kq6_balance_dex_main <- function(inc_exclude = "exclude") {
+  dex_plac_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "DeliriumProph", range = "A4:O16", col_types = c(rep("text", 2), rep("numeric", 7), rep("text", 6))) |>
     remove_empty(which = "cols") |>
-    # filter(exclude %notin% inc_exclude) |> # remove NRSI only; keep for complications; none excluded for main dexmedetomidine table
+    filter(exclude %notin% inc_exclude) |>
     clean_names() |>
     rename(est = estimate_95_percent_ci) |>
     filter(!if_all(rct:est, ~ is.na(.x))) |>
     mutate(
+      i2 = str_c(i2, "%"),
       high     = paste0("[", vlow, "]",     "(soe_gt.html#del-prophylaxis-grade)"),
       mod      = paste0("[", mod, "]",      "(soe_gt.html#del-prophylaxis-grade)"),
       low      = paste0("[", low, "]",      "(soe_gt.html#del-prophylaxis-grade)"),
@@ -1019,10 +1020,12 @@ kq6_balance_dex_main <- function(){
       # n        = "    N",
       grade    = "GRADE",
       measure  = "Effect",
-      est      = "Estimate (95% CI)"
+      est      = "Estimate (95% CI)",
+      i2       = md("*I*<sup> 2</sup>"),
+      tau      = md("τ")
     ) |>
-    fmt_markdown(columns = c(grade)) |>
-    cols_hide(n) |>
+    fmt_markdown(columns = c(grade, i2)) |>
+    cols_hide(c(n, exclude)) |>
     fmt_integer(use_seps = TRUE, sep_mark = ",") |>
     gt_theme_mg() |>
     cols_width(
@@ -1033,16 +1036,19 @@ kq6_balance_dex_main <- function(){
       event_e ~ px(115),
       event_c ~ px(105),
       grade ~ px(100),
-      measure ~ px(45),
-      est ~ px(140)
+      measure ~ px(65),
+      est ~ px(140),
+      i2 ~ px(40),
+      tau ~ px(40)
     ) |>
     sub_missing(columns = everything(), missing_text = "") |>
     tab_spanner(label = "Dexmedetomidine", columns = c(event_e), level = 1) |>
     tab_spanner(label = "Placebo", columns = c(event_c), level = 1) |>
+    tab_spanner(label = "Heterogeneity", columns = c(i2, tau), level = 1) |>
+    tab_style(style = cell_text(size = "11px"), locations = cells_column_spanners(spanners = "Heterogeneity")) |>
     opt_footnote_marks(marks = "standard") |>
-    tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(event_c, event_e))) |>
-    tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(n, grade, rct, nrsi))) |>
-    # tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c(est))) |>
+    tab_style(style = cell_text(align = "right"), locations = cells_body(columns = c(i2, tau))) |>
+    tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(event_c, event_e, n, grade, rct, nrsi))) |>
     # tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(est))) |>
     tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(grade, measure, rct, nrsi))) |>
     tab_footnote("RCT: randomized clinical trial; NRSI: nonrandomized studies of interventions; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; OR: odds ratio; MD: mean difference; SMD: standardized mean difference.") |>
@@ -1056,12 +1062,14 @@ kq6_balance_dex_main <- function(){
 }
 
 kq6_dex_complications <- function(){
-  dex_plac_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "DeliriumProph", range = "B20:M29") |>
+  dex_plac_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "DeliriumProph", range = "A20:N29", col_types = c(rep("text", 2), rep("numeric", 7), rep("text", 5))) |>
     # remove_empty(which = "cols") |>
+    select(-exclude) |>
     clean_names() |>
     rename(est = estimate_95_percent_ci) |>
     filter(!if_all(rct:est, ~ is.na(.x))) |>
     mutate(
+      i2 = str_c(i2, "%"),
       high     = paste0("[", vlow, "]",     "(soe_gt.html#del-prophylaxis-grade)"),
       mod      = paste0("[", mod, "]",      "(soe_gt.html#del-prophylaxis-grade)"),
       low      = paste0("[", low, "]",      "(soe_gt.html#del-prophylaxis-grade)"),
@@ -1094,9 +1102,10 @@ kq6_dex_complications <- function(){
       # n        = "    N",
       grade    = "GRADE",
       measure  = "Effect",
-      est      = "Estimate (95% CI)"
+      est      = "Estimate (95% CI)",
+      i2       = md("*I*<sup> 2</sup>")
     ) |>
-    fmt_markdown(columns = c(grade)) |>
+    fmt_markdown(columns = c(grade, i2)) |>
     cols_hide(n) |>
     fmt_integer(use_seps = TRUE, sep_mark = ",") |>
     gt_theme_mg() |>
@@ -1109,7 +1118,8 @@ kq6_dex_complications <- function(){
       event_c ~ px(105),
       grade ~ px(100),
       measure ~ px(45),
-      est ~ px(140)
+      est ~ px(140),
+      i2 ~ px(35)
     ) |>
     sub_missing(columns = everything(), missing_text = "") |>
     tab_spanner(label = "Dexmedetomidine", columns = c(event_e), level = 1) |>

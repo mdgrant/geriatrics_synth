@@ -765,7 +765,8 @@ soe_meta_result_rr_or <- function(meta_object, effect = "RR", digits = 2) {
   temp_pi <- exp(c(meta_object$lower.predict, meta_object$upper.predict))
   temp_pi <- formatC(temp_pi, digits = digits, format = "f")
   temp_pi <- paste0(" PI ", temp_pi[1], "–", temp_pi[2], ")")
-  (clipr::write_clip(paste0(temp_rr, temp_pi)))
+  temp_i2 <- paste0("*I*<sup> 2</sup> = ", formatC(meta_object$I2 * 100, 0, format = "f"), "%")
+  (clipr::write_clip(paste0(temp_rr, temp_pi, ", ", temp_i2)))
 }
 
 soe_meta_rd_or <- function(meta_object = temp_meta, digits = 1, scale = 1000) {
