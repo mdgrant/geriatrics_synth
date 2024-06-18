@@ -1,0 +1,223 @@
+---
+title: "Delirium Prophylaxis"
+---
+
+####    Timing (**Network**)
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <caption_mg> Network meta-analysis — dexmedetomidine time of administration and other comparators. </caption_mg>
+
+```{r component_nma}
+# VARIABLE: postop_only <lgl> from study arm only post-op administration [postop_only_dat]
+# study arm postop only
+timing_dat <- study_arm_dat |>
+  select(refid, arm_id, proph_med_pre, proph_med_induct, proph_med_intra, proph_med_postop) |>
+  rename_with(~ str_replace(.x, "proph_med", "time")) |>
+  mutate(
+    # time_pre = ifelse(!is.na(time_pre), "Preop/Induction", NA),
+    # time_induct = ifelse(!is.na(time_induct), "Preop/Induction", NA),
+    # time_intra = ifelse(!is.na(time_intra), "Intraop", NA),
+    time_pre_induct_intra = ifelse(!is.na(time_pre) | !is.na(time_induct) | !is.na(time_intra), "Preop/Induct/Intra", NA),
+    time_postop = ifelse(!is.na(time_postop), "Postop", NA),
+  ) |>
+  # unite(arm_time, time_pre, time_induct, time_intra, time_postop, na.rm = TRUE, sep = "|") |>
+  unite(arm_time, time_pre_induct_intra, time_postop, na.rm = TRUE, sep = "|") 
+  # mutate(arm_time = ifelse(arm_time == "Preop/Induction|Preop/Induction|Intraop", "Preop/Induction|Intraop", arm_time))
+
+delirium_dex_timing_meta_dat <- dichot_dat |>
+  # only dexmedetomidine studies
+  filter(!refid %in% c(18819)) |> # Sun 2023 timing not specified
+  filter(refid %in% dex_refid) |>
+  filter(!is.na(delitotal_n)) |>
+  left_join(drugs_dat |> select(refid, arm_id, drug_recode_abbr), by = c("refid", "arm_id")) |>
+  left_join(study_char_dat |> select(refid, country), by = "refid") |>
+  left_join(surgs |> select(refid, surgs_single_f), by = c("refid")) |>
+  left_join(timing_dat, by = c("refid", "arm_id")) |>
+  rename(arm = drug_recode_abbr, surg_f = surgs_single_f) |>
+  select(refid, refid_c, arm_id, year, study, design_f_lab, country, surg_f, arm_time, arm, delitotal_n, arm_n, delitotal_perc, delirium_inc_prop) |>
+  arrange(refid_c, arm_id) |>
+  # collapse arms
+  # group_by(refid) |>  filter(n() > 2) |>  ungroup() |> # verify collapsed arms; verified 2023-03-09
+  mutate(
+    arm = fct_collapse(arm, "Plac" = c("Plac", "None")),
+    arm_time = ifelse(arm_time == "", as.character(arm), arm_time),
+    # arm_time = ifelse(arm == "None", "Place", arm_time),
+    delirium_inc_prop = ifelse(delirium_inc_prop == TRUE, "Incidence Proportion", "Maximum Daily"),
+    across(c(arm, design_f_lab, surg_f), ~ fct_drop(.x)),
+    delitotal_n = case_when(
+      study == "Lee 2018a" & arm_id == 2 ~ collapse_dichot(dichot_dat, "Lee 2018a", c(2, 3), delitotal_n), # for nma keep all arms as is
+      study == "Zhao 2020" & arm_id == 2 ~ collapse_dichot(dichot_dat, "Zhao 2020", c(2, 3, 4), delitotal_n), # nb collapses all doses
+      .default = delitotal_n
+    ),
+    arm_n = case_when(
+      study == "Lee 2018a" & arm_id == 2 ~ collapse_dichot(dichot_dat, "Lee 2018a", c(2, 3), arm_n),
+      study == "Zhao 2020" & arm_id == 2 ~ collapse_dichot(dichot_dat, "Zhao 2020", c(2, 3, 4), arm_n),
+      .default = arm_n
+    ),
+    arm_time = ifelse(study == "Lee 2018b" & arm_id == 4, "Induction/Preop|Intraop|Preg", arm_time)
+  ) |>
+  filter(!(study %in% c("Zhao 2020") & arm_id %in% c(3, 4))) |> 
+  filter(!(study == "Lee 2018a" & arm_id == 3)) |> 
+  filter(!(study == "Lee 2018b" & arm_id %in% c(2, 4))) 
+
+```
+
+::: {layout="[[40,40,-20]]"}
+
+```{r delirium_dex_timing_meta}
+
+timing_nma_dat <- delirium_dex_timing_meta_dat
+trts <- c("Preop/Induct/Intra", "Preop/Induct/Intra|Postop", "Postop", "Mid", "Prop", "Plac")
+
+tabyl(timing_nma_dat$arm_time) |>
+  arrange(desc(n)) |>
+  gt(id = "one") |>
+  gt_theme_mg() |>
+  cols_hide(c(percent)) |>
+  cols_label(
+    "timing_nma_dat$arm_time" = "Time (dexmedetomidine) or arm",
+    n = "Studies",
+  ) |>
+  cols_width(
+    "timing_nma_dat$arm_time" ~ px(250),
+    n ~ px(100)
+  ) |>
+  tab_footnote("Preop/Induction/Intra|Postop: given any of preoperative, intraoperative, or intraoperative periods and postoperatively; Preop/Induction/Intra: given any of preoperative, intraoperative, or intraoperative periods; Prop: propofol; Mid: midazolam.")
+
+trts <- c("Preop/Induct/Intra", "Preop/Induct/Intra|Postop", "Postop", "Mid", "Prop", "Plac")
+
+pairwise_timing_dat <- pairwise(
+  treat = arm_time,
+  event = delitotal_n,
+  n = arm_n,
+  studlab = study,
+  data = timing_nma_dat,
+  sm = "RR",
+  keep.all.comparisons = TRUE)
+
+net_timing <- netmeta(
+  pairwise_timing_dat,
+  random = TRUE,
+  prediction = TRUE,
+  seq = trts,
+  sm = "RR",
+  reference.group = "Plac"
+)
+
+```
+
+```{r delirium_comp_meta_plot}
+#| echo: false
+#| include: false
+#| eval: false
+
+png("assets/kq6_timing_netgraph.png", width = 8.5, height = 4.9, units = "in", res = 300)
+par(mar = rep(0, 4), xaxs='i', yaxs='i')
+netgraph(net_timing,
+  lwd = 4,
+  plastic = FALSE,
+  thickness = TRUE,
+  points = TRUE,
+  alpha.transparency = 2,
+  col = "azure3",
+  col.points = "#F39C12",
+  number.of.studies = TRUE,
+  seq = c("Preop/Induct/Intra", "Preop/Induct/Intra|Postop", "Postop", "Mid", "Prop", "Plac"),
+  rescale.pointsize = TRUE,
+  # cex.points = c(1, 2, 3, 4, 5),
+  # cex.points = node_size$n/40,
+  cex.points = net_timing$k.trts/3,
+  labels = paste0(trts, "\n(n=", round(n.trts), ")"),
+  pos.number.of.studies = .56,
+  col.number.of.studies = "black",
+  cex.number.of.studies = 1.5,
+  col.highlight = "white",
+  bg.number.of.studies = c("#FFFFFF"),
+  offset = c(.04, -.015), 
+  cex = 1.5,
+)
+dev.off()
+
+```
+![](assets/kq6_timing_netgraph.png){fig.align="left" width="35%"}
+:::
+
+
+<caption_mg> Forest plot of results with placebo as referent. </caption_mg>
+
+```{r component_nma_forest}
+#| echo: false
+#| include: false
+
+png("assets/kq6_timing_forest.png", width = 5.9, height = 2.8, units = "in", res = 300)
+meta::forest(net_timing,
+  xlab = "Risk Ratio",
+  sortvar = trts
+)
+dev.off()
+
+```
+![](assets/kq6_timing_forest.png){fig.align="left" width="45%"}
+
+<foot_mg> Preop/Induction/Intra|Postop: given any of preoperative, intraoperative, or intraoperative periods and postoperatively; Preop/Induction/Intra: given any of preoperative, intraoperative, or intraoperative periods; Prop: propofol; Mid: midazolam. <br/> Excludes Lee 2018b pregabalin arms (pregabalin alone and with dexmedetomidine). </foot_mg>
+
+<br/>
+
+<caption_mg> League table of comparisons from direct evidence displayed in the upper diagonal; network comparisons shown on the lower diagonal. Risk ratios and 95% CIs shown. </caption_mg>
+
+```{r timing_league_table}
+#| results: asis
+
+timing_netleague <- netleague(net_timing,
+  digits = 2,
+  common =  FALSE,
+  # direct = FALSE,
+  seq = trts
+)
+
+as_tibble(timing_netleague$random) |>
+  mutate(
+    across(V1:V6, ~ str_replace(.x, " \\(", "<br>\\(")),
+    # across(V1:V8, ~ str_replace(.x, "\\]", "\\)")),
+    across(V1:V6, ~ ifelse(.x == ".", "", .x))
+  ) |>
+  gt(id = "one") |>
+  cols_width(
+    everything() ~ px(110),
+  ) |>
+  fmt_markdown(columns = everything()) |>
+  text_replace("Preop/Induct/Intra\\|Postop", "Preop/Induct/Intra<br/>& Postop", locations = cells_body()) |> 
+  text_replace("Preop/Induct/Intra", "Pre/Ind/Int", locations = cells_body()) |> 
+  tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V1, rows = V1 %in% trts)) |>
+  tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V2, rows = V2 %in% trts)) |>
+  tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V3, rows = V3 %in% trts)) |>
+  tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V4, rows = V4 %in% trts)) |>
+  tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V5, rows = V5 %in% trts)) |>
+  tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V6, rows = V6 %in% trts)) |>
+  # tab_style(style = list(cell_text(color = "maroon", weight = "bold")), locations = cells_body(columns = V7, rows = V7 %in% trts)) |>
+  rm_stubhead() |>
+  gt_theme_mg() |>
+  tab_options(column_labels.hidden = TRUE, table.font.size = px(14)) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_body(V1:V6)) |>
+  tab_footnote("Pre/Ind/Int & Postop: given any of preoperative, intraoperative, or intraoperative periods and postoperatively; Pre/Ind/Int: given any of preoperative, intraoperative, or intraoperative periods; Mid: midazolam.")
+
+```
+
+<br/>
+
+##### Comparison of direct and indirect evidence in network meta-analysis (node splitting forest plot). 
+
+```{r timing_netsplit}
+#| echo: false
+#| include: false
+
+timing_net_split <- netsplit(net_timing)
+
+png("assets/kq6_timing_net_split.png", width = 7.58, height = 9.8, units = "in", res = 300)
+forest(timing_net_split, xlab = "Risk Ratio")
+dev.off()
+
+```
+![](assets/kq6_timing_net_split.png){fig.align="left" width="57%"}
+
+:::
