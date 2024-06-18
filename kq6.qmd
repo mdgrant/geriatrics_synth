@@ -2803,7 +2803,7 @@ dev.off()
 
 <br/>
 
-## **Neurocognitive Disorder <30 days**
+## **Neurocognitive Disorder<br/> <30 days**
 
 ```{r dncr_ncd_dat}
 
@@ -3633,7 +3633,7 @@ dev.off()
 <foot_mg> Dex: Dexmedetomidine; Ket: Ketamine; Mel/Ram: Melatonin/Ramelteon; Mid: Midazolam; MS: Morphine; Prop: Propofol; Plac/None: Placebo or no comparator. </foot_mg>
 :::
 
-## **Neurocognitive Disorder ≥30 days**
+## **Neurocognitive Disorder<br/> ≥30 days to 1 year**
 
 ### Dexmedetomidine, Ketamine, and Melatonin
 

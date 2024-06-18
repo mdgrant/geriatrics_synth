@@ -1009,7 +1009,7 @@ rob_summary_meta_weighted_subset_fun(gen_reg_delirium_meta)
 ```
 :::
 
-## **Neurocognitive Disorder <30 days**
+## **Neurocognitive Disorder<br/> <30 days**
 
 ```{r dncr_ncd_dat}
 #| eval: true
@@ -1294,7 +1294,7 @@ rob_summary_meta_weighted_fun(gen_reg_dncr_meta)
 
 <foot_mg> `r temp` </foot_mg>
  
-## **Neurocognitive Disorder ≥30 days**
+## **Neurocognitive Disorder<br/> ≥30 days to 1 year**
 
 <caption_mg> `r table_ref()` Neurocognitive disorder ≥30 days incidence and ascertainment in a randomized clinical trial comparing neuraxial to general anesthesia.</caption_mg>
 

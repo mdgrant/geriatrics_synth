@@ -1480,7 +1480,7 @@ rob_summary_meta_weighted_nrsi_fun(delirium_meta_nrsi)
 ```
 :::
 
-## **Neurocognitive Disorder <30 days**
+## **Neurocognitive Disorder<br/> <30 days**
 
 ```{r dncr_ncd_dat}
 
@@ -1632,7 +1632,7 @@ dncr_dat |>
   tab_footnote("Mini-Mental State Exam; DST: Digit Span Test; MoCA: Montreal Cognitive Assessment; RR: risk ratio.")
 ```
 
-## **Neurocognitive Disorder ≥30 days**
+## **Neurocognitive Disorder<br/> ≥30 days to 1 year**
 
 <caption_mg> No studies </caption_mg>
 

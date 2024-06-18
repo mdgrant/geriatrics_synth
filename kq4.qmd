@@ -953,7 +953,7 @@ temp <- print(delirium_meta_nrsi) |>
 <foot_mg> `r temp` </foot_mg>
 :::
 
-## **Neurocognitive Disorder <30 days**
+## **Neurocognitive Disorder<br/> <30 days**
 
 ```{r dncr_ncd_dat}
 #| eval: true
@@ -1366,7 +1366,7 @@ rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind", weighted = TRUE
 ```
 :::
 
-## **Neurocognitive Disorder ≥30 days**
+## **Neurocognitive Disorder<br/> ≥30 days to 1 year**
 
 <caption_mg> `r table_ref()` Neurocognitive disorder ≥30 days (cognitive dysfunction after 30 days) and ascertainment. </caption_mg>
 
