@@ -3,6 +3,10 @@ project:
   output-dir: docs
   preview:
     watch-inputs: false
+  render:
+    - "*.qmd"
+    - "!timing-NMA.qmd"
+    - "!workflow.qmd"
 
 execute:
   echo: false
