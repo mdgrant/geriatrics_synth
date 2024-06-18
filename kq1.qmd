@@ -1480,7 +1480,7 @@ rob_summary_meta_weighted_nrsi_fun(delirium_meta_nrsi)
 ```
 :::
 
-## **Delayed Neurocognitive Recovery**
+## **Neurocognitive Disorder <30 days**
 
 ```{r dncr_ncd_dat}
 
@@ -1550,7 +1550,7 @@ dncr_dat <- dncr_dat |>
 rm(dncr_rr_ref)
 ```
 
-<font size = 4> `r table_ref()` Delayed neurocognitive recovery incidence and ascertainment (expanded versus standard preoperative evaluation; randomized and nonrandomized designs). </font>
+<font size = 4> `r table_ref()` Neurocognitive disorder <30 days incidence and ascertainment (expanded versus standard preoperative evaluation; randomized and nonrandomized designs). </font>
 
 ```{r dncr_gt}
 
@@ -1606,7 +1606,7 @@ dncr_dat |>
   fmt_number(dncr_time, decimals = 0) |>
   sub_missing(columns = everything(), missing_text = "") |>
   tab_spanner(label = "Instrument", columns = c(scale_mmse:scale_other_tf), level = 1) |>
-  tab_spanner(label = "Delayed Neurocognitive Recovery", columns = c(neurocog_nper:rr_ci), level = 1) |>
+  tab_spanner(label = "Neurocognitive Disorder <30 days", columns = c(neurocog_nper:rr_ci), level = 1) |>
   tab_spanner(label = "Preop", columns = c(pre_mmse), level = 1) |>
   cols_width(
     study_l ~ px(165),
@@ -1622,7 +1622,6 @@ dncr_dat |>
     bar ~ px(100),
     rr_ci ~ px(140),
   ) |>
-  # text_replace("999", replacement, locations = cells_body(columns = dncr_time))
   tab_style(style = cell_text(align = "left"), locations = cells_column_labels(columns = c(study, arm))) |>
   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(starts_with("scale"), pre_mmse, dncr_time, neurocog_nper, rr_ci))) |>
   tab_style(style = cell_text(align = "right"), locations = cells_column_labels(columns = c(neurocog_nper))) |>
@@ -1633,7 +1632,7 @@ dncr_dat |>
   tab_footnote("Mini-Mental State Exam; DST: Digit Span Test; MoCA: Montreal Cognitive Assessment; RR: risk ratio.")
 ```
 
-## **Postoperative Neurocognitive Disorder**
+## **Neurocognitive Disorder ≥30 days**
 
 <caption_mg> No studies </caption_mg>
 
@@ -2197,7 +2196,7 @@ path <- glue::glue("/Users/mgrant/Desktop/temp.xlsx")
 saveWorkbook(wb, "/Users/mgrant/Desktop/kq4.xlsx", overwrite = TRUE)
 ```
 
-<font size = 4> `r table_ref()` Reported complications in expanded versus standard preoperative evaluation --- cardiac, pulmonary, and acute kidney injury (randomized and nonrandomized designs). </font>
+<font size = 4> `r table_ref()` Complications reported in expanded versus standard preoperative evaluation --- cardiac, pulmonary, and acute kidney injury (randomized and nonrandomized designs). </font>
 
 ```{r complications}
 #| warning: true

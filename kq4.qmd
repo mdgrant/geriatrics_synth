@@ -953,7 +953,7 @@ temp <- print(delirium_meta_nrsi) |>
 <foot_mg> `r temp` </foot_mg>
 :::
 
-## **Delayed Neurocognitive Recovery**
+## **Neurocognitive Disorder <30 days**
 
 ```{r dncr_ncd_dat}
 #| eval: true
@@ -1045,7 +1045,7 @@ dncr_dat <- dncr_dat |>
 rm(dncr_rr_ref)
 ```
 
-<caption_mg> `r table_ref()` Delayed neurocognitive recovery incidence and ascertainment (randomized and nonrandomized designs). Table includes only studies conducting cognitive testing at day 3 or later.</caption_mg>
+<caption_mg> `r table_ref()` Neurocognitive disorder <30 days incidence and ascertainment (randomized and nonrandomized designs). Table includes only studies conducting cognitive testing at day 3 or later.</caption_mg>
 
 ```{r dncr_gt}
 #| eval: true
@@ -1107,7 +1107,7 @@ dncr_dat |>
   fmt_number(dncr_time, decimals = 0) |>
   sub_missing(columns = everything(), missing_text = "") |>
   tab_spanner(label = "Instrument", columns = c(scale_mmse:scale_ns), level = 1) |>
-  tab_spanner(label = "Delayed Neurocognitive Recovery", columns = c(neurocog_nper:rr_ci), level = 1) |>
+  tab_spanner(label = "Neurocognitive Disorder <30 days", columns = c(neurocog_nper:rr_ci), level = 1) |>
   tab_spanner(label = "Preop", columns = c(pre_mmse), level = 1) |>
   cols_width(
     study_l ~ px(165),
@@ -1155,7 +1155,7 @@ dncr_dat |>
 
 <foot_mg>    </foot_mg> 
 
-<caption_mg> `r figure_ref()` Delayed neurocognitive recovery assessed at postoperative day 5 or later (randomized clinical trials).  </caption_mg>
+<caption_mg> `r figure_ref()` Neurocognitive disorder <30 days assessed at postoperative day 5 or later (randomized clinical trials).  </caption_mg>
 
 ```{r dncr_meta_dat}
 #| eval: true
@@ -1285,7 +1285,7 @@ temp <- print(dncr_tiva_inhaled_meta,) |>
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <caption_mg> `r figure_ref()` Delayed neurocognitive recovery assessed at postoperative day 5 or later (randomized clinical trials; risk difference per 100). </caption_mg> <a id="kq4_delirium_risk-diff"></a>
+#### <caption_mg> `r figure_ref()` Neurocognitive disorder <30 days assessed at postoperative day 5 or later (randomized clinical trials; risk difference per 100). </caption_mg> <a id="kq4_delirium_risk-diff"></a>
 
 ```{r kq4_dncr_meta_forest_rd}
 #| echo: false
@@ -1321,7 +1321,7 @@ dev.off()
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <caption_mg> `r figure_ref()` Delayed neurocognitive recovery assessed at postoperative day 5 or later (small study effects). </caption_mg>
+#### <caption_mg> `r figure_ref()` Neurocognitive disorder <30 days assessed at postoperative day 5 or later (small study effects). </caption_mg>
 
 ```{r kq4_dncr_funnel_limit} 
 #| echo: false
@@ -1347,7 +1347,7 @@ dev.off()
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <caption_mg> `r figure_ref()` Delayed neurocognitive recovery summary risk of bias from randomized clinical trials (weighted). </caption_mg>
+#### <caption_mg> `r figure_ref()` Neurocognitive disorder <30 days summary risk of bias from randomized clinical trials (weighted). </caption_mg>
 
 ```{r rob2_summary_dncr, fig.height = 3, out.width = "60%"}
 temp <- update(dncr_tiva_inhaled_meta, subgroup = NULL)
@@ -1366,9 +1366,9 @@ rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind", weighted = TRUE
 ```
 :::
 
-## **Postoperative Neurocognitive Disorder**
+## **Neurocognitive Disorder ≥30 days**
 
-<caption_mg> `r table_ref()` Postoperative neurocognitive disorder (cognitive dysfunction after 30 days) and ascertainment. </caption_mg>
+<caption_mg> `r table_ref()` Neurocognitive disorder ≥30 days (cognitive dysfunction after 30 days) and ascertainment. </caption_mg>
 
 ```{r ncd_dat}
 ncd_dat <- dichot_dat |>
@@ -1482,7 +1482,7 @@ ncd_dat |>
   fmt_number(ncd_time, decimals = 0) |>
   sub_missing(columns = everything(), missing_text = "") |>
   tab_spanner(label = "Instrument", columns = c(scale_mmse:scale_ns), level = 1) |>
-  tab_spanner(label = "Neurocognitive Disorder", columns = c(neurocog_nper:rr_ci), level = 1) |>
+  tab_spanner(label = "Neurocognitive Disorder ≥30 days", columns = c(neurocog_nper:rr_ci), level = 1) |>
   tab_spanner(label = "Preop", columns = c(pre_mmse), level = 1) |>
   cols_width(
     study_l ~ px(165),
@@ -1522,7 +1522,7 @@ ncd_dat |>
 
 <foot_mg>    </foot_mg> 
 
-<caption_mg> `r figure_ref()` Postoperative neurocognitive disorder (nonrandomized designs).  </caption_mg>
+<caption_mg> `r figure_ref()` Neurocognitive disorder ≥30 days (nonrandomized designs).  </caption_mg>
 
 ```{r ncd_meta}
 #| echo: false

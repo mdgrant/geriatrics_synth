@@ -381,6 +381,7 @@ delirium_total_gt_fun <- function(drug_f_abbr){
       scale_delirium = ifelse(row_number() > 1, "", scale_delirium),
       bar = case_when(
         str_detect(drug_recode_abbr, drug_f_abbr) ~ bar_prop(calc_percent, "#A93226"),
+        str_detect(drug_recode_abbr, "Prop|Mid|Preg|Dex/Preg") ~ bar_prop(calc_percent, "#104E8B"),
         .default = bar_prop(calc_percent, "#969696")
       ),
     ) |>
@@ -1051,6 +1052,7 @@ kq6_balance_dex_main <- function(inc_exclude = "exclude") {
     tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(event_c, event_e, n, grade, rct, nrsi))) |>
     # tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(est))) |>
     tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(grade, measure, rct, nrsi))) |>
+    tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(est, measure), rows = str_detect(measure, "RD"))) |>
     tab_footnote("RCT: randomized clinical trial; NRSI: nonrandomized studies of interventions; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; OR: odds ratio; MD: mean difference; SMD: standardized mean difference.") |>
     tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
     tab_footnote("Neither study detected a difference.", locations = cells_body(columns = c(est), rows = outcome == "Neurocognitive disorders")) |>

@@ -272,7 +272,7 @@ study_char_dat |>
   mutate(across(starts_with("prim"), ~ !is.na(.x))) |>
   rename(
     "Postoperative delirium" = prim_delirium,
-    "Delayed neurocognitive recovery" = prim_pocd,
+    "Neurocognitive disorder <30 days" = prim_pocd,
     # "Stroke" = prim_stroke,
     # "Intraoperative awareness" = prim_aware,
     # "Quality of recovery" = prim_recovery,
@@ -340,7 +340,7 @@ study_char_dat |>
   mutate(across(starts_with("sec"), ~ !is.na(.x))) |> # names() -> temp
   rename(
     "Postoperative delirium" = sec_delirium,
-    "Delayed neurocognitive recovery" = sec_pocd,
+    "Neurocognitive disorder <30 days" = sec_pocd,
     # "Stroke" = sec_stroke,
     # "Intraoperative awareness" = sec_aware,
     # "Quality of recovery" = sec_recovery,
@@ -388,7 +388,7 @@ study_char_dat |>
   mutate(across(starts_with("sec_oth_"), ~ !is.na(.x))) |> # names() -> temp
   rename(
     "Postoperative delirium" = sec_oth_delirium,
-    "Delayed neurocognitive recovery" = sec_oth_pocd,
+    "Neurocognitive disorder <30 days" = sec_oth_pocd,
     # "Stroke" = sec_oth_stroke,
     # "Intraoperative awareness" = sec_oth_aware,
     # "Quality of recovery" = sec_oth_recovery,

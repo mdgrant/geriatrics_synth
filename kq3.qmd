@@ -1009,7 +1009,7 @@ rob_summary_meta_weighted_subset_fun(gen_reg_delirium_meta)
 ```
 :::
 
-## **Delayed Neurocognitive Recovery**
+## **Neurocognitive Disorder <30 days**
 
 ```{r dncr_ncd_dat}
 #| eval: true
@@ -1094,7 +1094,7 @@ dncr_dat <- dncr_dat |>
 rm(dncr_rr_ref)
 ```
 
-<caption_mg> `r table_ref()` Delayed neurocognitive recovery incidence and ascertainment. </caption_mg>
+<caption_mg> `r table_ref()` Neurocognitive disorder <30 days incidence and ascertainment. </caption_mg>
 
 ```{r dncr_gt}
 #| eval: true
@@ -1144,7 +1144,7 @@ dncr_dat |>
   fmt_number(dncr_time, decimals = 0) |>
   sub_missing(columns = everything(), missing_text = "") |>
   tab_spanner(label = "Instrument", columns = c(scale_mmse:scale_other_tf), level = 1) |>
-  tab_spanner(label = "Delayed Neurocognitive Recovery", columns = c(neurocog_nper:rr_ci), level = 1) |>
+  tab_spanner(label = "Neurocognitive Disorder <30 days", columns = c(neurocog_nper:rr_ci), level = 1) |>
   tab_spanner(label = "Preop", columns = c(pre_mmse), level = 1) |>
   cols_width(
     study_l          ~ px(150),
@@ -1294,9 +1294,9 @@ rob_summary_meta_weighted_fun(gen_reg_dncr_meta)
 
 <foot_mg> `r temp` </foot_mg>
  
-## **Postoperative Neurocognitive Disorder**
+## **Neurocognitive Disorder ≥30 days**
 
-<caption_mg> `r table_ref()` Postoperative neurocognitive disorder incidence and ascertainment in a randomized clinical trial comparing neuraxial to general anesthesia.</caption_mg>
+<caption_mg> `r table_ref()` Neurocognitive disorder ≥30 days incidence and ascertainment in a randomized clinical trial comparing neuraxial to general anesthesia.</caption_mg>
 
 ```{r ncd_dat}
 ncd_dat <- dichot_dat |>

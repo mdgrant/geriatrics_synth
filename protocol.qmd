@@ -176,9 +176,9 @@ Between 2019 and 2060, the number of US adults aged 65 years or older will likel
 
 -   Postoperative delirium
 
--   Delayed neurocognitive recovery (\< 30 days after procedure)
+-   Neurocognitive disorder <30 days (\< 30 days after procedure)
 
--   Postoperative neurocognitive disorder
+-   Neurocognitive disorder ≥30 days (to 1 year)
 
 -   Stroke
 
