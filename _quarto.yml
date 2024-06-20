@@ -7,6 +7,7 @@ project:
     - "*.qmd"
     - "!timing-NMA.qmd"
     - "!workflow.qmd"
+    - "!kq6_control_arm_reg.qmd"
 
 execute:
   echo: false

@@ -1544,6 +1544,17 @@ dex_meta_dat <- pairwise_dat |>
   ) |> 
   arrange(year, study)
 
+dex_meta_baseline_dat <- dex_meta_dat |> 
+  mutate(
+    baseline_risk = event1 / n1,
+    baseline_cat = case_when(
+      baseline_risk < 0.15 ~ "<15%",
+      baseline_risk >= 0.15 & baseline_risk <= 0.3 ~ "10-30%",
+      baseline_risk > 0.3 ~ ">30%"
+    ),
+    baseline_cat = factor(baseline_cat, levels = c("<15%", "10-30%", ">30%"))
+  ) 
+
 # length(unique(dex_plac_refid))
 # toString(sort(dex_plac_refid))
 # total_meta(dex_meta_dat)
@@ -1570,6 +1581,19 @@ dex_plac_meta_size <- metabin(event2, n2, event1, n1,
   method.predict = "HK",
   prediction = TRUE,
   allstudies = TRUE
+)
+
+dex_plac_base_sub_meta <- metabin(event2, n2, event1, n1,
+  data = dex_meta_baseline_dat,
+  studlab = study,
+  sm = "RR",
+  method = "MH",
+  method.tau = "REML",
+  method.random.ci = "HK",
+  method.predict = "HK",
+  prediction = TRUE,
+  allstudies = TRUE,
+  subgroup = baseline_cat
 )
 
 dex_meta_noasterisk_dat <- dex_meta_dat |> 
@@ -2096,12 +2120,30 @@ rm(temp, fitted_meta)
 
 <br/>
 
-<foot_mg> Similar plot for odds ratios obtained from a Bayesian meta-regression (fitted using Stan and multinma).</foot_mg>  
+<caption_mg> Similar plot for odds ratios obtained from a Bayesian meta-regression (fitted using Stan and multinma). </caption_mg>
 
 <br/>
 
 ![](assets/kq6_bubble_dex_plac_stan.png){fig.align="left" width="70%"}
 
+:::
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+#### <caption_mg> `r figure_ref()` Risk ratios according to baseline risk subgroups (placebo delirium incidence proportion) — <15%, 15% to 30%, and >30%. </caption_mg> <a id="dex-bubble-plot"></a>
+
+```{r baseline_risk_dex_subgroups}
+#| echo: false
+#| include: false
+
+png("assets/kq6_dex_plac_base_sub_meta.png", width = 10.5, height = 14, units = "in", res = 300)
+dex_meta_forest_sub(dex_plac_base_sub_meta)
+dev.off()
+
+trim_image("kq6_dex_plac_base_sub_meta.png")
+
+```
+
+![](assets/kq6_dex_plac_base_sub_meta.png){fig.align="left" width="68%"}
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
@@ -2117,21 +2159,22 @@ rob_summary_meta_weighted_fun(dex_plac_meta)
 <caption_mg> `r figure_ref()` Summary of subgroup results. </caption_mg>
 
 ```{r dex_subgroup_summary}
-# library(extrafont)
-# loadfonts(device = "pdf")
 
 subgroup_dat <- readxl::read_excel(
   "data/forester_data.xlsx",
-  sheet = "dex_subgroups",
-  range = "A1:H23"
-) |> 
+  sheet = "dex_subgroups_risk",
+  range = "A1:H27"
+) |>
   mutate(
     Subgroup = ifelse(!is.na(Studies) & Subgroup != "Overall", paste0("   ", Subgroup), Subgroup),
+    Subgroup = ifelse(Subgroup  %in% c("<15%", "15% to 30%", ">30%"), paste0("   ", Subgroup), Subgroup),
+    # Subgroup = str_remove(Subgroup, "^a"),
     `   I²` = ifelse(!is.na(`   I²`), paste0(as.character(round(`   I²`*100, 0)), "%   "), NA)
-  )  
+    # Subgroup = ifelse(Subgroup  %in% c("0.10", "0.20", "0.40"), paste0("    ", Subgroup), Subgroup)
+  )
   # rename("         Dex" = Dex)
 
-with(subgroup_dat, 
+with(subgroup_dat,
   forester::forester(
   left_side_data = subgroup_dat[, c(1, 2, 3, 4, 8)],
   estimate = rr,
@@ -2157,6 +2200,7 @@ with(subgroup_dat,
   arrow_labels = c("Dexmedetomidine Better", "Placebo Better")
 )
 )
+
 
 ```
 
