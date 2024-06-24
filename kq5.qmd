@@ -71,16 +71,16 @@ likert_dat <- data_kq(likert_dat, kq5_refid) |>
 
 ```
 
-## **Outcome Importance**
+<!-- ## **Outcome Importance** -->
 
-<font size = 4> `r table_ref()`</font> Rankings for the 5 most important outcomes (11 respondents).
+<!-- <font size = 4> `r table_ref()`</font> Rankings for the 5 most important outcomes (11 respondents). -->
 
-```{r outcome_priority}
-#| include: true
-#| eval: true
-outcome_dat <- rankings("KQ5")
-outcome_tab(outcome_dat, 11)
-```
+<!-- ```{r outcome_priority} -->
+<!-- #| include: true -->
+<!-- #| eval: true -->
+<!-- outcome_dat <- rankings("KQ5") -->
+<!-- outcome_tab(outcome_dat, 11) -->
+<!-- ``` -->
 
 ## **Outcomes Reported**
 

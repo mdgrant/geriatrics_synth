@@ -106,126 +106,126 @@ kq3_refid[kq3_refid %in% cogfunc_refid]
 kq3_refid[!kq3_refid %in% c(delirium_refid, cogfunc_refid)]
 ```
 
-## Updates
-::: {.callout-important collapse="true"}
-### 2024-03-11
+<!-- ## Updates -->
+<!-- ::: {.callout-important collapse="true"} -->
+<!-- ### 2024-03-11 -->
 
-| Date       | Modification                                                                                                                                                                    |
-|:-----------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 2023-11-08 | Updated to most current included studies. Removed risk of bias tallies from forest plots where not pertinent to outcome. Used weighted risk of bias summary for delirium and added for overall. Added risk differences per 1000 to complications and mortality. |
-| 2023-11-09 | Added balance tables (same as in the balance tables tab).|
-| 2024-01-02 | Added [Figure 5](kq3.html#bubble-plot) to display potential dependence of effects on baseline (control arm event rate) for delirium. Updated balance tables.|
-| 2024-01-03 | Added link under included studies section to updated [appendix](summary_kq3.html) that now includes a [primary outcomes table](summary_kq3.html#primary-outcomes). |
-| 2024-01-06 | Added [pooled risk difference](kq3.html#risk-diff) to delirium. Updated balance tables. |
-| 2024-03-11 | Added 2 new publications (1 new trial); [O'Brien 2023](https://doi.org/10.1002/alz.13132) dementia subgroups from Neuman 2021 and [Sciberras 2022](https://doi.org/10.2217/pmt-2021-0081).| 
-| 2024-03-15 | Studies enrolling and corresponding number of patients with dementia added to delirium analyses. |
-| 2024-03-16 | Dementia subgroup delirium results added; [Figure 1](kq3.html#pooled) footnote. |
-|            | Fixed coding error when collapsing arms for Shin 2020, that resulted in an incorrect denominator for the general anesthesia arm with delirium and mortality outcomes. Was correct for complications.|
-|            | Changed Li 2020 to exclude patients with preoperative delirium. |
-|            | Changed prediction method to use Hartung-Knapp adjustment with 5 or more trials.|
-|            | Included additional detail pertaining to meta-analysis methods where appropriate.|
-|            | Added mean delirium incidence rates to plot of baseline risk and risk difference (assist interpreting risk difference).|
-|            | Deleted Zhang 2019a (assessment on day 1) from table of delayed neurocognitive recovery. |
-|            | Added table for Neuman et al 2021 inability to walk at 60d without human assistance to physical function. |
-|            | Added Sciberras 2022 to physical function table and pooled result. |
+<!-- | Date       | Modification                                                                                                                                                                    | -->
+<!-- |:-----------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| -->
+<!-- | 2023-11-08 | Updated to most current included studies. Removed risk of bias tallies from forest plots where not pertinent to outcome. Used weighted risk of bias summary for delirium and added for overall. Added risk differences per 1000 to complications and mortality. | -->
+<!-- | 2023-11-09 | Added balance tables (same as in the balance tables tab).| -->
+<!-- | 2024-01-02 | Added [Figure 5](kq3.html#bubble-plot) to display potential dependence of effects on baseline (control arm event rate) for delirium. Updated balance tables.| -->
+<!-- | 2024-01-03 | Added link under included studies section to updated [appendix](summary_kq3.html) that now includes a [primary outcomes table](summary_kq3.html#primary-outcomes). | -->
+<!-- | 2024-01-06 | Added [pooled risk difference](kq3.html#risk-diff) to delirium. Updated balance tables. | -->
+<!-- | 2024-03-11 | Added 2 new publications (1 new trial); [O'Brien 2023](https://doi.org/10.1002/alz.13132) dementia subgroups from Neuman 2021 and [Sciberras 2022](https://doi.org/10.2217/pmt-2021-0081).|  -->
+<!-- | 2024-03-15 | Studies enrolling and corresponding number of patients with dementia added to delirium analyses. | -->
+<!-- | 2024-03-16 | Dementia subgroup delirium results added; [Figure 1](kq3.html#pooled) footnote. | -->
+<!-- |            | Fixed coding error when collapsing arms for Shin 2020, that resulted in an incorrect denominator for the general anesthesia arm with delirium and mortality outcomes. Was correct for complications.| -->
+<!-- |            | Changed Li 2020 to exclude patients with preoperative delirium. | -->
+<!-- |            | Changed prediction method to use Hartung-Knapp adjustment with 5 or more trials.| -->
+<!-- |            | Included additional detail pertaining to meta-analysis methods where appropriate.| -->
+<!-- |            | Added mean delirium incidence rates to plot of baseline risk and risk difference (assist interpreting risk difference).| -->
+<!-- |            | Deleted Zhang 2019a (assessment on day 1) from table of delayed neurocognitive recovery. | -->
+<!-- |            | Added table for Neuman et al 2021 inability to walk at 60d without human assistance to physical function. | -->
+<!-- |            | Added Sciberras 2022 to physical function table and pooled result. | -->
 
 
-```{r}
-#| tbl-cap: Overview of changes to primary outcomes following search update.
-#| eval: true
-#| html-table-processing: none
-reg_gen_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "RegionalGeneral", range = "A4:P21") |> # [, c(2:4, 10, 12, 13, 15:18)] |>
-  # remove_empty(which = "cols") |>
-  clean_names() |>
-  mutate(
-    across(everything(), ~ replace(.x, is.na(.x), "")),
-    estimate_95_percent_ci = ifelse(estimate_95_percent_ci == "see Appendix", "see Below", estimate_95_percent_ci)
-  )
+<!-- ```{r} -->
+<!-- #| tbl-cap: Overview of changes to primary outcomes following search update. -->
+<!-- #| eval: true -->
+<!-- #| html-table-processing: none -->
+<!-- reg_gen_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "RegionalGeneral", range = "A4:P21") |> # [, c(2:4, 10, 12, 13, 15:18)] |> -->
+<!--   # remove_empty(which = "cols") |> -->
+<!--   clean_names() |> -->
+<!--   mutate( -->
+<!--     across(everything(), ~ replace(.x, is.na(.x), "")), -->
+<!--     estimate_95_percent_ci = ifelse(estimate_95_percent_ci == "see Appendix", "see Below", estimate_95_percent_ci) -->
+<!--   ) -->
 
-reg_gen_dat |>
-  gt(id = "one") |>
-  cols_hide(c(exclude, grade_2, rct, events_reg:n, updated)) |>
-  cols_label(
-    outcome = "Outcome",
-    rct_new = "RCT",
-    grade = "GRADE",
-    measure = "Effect",
-    estimate_95_percent_ci = "Est (CI)",
-    rct_new = md("New<br/> RCT"),
-    prior_est = md("  Old<br/> Est (CI)"),
-    grade_change = "GRADE Δ"
-  ) |>
-  cols_width(
-    outcome ~ px(215),
-    rct_new ~ px(50),
-    grade ~ px(95),
-    measure ~ px(75),
-    estimate_95_percent_ci ~ px(125),
-    rct_new ~ px(55),
-    prior_est ~ px(120),
-    grade_change ~ px(105),
-  ) |>
-  gt_theme_mg() |>
-  tab_style(style = cell_text(size = "12px"), locations = cells_body(columns = everything())) |> 
-  tab_style(style = cell_text(size = "11px"), locations = cells_column_labels(columns = everything())) |> 
-  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rct, rct_new, prior_est, grade_change))) |>
-  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(rct, rct_new, prior_est, grade_change))) |>
-  tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(estimate_95_percent_ci , measure, prior_est), rows = str_detect(measure, "RD"))) |>
-  tab_footnote("RCT: randomized controlled trial; GRADE: Grading of Recommendations Assessment, Development and Evaluation; Est: effect estimate; CI: confidence interval; RR: risk ratio; MD: mean difference; RD: risk difference.") |> 
-  tab_footnote("Changed after additional review.", locations = cells_body(columns = c(grade_change), rows = grade_change == "Very low → Low")) |>
-  tab_footnote("Corrected Shin 2020.", locations = cells_body(columns = c(estimate_95_percent_ci), rows = estimate_95_percent_ci %in% c(" 0.66 (0.28–1.50)", "-5.4 (-12.3 to 1.5)", " 0.75 (0.34–1.64)", "-3.6 (-16.6 to 9.5)", " 0.20 (0.02–1.71)", "-8.8 (-21.1 to 3.6)", "1.12 (0.57–2.20)", "-3.1 (-15.4 to 9.1)"))) |>
-  tab_footnote("Fixed coding error when collapsing arms for Shin 2020, that resulting in an incorrect denominator for the general anesthesia arm. Changed Li 2020 to exclude patients with preoperative delirium.", locations = cells_body(columns = c(estimate_95_percent_ci), rows = outcome == "Delirium"))
-  # tab_footnote("Corrected model fitting parameter.", locations = cells_body(columns = prior_est, rows = outcome == "Mortality (in-hospital and 30-day)")) 
+<!-- reg_gen_dat |> -->
+<!--   gt(id = "one") |> -->
+<!--   cols_hide(c(exclude, grade_2, rct, events_reg:n, updated)) |> -->
+<!--   cols_label( -->
+<!--     outcome = "Outcome", -->
+<!--     rct_new = "RCT", -->
+<!--     grade = "GRADE", -->
+<!--     measure = "Effect", -->
+<!--     estimate_95_percent_ci = "Est (CI)", -->
+<!--     rct_new = md("New<br/> RCT"), -->
+<!--     prior_est = md("  Old<br/> Est (CI)"), -->
+<!--     grade_change = "GRADE Δ" -->
+<!--   ) |> -->
+<!--   cols_width( -->
+<!--     outcome ~ px(215), -->
+<!--     rct_new ~ px(50), -->
+<!--     grade ~ px(95), -->
+<!--     measure ~ px(75), -->
+<!--     estimate_95_percent_ci ~ px(125), -->
+<!--     rct_new ~ px(55), -->
+<!--     prior_est ~ px(120), -->
+<!--     grade_change ~ px(105), -->
+<!--   ) |> -->
+<!--   gt_theme_mg() |> -->
+<!--   tab_style(style = cell_text(size = "12px"), locations = cells_body(columns = everything())) |>  -->
+<!--   tab_style(style = cell_text(size = "11px"), locations = cells_column_labels(columns = everything())) |>  -->
+<!--   tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rct, rct_new, prior_est, grade_change))) |> -->
+<!--   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(rct, rct_new, prior_est, grade_change))) |> -->
+<!--   tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(estimate_95_percent_ci , measure, prior_est), rows = str_detect(measure, "RD"))) |> -->
+<!--   tab_footnote("RCT: randomized controlled trial; GRADE: Grading of Recommendations Assessment, Development and Evaluation; Est: effect estimate; CI: confidence interval; RR: risk ratio; MD: mean difference; RD: risk difference.") |>  -->
+<!--   tab_footnote("Changed after additional review.", locations = cells_body(columns = c(grade_change), rows = grade_change == "Very low → Low")) |> -->
+<!--   tab_footnote("Corrected Shin 2020.", locations = cells_body(columns = c(estimate_95_percent_ci), rows = estimate_95_percent_ci %in% c(" 0.66 (0.28–1.50)", "-5.4 (-12.3 to 1.5)", " 0.75 (0.34–1.64)", "-3.6 (-16.6 to 9.5)", " 0.20 (0.02–1.71)", "-8.8 (-21.1 to 3.6)", "1.12 (0.57–2.20)", "-3.1 (-15.4 to 9.1)"))) |> -->
+<!--   tab_footnote("Fixed coding error when collapsing arms for Shin 2020, that resulting in an incorrect denominator for the general anesthesia arm. Changed Li 2020 to exclude patients with preoperative delirium.", locations = cells_body(columns = c(estimate_95_percent_ci), rows = outcome == "Delirium")) -->
+<!--   # tab_footnote("Corrected model fitting parameter.", locations = cells_body(columns = prior_est, rows = outcome == "Mortality (in-hospital and 30-day)"))  -->
 
-```
+<!-- ``` -->
 
-```{r}
-#| tbl-cap: Changes to adverse events following search update.
-#| eval: true
-#| html-table-processing: none
-reg_gen_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "RegionalGeneral", range = "B33:P52") |>
-  # remove_empty(which = "cols") |>
-  clean_names() |>
-  mutate(
-    across(everything(), ~ replace(.x, is.na(.x), "")),
-    estimate_95_percent_ci = ifelse(estimate_95_percent_ci == "see Appendix", "see Below", estimate_95_percent_ci)
-    ) 
+<!-- ```{r} -->
+<!-- #| tbl-cap: Changes to adverse events following search update. -->
+<!-- #| eval: true -->
+<!-- #| html-table-processing: none -->
+<!-- reg_gen_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "RegionalGeneral", range = "B33:P52") |> -->
+<!--   # remove_empty(which = "cols") |> -->
+<!--   clean_names() |> -->
+<!--   mutate( -->
+<!--     across(everything(), ~ replace(.x, is.na(.x), "")), -->
+<!--     estimate_95_percent_ci = ifelse(estimate_95_percent_ci == "see Appendix", "see Below", estimate_95_percent_ci) -->
+<!--     )  -->
 
-reg_gen_dat |>
-  gt(id = "one") |>
-  cols_hide(c(rct:n, grade_2, updated)) |> 
-  cols_label(
-    outcome = "Outcome",
-    rct_new = "RCT",
-    grade = "GRADE",
-    measure = "Effect",
-    estimate_95_percent_ci = "Est (CI)",
-    rct_new = md("New<br/> RCT"),
-    prior_est = md("  Old<br/> Est (CI)"),
-    grade_change = "GRADE Δ"
-  ) |>
-  cols_width(
-    outcome ~ px(215),
-    rct_new ~ px(50),
-    grade ~ px(95),
-    measure ~ px(75),
-    estimate_95_percent_ci ~ px(125),
-    rct_new ~ px(55),
-    prior_est ~ px(120),
-    grade_change ~ px(105),
-  ) |>
-  gt_theme_mg() |>
-  tab_style(style = cell_text(size = "12px"), locations = cells_body(columns = everything())) |> 
-  tab_style(style = cell_text(size = "11px"), locations = cells_column_labels(columns = everything())) |> 
-  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rct, rct_new))) |>
-  tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(estimate_95_percent_ci, measure, prior_est), rows = str_detect(measure, "RD"))) |>
-  tab_footnote("RCT: randomized controlled trial; NRSI: non-randomized study of intervention; GRADE: Grading of Recommendations Assessment, Development and Evaluation; Est: effect estimate; CI: confidence interval; RR: risk ratio; OR: odds ratio; RD: risk difference.") |> 
-  tab_footnote("Change to random effects.", locations = cells_body(columns = c(estimate_95_percent_ci), rows = prior_est  %in% c("-11.8 (-28.5 to 4.5)", "-3.7 (-10.6 to 3.3)", "-3.7 (-9.2 to 1.8)"))) |> 
-  tab_footnote("Corrected to use Hartung-Knapp adjustment.", locations = cells_body(columns = c(estimate_95_percent_ci), rows = prior_est  %in% c("-11.8 (-28.5 to 4.5)")))
+<!-- reg_gen_dat |> -->
+<!--   gt(id = "one") |> -->
+<!--   cols_hide(c(rct:n, grade_2, updated)) |>  -->
+<!--   cols_label( -->
+<!--     outcome = "Outcome", -->
+<!--     rct_new = "RCT", -->
+<!--     grade = "GRADE", -->
+<!--     measure = "Effect", -->
+<!--     estimate_95_percent_ci = "Est (CI)", -->
+<!--     rct_new = md("New<br/> RCT"), -->
+<!--     prior_est = md("  Old<br/> Est (CI)"), -->
+<!--     grade_change = "GRADE Δ" -->
+<!--   ) |> -->
+<!--   cols_width( -->
+<!--     outcome ~ px(215), -->
+<!--     rct_new ~ px(50), -->
+<!--     grade ~ px(95), -->
+<!--     measure ~ px(75), -->
+<!--     estimate_95_percent_ci ~ px(125), -->
+<!--     rct_new ~ px(55), -->
+<!--     prior_est ~ px(120), -->
+<!--     grade_change ~ px(105), -->
+<!--   ) |> -->
+<!--   gt_theme_mg() |> -->
+<!--   tab_style(style = cell_text(size = "12px"), locations = cells_body(columns = everything())) |>  -->
+<!--   tab_style(style = cell_text(size = "11px"), locations = cells_column_labels(columns = everything())) |>  -->
+<!--   tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rct, rct_new))) |> -->
+<!--   tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(estimate_95_percent_ci, measure, prior_est), rows = str_detect(measure, "RD"))) |> -->
+<!--   tab_footnote("RCT: randomized controlled trial; NRSI: non-randomized study of intervention; GRADE: Grading of Recommendations Assessment, Development and Evaluation; Est: effect estimate; CI: confidence interval; RR: risk ratio; OR: odds ratio; RD: risk difference.") |>  -->
+<!--   tab_footnote("Change to random effects.", locations = cells_body(columns = c(estimate_95_percent_ci), rows = prior_est  %in% c("-11.8 (-28.5 to 4.5)", "-3.7 (-10.6 to 3.3)", "-3.7 (-9.2 to 1.8)"))) |>  -->
+<!--   tab_footnote("Corrected to use Hartung-Knapp adjustment.", locations = cells_body(columns = c(estimate_95_percent_ci), rows = prior_est  %in% c("-11.8 (-28.5 to 4.5)"))) -->
 
-```
+<!-- ``` -->
 
-:::
+<!-- ::: -->
 
 ## Key Question
 
@@ -247,16 +247,16 @@ kq3_balance_main() |>
 kq3_complications()
 ```
 
-## Outcome Importance
+<!-- ## Outcome Importance -->
 
-<caption_mg> `r table_ref()` Rankings of the 5 most important outcomes (11 respondents). </caption_mg>
+<!-- <caption_mg> `r table_ref()` Rankings of the 5 most important outcomes (11 respondents). </caption_mg> -->
 
-```{r outcome_priority}
-#| include: true
-#| eval: true
-outcome_dat <- rankings("KQ3") 
-outcome_tab(outcome_dat, 11)
-```
+<!-- ```{r outcome_priority} -->
+<!-- #| include: true -->
+<!-- #| eval: true -->
+<!-- outcome_dat <- rankings("KQ3")  -->
+<!-- outcome_tab(outcome_dat, 11) -->
+<!-- ``` -->
 
 ## Outcomes Reported
 

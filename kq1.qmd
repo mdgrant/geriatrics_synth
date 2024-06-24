@@ -99,144 +99,144 @@ likert_dat <- likert_dat |>
 
 ```
 
-## Updates
-::: {.callout-important collapse="true"}
-### 2024-04-10
+<!-- ## Updates -->
+<!-- ::: {.callout-important collapse="true"} -->
+<!-- ### 2024-04-10 -->
 
-| Date       | Modification                                                                                                                                                                    |
-|:-----------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 2024-03-28 | •  4 studies (3 before-after [[Harari 2007](evidence_tables.html#19171), [Smoor 2023](evidence_tables.html#18797), [Staiger 2023](evidence_tables.html#18807)] 1 retrospective cohort [[Paille 2021](evidence_tables.html#19377)]) added from updated search. |
-| 2024-03-30 | •  Correction to link Shyu 2005 and 2008 (same trial). <br/> •   Added dementia to study characteristics table.<br/> •   Study and group ordering now consistent study characteristics and evaluation tables. |
-| 2024-04-10 | •   GRADE for delirium now low based on concern for small study effects and potential for publication bias ([see asymmetric funnel plot examining small study effects](kq1.html#fig-rct_funnel)). <br/> •   For manuscript [balance table](balance_tables.html#expanded-preoperative-evaluation), omitted results from non-randomized studies except for delayed neurocognitive recovery and patient satisfaction. However, note that for hospital and 30-day mortality the GRADE was higher for nonrandomized studies. <br/> •   Updated [table of evaluation and intervention components](kq1.html#evaluationintervention-components) to include discussion of expectations and palliative care discussion, as well as haloperidol for delirium prophylaxis. Replaced changed for clarity. <br/> •   Added [table of intervention frequency](kq1.html#intervention-frequency). <br/> •   Physical function pooled removed period subgroups; arranged by time in forest plots and added figures showing limited change over time [for RCTs](kq1.html#fig-adl-time) and [nonrandomized studies](kq1.html#fig-adl-time_nrsi). <br/> •   Consistent with other TIVA versus inhaled anesthesia, adverse event results were combined (naïvely) from randomized and nonrandomized designs when the GRADE from randomized clinical trials would have been low or very low. <br/> •   Deleted pooled pulmonary complications owing to inconsistent outcome definitions. <br/> •   Reorganized discharge location pooled results to show randomized and nonrandomized designs. <br/> •   Added funnel plots, forest plots of risk differences, and baseline risk vs. risk ratio. <br/> •   Added [sensitivity analysis for pooled odds ratio to forest plot footnote](kq1.html#t-santabalbina2019_sensitivity_delirium) from nonrandomized studies to include the adjusted result from Tarazona-Santabalbina 2019 (little difference from unadjusted).
+<!-- | Date       | Modification                                                                                                                                                                    | -->
+<!-- |:-----------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| -->
+<!-- | 2024-03-28 | •  4 studies (3 before-after [[Harari 2007](evidence_tables.html#19171), [Smoor 2023](evidence_tables.html#18797), [Staiger 2023](evidence_tables.html#18807)] 1 retrospective cohort [[Paille 2021](evidence_tables.html#19377)]) added from updated search. | -->
+<!-- | 2024-03-30 | •  Correction to link Shyu 2005 and 2008 (same trial). <br/> •   Added dementia to study characteristics table.<br/> •   Study and group ordering now consistent study characteristics and evaluation tables. | -->
+<!-- | 2024-04-10 | •   GRADE for delirium now low based on concern for small study effects and potential for publication bias ([see asymmetric funnel plot examining small study effects](kq1.html#fig-rct_funnel)). <br/> •   For manuscript [balance table](balance_tables.html#expanded-preoperative-evaluation), omitted results from non-randomized studies except for delayed neurocognitive recovery and patient satisfaction. However, note that for hospital and 30-day mortality the GRADE was higher for nonrandomized studies. <br/> •   Updated [table of evaluation and intervention components](kq1.html#evaluationintervention-components) to include discussion of expectations and palliative care discussion, as well as haloperidol for delirium prophylaxis. Replaced changed for clarity. <br/> •   Added [table of intervention frequency](kq1.html#intervention-frequency). <br/> •   Physical function pooled removed period subgroups; arranged by time in forest plots and added figures showing limited change over time [for RCTs](kq1.html#fig-adl-time) and [nonrandomized studies](kq1.html#fig-adl-time_nrsi). <br/> •   Consistent with other TIVA versus inhaled anesthesia, adverse event results were combined (naïvely) from randomized and nonrandomized designs when the GRADE from randomized clinical trials would have been low or very low. <br/> •   Deleted pooled pulmonary complications owing to inconsistent outcome definitions. <br/> •   Reorganized discharge location pooled results to show randomized and nonrandomized designs. <br/> •   Added funnel plots, forest plots of risk differences, and baseline risk vs. risk ratio. <br/> •   Added [sensitivity analysis for pooled odds ratio to forest plot footnote](kq1.html#t-santabalbina2019_sensitivity_delirium) from nonrandomized studies to include the adjusted result from Tarazona-Santabalbina 2019 (little difference from unadjusted). -->
 
-<caption_mg> Outcomes reported in additional publications (not necessarily unique studies).  </caption_mg>
+<!-- <caption_mg> Outcomes reported in additional publications (not necessarily unique studies).  </caption_mg> -->
 
-```{r}
-tribble(
-  ~outcome, ~before_after, ~ret_coh,
-  "Delirium", 1, 1,
-  "Complications", 3, 1,
-  "Length of stay", 2, 1,
-  "Discharge location", NA, 1,
-  "Readmission", 1, 1,
-  "Mortality", 2, 1,
-) |>
-  gt(id = "one") |>
-  cols_label(
-    outcome          = "Outcome",
-    before_after     = "Before-After",
-    ret_coh          = md("Retrospective<br/> Cohort")
-  ) |>
-  gt_theme_mg() |>
-  sub_missing(columns = everything(), missing_text = "") |>
-  tab_spanner(label = "Studies Reporting", columns = c(before_after, ret_coh), level = 1) |>
-  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(before_after, ret_coh))) |>
-  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(before_after, ret_coh)))
+<!-- ```{r} -->
+<!-- tribble( -->
+<!--   ~outcome, ~before_after, ~ret_coh, -->
+<!--   "Delirium", 1, 1, -->
+<!--   "Complications", 3, 1, -->
+<!--   "Length of stay", 2, 1, -->
+<!--   "Discharge location", NA, 1, -->
+<!--   "Readmission", 1, 1, -->
+<!--   "Mortality", 2, 1, -->
+<!-- ) |> -->
+<!--   gt(id = "one") |> -->
+<!--   cols_label( -->
+<!--     outcome          = "Outcome", -->
+<!--     before_after     = "Before-After", -->
+<!--     ret_coh          = md("Retrospective<br/> Cohort") -->
+<!--   ) |> -->
+<!--   gt_theme_mg() |> -->
+<!--   sub_missing(columns = everything(), missing_text = "") |> -->
+<!--   tab_spanner(label = "Studies Reporting", columns = c(before_after, ret_coh), level = 1) |> -->
+<!--   tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(before_after, ret_coh))) |> -->
+<!--   tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(before_after, ret_coh))) -->
 
-```
+<!-- ``` -->
 
-```{r}
-#| tbl-cap: Overview of changes to primary outcomes following search update.
-#| html-table-processing: none
-expanded_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "ExpandedPreop", range = "A4:R26")[, c(2:4, 10, 12, 13, 15:18)] |>
-    remove_empty(which = "cols") |>
-    clean_names() |>
-  mutate(
-    across(everything(), ~ replace(.x, is.na(.x), "")),
-    estimate_95_percent_ci = ifelse(estimate_95_percent_ci == "see Appendix", "see Below", estimate_95_percent_ci)
-  )
+<!-- ```{r} -->
+<!-- #| tbl-cap: Overview of changes to primary outcomes following search update. -->
+<!-- #| html-table-processing: none -->
+<!-- expanded_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "ExpandedPreop", range = "A4:R26")[, c(2:4, 10, 12, 13, 15:18)] |> -->
+<!--     remove_empty(which = "cols") |> -->
+<!--     clean_names() |> -->
+<!--   mutate( -->
+<!--     across(everything(), ~ replace(.x, is.na(.x), "")), -->
+<!--     estimate_95_percent_ci = ifelse(estimate_95_percent_ci == "see Appendix", "see Below", estimate_95_percent_ci) -->
+<!--   ) -->
 
-expanded_dat |>
-  gt(id = "one") |>
-  cols_label(
-    outcome = "Outcome",
-    rct = "RCT",
-    nrsi = "NRSI",
-    grade = "GRADE",
-    measure = "Effect",
-    estimate_95_percent_ci = "Est (CI)",
-    rct_new = "New RCT",
-    nrsi_new = "New NRSI",
-    prior_est = "Old Est (CI)",
-    grade_change = "GRADE Δ"
-  ) |>
-  cols_width(
-    outcome ~ px(215),
-    rct ~ px(50),
-    nrsi ~ px(50),
-    grade ~ px(95),
-    measure ~ px(75),
-    estimate_95_percent_ci ~ px(125),
-    rct_new ~ px(45),
-    nrsi_new ~ px(50),
-    prior_est ~ px(120),
-    grade_change ~ px(80),
-  ) |>
-  gt_theme_mg() |>
-  tab_style(style = cell_text(size = "12px"), locations = cells_body(columns = everything())) |> 
-  tab_style(style = cell_text(size = "11px"), locations = cells_column_labels(columns = everything())) |> 
-  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rct, nrsi, rct_new, nrsi_new))) |>
-  tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(estimate_95_percent_ci , measure, prior_est), rows = str_detect(measure, "RD"))) |>
-  tab_footnote("RCT: randomized controlled trial; NRSI: non-randomized study of intervention; GRADE: Grading of Recommendations Assessment, Development and Evaluation; Est: effect estimate; CI: confidence interval; RR: risk ratio; MD: mean difference; RD: risk difference.") |> 
-    tab_footnote("Error in transcribing confidence interval.", locations = cells_body(columns = prior_est, rows = prior_est %in% c("1.02 (0.12–8.46)"))) |> 
-    tab_footnote("Difference in confidence intervals TBD.", locations = cells_body(columns = prior_est, rows = prior_est %in% c("0.77 (0.30–1.64)"))) |> 
-  tab_footnote("Although the number of studies limits the ability to assess small study effects, reviewing funnel plot suggests that possibility. Discussed with task force and decision made to downgrade to low.", locations = cells_body(columns = grade_change, rows = outcome == "Delirium incidence"))
-    
-
-```
-
-```{r}
-#| tbl-cap: Overview of changes to adverse events following search update.
-#| html-table-processing: none
-
-expanded_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "ExpandedPreop", range = "A36:R47")[, c(2:4, 10, 12, 13, 15:18)] |>
-    remove_empty(which = "cols") |>
-    clean_names() |>
-  mutate(
-    across(everything(), ~ replace(.x, is.na(.x), "")),
-    estimate_95_percent_ci = ifelse(estimate_95_percent_ci == "see Appendix", "see Below", estimate_95_percent_ci)
-  )
-
-expanded_dat |>
-  gt(id = "one") |>
-  cols_label(
-    outcome = "Outcome",
-    rct = "RCT",
-    nrsi = "NRSI",
-    grade = "GRADE",
-    measure = "Effect",
-    estimate_95_percent_ci = "Est (CI)",
-    rct_new = "New RCT",
-    nrsi_new = "New NRSI",
-    prior_est = "Old Est (CI)",
-    grade_change = "GRADE Δ"
-  ) |>
-  cols_width(
-    outcome ~ px(215),
-    rct ~ px(50),
-    nrsi ~ px(50),
-    grade ~ px(95),
-    measure ~ px(75),
-    estimate_95_percent_ci ~ px(120),
-    rct_new ~ px(45),
-    nrsi_new ~ px(50),
-    prior_est ~ px(120),
-    grade_change ~ px(105),
-  ) |>
-  gt_theme_mg() |>
-  tab_style(style = cell_text(size = "12px"), locations = cells_body(columns = everything())) |> 
-  tab_style(style = cell_text(size = "11px"), locations = cells_column_labels(columns = everything())) |> 
-  tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rct, nrsi, rct_new, nrsi_new))) |>
-  tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(estimate_95_percent_ci, measure, prior_est), rows = str_detect(measure, "RD"))) |>
-  tab_footnote("RCT: randomized controlled trial; NRSI: non-randomized study of intervention; GRADE: Grading of Recommendations Assessment, Development and Evaluation; Est: effect estimate; CI: confidence interval; RR: risk ratio; RD: risk difference.") 
-
-    # tab_footnote("Revised estimate from raw data; still approximate owing to pruning in those studies using propensity matching but more consistent with when a risk ratio was used.", locations = cells_body(columns = prior_est, rows = prior_est %in% c("-1.9 (3.0 to -0.7)", "0.62 (-1.23 to 3.49)", "-0.05 (-0.61 to 0.57)", "-7.1 (-21.8 to 21.8", "0.33 (0.14 to 0.57)", "-0.53 (-0.82 to -0.20)"))) 
+<!-- expanded_dat |> -->
+<!--   gt(id = "one") |> -->
+<!--   cols_label( -->
+<!--     outcome = "Outcome", -->
+<!--     rct = "RCT", -->
+<!--     nrsi = "NRSI", -->
+<!--     grade = "GRADE", -->
+<!--     measure = "Effect", -->
+<!--     estimate_95_percent_ci = "Est (CI)", -->
+<!--     rct_new = "New RCT", -->
+<!--     nrsi_new = "New NRSI", -->
+<!--     prior_est = "Old Est (CI)", -->
+<!--     grade_change = "GRADE Δ" -->
+<!--   ) |> -->
+<!--   cols_width( -->
+<!--     outcome ~ px(215), -->
+<!--     rct ~ px(50), -->
+<!--     nrsi ~ px(50), -->
+<!--     grade ~ px(95), -->
+<!--     measure ~ px(75), -->
+<!--     estimate_95_percent_ci ~ px(125), -->
+<!--     rct_new ~ px(45), -->
+<!--     nrsi_new ~ px(50), -->
+<!--     prior_est ~ px(120), -->
+<!--     grade_change ~ px(80), -->
+<!--   ) |> -->
+<!--   gt_theme_mg() |> -->
+<!--   tab_style(style = cell_text(size = "12px"), locations = cells_body(columns = everything())) |>  -->
+<!--   tab_style(style = cell_text(size = "11px"), locations = cells_column_labels(columns = everything())) |>  -->
+<!--   tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rct, nrsi, rct_new, nrsi_new))) |> -->
+<!--   tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(estimate_95_percent_ci , measure, prior_est), rows = str_detect(measure, "RD"))) |> -->
+<!--   tab_footnote("RCT: randomized controlled trial; NRSI: non-randomized study of intervention; GRADE: Grading of Recommendations Assessment, Development and Evaluation; Est: effect estimate; CI: confidence interval; RR: risk ratio; MD: mean difference; RD: risk difference.") |>  -->
+<!--     tab_footnote("Error in transcribing confidence interval.", locations = cells_body(columns = prior_est, rows = prior_est %in% c("1.02 (0.12–8.46)"))) |>  -->
+<!--     tab_footnote("Difference in confidence intervals TBD.", locations = cells_body(columns = prior_est, rows = prior_est %in% c("0.77 (0.30–1.64)"))) |>  -->
+<!--   tab_footnote("Although the number of studies limits the ability to assess small study effects, reviewing funnel plot suggests that possibility. Discussed with task force and decision made to downgrade to low.", locations = cells_body(columns = grade_change, rows = outcome == "Delirium incidence")) -->
 
 
+<!-- ``` -->
 
-```
+<!-- ```{r} -->
+<!-- #| tbl-cap: Overview of changes to adverse events following search update. -->
+<!-- #| html-table-processing: none -->
 
-:::
+<!-- expanded_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "ExpandedPreop", range = "A36:R47")[, c(2:4, 10, 12, 13, 15:18)] |> -->
+<!--     remove_empty(which = "cols") |> -->
+<!--     clean_names() |> -->
+<!--   mutate( -->
+<!--     across(everything(), ~ replace(.x, is.na(.x), "")), -->
+<!--     estimate_95_percent_ci = ifelse(estimate_95_percent_ci == "see Appendix", "see Below", estimate_95_percent_ci) -->
+<!--   ) -->
+
+<!-- expanded_dat |> -->
+<!--   gt(id = "one") |> -->
+<!--   cols_label( -->
+<!--     outcome = "Outcome", -->
+<!--     rct = "RCT", -->
+<!--     nrsi = "NRSI", -->
+<!--     grade = "GRADE", -->
+<!--     measure = "Effect", -->
+<!--     estimate_95_percent_ci = "Est (CI)", -->
+<!--     rct_new = "New RCT", -->
+<!--     nrsi_new = "New NRSI", -->
+<!--     prior_est = "Old Est (CI)", -->
+<!--     grade_change = "GRADE Δ" -->
+<!--   ) |> -->
+<!--   cols_width( -->
+<!--     outcome ~ px(215), -->
+<!--     rct ~ px(50), -->
+<!--     nrsi ~ px(50), -->
+<!--     grade ~ px(95), -->
+<!--     measure ~ px(75), -->
+<!--     estimate_95_percent_ci ~ px(120), -->
+<!--     rct_new ~ px(45), -->
+<!--     nrsi_new ~ px(50), -->
+<!--     prior_est ~ px(120), -->
+<!--     grade_change ~ px(105), -->
+<!--   ) |> -->
+<!--   gt_theme_mg() |> -->
+<!--   tab_style(style = cell_text(size = "12px"), locations = cells_body(columns = everything())) |>  -->
+<!--   tab_style(style = cell_text(size = "11px"), locations = cells_column_labels(columns = everything())) |>  -->
+<!--   tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(rct, nrsi, rct_new, nrsi_new))) |> -->
+<!--   tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(estimate_95_percent_ci, measure, prior_est), rows = str_detect(measure, "RD"))) |> -->
+<!--   tab_footnote("RCT: randomized controlled trial; NRSI: non-randomized study of intervention; GRADE: Grading of Recommendations Assessment, Development and Evaluation; Est: effect estimate; CI: confidence interval; RR: risk ratio; RD: risk difference.")  -->
+
+<!--     # tab_footnote("Revised estimate from raw data; still approximate owing to pruning in those studies using propensity matching but more consistent with when a risk ratio was used.", locations = cells_body(columns = prior_est, rows = prior_est %in% c("-1.9 (3.0 to -0.7)", "0.62 (-1.23 to 3.49)", "-0.05 (-0.61 to 0.57)", "-7.1 (-21.8 to 21.8", "0.33 (0.14 to 0.57)", "-0.53 (-0.82 to -0.20)")))  -->
+
+
+
+<!-- ``` -->
+
+<!-- ::: -->
 
 ## Key Question
 
@@ -258,18 +258,18 @@ kq1_balance_main("include") |>
 kq1_complications()
 ```
 
-## **Outcome Importance Rankings**
+<!-- ## **Outcome Importance Rankings** -->
 
-### Expanded Preoperative Evaluation
+<!-- ### Expanded Preoperative Evaluation -->
 
-<font size = 4> `r table_ref()` Rankings of the 5 most important outcomes (11 respondents). </font>
+<!-- <font size = 4> `r table_ref()` Rankings of the 5 most important outcomes (11 respondents). </font> -->
 
-```{r, outcome_priority_kq1}
-#| include: true
-#| eval: true
-outcome_dat <- rankings("KQ1")
-outcome_tab(outcome_dat, 11)
-```
+<!-- ```{r, outcome_priority_kq1} -->
+<!-- #| include: true -->
+<!-- #| eval: true -->
+<!-- outcome_dat <- rankings("KQ1") -->
+<!-- outcome_tab(outcome_dat, 11) -->
+<!-- ``` -->
 
 ## **Outcomes Reported**
 
