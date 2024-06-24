@@ -267,9 +267,9 @@ kq6_balance_dex_main("include") |>
 kq6_dex_complications()
 ```
 
-### Ketamine
+<!-- ### Ketamine -->
 
-<caption_mg> Benefits, harms, and strength of evidence (GRADE) for ketamine versus placebo or no intervention. </caption_mg>
+<!-- <caption_mg> Benefits, harms, and strength of evidence (GRADE) for ketamine versus placebo or no intervention. </caption_mg> -->
 
 ```{r ket_balance}
 #| eval: false
@@ -279,9 +279,9 @@ kq6_ketamine() |>
   # text_replace("see Appendix", "see Appendix", locations = cells_body())
 ```
 
-### Melatonin or Ramelteon
+<!-- ### Melatonin or Ramelteon -->
 
-<caption_mg> Benefits, harms, and strength of evidence (GRADE) for melatonin or ramelteon versus placebo or no intervention. </caption_mg>
+<!-- <caption_mg> Benefits, harms, and strength of evidence (GRADE) for melatonin or ramelteon versus placebo or no intervention. </caption_mg> -->
 
 ```{r mel_ram_balance}
 #| eval: false
@@ -291,7 +291,7 @@ kq6_balance_mel_ram_main() |>
   # text_replace("see Appendix", "see Appendix", locations = cells_body())
 ```
 
-<caption_mg> Included complications and strength of evidence (GRADE) for melatonin or ramelteon versus placebo or no intervention.</caption_mg>
+<!-- <caption_mg> Included complications and strength of evidence (GRADE) for melatonin or ramelteon versus placebo or no intervention.</caption_mg> -->
 
 ```{r mel_ram_complications}
 #| eval: false
@@ -313,23 +313,28 @@ kq6_balance_mel_ram_complications()
 
 ## Outcomes Reported
 
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+### <caption_mg> Dexmedetomidine  </caption_mg>
+
 <caption_mg> `r table_ref()` Publications reporting dichotomous or count outcomes (not necessarily unique studies).</caption_mg>
 
 ```{r dichot_outcome_freq}
-dichot_freq_fun(dichot_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
+dichot_freq_fun(dichot_dat |> filter(refid %in% dex_refid), "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
 ```
 
 <caption_mg> `r table_ref()` Publications reporting continuous outcomes (not necessarily unique studies). </caption_mg>
 
 ```{r cont_outcome_freq}
-contin_freq_fun(contin_dat)
+contin_freq_fun(contin_dat |> filter(refid %in% dex_refid))
 ```
 
 <caption_mg> `r table_ref()` Publications reporting likert or ordinal outcomes (not necessarily unique studies). </caption_mg>
 
 ```{r likert_outcome_freq}
-likert_freq_fun(likert_dat, "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
+likert_freq_fun(likert_dat |> filter(refid %in% dex_refid), "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
 ```
+
+:::
 
 ## **Included Studies**
 

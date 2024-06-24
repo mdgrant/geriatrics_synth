@@ -985,7 +985,7 @@ kq6_balance_dex_main <- function(inc_exclude = "exclude") {
     rename(est = estimate_95_percent_ci) |>
     filter(!if_all(rct:est, ~ is.na(.x))) |>
     mutate(
-      # i2 = str_c(i2, "%"),
+      i2 = str_c(i2, "%"),
       high     = paste0("[", vlow, "]",     "(soe_gt.html#del-prophylaxis-grade)"),
       mod      = paste0("[", mod, "]",      "(soe_gt.html#del-prophylaxis-grade)"),
       low      = paste0("[", low, "]",      "(soe_gt.html#del-prophylaxis-grade)"),
