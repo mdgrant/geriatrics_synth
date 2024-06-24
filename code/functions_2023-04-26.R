@@ -708,7 +708,17 @@ riskdiff_ci_from_meta_rr <- function(meta_object, pscale = 100, digits = 2) {
   paste0(temp[1], " per ", pscale, " (95% CI, ", temp[2], " to ", temp[3], ")", ";", " control arm event rate ", control_arm, " per ", pscale, ".")
 }
 
-# change toi common effect
+riskdiff_ci_from_meta_rr_soe <- function(meta_object, pscale = 100, digits = 2) {
+  meta_object <- update(meta_object, sm = "RD")
+  temp <- c(meta_object$TE.random, meta_object$lower.random, meta_object$upper.random) * pscale
+  temp <- formatC(temp, digits = digits, format = "f")
+  temp_control <- metaprop(meta_object$data$.event.c, meta_object$data$.n.c)
+  control_arm <- boot::inv.logit(temp_control$TE.common) * pscale
+  control_arm <- formatC(control_arm, digits = digits, format = "f")
+  paste0(temp[1], " per ", pscale, " (95% CI, ", temp[2], " to ", temp[3], ")", "<br/>[", "pooled control arm event rate ", control_arm, " per ", pscale, "]")
+}
+
+# change to common effect
 # riskdiff_ci_from_meta_rr <- function(meta_object, pscale = 100, digits = 2) {
 #   meta_object <- update(meta_object, sm = "RD")
 #   temp <- c(meta_object$TE.common, meta_object$lower.common, meta_object$upper.common) * pscale
@@ -735,7 +745,11 @@ riskdiff_ci_from_meta_subset_rr <- function(meta_object, pscale = 100, digits = 
 
 risk_diff_meta_rr <- function(meta_select = temp_meta, scale = 1000, digits = 1) {
   paste0("Pooled risk difference ", riskdiff_ci_from_meta_rr(meta_select, pscale = scale, digits = digits))
-  }
+}
+
+risk_diff_meta_rr_soe <- function(meta_select = temp_meta, scale = 1000, digits = 1) {
+  paste0("Pooled risk difference ", riskdiff_ci_from_meta_rr_soe(meta_select, pscale = scale, digits = digits))
+}
 
 risk_diff_meta_subset_rr <- function(meta_select = temp_meta, scale = 1000, digits = 1) {
   paste0("Pooled risk difference ", riskdiff_ci_from_meta_subset_rr(meta_select, pscale = scale, digits = digits))
@@ -775,6 +789,10 @@ soe_meta_rd_or <- function(meta_object = temp_meta, digits = 1, scale = 1000) {
 
 soe_meta_rd_rr <- function(meta_object = temp_meta, digits = 1, scale = 1000) {
   (clipr::write_clip(paste0("RD ", riskdiff_ci_from_meta_rr(meta_object, pscale = scale, digits = digits))))
+}
+
+soe_meta_rd_rr_wcontrol <- function(meta_object = temp_meta, digits = 1, scale = 1000) {
+  (clipr::write_clip(paste0("RD ", riskdiff_ci_from_meta_rr_soe(meta_object, pscale = scale, digits = digits))))
 }
 
 ## kq4 risk difference functions + -------------------- (2024-03-26 10:52) @----

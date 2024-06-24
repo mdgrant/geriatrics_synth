@@ -985,7 +985,7 @@ kq6_balance_dex_main <- function(inc_exclude = "exclude") {
     rename(est = estimate_95_percent_ci) |>
     filter(!if_all(rct:est, ~ is.na(.x))) |>
     mutate(
-      i2 = str_c(i2, "%"),
+      # i2 = str_c(i2, "%"),
       high     = paste0("[", vlow, "]",     "(soe_gt.html#del-prophylaxis-grade)"),
       mod      = paste0("[", mod, "]",      "(soe_gt.html#del-prophylaxis-grade)"),
       low      = paste0("[", low, "]",      "(soe_gt.html#del-prophylaxis-grade)"),
@@ -1021,9 +1021,9 @@ kq6_balance_dex_main <- function(inc_exclude = "exclude") {
       # n        = "    N",
       grade    = "GRADE",
       measure  = "Effect",
-      est      = "Estimate (95% CI)",
+      est      = md("    Estimate<br/>      (95% CI)"),
       i2       = md("*I*<sup> 2</sup>"),
-      tau      = md("τ")
+      pi       = md("  Prediction<br/>   Interval")
     ) |>
     fmt_markdown(columns = c(grade, i2)) |>
     cols_hide(c(n, exclude)) |>
@@ -1038,17 +1038,17 @@ kq6_balance_dex_main <- function(inc_exclude = "exclude") {
       event_c ~ px(105),
       grade ~ px(100),
       measure ~ px(65),
-      est ~ px(140),
+      est ~ px(120),
       i2 ~ px(40),
-      tau ~ px(40)
+      pi ~ px(100)
     ) |>
     sub_missing(columns = everything(), missing_text = "") |>
     tab_spanner(label = "Dexmedetomidine", columns = c(event_e), level = 1) |>
     tab_spanner(label = "Placebo", columns = c(event_c), level = 1) |>
-    tab_spanner(label = "Heterogeneity", columns = c(i2, tau), level = 1) |>
-    tab_style(style = cell_text(size = "11px"), locations = cells_column_spanners(spanners = "Heterogeneity")) |>
+    # tab_spanner(label = "Heterogeneity", columns = c(i2), level = 1) |>
+    # tab_style(style = cell_text(size = "11px"), locations = cells_column_spanners(spanners = "Heterogeneity")) |>
     opt_footnote_marks(marks = "standard") |>
-    tab_style(style = cell_text(align = "right"), locations = cells_body(columns = c(i2, tau))) |>
+    tab_style(style = cell_text(align = "right"), locations = cells_body(columns = c(i2))) |>
     tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(event_c, event_e, n, grade, rct, nrsi))) |>
     # tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(est))) |>
     tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(grade, measure, rct, nrsi))) |>
