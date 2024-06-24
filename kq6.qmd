@@ -257,7 +257,9 @@ kq6_balance_dex_main("include") |>
   # text_replace("see Appendix", "see Appendix", locations = cells_body())
 ```
 
-<caption_mg> Included complications and strength of evidence (GRADE) for dexmedetomidine versus placebo or no intervention. </caption_mg>
+<!-- <caption_mg> Included complications and strength of evidence (GRADE) for dexmedetomidine versus placebo or no intervention. </caption_mg> -->
+
+
 
 ```{r dex_complications}
 #| eval: false
@@ -297,17 +299,17 @@ kq6_balance_mel_ram_main() |>
 kq6_balance_mel_ram_complications()
 ```
 
-## Outcome Importance
+<!-- ## Outcome Importance -->
 
-<caption_mg> `r table_ref()` Rankings for the 5 most important outcomes (11 respondents). </caption_mg>
+<!-- <caption_mg> `r table_ref()` Rankings for the 5 most important outcomes (11 respondents). </caption_mg> -->
 
-```{r outcome_priority}
-#| include: true
-#| eval: true
-# note also in appendix
-outcome_dat <- rankings("KQ6")
-outcome_tab(outcome_dat, 11)
-```
+<!-- ```{r outcome_priority} -->
+<!-- #| include: true -->
+<!-- #| eval: true -->
+<!-- # note also in appendix -->
+<!-- outcome_dat <- rankings("KQ6") -->
+<!-- outcome_tab(outcome_dat, 11) -->
+<!-- ``` -->
 
 ## Outcomes Reported
 
@@ -4796,7 +4798,7 @@ adverse_events_dat |>
 
 <caption_mg> `r figure_ref()` **Risk ratio** for hypotension (dexmedetomidine versus placebo or no interventions; randomized clinical trials). </caption_mg>
 
-```{r complication_hypo_meta, fig.width = 16.5, fig.height = 8.75, fig.align = "left"}
+```{r complication_hypo_meta}
 #| echo: false
 #| include: false
 
@@ -4818,7 +4820,8 @@ hypo_meta <- metabin(
   n_Dex, arm_n_Dex, n_Plac, arm_n_Plac,
   data = adverse_dex_meta_hypo_dat,
   studlab = study,
-  hakn = TRUE,
+  method.random.ci = "HK",
+  method.predict = "HK",
   sm = "RR",
   method.tau = "REML",
   # subset = !grepl("\\*", study),
@@ -5252,6 +5255,9 @@ adverse_ram_meta_wide_dat <- adverse_ram_meta_dat |>
 <caption_mg> `r figure_ref()` **Risk difference** in pneumonia (ramelteon versus no interventions; before-after studies). </caption_mg>
 
 ```{r complication_ram_meta,  fig.width = 16, fig.height = 4.5, fig.align = "left"}
+#| echo: false
+#| include: false
+
 adverse_ram_meta <- metabin(
   n_Ram, arm_n_Ram, n_None, arm_n_None,
   data = adverse_ram_meta_wide_dat,
