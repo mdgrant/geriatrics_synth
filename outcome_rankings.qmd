@@ -1,7 +1,7 @@
 ---
-title: "Outcome Priority Rankings"
+title: "Outcome Importance Ratings & Rankings"
 editor: source
-toc-title: "Outcome Priority Rankings"
+toc-title: "Type of Rating"
 toc-location: "left"
 toc_float: 
   collapsed: true
@@ -22,12 +22,66 @@ tables:
 source("code/load_data.R")
 ```
 
-## For all included key questions 
+Outcomes were first rated according by importance to patients, caregivers, and clinicians on a scale of 1 to 9 (1 to 3 limited importance, 4 to 6 important, 7 to 9 critical). To further focus the evidence synthesis, the task force then ranked the top 5 most important for each question displayed below as rankings. 
 
-<font size = 4> `r table_ref()`</font> Rankings for the 5 most important outcomes across 7 key questions (11 respondents; maximum 77 for each outcome rank or any top 5 ranking).
+## **Importance Ratings**
+
+```{r importance}
+#| echo: false
+#| include: false
+
+library(likert)
+
+importance_dat <- read_csv("data/geri_out_importance_2022-07-19.csv")[, -c(1, 5, 6)] |> 
+  mutate(
+    id = row_number(),
+  ) |> 
+  relocate(id, .before = 1) |> 
+  # mutate(across(-1, as.factor))
+  mutate(across(-1, \(x) case_when(
+    x <= 3 ~ "Limited",
+    x <= 6  ~ "Important",
+    TRUE ~ "Critical"
+  )))
+
+names(importance_dat)[c(3, 4)] <- c("Neurocognitive disorder <30d", "Neurocognitive disorder ≥30d to 1y")
+importance_dat_long <- pivot_longer(importance_dat, cols = -c(1), names_to = "answer", values_to = "value")
+importance_dat <- map(importance_dat[,-1], function(x) factor(x, levels = c("Limited", "Important", "Critical")))
+
+importance_lik <- likert(as.data.frame(importance_dat, check.names = FALSE), nlevels = 3)
+# summary(importance_lik)
+plot(importance_lik)
+
+png("assets/importance_lik.png", width = 13, height = 7.5, units = "in", res = 300)
+plot(importance_lik, text.size = 5, low.color = "#deebf7", neutral.color = "#9ecae1", high.color = "#3182bd", centered = TRUE) +
+  theme_minimal() +
+  theme(
+    # axis.text.x = element_blank(),
+    # axis.title.x = element_blank(),
+    panel.grid = element_blank(),
+    axis.text.x = element_text(size = 14, color = "black"),
+    axis.text.y = element_text(size = 15),
+    axis.title.x = element_text(size = 14),
+    plot.percent.low = FALSE,
+    legend.position = "bottom",
+    legend.title = element_blank(),
+    strip.text = element_text(colour = "green", face = "bold")
+  ) 
+dev.off()
+
+# trim_image("importance_lik.png")
+
+```
+![](assets/importance_lik.png){fig.align="left" width="80%"}
+
+## Rankings of the 5 most important outcomes across all key questions 
+
+<font size = 4> Rankings for the 5 most important outcomes across 5 key questions (11 respondents; maximum 55 for each outcome rank or any top 5 ranking). Other perioperative cognitive disorders includes neurocognitive disorder <30 days and neurocognitive disorder ≥30 days to 1 year. (Ordering can be changed by clicking on the column headers.) </font>
 
 ```{r}
-## key questions 1-6 & 8 --------------------------------------- (2023-01-24 11:48) @----
+
+```{r}
+## key questions 1, 3, 4, 5, 6 --------------------------------------- (2023-01-24 11:48) @----
 # function for outcome priority table by kq
 outcome_tab_all <- function(outcome_dat, responses) {
   reactable(
@@ -39,7 +93,7 @@ outcome_tab_all <- function(outcome_dat, responses) {
     defaultColDef = colDef(
       cell = data_bars(outcome_dat,
                        box_shadow = TRUE,
-                       force_outside = c(1, 77),
+                       force_outside = c(1, 55),
                        bar_height = 12,
                        max_value = responses
                        # fill_color = "#B22215"
@@ -59,7 +113,7 @@ outcome_tab_all <- function(outcome_dat, responses) {
         name = "Any", width = 80, headerClass = "header", align = "center",
         cell = data_bars(
           outcome_dat,
-          force_outside = c(1, 77),
+          force_outside = c(1, 55),
           box_shadow = TRUE,
           bar_height = 12,
           max_value = responses,
@@ -82,7 +136,7 @@ outcome_tab_all <- function(outcome_dat, responses) {
 priority_dat <- readxl::read_xlsx("data/OutcomeRankingRawData_2023-01-23_edit.xlsx", range = "A1:S89", sheet = "data") |>
   fill(kq) |>
   # exclude kq7 not being addressed
-  filter(kq != 7) |>
+  filter(!kq  %in%  c(2,7,8)) |>
   mutate(id = paste0(kq, "-", id))
 
 # function to tally the number by rank 1, 2, 3, 4, 5
@@ -106,5 +160,57 @@ rankings_dat <- transpose_tibble(rankings_dat, col_names = rank, id_col = "outco
 # rankings_dat |>
 #   summarise(across(rank1:rank5, sum))
 
-outcome_tab_all(rankings_dat, 77)
+outcome_tab_all(rankings_dat, 55)
 ```
+
+## Rankings of the 5 most important outcomes by key question
+
+<font size = 4> Rankings of the 5 most important outcomes (11 respondents) for each key question. Other perioperative cognitive disorders includes neurocognitive disorder <30 days and neurocognitive disorder ≥30 days to 1 year. (Ordering can be changed by clicking on the column headers.)
+</font>
+
+### Expanded Preoperative Evaluation
+
+```{r, outcome_priority_kq1}
+#| include: true
+#| eval: true
+outcome_dat <- rankings("KQ1")
+outcome_tab(outcome_dat, 11)
+```
+
+### Neuraxial versus General Anesthesia
+
+```{r, outcome_priority_kq3}
+#| include: true
+#| eval: true
+outcome_dat <- rankings("KQ3")
+outcome_tab(outcome_dat, 11)
+```
+
+### TIVA versus Inhaled (volatile) Anesthesia
+
+```{r, outcome_priority_kq4}
+#| include: true
+#| eval: true
+outcome_dat <- rankings("KQ4")
+outcome_tab(outcome_dat, 11)
+```
+
+### Potentially Inappropriate Medications
+
+```{r, outcome_priority_kq5}
+#| include: true
+#| eval: true
+outcome_dat <- rankings("KQ5")
+outcome_tab(outcome_dat, 11)
+```
+
+### Delirium Prophylaxis
+
+```{r, outcome_priority_kq6}
+#| include: true
+#| eval: true
+outcome_dat <- rankings("KQ6")
+outcome_tab(outcome_dat, 11)
+```
+
+
