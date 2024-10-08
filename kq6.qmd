@@ -260,7 +260,6 @@ kq6_balance_dex_main("include") |>
 <!-- <caption_mg> Included complications and strength of evidence (GRADE) for dexmedetomidine versus placebo or no intervention. </caption_mg> -->
 
 
-
 ```{r dex_complications}
 #| eval: false
 
@@ -301,7 +300,7 @@ kq6_balance_mel_ram_complications()
 
 <!-- ## Outcome Importance -->
 
-<!-- <caption_mg> `r table_ref()` Rankings for the 5 most important outcomes (11 respondents). </caption_mg> -->
+<!-- <caption_mg> Rankings for the 5 most important outcomes (11 respondents). </caption_mg> -->
 
 <!-- ```{r outcome_priority} -->
 <!-- #| include: true -->
@@ -314,24 +313,70 @@ kq6_balance_mel_ram_complications()
 ## Outcomes Reported
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-### <caption_mg> Dexmedetomidine  </caption_mg>
+### <caption_mg> **Dexmedetomidine**  </caption_mg>
 
-<caption_mg> `r table_ref()` Publications reporting dichotomous or count outcomes (not necessarily unique studies).</caption_mg>
+<caption_mg> `r table_ref()` Publications reporting dichotomous or count outcomes  in dexmedetomidine studies (not necessarily unique studies).</caption_mg>
 
-```{r dichot_outcome_freq}
+```{r dichot_outcome_freq_dex}
 dichot_freq_fun(dichot_dat |> filter(refid %in% dex_refid), "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
 ```
 
-<caption_mg> `r table_ref()` Publications reporting continuous outcomes (not necessarily unique studies). </caption_mg>
+<caption_mg> `r table_ref()` Publications reporting continuous outcomes in dexmedetomidine studies (not necessarily unique studies). </caption_mg>
 
-```{r cont_outcome_freq}
+```{r cont_outcome_freq_dex}
 contin_freq_fun(contin_dat |> filter(refid %in% dex_refid))
 ```
 
-<caption_mg> `r table_ref()` Publications reporting likert or ordinal outcomes (not necessarily unique studies). </caption_mg>
+<caption_mg> `r table_ref()` Publications reporting likert or ordinal outcomes in dexmedetomidine studies (not necessarily unique studies). </caption_mg>
 
-```{r likert_outcome_freq}
+```{r likert_outcome_freq_dex}
 likert_freq_fun(likert_dat |> filter(refid %in% dex_refid), "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
+```
+
+:::
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+### <caption_mg> **Ketamine**  </caption_mg>
+
+<caption_mg> `r table_ref()` Publications reporting dichotomous or count outcomes in ketamine studies (not necessarily unique studies).</caption_mg>
+
+```{r dichot_outcome_freq_ket}
+dichot_freq_fun(dichot_dat |> filter(refid %in% ket_refid), "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
+```
+
+<caption_mg> `r table_ref()` Publications reporting continuous outcomes in ketamine studies  (not necessarily unique studies). </caption_mg>
+
+```{r cont_outcome_freq_ket}
+contin_freq_fun(contin_dat |> filter(refid %in% ket_refid))
+```
+
+<caption_mg> `r table_ref()` Publications reporting likert or ordinal outcomes in ketamine studies  (not necessarily unique studies). </caption_mg>
+
+```{r likert_outcome_freq_ket}
+likert_freq_fun(likert_dat |> filter(refid %in% ket_refid), "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
+```
+
+:::
+
+::: {.callout-note collapse="true" appearance="minimal" icon="false"}
+### <caption_mg> **Melatonin or ramelteon**  </caption_mg>
+
+<caption_mg> `r table_ref()` Publications reporting dichotomous or count outcomes in melatonin or ramelteon studies (not necessarily unique studies).</caption_mg>
+
+```{r dichot_outcome_freq_mel_ram}
+dichot_freq_fun(dichot_dat |> filter(refid %in% mel_ram_refid), "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
+```
+
+<caption_mg> `r table_ref()` Publications reporting continuous outcomes in melatonin or ramelteon studies (not necessarily unique studies). </caption_mg>
+
+```{r cont_outcome_freq_mel_ram}
+contin_freq_fun(contin_dat |> filter(refid %in% mel_ram_refid))
+```
+
+<caption_mg>`r table_ref()`  Publications reporting likert or ordinal outcomes in melatonin or ramelteon studies(not necessarily unique studies). </caption_mg>
+
+```{r likert_outcome_freq_mel_ram}
+likert_freq_fun(likert_dat |> filter(refid %in% mel_ram_refid), "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
 ```
 
 :::
@@ -2696,7 +2741,7 @@ delirium_nma_char$comparison |>
 
 <a id="nma_figures"></a>
 
-<br/>
+<br/><br/>
 
 <caption_mg> `r figure_ref()` Network structure of randomized clinical trials and comparators reporting delirium incidence. </caption_mg>
 
@@ -2854,7 +2899,7 @@ dev.off()
 
 <br/>
 
-## **Neurocognitive Disorder<br/> <30 days**
+## **Neurocognitive Disorder <30 days**
 
 ```{r dncr_ncd_dat}
 
@@ -3541,7 +3586,7 @@ delirium_nma_char$comparison |>
 
 <a id="nma_dncr_figures"></a>
 
-<br/>
+<br/><br/>
 
 <caption_mg> `r figure_ref()` Network structure of randomized clinical trials and comparators reporting delayed neurocognitive recovery. </caption_mg>
 
@@ -3684,7 +3729,7 @@ dev.off()
 <foot_mg> Dex: Dexmedetomidine; Ket: Ketamine; Mel/Ram: Melatonin/Ramelteon; Mid: Midazolam; MS: Morphine; Prop: Propofol; Plac/None: Placebo or no comparator. </foot_mg>
 :::
 
-## **Neurocognitive Disorder<br/> ≥30 days to 1 year**
+## **Neurocognitive Disorder 30 days to 1 year**
 
 ### Dexmedetomidine, Ketamine, and Melatonin
 

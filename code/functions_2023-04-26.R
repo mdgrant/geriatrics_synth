@@ -715,7 +715,7 @@ riskdiff_ci_from_meta_rr_soe <- function(meta_object, pscale = 100, digits = 2) 
   temp_control <- metaprop(meta_object$data$.event.c, meta_object$data$.n.c)
   control_arm <- boot::inv.logit(temp_control$TE.common) * pscale
   control_arm <- formatC(control_arm, digits = digits, format = "f")
-  paste0(temp[1], " per ", pscale, " (95% CI, ", temp[2], " to ", temp[3], ")", "<br/>[", "pooled control arm event rate ", control_arm, " per ", pscale, "]")
+  paste0(temp[1], " per ", pscale, " (95% CI, ", temp[2], " to ", temp[3], ")", "<br/>[", "control arm event rate ", control_arm, " per ", pscale, "]")
 }
 
 # change to common effect

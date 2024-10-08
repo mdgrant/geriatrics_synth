@@ -8,12 +8,14 @@ project:
     - "!timing-NMA.qmd"
     - "!workflow.qmd"
     - "!kq6_control_arm_reg.qmd"
+    - "!outcome_importance.qmd"
+
 
 execute:
   echo: false
 
 website:
-  title: "Geriatrics Anesthesia Evidence Synthesis"
+  title: "Older Adults Anesthesia Evidence Synthesis"
   search:
     location: navbar
     limit: 100
@@ -54,7 +56,7 @@ website:
           - href: evidence_tables.html
             text: "Study-level evidence tables"
           - href: outcome_rankings.html
-            text: "Outcome importance rankings"
+            text: "Outcome importance ratings & rankings"
           - href: protocol.html
             text: "Draft protocol"
       - about.qmd

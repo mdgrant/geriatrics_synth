@@ -50,7 +50,11 @@ importance_dat <- map(importance_dat[,-1], function(x) factor(x, levels = c("Lim
 
 importance_lik <- likert(as.data.frame(importance_dat, check.names = FALSE), nlevels = 3)
 # summary(importance_lik)
-plot(importance_lik)
+# importance rating estimate by number 1 to 9
+importance_category_dat <- read_csv("data/geri_out_importance_2022-07-19.csv")[, -c(1, 5, 6)] 
+
+importance_category_lik <- likert(as.data.frame(importance_category_dat, check.names = FALSE), nlevels = 9)
+summary(importance_category_lik)
 
 png("assets/importance_lik.png", width = 13, height = 7.5, units = "in", res = 300)
 plot(importance_lik, text.size = 5, low.color = "#deebf7", neutral.color = "#9ecae1", high.color = "#3182bd", centered = TRUE) +

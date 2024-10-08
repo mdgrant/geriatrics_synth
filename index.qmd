@@ -53,7 +53,7 @@ Study/patient characteristics
 Brief summaries by study design of inclusion/exclusion criteria, results, and comment when relevant.   
 Includes links to publications. 
 
-[Outcome Importance Rankings](outcome_rankings.html)
+[Outcome Importance Ratings and Rankings](outcome_rankings.html)
 
 [Draft Protocol](protocol.html)
 

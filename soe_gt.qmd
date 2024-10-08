@@ -51,7 +51,7 @@ soe_footnote <- function(x) {
     tab_footnote("Pts: patients; RCT: randomized clinical trial; NRSI: non-randomized studies of interventions (inlcudes non-randomized trials, before-after/time series, and observational); GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; ACCF/AHA: American College of Cardiology Foundation/American Heart Association; RR: risk ratio; OR: odds ratio; MD: mean difference; RD: risk difference; PI: prediction interval.") |>
     tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
     tab_footnote("A: high-quality evidence from more than 1 RCT; B-R: moderate-quality evidence from more than 1 RCT; B-NR: moderate-quality evidence from more than one observational study; C-LD: randomized or non-randomized observational or registry studies with limited data; C-EO: consensus of expert opinion.", locations = cells_column_labels(columns = acc)) |>
-    tab_footnote("Limited +; Important ++; Critical +++.", locations = cells_column_labels(columns = out_import)) |> 
+    # tab_footnote("Limited +; Important ++; Critical +++.", locations = cells_column_labels(columns = out_import)) |> 
     tab_footnote("Complications were judged critical without specification to type except stroke.", locations = cells_body(columns = out_import, rows = outcome %in% c("Myocardial infarction", "Stroke", "Renal complications", "Pulmonary complications", "Pneumonia", "Pulmonary embolism", "Pulmonary congestion", "Acute kidney injury", "Respiratory failure", "Cardiac Arrest", "Bradycardia", "Hypotension")))
 }
 
@@ -124,7 +124,7 @@ domain_summary <- soe_kq1_dat |>
 
 ```
 
-<caption_mg> `r table_ref()` Strength of evidence summaries — expanded versus standard preoperative evaluation. </caption_mg>
+<caption_mg> `r table_ref()` Strength of evidence summaries for [critical and important outcomes](outcome_rankings.html) — expanded versus standard preoperative evaluation. </caption_mg>
 
 ```{r kq1_soe_gt}
 #| echo: false
@@ -135,14 +135,14 @@ soe_summary |>
     outcome = ifelse(outcome == lag(outcome) & row_number() > 1, "", outcome)
   ) |>
   gt(id = "one") |>
-  cols_hide(c(n, comparison, compare_group)) |>
+  cols_hide(c(n, comparison, compare_group, out_import)) |>
   cols_label(
     outcome = "Outcome",
     design = "Study Design",
     n_s = "Studies (Pts)",
     grade = "GRADE",
     acc = "ACCF AHA",
-    out_import = "Importance",
+    # out_import = "Importance",
     summary = "Summary",
     result_links = "Result Detail"
   ) |>
@@ -158,7 +158,7 @@ soe_summary |>
     n_s ~ px(85),
     grade ~ px(60),
     acc ~ px(60),
-    out_import ~ px(90),
+    # out_import ~ px(90),
     summary ~ px(325),
     result_links ~ px(125)
   ) |>
@@ -340,7 +340,7 @@ domain_summary <- soe_kq3_dat |>
 
 ```
 
-<font size = 4> `r table_ref()` Strength of evidence summaries — neuraxial versus general anesthesia. </font>
+<font size = 4> `r table_ref()` Strength of evidence summaries for [critical and important outcomes](outcome_rankings.html)  — neuraxial versus general anesthesia. </font>
 
 ```{r kq3_soe_gt}
 #| include: true
@@ -353,14 +353,14 @@ soe_summary |>
          ) |> 
   # group_by(compare_group) |> 
   gt(id = "one") |>
-  cols_hide(c(n, comparison, compare_group)) |>
+  cols_hide(c(n, comparison, compare_group, out_import)) |>
   cols_label(
     outcome = "Outcome",
     design = "Study Design",
     n_s = "Studies (Pts)",
     grade = "GRADE",
     acc = "ACCF AHA",
-    out_import = "Importance",
+    # out_import = "Importance",
     summary = "Summary",
     result_links = "Result Detail"
   ) |>
@@ -375,7 +375,7 @@ soe_summary |>
     n_s ~ px(85),
     grade ~ px(50),
     acc ~ px(60),
-    out_import ~ px(90),
+    # out_import ~ px(90),
     summary ~ px(325),
     result_links ~ px(120)
   ) |>
@@ -546,7 +546,7 @@ domain_summary <- soe_kq4_dat |>
 
 ```
 
-<font size = 4> `r table_ref()` Strength of evidence summaries — TIVA versus inhaled anesthesia. </font>
+<font size = 4> `r table_ref()` Strength of evidence summaries for [critical and important outcomes](outcome_rankings.html)  — TIVA versus inhaled anesthesia. </font>
 
 ```{r kq4_soe_gt}
 #| include: true
@@ -559,14 +559,14 @@ soe_summary |>
          ) |> 
   # group_by(compare_group) |> 
   gt(id = "one") |>
-  cols_hide(c(n, comparison, compare_group)) |>
+  cols_hide(c(n, comparison, compare_group, out_import)) |>
   cols_label(
     outcome = "Outcome",
     design = "Study Design",
     n_s = "Studies (Pts)",
     grade = "GRADE",
     acc = "ACCF AHA",
-    out_import = "Importance",
+    # out_import = "Importance",
     summary = "Summary",
     result_links = "Result Detail"
   ) |>
@@ -585,7 +585,7 @@ soe_summary |>
     n_s ~ px(85),
     grade ~ px(50),
     acc ~ px(60),
-    out_import ~ px(90),
+    # out_import ~ px(90),
     summary ~ px(325),
     result_links ~ px(120)
   ) |>
@@ -757,7 +757,7 @@ domain_summary <- soe_kq6_dat |>
 
 ```
 
-<font size = 4> `r table_ref()` GRADE strength of evidence ratings --- delirium prophylaxis. </font>
+<font size = 4> `r table_ref()` GRADE strength of evidence ratings for [critical and important outcomes](outcome_rankings.html) --- delirium prophylaxis. </font>
 
 ```{r kq6_soe_gt}
 #| include: true
@@ -771,14 +771,14 @@ soe_summary |>
   ) |>
   group_by(compare_group) |>
   gt(id = "one") |>
-  cols_hide(c(n, comparison, high:low_very)) |>
+  cols_hide(c(n, comparison, high:low_very, out_import)) |>
   cols_label(
     outcome = "Outcome",
     design = "Study Design",
     n_s = "Studies (Pts)",
     grade = "GRADE",
     acc = "ACCF AHA",
-    out_import = "Importance",
+    # out_import = "Importance",
     summary = "Summary",
     result_links = "Result Detail"
   ) |>
@@ -797,7 +797,7 @@ soe_summary |>
     n_s ~ px(85),
     grade ~ px(60),
     acc ~ px(60),
-    out_import ~ px(90),
+    # out_import ~ px(90),
     summary ~ px(325),
     result_links ~ px(175)
   ) |>
@@ -807,18 +807,18 @@ soe_summary |>
     line-height: 1.4;
     }
   "
-  ) |>
+  ) |> 
   opt_footnote_marks(marks = "numbers") |>
   sub_values(values = c("NA <br/>(NA)"), replacement = "—") |>
-  tab_footnote("Pts: patients; RCT: randomized clinical trial; NRSI: non-randomized studies of interventions (inlcudes non-randomized trials, before-after/time series, and observational); GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; ACCF/AHA: American College of Cardiology Foundation/American Heart Association; RR: risk ratio; OR: odds ratio; MD: mean difference; RD: risk difference; PI: prediction interval; NMA: network meta-analysis.") |>
+  tab_footnote(md("Pts: patients; RCT: randomized clinical trial; NRSI: non-randomized studies of interventions (inlcudes non-randomized trials, before-after/time series, and observational); GRADE: Grades of Recommendation, Assessment, <br/> Development, and Evaluation; ACCF/AHA: American College of Cardiology Foundation/American Heart Association; RR: risk ratio; OR: odds ratio; MD: mean difference; RD: risk difference; PI: prediction interval; NMA: network<br/> meta-analysis.")) |> 
   tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
-  tab_footnote("A: high-quality evidence from more than 1 RCT; B-R: moderate-quality evidence from more than 1 RCT; B-NR: moderate-quality evidence from more than one observational study; C-LD: randomized or non-randomized observational or registry studies with limited data; C-EO: consensus of expert opinion.", locations = cells_column_labels(columns = acc)) |>
-  tab_footnote("Limited +; Important ++; Critical +++.", locations = cells_column_labels(columns = out_import)) |>
+  tab_footnote(md("A: high-quality evidence from more than 1 RCT; B-R: moderate-quality evidence from more than 1 RCT; B-NR: moderate-quality evidence from more than one observational study; C-LD: randomized or non-randomized <br/> observational or registry studies with limited data; C-EO: consensus of expert opinion."), locations = cells_column_labels(columns = acc)) |>
+  # tab_footnote("Limited +; Important ++; Critical +++.", locations = cells_column_labels(columns = out_import)) |>
   tab_footnote("Complications were judged critical without specification to type except stroke.", locations = cells_body(columns = out_import, rows = outcome %in% c("Myocardial infarction", "Stroke", "Renal complications", "Pulmonary complications", "Pneumonia", "Pulmonary embolism", "Pulmonary congestion", "Acute kidney injury", "Respiratory failure", "Cardiac Arrest", "Bradycardia", "Hypotension"))) |>
   tab_footnote("Common effects model.", locations = cells_body(columns = summary, rows = str_detect(n, "5.34"))) |>
   tab_footnote("Network meta-analysis results were consistent.", locations = cells_body(columns = summary, rows = str_detect(n, "5.11"))) |>
   tab_footnote("Results from the largest trial (N = 650 analyzed) were not consistent with an effect.", locations = cells_body(columns = summary, rows = str_detect(n, "5.21"))) |>
-  tab_footnote("Network meta-anlaysis yielded narrower 95% confidence interval attributable to pairwise result incorportating Hartung-Knapp adjustment.", locations = cells_body(columns = summary, rows = str_detect(n, "5.33")))
+  tab_footnote("Network meta-analysis yielded narrower 95% confidence interval attributable to pairwise result incorportating Hartung-Knapp adjustment.", locations = cells_body(columns = summary, rows = str_detect(n, "5.33"))) 
 
 ```
 
@@ -895,7 +895,7 @@ kq6_domain |>
     prec = "Imprecision",
     other = "Other"
   ) |>
-  fmt_markdown(columns = c(n_s:other)) |>
+  fmt_markdown(columns = everything()) |>
   tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(design, rob:other))) |>
   tab_spanner(label = "GRADE Domains", columns = c(rob:other)) |>
   gt_theme_mg() |>
