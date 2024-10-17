@@ -1176,6 +1176,7 @@ delirium_meta_kq5_dat <- read_csv("data/delirium_meta_kq5_dat.csv") |>
   rename(arm = arm_up) |> 
   select(refid, study, arm_id, arm, drug_up, year, design_f_lab, surg_f, delitotal_n, arm_n)
 
+# NOTE !! : must edit above creation of delirium_meta_dat above not exclude arms of interest
 delirium_meta_kq6_dat <- delirium_meta_dat |> 
   filter(!refid %in% delirium_meta_kq5_dat$refid) |>
   mutate(drug_up = NA_character_) |>
@@ -1199,8 +1200,9 @@ delirium_combined <- bind_rows(delirium_meta_kq5_dat, delirium_meta_kq6_dat) |>
     )
   )
 
-# for appendix nma
-# write_csv(delirium_combined, "data/delirium_combined.csv", na = "")
+# for appendix nma 
+# write_csv(delirium_combined, "data/delirium_combined_2024-10-17.csv", na = "")
+
 ```
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
