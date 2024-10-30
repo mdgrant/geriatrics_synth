@@ -710,7 +710,9 @@ rob2_dat <- rob_dat |>
   ))
 
 rob2_meta_dat <- rob2_dat |>
-  select(refid, D1:Overall)
+  select(refid, D1:Overall) |>
+  # pad left for appearance in forest plot using left justified text for rightcols
+  mutate(across(D1:Overall, ~ str_pad(.x, 2, "left")))
 
 rob2_dat <- rob2_dat |>
   select(refid, Study, randomization_process:overall) |>
