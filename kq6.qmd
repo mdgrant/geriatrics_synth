@@ -1490,8 +1490,6 @@ nma_rct_dat <- delirium_meta_dat |>
   mutate(across(c(arm, design_f_lab), ~ fct_drop(.x))) |> 
   select(refid, study, year, arm, delitotal_n, arm_n)
 
-# write_csv(nma_rct_dat, "data/nma_rct_dat.csv", na = "")
-
 trts <- levels(nma_rct_dat$arm)
 
 pairs_dat <- pairwise(
@@ -1578,6 +1576,8 @@ netmeta_melram_or_nma <- netmeta(
 dex_plac_refid <- pairwise_dat |> 
   filter(str_detect(to_select, "Plac") & str_detect(to_select, "Dex")) |> 
   pull(refid)
+
+rob2_meta_dat <- rob2_meta_dat |> mutate(across(D1:Overall, ~ str_pad(.x, 2, "left")))
 
 dex_meta_dat <- pairwise_dat |>
   left_join(rob2_meta_dat, by = "refid") |>
@@ -1685,8 +1685,8 @@ forest(data_meta,
   common = TRUE,
   label.e = "Dex     ",
   label.c = "Plac/None  ",
-  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
-  rightlabs = c("RR ", "(95% CI)  ", "D1", "D2", "D3", "D4", "D5", "All"),
+  rightcols = c("effect", "ci", "surg_f", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  rightlabs = c("RR ", "(95% CI)  ", "Procedure", "D1", "D2", "D3", "D4", "D5", "All"),
   just.addcols.right = "left",
   digits = 2,
   digits.tau2 = 1,
@@ -1709,8 +1709,8 @@ forest(data_meta,
   common = TRUE,
   label.e = "Dex     ",
   label.c = "Plac/None  ",
-  rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
-  rightlabs = c("RR ", "(95% CI)  ", "D1", "D2", "D3", "D4", "D5", "All"),
+  rightcols = c("effect", "ci", "surg_f", "D1", "D2", "D3", "D4", "D5", "Overall"),
+  rightlabs = c("RR ", "(95% CI)  ", "Procedure", "D1", "D2", "D3", "D4", "D5", "All"),
   just.addcols.right = "left",
   digits = 2,
   digits.tau2 = 1,
@@ -1782,9 +1782,11 @@ dex_sens_dat <- dex_meta_dat |>
 #| echo: false
 #| include: false
 
-png("assets/kq6_dex_delirium_all.png", width = 9.78, height = 9, units = "in", res = 300)
+png("assets/kq6_dex_delirium_all.png", width = 12, height = 10, units = "in", res = 300)
 dex_meta_forest(dex_plac_meta, text.addline2 = risk_diff_meta_rr(dex_plac_meta, scale = 100))
 dev.off() 
+
+trim_image("kq6_dex_delirium_all.png")
 
 # sort by size
 # forest(dex_plac_meta,
@@ -1811,7 +1813,7 @@ dev.off()
 
 ```
 
-![](assets/kq6_dex_delirium_all.png){fig.align="left" width="70%"}
+![](assets/kq6_dex_delirium_all.png){fig.align="left" width="79%"}
 
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <a id="figure-4"></a><br/> `r paste0("Harbord test for small study effects P = ", formatC(temp_metabias$pval, digits = 5, format = "f"), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, dex_plac_refid), "; a secondary outcome in ", prim_sec_out_fun(sec_delirium, dex_plac_refid), ".")`<br/> Excluding Turan 2020: RR 0.56 (95% CI, 0.49-0.64; *I*<sup> 2</sup> = 21%, $\tau$<sup>2</sup>. <br/>\*Trials conducted in China.</foot_mg>
 
@@ -1839,16 +1841,18 @@ temp <- print(dex_plac_meta) |>
 #| echo: false
 #| include: false
 
-png("assets/kq6_dex_delirium_country.png", width = 9.81, height = 11.5, units = "in", res = 300)
+png("assets/kq6_dex_delirium_country.png", width = 11.61, height = 11.5, units = "in", res = 300)
 dex_meta_forest_sub(dex_plac_country_meta)
 dev.off()
+
+trim_image("kq6_dex_delirium_country.png")
 
 temp_metareg <- update(dex_plac_country_meta, tau.common = TRUE, common = FALSE, method.tau = "REML", method.random.ci = "HK")
 temp_metareg <- metareg(temp_metareg)
 
 ```
 
-![](assets/kq6_dex_delirium_country.png){fig.align="left" width="70%"}
+![](assets/kq6_dex_delirium_country.png){fig.align="left" width="80%"}
 
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/> Meta-regression (China vs. Other), *I*<sup> 2</sup> = `r paste0(digit0(temp_metareg$I2), "%.")` </foot_mg>
 ::: 
@@ -2000,14 +2004,16 @@ dev.off()
 # TODO: verify timing
 dex_plac_meta_postop <- update(dex_plac_meta, subgroup = postop_only, method.predict = "HK", prediction.subgroup = TRUE)
 
-png("assets/kq6_dex_plac_meta_postop.png", width = 9.79, height = 11.5, units = "in", res = 300)
+png("assets/kq6_dex_plac_meta_postop.png", width = 11.61, height = 12, units = "in", res = 300)
 dex_meta_forest_sub(dex_plac_meta_postop)
 dev.off()
+
+trim_image("kq6_dex_plac_meta_postop.png")
 
 rm(dex_plac_meta_postop)
 ```
 
-![](assets/kq6_dex_plac_meta_postop.png){fig.align="left" width="70%"}
+![](assets/kq6_dex_plac_meta_postop.png){fig.align="left" width="80%"}
 
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> \*Trials conducted in China.</foot_mg><a id="figure-7"></a>
 :::
@@ -2021,13 +2027,15 @@ rm(dex_plac_meta_postop)
 
 dex_plac_meta_postop_any <- update(dex_plac_meta, subgroup = postop_any)
 
-png("assets/kq6_dex_plac_meta_postop_any.png", width = 9.79, height = 11.5, units = "in", res = 300)
+png("assets/kq6_dex_plac_meta_postop_any.png", width = 11, height = 12, units = "in", res = 300)
 dex_meta_forest_sub(dex_plac_meta_postop_any)
 dev.off()
 
+trim_image("kq6_dex_plac_meta_postop_any.png")
+
 rm(dex_plac_meta_postop_any)
 ```
-![](assets/kq6_dex_plac_meta_postop_any.png){fig.align="left" width="70%"}
+![](assets/kq6_dex_plac_meta_postop_any.png){fig.align="left" width="80%"}
 
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> \*Trials conducted in China.</foot_mg><a id="figure-7"></a>
 :::
@@ -2039,27 +2047,27 @@ rm(dex_plac_meta_postop_any)
 #| echo: false
 #| include: false
 
-png("assets/kq6_dex_plac_meta_ortho.png", width = 10.5, height = 7.5, units = "in", res = 300)
+png("assets/kq6_dex_plac_meta_ortho.png", width = 12, height = 7.5, units = "in", res = 300)
 dex_meta_forest_surg_sub(dex_plac_meta, "Ortho", "HK", "HK")
 dev.off()
 trim_image("kq6_dex_plac_meta_ortho.png")
 
-png("assets/kq6_dex_plac_meta_various.png", width = 10.5, height = 7.5, units = "in", res = 300)
+png("assets/kq6_dex_plac_meta_various.png", width = 12, height = 7.5, units = "in", res = 300)
 dex_meta_forest_surg_sub(dex_plac_meta, "Various", "HK", "HK")
 dev.off()
 trim_image("kq6_dex_plac_meta_various.png")
 
-png("assets/kq6_dex_plac_meta_cardiac.png", width = 10.5, height = 7.5, units = "in", res = 300)
+png("assets/kq6_dex_plac_meta_cardiac.png", width = 12, height = 7.5, units = "in", res = 300)
 dex_meta_forest_surg_sub(dex_plac_meta, "Cardiac", "HK", "HK")
 dev.off()
 trim_image("kq6_dex_plac_meta_cardiac.png")
 
-png("assets/kq6_dex_plac_meta_thoracic.png", width = 10.5, height = 7.5, units = "in", res = 300)
+png("assets/kq6_dex_plac_meta_thoracic.png", width = 12, height = 7.5, units = "in", res = 300)
 dex_meta_forest_surg_sub(dex_plac_meta, "Thoracic", "HK", "HK")
 dev.off()
 trim_image("kq6_dex_plac_meta_thoracic.png")
 
-png("assets/kq6_dex_plac_meta_gi-abd.png", width = 10.5, height = 7.5, units = "in", res = 300)
+png("assets/kq6_dex_plac_meta_gi-abd.png", width = 12, height = 7.5, units = "in", res = 300)
 dex_meta_forest_surg_sub(dex_plac_meta, "GI/Abd", "classic", "HTS", prediction_forest = FALSE)
 dev.off()
 trim_image("kq6_dex_plac_meta_gi-abd.png")
@@ -2071,6 +2079,7 @@ trim_image("kq6_dex_plac_meta_gi-abd.png")
 Orthopedic 
 
 ![](assets/kq6_dex_plac_meta_ortho.png){fig.align="left" width="68%"}
+
 Various
 
 ![](assets/kq6_dex_plac_meta_various.png){fig.align="left" width="68%"}
@@ -2099,13 +2108,15 @@ GI/Abdominal
 
 dex_rob_meta <- update(dex_plac_meta, subgroup = rob)
 
-png("assets/kq6_dex_rob_meta.png", width = 9.79, height = 12.65, units = "in", res = 300)
+png("assets/kq6_dex_rob_meta.png", width = 12, height = 12.65, units = "in", res = 300)
 dex_meta_forest_sub(dex_rob_meta)
 dev.off()
 
+trim_image("kq6_dex_rob_meta.png")
+
 rm(dex_rob_meta)
 ```
-![](assets/kq6_dex_rob_meta.png){fig.align="left" width="70%"}
+![](assets/kq6_dex_rob_meta.png){fig.align="left" width="80%"}
 
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> \*Trials conducted in China.</foot_mg>
 :::
@@ -2118,13 +2129,15 @@ rm(dex_rob_meta)
 #| include: false
 
 delirium_inc_pro_meta <- update(dex_plac_meta, subgroup = delirium_inc_prop)
-png("assets/kq6_delirium_inc_pro_meta.png", width = 9.78, height = 11.5, units = "in", res = 300)
+png("assets/kq6_delirium_inc_pro_meta.png", width = 12, height = 11.5, units = "in", res = 300)
 dex_meta_forest_sub(delirium_inc_pro_meta)
 dev.off()
 
+trim_image("kq6_delirium_inc_pro_meta.png")
+
 rm(delirium_inc_pro_meta)
 ```
-![](assets/kq6_delirium_inc_pro_meta.png){fig.align="left" width="70%"}
+![](assets/kq6_delirium_inc_pro_meta.png){fig.align="left" width="80%"}
 
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- .<br/> Hartung-Knapp adjustment not applied.<br/> \*Trials conducted in China.</foot_mg>
 :::
@@ -2189,7 +2202,7 @@ rm(temp, fitted_meta)
 #| echo: false
 #| include: false
 
-png("assets/kq6_dex_plac_base_sub_meta.png", width = 10.5, height = 14, units = "in", res = 300)
+png("assets/kq6_dex_plac_base_sub_meta.png", width = 12, height = 14, units = "in", res = 300)
 dex_meta_forest_sub(dex_plac_base_sub_meta)
 dev.off()
 
@@ -2197,7 +2210,7 @@ trim_image("kq6_dex_plac_base_sub_meta.png")
 
 ```
 
-![](assets/kq6_dex_plac_base_sub_meta.png){fig.align="left" width="68%"}
+![](assets/kq6_dex_plac_base_sub_meta.png){fig.align="left" width="80%"}
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
@@ -2681,9 +2694,9 @@ dev.off()
 
 <foot_mg> D1: Bias due to confounding; D2: Bias in selection of participants into the study; D3: Bias in classification of interventions; D4: Bias due to deviations from intended interventions; D5: Bias due to missing data; D6: Bias in measurement of outcomes; D7: Bias in selection of reported results; All: overall risk of bias.<br/> Risk of bias ratings: low ++, moderate +, serious -, critical - - ; NI: no information; NA: not applicable.</foot_mg>
 
-<br/>
-
 <a id="nma_tables"></a>
+
+<br/>
 
 #### **Network**
 
@@ -2713,7 +2726,7 @@ delirium_nma_char$network |>
     Characteristic ~ px(350),
     Value ~ px(80)
   ) |>
-  tab_header(title = glue::glue("{table_ref()}Summary of studies included in the network.")) |> 
+  tab_header(title = glue::glue("{table_ref()}Summary of studies included in the network for delirium incidence.")) |> 
   fmt_number(columns = c(Value), drop_trailing_zeros = TRUE) |>
   gt_theme_mg()
 
@@ -2735,7 +2748,7 @@ delirium_nma_char$comparison |>
     n.patients ~ px(80),
     n.outcomes ~ px(120)
   ) |>
-  tab_header(title = glue::glue("{table_ref()}Summary of events by comparisons in the network.")) |>
+  tab_header(title = glue::glue("{table_ref()}Summary of events by comparisons in the network for delirium incidence.")) |>
   fmt_number(columns = c(n.patients), drop_trailing_zeros = TRUE) |>
   gt_theme_mg()
 
@@ -2820,7 +2833,7 @@ dev.off()
 
 <br/>
 
-<caption_mg> `r table_ref()` League table of risk ratios and 95% confidence intervals from network meta-analysis (random effects model). Comparisons from direct evidence displayed in the upper diagonal; network comparisons shown on the lower diagonal. </caption_mg>
+<caption_mg> `r table_ref()` League table of risk ratios and 95% confidence intervals from network meta-analysis of delirium incidence (random effects model). Comparisons from direct evidence displayed in the upper diagonal; network comparisons shown on the lower diagonal. </caption_mg>
 
 
 ```{r leagueTable}
@@ -3385,7 +3398,7 @@ dev.off()
 ![](assets/kq6_dncr_dex_plac_meta.png){fig.align="left" width="85%"}
 
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <a id="figure-4"></a><br/> 
-`r paste0("Neurocognitive recovery a designated primary outcome in ", prim_sec_out_fun(prim_pocd, dex_meta_dat$refid), "; a secondary outcome in ", prim_sec_out_fun(sec_pocd, dex_meta_dat$refid), ".")`<br/> \*Triasl conducted in China.</foot_mg><br/>
+`r paste0("Neurocognitive recovery a designated primary outcome in ", prim_sec_out_fun(prim_pocd, dex_meta_dat$refid), "; a secondary outcome in ", prim_sec_out_fun(sec_pocd, dex_meta_dat$refid), ".")`<br/> \*Trials conducted in China.</foot_mg><br/>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <caption_mg> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention according to risk of bias appraisals (randomized clinical trials; delayed neurocognitive recovery). </caption_mg>
@@ -3530,6 +3543,8 @@ dev.off()
 
 <foot_mg> Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <br/> Too few studies to examine small study effects. </foot_mg><br/>
 
+<a id="network-dncr-tables"></a>
+
 #### **Network**
 
 ```{r nma_dncr_characteristics}
@@ -3558,7 +3573,7 @@ delirium_nma_char$network |>
     Characteristic ~ px(350),
     Value ~ px(80)
   ) |>
-  tab_header(title = glue::glue("{table_ref()}Summary of studies included in the network.")) |> 
+  tab_header(title = glue::glue("{table_ref()}Summary of studies included in the network for neurocognitive disorder <30 days.")) |> 
   fmt_number(columns = c(Value), drop_trailing_zeros = TRUE) |>
   gt_theme_mg()
 
@@ -3580,7 +3595,7 @@ delirium_nma_char$comparison |>
     n.patients ~ px(80),
     n.outcomes ~ px(120)
   ) |>
-  tab_header(title = glue::glue("{table_ref()}Summary of events by comparisons in the network."), preheader = "Test") |>
+  tab_header(title = glue::glue("{table_ref()}Summary of events by comparisons in the network for neurocognitive disorder <30 days."), preheader = "Test") |>
   fmt_number(columns = c(n.patients), drop_trailing_zeros = TRUE) |>
   gt_theme_mg()
 
@@ -3590,7 +3605,7 @@ delirium_nma_char$comparison |>
 
 <br/><br/>
 
-<caption_mg> `r figure_ref()` Network structure of randomized clinical trials and comparators reporting delayed neurocognitive recovery. </caption_mg>
+<caption_mg> `r figure_ref()` Network structure of randomized clinical trials and comparators reporting neurocognitive disorder <30 days. </caption_mg>
 
 ```{r dncr_nma_plot}
 #| echo: false
@@ -3631,7 +3646,7 @@ dev.off()
 
 <br/>
 
-<caption_mg> `r figure_ref()` Network meta-analysis of delayed neurocognitive recovery including all comparators.</caption_mg>
+<caption_mg> `r figure_ref()` Network meta-analysis of neurocognitive disorder <30 days including all comparators.</caption_mg>
 
 ```{r dncr_nma_forest}
 #| echo: false
@@ -3654,7 +3669,7 @@ dev.off()
 
 <br/>
 
-<caption_mg> `r table_ref()` League table of risk ratios and 95% confidence intervals from network meta-analysis (random effects model). Comparisons from direct evidence displayed in the upper diagonal; network comparisons shown on the lower diagonal. </caption_mg>
+<caption_mg> `r table_ref()` League table of risk ratios and 95% confidence intervals from network meta-analysis of neurocognitive disorder <30 days (random effects model). Comparisons from direct evidence displayed in the upper diagonal; network comparisons shown on the lower diagonal. </caption_mg>
 
 ```{r dncr_nma_league}
 #| results: asis
@@ -3687,7 +3702,7 @@ as_tibble(nma_dncr_league$random) |>
 ```
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <caption_mg> `r figure_ref()` Comparison-adjusted funnel plot for delayed neurocognitive recovery. </caption_mg>
+#### <caption_mg> `r figure_ref()` Comparison-adjusted funnel plot for neurocognitive disorder <30 days. </caption_mg>
 
 ```{r compare_adj_fun_dncr}
 #| echo: false
@@ -3707,7 +3722,7 @@ dev.off()
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <caption_mg> `r figure_ref()` Comparison of direct and indirect evidence in network meta-analysis of delayed neurocognitive recovery (node splitting forest plot). </caption_mg>
+#### <caption_mg> `r figure_ref()` Comparison of direct and indirect evidence in network meta-analysis of neurocognitive disorder <30 days (node splitting forest plot). </caption_mg>
 
 ```{r dncr_netsplit}
 #| echo: false
@@ -3885,6 +3900,8 @@ ncd_dat |>
 
 ```
 
+<a id="fig_pooled_dex"></a>
+
 ### *Pooled*
 
 #### Dexmedetomidine
@@ -4011,6 +4028,8 @@ trim_image("kq6_ncd_ket_meta.png")
 
 ![](assets/kq6_ncd_ket_meta.png){fig.align="left" width="68%"}
 
+<a id="exploratory-network"></a>
+
 #### **Network** (exploratory)
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
@@ -4095,13 +4114,13 @@ trim_image("kq6_ncd_nma.png")
 ```
 ![](assets/kq6_ncd_nma.png){fig.align="left" width="40%"}
 :::
-<foot_mg> Excludes midazolam and propofol arms as neither contributed (ie, not in an closed loops).  </foot_mg> 
+<foot_mg> Excludes midazolam and propofol arms as neither contributed (ie, not in a closed loops).  </foot_mg> 
 
 :::
 
 ## **Physical Function**
 
-<caption_mg> `r table_ref()` Physical functional status for expanded versus standard preoperative evaluation. </caption_mg>
+<caption_mg> `r table_ref()` Physical functional status following dexmedetomidine and melatonin for delirium prophylaxis. </caption_mg>
 
 ```{r exp_std_adl}
 
@@ -5076,7 +5095,7 @@ forest(adverse_meta,
   random = FALSE,
   label.e = "Dex",
   label.c = "Placebo",
-  just.addcols.right = "center",
+  just.addcols.right = "left",
   rightcols = c("effect", "ci"), 
   rightlabs = c("RR", "(95% CI)"), 
   colgap.right = "4mm",
@@ -5132,7 +5151,7 @@ forest(adverse_meta,
   random = FALSE,
   label.e = "Dex",
   label.c = "Placebo",
-  just.addcols.right = "center",
+  just.addcols.right = "left",
   rightcols = c("effect", "ci"), 
   rightlabs = c("RD", "(95% CI)"), 
   colgap.right = "4mm",
@@ -5326,7 +5345,7 @@ forest(adverse_ram_meta,
   label.e = "Ramelteon",
   label.c = "None",
   rightlabs = c("RD ", "(95% CI)  "),
-  just.addcols.right = "center",
+  just.addcols.right = "left",
   rightcols = c("effect", "ci"),
 
   colgap.right = "4mm",
