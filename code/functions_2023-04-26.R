@@ -1,4 +1,4 @@
-# read files
+## read files ----------------------------------------- (2024-10-31 07:44) @----
 read_file_mg <- function(filename){
   data_files |>
     filter(str_detect(value, filename)) |>
@@ -6,21 +6,21 @@ read_file_mg <- function(filename){
     slice(1)
 }
 
-# extract path
+## extract path --------------------------------------- (2024-10-31 07:44) @----
 path_csv <- function(name_csv){
   sheet <- name_csv
   path <- str_c("data/", sheet)
   return(path)
 }
 
-# function to pull refids
+## function to pull refids ---------------------------- (2024-10-31 07:44) @----
 kq_refids <- function(kq_id) {
   study_char_dat |>
     filter(!is.na({{ kq_id }})) |>
     pull(refid)
 }
 
-# count of unique for variable
+## count of unique for variable ----------------------- (2024-10-31 07:45) @----
 count_unique <- function(df, var){
   df |>
     select({{var}}) |>
@@ -29,7 +29,7 @@ count_unique <- function(df, var){
     pull(n)
 }
 
-# 2 by 2 frequency table
+## 2 by 2 frequency table ----------------------------- (2024-10-31 10:15) @----
 proc_freq <- function(df, a, b){
   df %>%
     group_by({{a}}, {{b}}) %>%
@@ -38,13 +38,14 @@ proc_freq <- function(df, a, b){
     gt::gt(.)
 }
 
+## tabyl for selected variables ----------------------- (2024-10-31 10:17) @----
 tab_lst <- function(data, vars){
   data %>%
     select({{vars}}) %>%
     map(~ tabyl(.))
 }
 
-# convenience function to view record(s) for refid from dataset
+## view record(s) for refid from dataset -------------- (2024-10-31 10:17) @----
 view_rec <- function(data_set, refid_select) {
   data_set |>
     filter(refid == refid_select) |>
@@ -55,7 +56,7 @@ view_rec <- function(data_set, refid_select) {
     View()
 }
 
-## view_all function to page through all distiller forms; uses readkey
+## page through all distiller forms; uses readkey ----- (2024-10-31 10:18) @----
 readkey <- function() {
   cat("[press [enter] to continue]")
   number <- scan(n = 1)
@@ -73,23 +74,20 @@ view_all <- function(refid){
   view_rec(likert_dat, refid)
 }
 
-
-# %notin% operator
+## %notin% operator ----------------------------------- (2024-10-31 10:19) @----
 `%notin%` <- Negate(`%in%`)
 
-# replace nonmissing with U00D7
+## replace nonmissing with U00D7 ---------------------- (2024-10-31 10:19) @----
 notna_to_x <- function(variable, symbol = "\U00D7") {
-  # ifelse(!is.na(variable), "\U00D7", NA)
   ifelse(!is.na(variable), symbol, NA)
 }
 
-# replace nonmissing with U00D7
+## replace missing with U00D7 ------------------------- (2024-10-31 10:19) @----
 na_to_x <- function(variable, symbol = "\U00D7") {
-  # ifelse(!is.na(variable), "\U00D7", NA)
   ifelse(is.na(variable), symbol, NA)
 }
 
-# format to n (percent)
+## format to n (percent) ------------------------------ (2024-10-31 10:21) @----
 # n_per_fun(9, 28, 1)
 n_per_fun <- function(events_n, total, n_sig_dig = 1){
   temp <- str_c(format(events_n, big.mark = ",")," (", formatC(events_n/total * 100, digits = n_sig_dig, format = "f"), ")")
@@ -102,19 +100,19 @@ n_per_tf <- function(var_name, n_dig = 1){
   paste0(sum(var_name == TRUE), " (", format(round(100*(mean(var_name)), n_dig), nsmall = 1), ")")
 }
 
-# capitalize 1st letter
+## capitalize 1st letter ------------------------------ (2024-10-31 10:23) @----
 firstup <- function(x) {
   substr(x, 1, 1) <- toupper(substr(x, 1, 1))
   x
 }
 
-# lower case 1st letter
+## lower case 1st letter ------------------------------ (2024-10-31 10:23) @----
 firstlower <- function(x) {
   substr(x, 1, 1) <- tolower(substr(x, 1, 1))
   x
 }
 
-# convert columns guessed as logical to character
+## convert columns guessed as logical to character ---- (2024-10-31 10:24) @----
 type_col <- function(data) {
   data %>%
     summary.default() |>
@@ -131,30 +129,28 @@ type_col <- function(data) {
     # str_c(collapse = "")
 }
 
-# simple figure and table caption labels (flexibility for html)
+## initialize fig tab n labels (flexibility for html) - (2024-10-31 10:25) @----
 table_n <- 0
 figure_n <- 0
 
+## table reference ------------------------------------ (2024-10-31 07:48) @----
 table_ref <- function() {
   table_n <<- table_n + 1
   paste0("Table ", table_n, ". ")
 }
-
+## anchor table increment NOT USED -------------------- (2024-10-31 10:26) @----
 anchor_table_ref <- function() {
    table_n + 1
 }
 
-# `r paste0("tab", knitr::current_input(), anchor_table_ref())`
-
+## figure reference ----------------------------------- (2024-10-31 07:48) @----
 figure_ref <- function() {
   figure_n <<- figure_n + 1
   paste0("Figure ", figure_n, ". ")
 }
 
-# create excel file of individual study records
+## function to create excel with pages for each refid - (2024-10-31 07:47) @----
 library(openxlsx)
-
-# function to create excel with pages for each refid
 by_study_xlsx <- function(refids, kq_dat, name) {
   # record for worksheet
   view_xlsx <- function(data_set, refid_select) {
@@ -179,7 +175,7 @@ by_study_xlsx <- function(refids, kq_dat, name) {
   saveWorkbook(wb, path, overwrite = TRUE)
 }
 
-# select refids for variable str_detect
+## select refids for variable str_detect -------------- (2024-10-31 07:47) @----
 refid_detect_select_fun <- function(data_select, var_select, string_select) {
   data_select |>
     filter(str_detect({{ var_select }}, string_select)) |>
@@ -188,7 +184,7 @@ refid_detect_select_fun <- function(data_select, var_select, string_select) {
     pull(refid)
 }
 
-# cochrane function to combine arms
+## cochrane function to combine arms ------------------ (2024-10-31 07:46) @----
 combine_contin <- function(n_1, n_2, x_1, x_2, sd_1, sd_2){
   n_comb <- n_1 + n_2
   x_comb <-  (n_1 * x_1 + n_2 * x_2)/(n_comb)
@@ -196,7 +192,7 @@ combine_contin <- function(n_1, n_2, x_1, x_2, sd_1, sd_2){
   c(n_comb, x_comb, sd_comb)
 }
 
-# calculate SD for groups from p value, assuming equal
+## calculate SD for groups from p value, assuming equal (2024-10-31 07:46) @----
 sd_bwgrp_fun <- function(m1, m2, n1, n2, pVal) {
   sd2 <- abs((m2 - m1) / qt(pVal / 2, n1 + n2 - 2)) * sqrt(n2 * n1 / (n2 + n1))
   sd1 <- sd2
@@ -208,7 +204,7 @@ sd_bwgrp_sdonly_fun <- function(m1, m2, n1, n2, pVal) {
   sd2
 }
 
-# first row by refid only
+## first row by refid only ---------------------------- (2024-10-31 07:46) @----
 first_row <- function(variable){
   ifelse(row_number() > 1, "", as.character(variable))
 }
@@ -559,7 +555,7 @@ refid_meta_fun <- function(data_meta){
   return(temp)
 }
 
-## gt style file --------------------------------------- (2023-04-10 10:03) @----
+## gt style file -------------------------------------- (2023-04-10 10:03) @----
 gt_theme_mg <- function(data) {
   data %>%
     # opt_row_striping() |>
@@ -702,7 +698,8 @@ riskdiff_ci_from_meta_rr <- function(meta_object, pscale = 100, digits = 2) {
   meta_object <- update(meta_object, sm = "RD")
   temp <- c(meta_object$TE.random, meta_object$lower.random, meta_object$upper.random) * pscale
   temp <- formatC(temp, digits = digits, format = "f")
-  temp_control <- metaprop(meta_object$data$.event.c, meta_object$data$.n.c)
+  # temp_control <- metaprop(meta_object$data$.event.c, meta_object$data$.n.c) # TODO: delete old error
+  temp_control <- metaprop(meta_object$event.c, meta_object$n.c)
   control_arm <- boot::inv.logit(temp_control$TE.common) * pscale
   control_arm <- formatC(control_arm, digits = digits, format = "f")
   paste0(temp[1], " per ", pscale, " (95% CI, ", temp[2], " to ", temp[3], ")", ";", " control arm event rate ", control_arm, " per ", pscale, ".")
@@ -712,6 +709,7 @@ riskdiff_ci_from_meta_rr_soe <- function(meta_object, pscale = 100, digits = 2) 
   meta_object <- update(meta_object, sm = "RD")
   temp <- c(meta_object$TE.random, meta_object$lower.random, meta_object$upper.random) * pscale
   temp <- formatC(temp, digits = digits, format = "f")
+  # temp_control <- metaprop(meta_object$data$.event.c, meta_object$data$.n.c) # TODO: delete old error
   temp_control <- metaprop(meta_object$data$.event.c, meta_object$data$.n.c)
   control_arm <- boot::inv.logit(temp_control$TE.common) * pscale
   control_arm <- formatC(control_arm, digits = digits, format = "f")
@@ -779,8 +777,14 @@ soe_meta_result_rr_or <- function(meta_object, effect = "RR", digits = 2) {
   temp_pi <- exp(c(meta_object$lower.predict, meta_object$upper.predict))
   temp_pi <- formatC(temp_pi, digits = digits, format = "f")
   temp_pi <- paste0(" PI ", temp_pi[1], "–", temp_pi[2], ")")
-  temp_i2 <- paste0("*I*<sup> 2</sup> = ", formatC(meta_object$I2 * 100, 0, format = "f"), "%")
-  (clipr::write_clip(paste0(temp_rr, temp_pi, ", ", temp_i2)))
+  # add i2 and CI if desired
+  # temp_i2 <- paste0(
+    # "*I*<sup> 2</sup> ",
+    # formatC(meta_object$I2 * 100, 0, format = "f"), "%", " (95% CI, ",
+    # formatC(meta_object$lower.I2 * 100, 0, format = "f"), "%", "-",
+    # formatC(meta_object$upper.I2 * 100, 0, format = "f"), "%", ")")
+  # (clipr::write_clip(paste0(temp_rr, temp_pi, "<br/>&emsp;", temp_i2)))
+  (clipr::write_clip(paste0(temp_rr, temp_pi)))
 }
 
 soe_meta_rd_or <- function(meta_object = temp_meta, digits = 1, scale = 1000) {
@@ -925,7 +929,6 @@ meta_rob_traffic_light_refid <- function(refid_select) {
   robinsi <- robinsi_traffic_light_refid(temp_meta$data$refid)
   return(list(rob2, robinsi))
 }
-
 
 ## summary weighted for pt characteristics ------------ (2023-12-27 10:50) @----
 pt_sum <- function(variable, wgt){sum(variable * wgt, na.rm = FALSE)}
