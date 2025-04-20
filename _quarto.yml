@@ -21,9 +21,15 @@ website:
     limit: 100
   favicon: favicon.png
   navbar:
-    background: primary
+    background: "primary"
     search: true
     pinned: true
+    right:
+      - icon: github
+        href: https://github.com/mdgrant/geriatrics_synth
+        aria-label: GitHub
+      - icon: envelope
+        url: mailto:mgrantmd@gmail.com
     left:
       - href: index.html
         text: Home
@@ -34,7 +40,7 @@ website:
       - text: Key Question
         menu:
           - href: kq1.html
-            text: "Expanded Preop Evaluation"
+            text: "Expanded Preoperative Evaluation"
           - href: kq3.html
             text: "Neuraxial versus General Anesthesia"
           - href: kq4.html

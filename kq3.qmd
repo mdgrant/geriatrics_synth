@@ -819,7 +819,7 @@ forest(gen_reg_delirium_meta,
 dev.off()
 ```
 
-![](assets/kq3_delirium_meta_forest.png){#fig-delirium-main fig.align="left" width="71%"}
+![](assets/kq3_delirium_meta_forest.png){fig.align="left" width="71%"}
 
 <foot_mg>RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> 
 Risk of bias ratings: low +, some concerns ?, high -- . <br/> 
@@ -1009,7 +1009,7 @@ rob_summary_meta_weighted_subset_fun(gen_reg_delirium_meta)
 ```
 :::
 
-## **Neurocognitive Disorder <30 days**
+## **Neurocognitive Disorder <br/>  <30 days**
 
 ```{r dncr_ncd_dat}
 #| eval: true
@@ -1294,7 +1294,7 @@ rob_summary_meta_weighted_fun(gen_reg_dncr_meta)
 
 <foot_mg> `r temp` </foot_mg>
  
-## **Neurocognitive Disorder 30 days to 1 year**
+## **Neurocognitive Disorder <br/>  30 days to 1 year**
 
 <caption_mg> `r table_ref()` Neurocognitive disorder ≥30 days incidence and ascertainment in a randomized clinical trial comparing neuraxial to general anesthesia.</caption_mg>
 
@@ -2185,7 +2185,7 @@ forest(adverse_meta,
 
 png("assets/kq3_complication_mi.png", width = 8.1, height = 3.8, units = "in", res = 300)
 temp_meta <- complication_meta_fun("MI")
-complication_forest_fun(temp_meta, "Similar arms combined for Liang 2017.", text.addline2 = risk_diff_meta_rr())
+complication_forest_fun(temp_meta, "Similar arms combined for Liang 2017.", text.addline2 = rd_ci_from_meta(temp_meta, pscale = 1000, digits = 1))
 dev.off()
 ```
 
@@ -2215,7 +2215,7 @@ bradycardia_footnote <- cardiac_compl |>
 png("assets/kq3_complication_brady.png", width = 8.1, height = 3.2, units = "in", res = 300)
 temp_meta <- complication_meta_fun("Other Cardiac")
 temp_meta <- update(temp_meta, subset = study %in% c("Carron 2007", "Nishikawa 2007b", "Wongyingsinn 2020", "Bielka 2021"))
-complication_forest_fun(temp_meta, predictive = FALSE, risk_diff_meta_subset_rr())
+complication_forest_fun(temp_meta, predictive = FALSE, rd_ci_from_meta_sub(temp_meta, pscale = 1000, digits = 1))
 dev.off()
 
 ```
@@ -2236,7 +2236,7 @@ dev.off()
 
 png("assets/kq3_complication_stroke.png", width = 8.1, height = 3.0, units = "in", res = 300) 
 temp_meta <- complication_meta_fun("Stroke", use_hakn = "classic", predictive = FALSE)
-complication_forest_fun(temp_meta, predictive = FALSE, risk_diff_meta_rr())
+complication_forest_fun(temp_meta, predictive = FALSE, rd_ci_from_meta(temp_meta, pscale = 1000, digits = 1))
 dev.off()
 
 # prediction interval (0.00; 593.55)
@@ -2256,7 +2256,7 @@ dev.off()
  
 png("assets/kq3_complication_renal.png", width = 8.1, height = 3.37, units = "in", res = 300)
 temp_meta <- complication_meta_fun("AKI/Renal Failure", use_hakn = "classic", predictive = FALSE)
-complication_forest_fun(temp_meta, predictive = TRUE, risk_diff_meta_rr())
+complication_forest_fun(temp_meta, predictive = TRUE, rd_ci_from_meta(temp_meta, pscale = 1000, digits = 1))
 dev.off()
 
 ```
@@ -2275,7 +2275,7 @@ dev.off()
 png("assets/kq3_complication_pneumonia.png", width = 8.1, height = 4.2, units = "in", res = 300)
 temp_meta <- complication_meta_fun("Pneumonia", use_hakn = "HK", predictive = FALSE)
 # temp_meta <- update(temp_meta, subgroup = surg_hip_oth)
-complication_forest_fun(temp_meta, "Similar arms combined for Liang 2017. Hip fracture studies only RR 0.48 (0.33–0.70).", text.addline2 = risk_diff_meta_rr())
+complication_forest_fun(temp_meta, "Similar arms combined for Liang 2017. Hip fracture studies only RR 0.48 (0.33–0.70).", text.addline2 = rd_ci_from_meta(temp_meta, pscale = 1000, digits = 1))
 dev.off()
 
 ```
@@ -2293,7 +2293,7 @@ dev.off()
 
 png("assets/kq3_complication_pe.png", width = 8.1, height = 4, units = "in", res = 300)
 temp_meta <- complication_meta_fun("Pulmonary Embolism", use_hakn = "HK", predictive = TRUE)
-complication_forest_fun(temp_meta, "Similar arms combined for Liang 2017.", text.addline2 = risk_diff_meta_rr())
+complication_forest_fun(temp_meta, "Similar arms combined for Liang 2017.", text.addline2 = rd_ci_from_meta(temp_meta, pscale = 1000, digits = 1))
 dev.off()
 
 ```

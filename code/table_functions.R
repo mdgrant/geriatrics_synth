@@ -27,16 +27,16 @@ rankings <- function(key_question){
 
   priority_dat <- bind_rows(out_kq1, out_kq2, out_kq3, out_kq4, out_kq5, out_kq6, out_kq7, out_kq8) |>
     mutate(kq = factor(kq,
-                       labels = c(
-                         "KQ1 Preoperative Evaluation",
-                         "KQ2 Prehabilitation",
-                         "KQ3 Regional versus General",
-                         "KQ4 Intravenous versus Inhaled",
-                         "KQ5 Potentially Inappropriate Medications",
-                         "KQ6 Pharmacologic Delirium Prophylaxis",
-                         "KQ7 Postoperative Regional Anesthesia",
-                         "KQ8 PACU Delirium Screening"
-                       )
+      labels = c(
+        "KQ1 Preoperative Evaluation",
+        "KQ2 Prehabilitation",
+        "KQ3 Regional versus General",
+        "KQ4 Intravenous versus Inhaled",
+        "KQ5 Potentially Inappropriate Medications",
+        "KQ6 Pharmacologic Delirium Prophylaxis",
+        "KQ7 Postoperative Regional Anesthesia",
+        "KQ8 PACU Delirium Screening"
+      )
     )) |>
     relocate(kq, .before = 1)
 
@@ -119,8 +119,8 @@ outcome_tab <- function(outcome_dat, responses) {
   )
 }
 
-## outcome priority tables ---------------------------- (2023-03-02 11:50) @----
-# footnote designs for tables
+## outcomes reported tables --------------------------- (2023-03-02 11:50) @----
+# footnote designs included for tables
 foot_out_freq <- function(data) {
   design_select <- data |>
     select(design_f_abbrev) |>
@@ -166,7 +166,7 @@ dichot_freq_fun <- function(data, add_footnote = NULL) {
     ungroup() |>
     rename(
       "Complications" = "d_complication",
-      "DNCR/PND" = "d_cog_delay",
+      "DNCR/POCD" = "d_cog_delay",
       "Delirium duration" = "d_deli_duration",
       "Discharge location" = "d_disch_location",
       "Opioid use" = "d_opioid",
@@ -201,7 +201,7 @@ dichot_freq_fun <- function(data, add_footnote = NULL) {
       label ~ "180px",
       matches("stat_[1-9]") ~ "120px") |>
     tab_options(footnotes.marks = "letters") |>
-    tab_footnote(paste0(add_footnote, foot_out_freq(data), ".")) |>
+    tab_footnote(md(paste0(add_footnote, foot_out_freq(data), "."))) |>
     sub_values(values = c("0 (0%)"), replacement = "—")
   # opt_footnote_marks(marks = "standard")
 }
@@ -266,7 +266,7 @@ likert_freq_fun <- function(data, add_footnote = NULL) {
     select(-l_depression) |>
     rename(
       "ADL" = "l_adl",
-      "DNCR/PND" = "l_cogfunc",
+      "DNCR/POCD" = "l_cogfunc",
       "Delirium"	= "l_delirium",
       "Complications" = "l_complications",
       # "Depression/anxiety" = "l_depression",
@@ -460,7 +460,6 @@ rob_summary_meta_weighted_nrsi_fun <- function(meta) {
   rob_summary(rob_temp_dat, tool = "ROBINS-I", colour = "colourblind", weighted = TRUE)
 }
 
-
 # to use with meta object and subset
 rob_summary_meta_weighted_subset_fun <- function(meta) {
   add_weights <- tibble(as.numeric(meta$data$refid[meta$subset]), meta$w.random / sum(meta$w.random)) |>
@@ -501,11 +500,11 @@ kq1_balance_main <- function(inc_exclude = "exclude") {
     rename(est = estimate_95_percent_ci) |>
     filter(!if_all(rct:est, ~ is.na(.x))) |>
     mutate(
-      high     = paste0("[", vlow, "]",     "(soe_gt.html#exp-std-grade)"),
-      mod      = paste0("[", mod, "]",      "(soe_gt.html#exp-std-grade)"),
-      low      = paste0("[", low, "]",      "(soe_gt.html#exp-std-grade)"),
-      vlow     = paste0("[", vlow, "]",     "(soe_gt.html#exp-std-grade)"),
-      low_very = paste0("[", low_very, "]", "(soe_gt.html#exp-std-grade)"),
+      high     = paste0("[", high, "]",     "(soe_gt.html#expanded-preoperative-evaluation)"),
+      mod      = paste0("[", mod, "]",      "(soe_gt.html#expanded-preoperative-evaluation)"),
+      low      = paste0("[", low, "]",      "(soe_gt.html#expanded-preoperative-evaluation)"),
+      vlow     = paste0("[", vlow, "]",     "(soe_gt.html#expanded-preoperative-evaluation)"),
+      low_very = paste0("[", low_very, "]", "(soe_gt.html#expanded-preoperative-evaluation)"),
       # group = ifelse(outcome == "Patient satisfaction", "Patient-reported", "Clinical"),
       across(everything(), ~ str_remove(.x, "‡|†|\\*")),
       grade = case_when(
@@ -565,7 +564,7 @@ kq1_balance_main <- function(inc_exclude = "exclude") {
     tab_style(style = cell_text(size = px(12)), locations = cells_body(columns = c(measure), rows = measure == "RD/1000")) |>
     tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(rct:est), rows = str_detect(measure, "RD"))) |>
     tab_style(style = list(cell_text(color = "black")), locations = cells_body(columns = c(rct:est), rows = str_detect(measure, "RD") & str_detect(outcome, "satis"))) |>
-    tab_footnote(md("RCT: randomized clinical trial; NRSI: nonrandomized studies of interventions (non-randomized trial, before-after and cohort studies);  GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; MD: mean difference.")) |>
+    tab_footnote(md("RCT: randomized clinical trial; NRSI: nonrandomized studies of interventions (non-randomized trial, before-after and cohort studies);  GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; SMD: standardized mean difference; RD: risk difference; MD: mean difference.")) |>
     tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
     tab_footnote("Cardiovascular, pulmonary, and renal.", locations = cells_body(columns = c(outcome), rows = outcome == "Complications")) |>
     tab_footnote("High versus lower satisfaction.", locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"))
@@ -578,7 +577,7 @@ kq1_complications <- function() {
     rename(est = estimate_95_percent_ci) |>
     filter(!if_all(rct:est, ~ is.na(.x))) |>
     mutate(
-      high     = paste0("[", vlow, "]",     "(soe_gt.html#exp-std-grade)"),
+      high     = paste0("[", high, "]",     "(soe_gt.html#exp-std-grade)"),
       mod      = paste0("[", mod, "]",      "(soe_gt.html#exp-std-grade)"),
       low      = paste0("[", low, "]",      "(soe_gt.html#exp-std-grade)"),
       vlow     = paste0("[", vlow, "]",     "(soe_gt.html#exp-std-grade)"),
@@ -661,11 +660,11 @@ kq3_balance_main <- function(exclude = "RD") {
   rename(est = estimate_95_percent_ci) |>
   # filter(!if_all(rct:est, ~ is.na(.x))) |>
     mutate(
-      high     = paste0("[", vlow, "]",     "(soe_gt.html#reg-gen-grade)"),
-      mod      = paste0("[", mod, "]",      "(soe_gt.html#reg-gen-grade)"),
-      low      = paste0("[", low, "]",      "(soe_gt.html#reg-gen-grade)"),
-      vlow     = paste0("[", vlow, "]",     "(soe_gt.html#reg-gen-grade)"),
-      low_very = paste0("[", low_very, "]", "(soe_gt.html#reg-gen-grade)"),
+      high     = paste0("[", high, "]",     "(soe_gt.html#neuraxial-versus-general-anesthesia)"),
+      mod      = paste0("[", mod, "]",      "(soe_gt.html#neuraxial-versus-general-anesthesia)"),
+      low      = paste0("[", low, "]",      "(soe_gt.html#neuraxial-versus-general-anesthesia)"),
+      vlow     = paste0("[", vlow, "]",     "(soe_gt.html#neuraxial-versus-general-anesthesia)"),
+      low_very = paste0("[", low_very, "]", "(soe_gt.html#neuraxial-versus-general-anesthesia)"),
       # group = ifelse(outcome == "Patient satisfaction", "Patient-reported", "Clinical"),
       across(everything(), ~ str_remove(.x, "‡|†|\\*")),
       grade = case_when(
@@ -742,7 +741,7 @@ kq3_complications <- function() {
     rename(est = estimate_95_percent_ci) |>
     filter(!if_all(rct:est, ~ is.na(.x))) |>
     mutate(
-      high     = paste0("[", vlow, "]",     "(soe_gt.html#reg-gen-grade)"),
+      high     = paste0("[", high, "]",     "(soe_gt.html#reg-gen-grade)"),
       mod      = paste0("[", mod, "]",      "(soe_gt.html#reg-gen-grade)"),
       low      = paste0("[", low, "]",      "(soe_gt.html#reg-gen-grade)"),
       vlow     = paste0("[", vlow, "]",     "(soe_gt.html#reg-gen-grade)"),
@@ -824,11 +823,11 @@ kq4_balance_main <- function(inc_exclude = "exclude") {
     rename(est = estimate_95_percent_ci) |>
     filter(!if_all(rct:est, ~ is.na(.x))) |>
     mutate(
-      high     = paste0("[", vlow, "]",     "(soe_gt.html#tiva-grade)"),
-      mod      = paste0("[", mod, "]",      "(soe_gt.html#tiva-grade)"),
-      low      = paste0("[", low, "]",      "(soe_gt.html#tiva-grade)"),
-      vlow     = paste0("[", vlow, "]",     "(soe_gt.html#tiva-grade)"),
-      low_very = paste0("[", low_very, "]", "(soe_gt.html#tiva-grade)"),
+      high     = paste0("[", high, "]",     "(soe_gt.html#tiva-versus-inhaled-volatile)"),
+      mod      = paste0("[", mod, "]",      "(soe_gt.html#tiva-versus-inhaled-volatile)"),
+      low      = paste0("[", low, "]",      "(soe_gt.html#tiva-versus-inhaled-volatile)"),
+      vlow     = paste0("[", vlow, "]",     "(soe_gt.html#tiva-versus-inhaled-volatile)"),
+      low_very = paste0("[", low_very, "]", "(soe_gt.html#tiva-versus-inhaled-volatile)"),
       # group = ifelse(outcome == "Patient satisfaction", "Patient-reported", "Clinical"),
       across(everything(), ~ str_remove(.x, "‡|†|\\*")),
       grade = case_when(
@@ -903,7 +902,7 @@ kq4_complications <- function(){
     rename(est = estimate_95_percent_ci) |>
     filter(!if_all(rct:est, ~ is.na(.x))) |>
     mutate(
-      high     = paste0("[", vlow, "]",     "(soe_gt.html#tiva-grade)"),
+      high     = paste0("[", high, "]",     "(soe_gt.html#tiva-grade)"),
       mod      = paste0("[", mod, "]",      "(soe_gt.html#tiva-grade)"),
       low      = paste0("[", low, "]",      "(soe_gt.html#tiva-grade)"),
       vlow     = paste0("[", vlow, "]",     "(soe_gt.html#tiva-grade)"),
@@ -986,11 +985,11 @@ kq6_balance_dex_main <- function(inc_exclude = "exclude") {
     filter(!if_all(rct:est, ~ is.na(.x))) |>
     mutate(
       i2 = str_c(i2, "%"),
-      high     = paste0("[", vlow, "]",     "(soe_gt.html#del-prophylaxis-grade)"),
-      mod      = paste0("[", mod, "]",      "(soe_gt.html#del-prophylaxis-grade)"),
-      low      = paste0("[", low, "]",      "(soe_gt.html#del-prophylaxis-grade)"),
-      vlow     = paste0("[", vlow, "]",     "(soe_gt.html#del-prophylaxis-grade)"),
-      low_very = paste0("[", low_very, "]", "(soe_gt.html#del-prophylaxis-grade)"),
+      high     = paste0("[", high, "]",     "(soe_gt.html#delirium-prophylaxis)"),
+      mod      = paste0("[", mod, "]",      "(soe_gt.html#delirium-prophylaxis)"),
+      low      = paste0("[", low, "]",      "(soe_gt.html#delirium-prophylaxis)"),
+      vlow     = paste0("[", vlow, "]",     "(soe_gt.html#delirium-prophylaxis)"),
+      low_very = paste0("[", low_very, "]", "(soe_gt.html#delirium-prophylaxis)"),
       # group = ifelse(outcome == "Patient satisfaction", "Patient-reported", "Clinical"),
       across(everything(), ~ str_remove(.x, "‡|†|\\*")),
       # group = ifelse(outcome == "Patient satisfaction", "Patient-reported", "Clinical"),
@@ -1023,7 +1022,7 @@ kq6_balance_dex_main <- function(inc_exclude = "exclude") {
       measure  = "Effect",
       est      = md("    Estimate<br/>      (95% CI)"),
       i2       = md("*I*<sup> 2</sup>"),
-      pi       = md("  Prediction<br/>   Interval")
+      pi       = md("  (95% PI)")
     ) |>
     fmt_markdown(columns = c(grade, i2)) |>
     cols_hide(c(n, exclude)) |>
@@ -1043,8 +1042,9 @@ kq6_balance_dex_main <- function(inc_exclude = "exclude") {
       pi ~ px(100)
     ) |>
     sub_missing(columns = everything(), missing_text = "") |>
+    sub_values(columns = pi, pattern = "insuff_data", replacement = "      ") |>
     tab_spanner(label = "Dexmedetomidine", columns = c(event_e), level = 1) |>
-    tab_spanner(label = "Placebo", columns = c(event_c), level = 1) |>
+    tab_spanner(label = "Placebo", columns = c(event_c), level = 1, id = "event_c_spanner") |>
     # tab_spanner(label = "Heterogeneity", columns = c(i2), level = 1) |>
     # tab_style(style = cell_text(size = "11px"), locations = cells_column_spanners(spanners = "Heterogeneity")) |>
     opt_footnote_marks(marks = "standard") |>
@@ -1052,19 +1052,23 @@ kq6_balance_dex_main <- function(inc_exclude = "exclude") {
     tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(event_c, event_e, n, grade, rct, nrsi))) |>
     # tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c(est))) |>
     tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(grade, measure, rct, nrsi))) |>
-    tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(est, measure), rows = str_detect(measure, "RD"))) |>
-    tab_footnote("RCT: randomized clinical trial; NRSI: nonrandomized studies of interventions; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; OR: odds ratio; MD: mean difference; SMD: standardized mean difference.") |>
+    # tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(est, measure), rows = str_detect(measure, "RD"))) |>
+    tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(rct:pi), rows = str_detect(measure, "RD"))) |>
+    tab_footnote("RCT: randomized clinical trial; NRSI: nonrandomized studies of interventions; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; PI: prediction interval; RR: risk ratio; SMD: standardized mean difference; RD: risk difference; MD: mean difference.") |>
     tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
     tab_footnote("Neither study detected a difference.", locations = cells_body(columns = c(est), rows = outcome == "Neurocognitive disorders")) |>
+    tab_footnote("Insufficient data to estimate a valid prediction interval.", locations = cells_body(columns = pi, rows = pi == "insuff_data")) |>
     # tab_footnote("Cardiovascular, pulmonary, and acute kidney injury.", locations = cells_body(columns = c(outcome), rows = outcome == "Complications")) |>
     tab_footnote("0 events in one study; second did not detect a difference.", locations = cells_body(columns = c(est), rows = outcome == "Pulmonary congestion/edema")) |>
     tab_footnote("2 versus 0 events.", locations = cells_body(columns = c(est), rows = outcome == "Cardiac arrest")) |>
     # tab_footnote(md("[Comparing higher/highest category or categories with lower ones.](kq4.html#patient-satisfaction)"), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right")
-    tab_footnote(md("Comparing higher/highest category or categories with lower ones."), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right")
+    tab_footnote(md("Comparing higher/highest category or categories with lower ones."), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |>
+    tab_footnote("In some studies (randomized or not) the control incorporated neither placebo or prophylaxis.", locations = cells_column_spanners(spanners = "event_c_spanner")) |>
+    tab_footnote("With Hartung-Knapp adjustment MD -0.8 (-1.5 to -0.08).", locations = cells_body(columns = c(est), rows = outcome == "Length of stay (days)"), placement = "right")
 }
 
 kq6_dex_complications <- function(){
-  dex_plac_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "DeliriumProph", range = "A20:N29", col_types = c(rep("text", 2), rep("numeric", 7), rep("text", 5))) |>
+  dex_plac_dat <- readxl::read_excel("data/balance_tables_2023-09-14_mac_mg.xlsx", sheet = "DeliriumProph", range = "A23:O39", col_types = c(rep("text", 2), rep("numeric", 7), rep("text", 6))) |>
     # remove_empty(which = "cols") |>
     select(-exclude) |>
     clean_names() |>
@@ -1072,11 +1076,11 @@ kq6_dex_complications <- function(){
     filter(!if_all(rct:est, ~ is.na(.x))) |>
     mutate(
       i2 = str_c(i2, "%"),
-      high     = paste0("[", vlow, "]",     "(soe_gt.html#del-prophylaxis-grade)"),
-      mod      = paste0("[", mod, "]",      "(soe_gt.html#del-prophylaxis-grade)"),
-      low      = paste0("[", low, "]",      "(soe_gt.html#del-prophylaxis-grade)"),
-      vlow     = paste0("[", vlow, "]",     "(soe_gt.html#del-prophylaxis-grade)"),
-      low_very = paste0("[", low_very, "]", "(soe_gt.html#del-prophylaxis-grade)"),
+      high     = paste0("[", high, "]",     "(soe_gt.html#delirium-prophylaxis)"),
+      mod      = paste0("[", mod, "]",      "(soe_gt.html#delirium-prophylaxis)"),
+      low      = paste0("[", low, "]",      "(soe_gt.html#delirium-prophylaxis)"),
+      vlow     = paste0("[", vlow, "]",     "(soe_gt.html#delirium-prophylaxis)"),
+      low_very = paste0("[", low_very, "]", "(soe_gt.html#delirium-prophylaxis)"),
       across(everything(), ~ str_remove(.x, "‡|†|\\*")),
       grade = case_when(
         grade == "Very low" ~ vlow,
@@ -1105,7 +1109,8 @@ kq6_dex_complications <- function(){
       grade    = "GRADE",
       measure  = "Effect",
       est      = "Estimate (95% CI)",
-      i2       = md("*I*<sup> 2</sup>")
+      i2       = md("*I*<sup> 2</sup>"),
+      pi       = md("  (95% PI)")
     ) |>
     fmt_markdown(columns = c(grade, i2)) |>
     cols_hide(n) |>
@@ -1119,26 +1124,31 @@ kq6_dex_complications <- function(){
       event_e ~ px(115),
       event_c ~ px(105),
       grade ~ px(100),
-      measure ~ px(45),
-      est ~ px(140),
-      i2 ~ px(35)
+      measure ~ px(65),
+      est ~ px(120),
+      i2 ~ px(40),
+      pi ~ px(100)
     ) |>
     sub_missing(columns = everything(), missing_text = "") |>
+    sub_values(columns = pi, pattern = "insuff_data", replacement = "      ") |>
     tab_spanner(label = "Dexmedetomidine", columns = c(event_e), level = 1) |>
-    tab_spanner(label = "Placebo", columns = c(event_c), level = 1) |>
+    tab_spanner(label = "Placebo", columns = c(event_c), level = 1, id = "event_c_spanner") |>
     opt_footnote_marks(marks = "standard") |>
     tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(event_c, event_e))) |>
     tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(n, grade, rct))) |>
     tab_style(style = cell_text(align = "center"), locations = cells_body(columns = c(grade, measure, rct))) |>
-    # tab_style(style = cell_text(size = px(9)), locations = cells_column_labels(columns = c()))
-    tab_footnote(md("RCT: randomized clinical trial; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; MD: mean difference.")) |>
+    tab_style(style = cell_text(size = px(12)), locations = cells_body(columns = c(measure), rows = measure == "RD/1000")) |>
+    tab_style(style = list(cell_text(color = riskdiff_color)), locations = cells_body(columns = c(rct:pi), rows = str_detect(measure, "RD"))) |>
+    tab_footnote("Insufficient data to estimate a valid prediction interval.", locations = cells_body(columns = pi, rows = pi == "insuff_data")) |>
+    tab_footnote(md("RCT: randomized clinical trial; GRADE: Grades of Recommendation, Assessment, Development, and Evaluation; RR: risk ratio; RD: risk difference.")) |>
     tab_footnote(md(grade_foot), locations = cells_column_labels(columns = grade)) |>
     tab_footnote(md("[Comparing higher/highest category or categories with lower ones.](kq3.html#patient-satisfaction)"), locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |>
     tab_footnote("Comparing higher/highest category or categories with lower ones", locations = cells_body(columns = c(est), rows = outcome == "Patient satisfaction"), placement = "right") |>
     tab_footnote("Cardiovascular, pulmonary, and acute kidney injury.", locations = cells_body(columns = c(outcome), rows = outcome == "Complications")) |>
     tab_footnote("Complications reported variously across the 13 trials. ", locations = cells_body(columns = c(rct), rows = outcome == "Complications"), placement = "right") |>
     tab_footnote("One study no events; the other two. ", locations = cells_body(columns = c(est), rows = outcome == "cardiac arrest"), placement = "right") |>
-    tab_footnote("Complications reported as heart failure (1 study), arrhythmia (1 study), or bradycardia (17 studies).", locations = cells_body(columns = c(outcome), rows = outcome == "Cardiac complications"))
+    tab_footnote("Complications reported as heart failure (1 study), arrhythmia (1 study), or bradycardia (17 studies).", locations = cells_body(columns = c(outcome), rows = outcome == "Cardiac complications")) |>
+    tab_footnote("In some studies (randomized or not) the control incorporated neither placebo or prophylaxis.", locations = cells_column_spanners(spanners = "event_c_spanner"))
 }
 
 kq6_ketamine <- function(){
@@ -1148,7 +1158,7 @@ kq6_ketamine <- function(){
     rename(est = estimate_95_percent_ci) |>
     filter(!if_all(rct:est, ~ is.na(.x))) |>
     mutate(
-      high     = paste0("[", vlow, "]",     "(soe_gt.html#del-prophylaxis-grade)"),
+      high     = paste0("[", high, "]",     "(soe_gt.html#del-prophylaxis-grade)"),
       mod      = paste0("[", mod, "]",      "(soe_gt.html#del-prophylaxis-grade)"),
       low      = paste0("[", low, "]",      "(soe_gt.html#del-prophylaxis-grade)"),
       vlow     = paste0("[", vlow, "]",     "(soe_gt.html#del-prophylaxis-grade)"),
@@ -1226,7 +1236,7 @@ kq6_balance_mel_ram_main <- function(){
     rename(est = estimate_95_percent_ci) |>
     filter(!if_all(rct:est, ~ is.na(.x))) |>
     mutate(
-      high     = paste0("[", vlow, "]",     "(soe_gt.html#del-prophylaxis-grade)"),
+      high     = paste0("[", high, "]",     "(soe_gt.html#del-prophylaxis-grade)"),
       mod      = paste0("[", mod, "]",      "(soe_gt.html#del-prophylaxis-grade)"),
       low      = paste0("[", low, "]",      "(soe_gt.html#del-prophylaxis-grade)"),
       vlow     = paste0("[", vlow, "]",     "(soe_gt.html#del-prophylaxis-grade)"),
@@ -1303,7 +1313,7 @@ kq6_balance_mel_ram_complications <- function() {
     rename(est = estimate_95_percent_ci) |>
     filter(!if_all(rct:est, ~ is.na(.x))) |>
     mutate(
-      high     = paste0("[", vlow, "]",     "(soe_gt.html#del-prophylaxis-grade)"),
+      high     = paste0("[", high, "]",     "(soe_gt.html#del-prophylaxis-grade)"),
       mod      = paste0("[", mod, "]",      "(soe_gt.html#del-prophylaxis-grade)"),
       low      = paste0("[", low, "]",      "(soe_gt.html#del-prophylaxis-grade)"),
       vlow     = paste0("[", vlow, "]",     "(soe_gt.html#del-prophylaxis-grade)"),

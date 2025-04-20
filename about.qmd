@@ -1,5 +1,14 @@
 ---
 title: "About"
+license: "CC BY-NC"
 ---
 
-Detail of evidence synthesis.
+Detail of evidence synthesis supporting the 2025 American Society of Anesthesiologists Practice Advisory for Perioperative Care of Older Adults Scheduled for Inpatient Surgery.
+
+Note that some inner workings of synthesis have been updated post-publication to enhance reproducibility and editing and attention to consistency. The most recent version of the synthesis including the history of changes can be found in the GitHub repository here: [ <img src="assets/github-mark.png" width="15" alt="GitHub repository" /> ](https://github.com/mdgrant/geriatrics_synth). Data and code can be freely downloaded and used for educational purposes consistent with licensing. 
+
+The analysis used R 4.3.3 and Quarto 1.3.450. Appearance may differ with more recent Quarto versions. 
+<!-- Package versions can be found in the `renv` lockfile.  -->
+
+
+

@@ -747,6 +747,8 @@ forest(delirium_meta_rct,
 )
 dev.off()
 
+trim_image("kq4_delirium_meta_rct.png")
+
 ```
 ![](assets/kq4_delirium_meta_rct.png){fig.align="left" width="73%"}
 
@@ -805,6 +807,8 @@ forest(delirium_meta_rct_rd,
   fs.hetstat = 10,
 )
 dev.off()
+
+trim_image("kq4_delirium_meta_forest_rd.png")
 ```
 ![](assets/kq4_delirium_meta_forest_rd.png){fig.align="left" width="73%"}
 :::
@@ -931,6 +935,8 @@ forest(delirium_meta_nrsi,
 )
 dev.off()
 
+trim_image("kq4_delirium_meta_nrsi.png")
+
 ```
 ![](assets/kq4_delirium_meta_nrsi.png){fig.align="left" width="78%"}
 
@@ -953,7 +959,7 @@ temp <- print(delirium_meta_nrsi) |>
 <foot_mg> `r temp` </foot_mg>
 :::
 
-## **Neurocognitive Disorder <30 days**
+## **Neurocognitive Disorder <br/>  <30 days**
 
 ```{r dncr_ncd_dat}
 #| eval: true
@@ -1256,7 +1262,7 @@ forest(dncr_tiva_inhaled_meta,
   xlab = "Favors: TIVA                    Inhaled",
   addrows.below.overall = 4,
   fs.hetstat = 10,
-  text.addline2 = risk_diff_meta_rr(dncr_tiva_inhaled_meta, scale = 100)
+  text.addline2 = rd_ci_from_meta_sub(dncr_tiva_inhaled_meta, pscale = 100, digits = 1)
 )  
 dev.off()
 
@@ -1316,6 +1322,8 @@ forest(dncr_tiva_inhaled_meta_rct_rd,
   fs.hetstat = 10
 )
 dev.off()
+
+trim_image("kq4_dncr_meta_forest_rd.png")
 ```
 ![](assets/kq4_dncr_meta_forest_rd.png){fig.align="left" width="72%"}
 :::
@@ -1366,7 +1374,7 @@ rob_summary(rob_temp_dat, tool = "ROB2", colour = "colourblind", weighted = TRUE
 ```
 :::
 
-## **Neurocognitive Disorder 30 days to 1 year**
+## **Neurocognitive Disorder <br/>  30 days to 1 year**
 
 <caption_mg> `r table_ref()` Neurocognitive disorder ≥30 days (cognitive dysfunction after 30 days) and ascertainment. </caption_mg>
 
@@ -1579,9 +1587,11 @@ forest(ncd_meta,
   xlab = "Favors: TIVA                    Inhaled",
   addrows.below.overall = 4,
   fs.hetstat = 10,
-  text.addline2 = risk_diff_meta_rr(meta_select = ncd_meta, scale = 100)
+  text.addline2 = rd_ci_from_meta(ncd_meta, pscale = 100, digits = 1)
 )  
 dev.off()
+
+trim_image("kq4_ncd_meta.png")
 
 ```
 
@@ -1611,7 +1621,8 @@ No studies
     
 ## **Complications**
 
-```{r complications_check_to_excel, eval = FALSE}
+```{r complications_check_to_excel}
+#| eval: false
 
 # create excel file to inspect complications
 complication_fun <- function(var_prefix) {
@@ -1860,10 +1871,11 @@ adverse_events_gt_dat |>
 
 ### *Pooled*
 
-Note: given the limited number of randomized studies and absence of convincing evidence for any complication, we pooled all designs without detriment to any strength of evidence rating. When odds ratios were pooled, approximate risk differences were calculated based on the event rate across inhaled anesthetic arms and the corresponding risk ratio derived from the odds ratio.
+Note: given the limited number of randomized studies and absence of convincing evidence for any complication, randomized and nonrandomized designs were poole without detriment to any strength of evidence rating. When odds ratios were pooled (to include adjusted results from nonrandomized designs), approximate risk differences were calculated based on the event rate across inhaled anesthetic arms and risk ratio derived from the odds ratio.
 
 ```{r complication_meta}
 
+# functions to perform meta-analysis obtaining odds ratio using metagen or rr directly
 complication_meta_or <- function(compl_label, use_hakn = TRUE, predictive = TRUE, study_label = "study_design", ...){
 meta_dat <- adverse_meta_wide_dat |>
   filter(!str_detect(complication, "Other Cardiac")) |> 
@@ -1871,7 +1883,6 @@ meta_dat <- adverse_meta_wide_dat |>
   rename(complication = complication_nodesign) |>
   filter(complication %in% compl_label) |> 
   left_join(rob2_meta_dat, by = "refid")
-
 
 meta_dat <- adverse_meta_wide_dat |>
   filter(!str_detect(complication, "Other Cardiac")) |> 
@@ -1936,7 +1947,7 @@ complication_forest_or <- function(adverse_meta, use_predictive = TRUE, random =
     # pooled.events = TRUE,
     digits = 2,
     print.pval.Q = FALSE,
-    xlim = c(0.1, 10),
+    # xlim = c(0.1, 10),
     xlab = "Favors: TIVA                             Inhaled",
     addrows.below.overall = 4,
     text.addline1 = "*Randomized clinical trial",
@@ -2027,15 +2038,19 @@ complication_summary_rd <- function(compl_label){
 
 ```{r complication_mi}
 #| echo: false
+#| include: false
 
 png("assets/kq4_complication_mi.png", width = 8.9, height = 4.2, units = "in", res = 300)
 temp_meta <- complication_meta_or("Myocardial Infarction", use_hakn = TRUE, study_label = "study_design")
-complication_forest_or(temp_meta, big.mark = ",", text.addline2 = risk_diff_meta_or_kq4())
+complication_forest_or(temp_meta, xlim = c(0.2, 5.0), big.mark = ",", text.addline2 = rd_ci_from_meta_or_kq4(temp_meta, pscale = 1000, digits = 1)) 
 dev.off()
+
+trim_image("kq4_complication_mi.png")
 
 # meta_rob_traffic_light_refid(temp_meta)
 # complication_summary_rr_or("Myocardial Infarction")
 # soe_meta_result_rr_or(temp_meta, "OR")
+# RESUME: 2025-04-10 fix function soe_meta_rd_or
 # soe_meta_rd_or(temp_meta, digits = 1)
 
 ```
@@ -2051,12 +2066,15 @@ dev.off()
 <caption_mg> `r figure_ref()` Risk ratio for cardiac arrest (randomized and nonrandomized studies). </caption_mg>
 
 ```{r complication_cardiac_arrest}
-# <!-- #| echo: false -->
+#| echo: false
+#| include: false
 
 png("assets/kq4_complication_cardiac_arrest.png", width = 8.1, height = 2.8, units = "in", res = 300)
 temp_meta <- complication_meta_rr("Cardiac Arrest", random = FALSE, use_hakn = FALSE)
-complication_forest_rr(temp_meta, random = FALSE, big.mark = ",", text.addline2 = risk_diff_meta_rr_kq4())
+complication_forest_rr(temp_meta, random = FALSE, big.mark = ",", text.addline2 = rd_ci_from_meta(temp_meta, pscale = 1000, digits = 1))  
 dev.off()
+
+trim_image("kq4_complication_cardiac_arrest.png")
 
 # complication_summary_rr_or("Cardiac Arrest")
 # meta_rob_traffic_light_refid(temp_meta)
@@ -2075,11 +2093,14 @@ dev.off()
 
 ```{r complication_brady}
 #| echo: false
+#| include: false
 
 png("assets/kq4_complication_brady.png", width = 8.11, height = 3.8, units = "in", res = 300)
 temp_meta <- complication_meta_rr("Bradycardia", use_hakn = TRUE)
-complication_forest_rr(temp_meta, big.mark = ",", text.addline2 = risk_diff_meta_rr_kq4())
+complication_forest_rr(temp_meta, big.mark = ",", use_predictive = FALSE, text.addline2 = rd_ci_from_meta(temp_meta, pscale = 1000, digits = 1))
 dev.off()
+
+trim_image("kq4_complication_brady.png")
 
 # meta_rob_traffic_light_refid(temp_meta)
 # complication_summary_rr_or("Bradycardia")
@@ -2089,6 +2110,8 @@ dev.off()
 ```
 
 ![](assets/kq4_complication_brady.png){fig.align="left" width="59%"}
+
+<foot_mg> Insufficient data to estimate a valid prediction interval. </foot_mg> 
 
 <a id="intraop_hypotension"></a>
 
@@ -2104,8 +2127,10 @@ dev.off()
 
 png("assets/kq4_complication_hypotension.png", width = 8.02, height = 3.6, units = "in", res = 300)
 temp_meta <- complication_meta_rr("Hypotension", use_hakn = FALSE)
-complication_forest_rr(temp_meta, big.mark = ",", text.addline2 = risk_diff_meta_rr_kq4())
+complication_forest_rr(temp_meta, big.mark = ",", text.addline2 = rd_ci_from_meta(temp_meta, pscale = 1000, digits = 1))
 dev.off()
+
+trim_image("kq4_complication_hypotension.png")
 
 # meta_rob_traffic_light_refid(temp_meta)
 # complication_summary_rr_or("Hypotension")
@@ -2130,8 +2155,10 @@ dev.off()
 
 png("assets/kq4_complication_stroke.png", width = 8.13, height = 2.8, units = "in", res = 300)
 temp_meta <- complication_meta_or("Stroke", use_hakn = FALSE, random = FALSE)
-complication_forest_or(temp_meta, big.mark = ",", random = FALSE, text.addline2 = risk_diff_meta_or_kq4())
+complication_forest_or(temp_meta, big.mark = ",", random = FALSE, text.addline2 = rd_ci_from_meta_or_kq4(temp_meta, pscale = 1000, digits = 1)) 
 dev.off()
+
+trim_image("kq4_complication_stroke.png")
 
 # meta_rob_traffic_light_refid(temp_meta)
 # complication_summary_rr_or("Stroke")
@@ -2156,8 +2183,10 @@ dev.off()
 
 png("assets/kq4_complication_renal.png", width = 8.9, height = 4, units = "in", res = 300)
 temp_meta <- complication_meta_or("Acute Kidney Injury", use_hakn = TRUE)
-complication_forest_or(temp_meta, big.mark = ",", text.addline2 = risk_diff_meta_or_kq4(digits = 1))
+complication_forest_or(temp_meta, big.mark = ",", text.addline2 = rd_ci_from_meta_or_kq4(temp_meta, pscale = 1000, digits = 1)) 
 dev.off()
+
+trim_image("kq4_complication_renal.png")
 
 # meta_rob_traffic_light_refid(temp_meta)
 # complication_summary_rr_or("Acute Kidney Injury")
@@ -2181,9 +2210,11 @@ dev.off()
 #| include: false
 
 png("assets/kq4_complication_pneumonia.png", width = 8.54, height = 3.8, units = "in", res = 300)
-temp_meta <- complication_meta_or("Pneumonia", use_hakn = TRUE, predictive = TRUE)
-complication_forest_or(temp_meta, use_predictive = TRUE, text.addline2 = risk_diff_meta_or_kq4())
+temp_meta <- complication_meta_rr("Pneumonia", use_hakn = TRUE, predictive = TRUE)
+complication_forest_rr(temp_meta, use_predictive = TRUE, text.addline2 = rd_ci_from_meta(temp_meta, pscale = 1000, digits = 1))
 dev.off()
+
+trim_image("kq4_complication_pneumonia.png")
 
 # meta_rob_traffic_light_refid(temp_meta)
 # complication_summary_rr_or("Pneumonia")
@@ -2199,7 +2230,7 @@ dev.off()
 
 ```
 
-![](assets/kq4_complication_pneumonia.png){fig.align="left" width="62%"}
+![](assets/kq4_complication_pneumonia.png){fig.align="left" width="60%"}
 
 <a id="pe"></a>
 
@@ -2215,8 +2246,10 @@ dev.off()
 
 png("assets/kq4_complication_pe.png", width = 9.1, height = 3.8, units = "in", res = 300)
 temp_meta <- complication_meta_or("Pulmonary Embolism", use_hakn = TRUE, predictive = FALSE)
-complication_forest_or(temp_meta, use_predictive = TRUE, big.mark = ",", text.addline2 = risk_diff_meta_or_kq4(digits = 1))
+complication_forest_or(temp_meta, use_predictive = TRUE, big.mark = ",", text.addline2 = rd_ci_from_meta_or_kq4(temp_meta, pscale = 1000, digits = 1)) 
 dev.off()
+
+trim_image("kq4_complication_pe.png")
 
 # meta_rob_traffic_light_refid(temp_meta)
 # complication_summary_rr_or("Pulmonary Embolism")
@@ -2249,8 +2282,10 @@ dev.off()
 
 png("assets/kq4_respiratory_failure.png", width = 8.5, height = 3.6, units = "in", res = 300)
 temp_meta <- complication_meta_or("Respiratory Failure", use_hakn = FALSE, predictive = FALSE)
-complication_forest_or(temp_meta, use_predictive = TRUE, big.mark = ",", text.addline2 = risk_diff_meta_or_kq4(digits = 2))
+complication_forest_or(temp_meta, use_predictive = TRUE, big.mark = ",", text.addline2 = rd_ci_from_meta_or_kq4(temp_meta, pscale = 1000, digits = 1)) 
 dev.off()
+
+trim_image("kq4_respiratory_failure.png")
 
 # meta_rob_traffic_light_refid(temp_meta)
 # complication_summary_rr_or("Respiratory Failure")
@@ -3177,6 +3212,8 @@ forest(mort_rct_meta,
 )
 dev.off()
 
+trim_image("kq4_mort_rct.png")
+
 #                    RR            95%-CI    z p-value
 # Zangrillo 2011 2.0000 (0.1881, 21.2627) 0.57  0.5655
 
@@ -3212,7 +3249,7 @@ mort_nrsi_meta <- metagen(ln_or, ln_se,
   allstudies = FALSE,
 )
 
-# summary(plac_meta)
+# summary(mort_nrsi_meta)
 
 # for risk difference
 temp_meta <- mort_nrsi_meta
@@ -3227,7 +3264,7 @@ temp_meta <- metabin(
   allstudies = TRUE,
 )
 
-# riskdiff_ci_from_meta_rr_kq4(temp_meta, digits = 2)
+# rd_ci_from_meta_rr_kq4(temp_meta, digits = 2)
 
 temp <- metaprop(mort_n_Inhaled, arm_n_Inhaled, data = mort_meta_dat)
 control_arm <- boot::inv.logit(temp$TE.common)
@@ -3263,9 +3300,11 @@ forest(mort_nrsi_meta,
   fs.hetstat = 10,
   big.mark = ",",
   method.random.ci = "HK",
-  text.addline2 = paste0("Approximate pooled risk difference ", riskdiff_ci_from_meta_rr_kq4(temp_meta, digits = 2))
+  text.addline2 = paste0("Approximate pooled risk difference ", rd_ci_from_meta_rr_kq4(temp_meta, digits = 2))
 )
 dev.off()
+
+trim_image("kq4_mort_nrsi.png")
 
 ```
 
@@ -3327,9 +3366,11 @@ forest(mort_1yr_meta,
   addrows.below.overall = 4,
   fs.hetstat = 10,
   big.mark = ",",
-  text.addline1 = risk_diff_meta_rr()
+  text.addline1 = risk_diff_meta_rr_kq4()
 )
 dev.off()
+
+trim_image("kq4_mort_1yr.png")
 
 # meta_rob_traffic_light_refid(mort_1yr_meta)
 # soe_meta_result_rr_or(mort_1yr_meta, "RR")

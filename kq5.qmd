@@ -22,15 +22,17 @@ nocite: '@*'
 
 ## **Key Question**
 
-Among older patients undergoing surgery and anesthesia, do commonly used potentially inappropriate medications administered during the perioperative period increase the risk of postoperative delirium or other adverse outcomes?
+Among older patients undergoing surgery and anesthesia, do medications with potential central nervous system effects (i.e., benzodiazepines, antipsychotics, anticholinergics, ketamine, corticosteroids, gabapentin, or NSAIDs) administered during the perioperative period increase the risk of postoperative delirium or other adverse outcomes?
+
+(Original Question: Among older patients undergoing surgery and anesthesia, do commonly used potentially inappropriate medications administered during the perioperative period increase the risk of postoperative delirium or other adverse outcomes?)
 
 ```{r, read_data}
+#| label: read_data
 #| include: false
 source("code/load_data.R")
-kq5_refid <- kq5_refid[!kq5_refid %in% c(c(17130, 17136))] # Memtsoudis 2019 ketamine
 
 study_char_dat <- data_kq(study_char_dat, kq5_refid) |>
-  mutate(across(matches("study"), ~ ifelse(refid %in% c(5163, 17130:17133), str_replace_all(.x, "Memtsoudis 2019\\w", "Memtsoudis 2019 THA"), .x))) |> 
+  mutate(across(matches("study"), ~ ifelse(refid %in% c(5163, 17131:17133), str_replace_all(.x, "Memtsoudis 2019\\w", "Memtsoudis 2019 THA"), .x))) |> 
   mutate(across(matches("study"), ~ ifelse(refid %in% c(17134:17139), str_replace_all(.x, "Memtsoudis 2019\\w", "Memtsoudis 2019 TKA"), .x))) |> 
   mutate(
     design_f = fct_recode(design_f, "cluster_crossover" = "crossover"),
@@ -38,7 +40,7 @@ study_char_dat <- data_kq(study_char_dat, kq5_refid) |>
   )
 
 study_arm_dat <- data_kq(study_arm_dat, kq5_refid) |>
-  mutate(across(matches("study"), ~ ifelse(refid %in% c(5163, 17130:17133), str_replace_all(.x, "Memtsoudis 2019\\w", "Memtsoudis 2019 THA"), .x))) |> 
+  mutate(across(matches("study"), ~ ifelse(refid %in% c(5163, 17131:17133), str_replace_all(.x, "Memtsoudis 2019\\w", "Memtsoudis 2019 THA"), .x))) |> 
   mutate(across(matches("study"), ~ ifelse(refid %in% c(17134:17139), str_replace_all(.x, "Memtsoudis 2019\\w", "Memtsoudis 2019 TKA"), .x))) |> 
   mutate(
     design_f = fct_recode(design_f, "cluster_crossover" = "crossover"),
@@ -46,7 +48,7 @@ study_arm_dat <- data_kq(study_arm_dat, kq5_refid) |>
   )
 
 contin_dat <- data_kq(contin_dat, kq5_refid) |>
-  mutate(across(matches("study"), ~ ifelse(refid %in% c(5163, 17130:17133), str_replace_all(.x, "Memtsoudis 2019\\w", "Memtsoudis 2019 THA"), .x))) |> 
+  mutate(across(matches("study"), ~ ifelse(refid %in% c(5163, 17131:17133), str_replace_all(.x, "Memtsoudis 2019\\w", "Memtsoudis 2019 THA"), .x))) |> 
   mutate(across(matches("study"), ~ ifelse(refid %in% c(17134:17139), str_replace_all(.x, "Memtsoudis 2019\\w", "Memtsoudis 2019 TKA"), .x))) |>   
   mutate(
     design_f = fct_recode(design_f, "cluster_crossover" = "crossover"),
@@ -54,7 +56,7 @@ contin_dat <- data_kq(contin_dat, kq5_refid) |>
   )
 
 dichot_dat <- data_kq(dichot_dat, kq5_refid) |> 
-  mutate(across(matches("study"), ~ ifelse(refid %in% c(5163, 17130:17133), str_replace_all(.x, "Memtsoudis 2019\\w", "Memtsoudis 2019 THA"), .x))) |> 
+  mutate(across(matches("study"), ~ ifelse(refid %in% c(5163, 17131:17133), str_replace_all(.x, "Memtsoudis 2019\\w", "Memtsoudis 2019 THA"), .x))) |> 
   mutate(across(matches("study"), ~ ifelse(refid %in% c(17134:17139), str_replace_all(.x, "Memtsoudis 2019\\w", "Memtsoudis 2019 TKA"), .x))) |>   
   mutate(
     design_f = fct_recode(design_f, "cluster_crossover" = "crossover"),
@@ -66,7 +68,7 @@ dichot_dat <- data_kq(dichot_dat, kq5_refid) |>
   relocate(delirium_day_max, .after = delitotal_n) 
 
 likert_dat <- data_kq(likert_dat, kq5_refid) |> 
-  mutate(across(matches("study"), ~ ifelse(refid %in% c(5163, 17130:17133), str_replace_all(.x, "Memtsoudis 2019\\w", "Memtsoudis 2019 THA"), .x))) |> 
+  mutate(across(matches("study"), ~ ifelse(refid %in% c(5163, 17131:17133), str_replace_all(.x, "Memtsoudis 2019\\w", "Memtsoudis 2019 THA"), .x))) |> 
   mutate(across(matches("study"), ~ ifelse(refid %in% c(17134:17139), str_replace_all(.x, "Memtsoudis 2019\\w", "Memtsoudis 2019 TKA"), .x)))
 
 ```
@@ -87,18 +89,21 @@ likert_dat <- data_kq(likert_dat, kq5_refid) |>
 <font size = 4> `r table_ref()` Dichotomous and count outcomes. </font>
 
 ```{r dichot_outcome_freq}
+#| label: dichot_outcome_freq
 dichot_freq_fun(dichot_dat)
 ```
 
 <font size = 4> `r table_ref()` Publications reporting continuous outcomes (not necessarily unique studies). </font>
 
 ```{r cont_outcome_freq}
+#| label: cont_outcome_freq
 contin_freq_fun(contin_dat)
 ```
 
 <font size = 4> `r table_ref()` Likert and ordinal outcomes. </font>
 
 ```{r likert_outcome_freq}
+#| label: likert_outcome_freq
 likert_freq_fun(likert_dat)
 ```
 
@@ -107,10 +112,12 @@ likert_freq_fun(likert_dat)
 <font size = 4> `r table_ref()` Number of studies by design. </font>
 
 ```{r studies_design}
+#| label: studies_design
+
 study_char_dat |>
   filter(refid %in% kq5_refid) |>
   arrange(year) |> 
-  group_by(linked_references_all_refid) |> # count 1 for multiple pubs from single study or only 1 if cloned
+  group_by(linked_references_all_refid) |> # count 1 for multiple publications from single study but only 1 if cloned
   slice(1) |> 
   ungroup() |> 
   select(refid, study, design_f_lab) |>
@@ -152,10 +159,10 @@ study_char_dat |>
 <font size = 4> `r table_ref()` Study design, enrollment, centers, country, and surgery (see [References](#references) for citations). </font>
 
 ```{r drugs_by_study}
+#| label: drugs_by_study
 # DATA: drug_classes_by_study — refid, arm_up is pim drug class
-## drug_classes_by_study concatenated; by study ------- (2023-09-29 13:12) @----
-# RESUME: drug_classes_by_study — refid, arm_up is pim drug class
 
+## drug_classes_by_study concatenated; by study ------- (2023-09-29 13:12) @----
 drug_classes_by_study <- study_arm_dat |>
   select(refid, design_f, study, arm_id, arm_n, kq5_antichol:kq5_benzo_shortlong) |>
   filter(if_any(starts_with("kq"), ~ !is.na(.))) |> # arms with relevant drugs; other all NA
@@ -198,6 +205,8 @@ drug_classes_by_study <- study_arm_dat |>
 ```
 
 ```{r included_studies}
+#| label: included_studies
+
 ## table of included studies -------------------------- (2023-09-29 10:43) @----
 included_dat <- study_char_dat |>
   select(refid, starts_with("design"), study, study_l, study_l_w_linked, year, n_enroll, n_analyze, centers, country, non_vh_hdi, surgs, year) |>
@@ -263,6 +272,8 @@ included_dat |>
 <font size = 4> `r table_ref()` Summary of studies by country where conducted. </font>
 
 ```{r country}
+#| label: country
+
 ## country table -------------------------------------- (2023-09-29 10:54) @----
 study_char_dat |>
   mutate(linked_references = ifelse(is.na(linked_references), refid, linked_references)) |> 
@@ -279,7 +290,9 @@ study_char_dat |>
 ```
 
 ```{r pim_drug}
+#| label: pim_drug
 #| include: false
+
 ## multiple categorization (old) ---------------------- (2023-09-29 13:11) @---- 
 # drug_classes_by_study <- drug_classes_by_study |>
 #   mutate(
@@ -441,6 +454,7 @@ kq5_by_arm_tab <- kq5_by_arm_tab |>
 
 
 ```{r save_pim_drug}
+#| label: save_pim_drug
 #| eval: false
 
 # RESUME: save pim arms for KQ6

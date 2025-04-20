@@ -1480,7 +1480,7 @@ rob_summary_meta_weighted_nrsi_fun(delirium_meta_nrsi)
 ```
 :::
 
-## **Neurocognitive Disorder <30 days**
+## **Neurocognitive Disorder <br/>  <30 days**
 
 ```{r dncr_ncd_dat}
 
@@ -1632,7 +1632,7 @@ dncr_dat |>
   tab_footnote("Mini-Mental State Exam; DST: Digit Span Test; MoCA: Montreal Cognitive Assessment; RR: risk ratio.")
 ```
 
-## **Neurocognitive Disorder 30 days to 1 year**
+## **Neurocognitive Disorder <br/>  30 days to 1 year**
 
 <caption_mg> No studies </caption_mg>
 
@@ -2575,8 +2575,8 @@ designs_summary <- function(temp_meta){
 #| include: false
 
 png("assets/kq1_complication_mi.png", width = 9.07, height = 3.8, units = "in", res = 300)
-temp_meta <- complication_meta_fun("MI", use_hakn = TRUE, predictive = TRUE)
-complication_forest_fun(temp_meta, use_predictive = TRUE, text.addline1 = "*Randomized clinical trial", text.addline2 = risk_diff_meta_rr())
+temp_meta <- complication_meta_fun("MI", use_hakn = TRUE, predictive = TRUE)# complication_forest_fun(temp_meta, use_predictive = TRUE, text.addline1 = "*Randomized clinical trial", text.addline2 = risk_diff_meta_rr())
+complication_forest_fun(temp_meta, use_predictive = TRUE, text.addline1 = "*Randomized clinical trial", text.addline2 = rd_ci_from_meta(temp_meta, pscale = 1000, digits = 1))
 dev.off()
 
 # meta_rob_traffic_light_refid(temp_meta)
@@ -2603,7 +2603,7 @@ dev.off()
 
 png("assets/kq1_complication_cardiac_arrest.png", width = 8.87, height = 3.0, units = "in", res = 300)
 temp_meta <- complication_meta_fun("Cardiac Arrest", use_hakn = FALSE, predictive = FALSE, random = FALSE)
-complication_forest_fun(temp_meta, use_predictive = FALSE, text.addline1 = "*Randomized clinical trial", text.addline2 = risk_diff_meta_rr())
+complication_forest_fun(temp_meta, use_predictive = FALSE, text.addline1 = "*Randomized clinical trial", text.addline2 = rd_ci_from_meta(temp_meta, pscale = 1000, digits = 1))
 dev.off()
 
 # meta_rob_traffic_light_refid(temp_meta)
@@ -2629,7 +2629,7 @@ dev.off()
 
 png("assets/kq1_complication_aki.png", width = 8.97, height = 4.0, units = "in", res = 300)
 temp_meta <- complication_meta_fun("Acute Kidney Injury", use_hakn = TRUE, predictive = TRUE)
-complication_forest_fun(temp_meta, use_predictive = TRUE, text.addline1 = "*Randomized clinical trial", text.addline2 = risk_diff_meta_rr())
+complication_forest_fun(temp_meta, use_predictive = TRUE, text.addline1 = "*Randomized clinical trial", text.addline2 = rd_ci_from_meta(temp_meta, pscale = 1000, digits = 1))
 dev.off()
 
 # meta_rob_traffic_light_refid(temp_meta)
@@ -2656,7 +2656,7 @@ dev.off()
 
 png("assets/kq1_complication_pneumonia.png", width = 9.22, height = 4.6, units = "in", res = 300)
 temp_meta <- complication_meta_fun("Pneumonia", use_hakn = TRUE, predictive = TRUE)
-complication_forest_fun(temp_meta, use_predictive = TRUE, text.addline1 = "*Randomized clinical trial", text.addline2 = risk_diff_meta_rr())
+complication_forest_fun(temp_meta, use_predictive = TRUE, text.addline1 = "*Randomized clinical trial", text.addline2 = rd_ci_from_meta(temp_meta, pscale = 1000, digits = 1))
 dev.off()
 
 # meta_rob_traffic_light_refid(temp_meta)
@@ -2683,7 +2683,7 @@ dev.off()
 
 png("assets/kq1_complication_pe.png", width = 9.22, height = 3.4, units = "in", res = 300)
 temp_meta <- complication_meta_fun("PE", use_hakn = FALSE, predictive = TRUE)
-complication_forest_fun(temp_meta, use_predictive = TRUE, text.addline1 = risk_diff_meta_rr())
+complication_forest_fun(temp_meta, use_predictive = TRUE, text.addline1 = rd_ci_from_meta(temp_meta, pscale = 1000, digits = 1))
 dev.off()
 
 # meta_rob_traffic_light_refid(temp_meta)
@@ -3595,7 +3595,7 @@ forest(mort_rct_meta,
   # xlim = c(0.1, 10),
   xlab = "Favors: Expanded                         Standard        ",
   addrows.below.overall = 4,
-  text.addline2 = risk_diff_meta_rr(mort_rct_meta)
+  text.addline2 = rd_ci_from_meta(mort_rct_meta)
 )
 dev.off()
 
@@ -3660,7 +3660,7 @@ forest(mort_rct_1yr_meta,
   xlim = c(0.2, 4),
   xlab = "Favors: Expanded                         Standard        ",
   addrows.below.overall = 4,
-  text.addline2 = risk_diff_meta_rr(mort_rct_1yr_meta)
+  text.addline2 = rd_ci_from_meta(mort_rct_1yr_meta)
 )
 dev.off()
 
@@ -3722,7 +3722,7 @@ forest(mort_nrsi_meta,
   xlim = c(0.1, 10),
   xlab = "Favors: Expanded                         Standard        ",
   addrows.below.overall = 4,
-  text.addline2 = risk_diff_meta_rr(mort_nrsi_meta)
+  text.addline2 = rd_ci_from_meta(mort_nrsi_meta)
 )
 dev.off()
 
@@ -3788,7 +3788,7 @@ forest(mort_nrsi_1yr_meta,
   xlim = c(0.2, 4),
   xlab = "Favors: Expanded                         Standard        ",
   addrows.below.overall = 4,
-  text.addline2 = risk_diff_meta_rr(mort_nrsi_1yr_meta)
+  text.addline2 = rd_ci_from_meta(mort_nrsi_1yr_meta)
 )
 
 dev.off()

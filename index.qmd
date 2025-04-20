@@ -1,6 +1,9 @@
 ---
-# title: ""
+title: "Evidence synthesis"
+subtitle: "[2025 American Society of Anesthesiologists Practice Advisory for <br/>Perioperative Care of Older Adults Scheduled for Inpatient Surgery](https://journals.lww.com/anesthesiology/fulltext/2025/01000/2025_american_society_of_anesthesiologists.14.aspx)"
 editor: source
+css: styles.css
+license: "CC BY-NC"
 ---
 
 <!-- Google tag (gtag.js) -->
@@ -13,7 +16,6 @@ editor: source
   gtag('config', 'G-ZKMEBHKBYM');
 </script>
 
-<br/>
 
 <font size = 5> Evidence Summaries and GRADE </font>
 
@@ -55,10 +57,17 @@ Includes links to publications.
 
 [Outcome Importance Ratings and Rankings](outcome_rankings.html)
 
-[Draft Protocol](protocol.html)
+[Protocol](protocol.html)
 
 <br/>
 
-Draft materials **(not to be cited).**
 
-Please send corrections, suggestions, or comments to [Mark Grant](mailto:m.grant@asahq.org).
+Please send corrections, suggestions, or comments to [Mark Grant](mailto:mgrantmd@gmail.com).
+
+Data, R code, and data dictionary can be found at 
+<a href="https://github.com/mdgrant/geriatrics_synth" target="_blank">
+  <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" width="30">
+</a>
+
+
+

@@ -1,9 +1,31 @@
+## description ---------------------------------------- (2025-02-20 16:13) @----
+## Reading and processing extracted data for analyses.
+# 8 data files were obtained from Distiller reports are included with studies referred to by unique reference id "Refid" in csv files ("refid" in analyses)
+# While developing the evidence synthesis edits and updates to the database were frequent and it was common to have multiple versions of the data from reports. The read_file_mg function identifies the most recent datasets.
+# Post-processing data edits were minimized by making any corrections to Distiller
+# The organization of the data manipulations can be seen in the headers (best viewed in RStudio, POSITRON, or Visual Studio Code)
+# The analytical dataset is saved to avoid the time incurred to rerun the processing steps. For those concerned with potential security issues the Rdata file can be recreated or simply by including the code here in load_data.R
+# NOTE: The summary_mn_med code is external only for convenience.
+# NOTE: Most data verification routines are commented out but run when updating data. The exception was verifying all arms were unique there were instances where study arms were included in more that key question and identifying
+# errors was sometimes difficult.
+
+## DATA files
+# studyRefs.csv - included and excluded references and references
+# studyChar.csv - study characteristics
+# studyArm.csv - study arm data
+# contOutcomes.csv - continuous outcome data
+# dichotOutcomes.csv - dichotomous outcome data
+# likertOutcomes.csv - likert, nominal, or ordinal outcome data
+# rob_2.csv - risk of bias for randomized clinical trials
+# nrsi.csv - risk of bias (ROBINS-I) for observational studies
+# NOTE: data entry forms and a limited data dictionary can be viewed throught the appendix link of the evidence synthesis
+
+
 ## preliminaries -------------------------------------- (2022-11-16 11:49) @----
 # in .Rprofile
+rm(list = ls()) # to avoid including errant files
 library(conflicted)
 library(tidyverse)
-# conflicts_prefer(dplyr::filter)
-rm(list = ls()) # avoid including errant files
 library(janitor)
 suppressMessages(library(meta))
 suppressMessages(library(netmeta))
@@ -32,8 +54,28 @@ theme <- theme_update(
   axis.ticks = element_line(colour = "gray72"),
   panel.grid.major = element_line(colour = "gray80"))
 
-# refids to exclude
+# refids to exclude; refid 1 completely populated to preserve data types; dnot an eligible study excluded
 exclude_refids <- c(1)
+
+## functions ------------------------------------------ (2024-10-31 07:44) @----
+read_file_mg <- function(filename){
+  data_files |>
+    filter(str_detect(value, filename)) |>
+    arrange(desc(value)) |>
+    slice(1)
+}
+
+path_csv <- function(name_csv){
+  sheet <- name_csv
+  path <- str_c("data/", sheet)
+  return(path)
+}
+
+kq_refids <- function(kq_id) {
+  study_char_dat |>
+    filter(!is.na({{ kq_id }})) |>
+    pull(refid)
+}
 
 ## data files ----------------------------------------- (2022-11-16 14:19) @----
 data_files <- as_tibble(list.files("data/"))

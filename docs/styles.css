@@ -152,3 +152,16 @@ panel-caption, .figure-caption, .subfigure-caption, .table-caption, figcaption.q
       text-align: center;
 }
 
+.github-icon a {
+  background-color: black;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.github-icon a i {
+  color: white !important;
+}
+
+.fa-github {
+  color: black;
+}

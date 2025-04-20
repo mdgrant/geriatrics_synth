@@ -232,7 +232,7 @@ Between 2019 and 2060, the number of US adults aged 65 years or older will likel
 
 ## Analytic Framework
 
-![](figures/geriatricsAnalyticFramework.png){width="9in"}
+![](assets/geriatricsAnalyticFramework.png){width="9in"}
 
 ## Methods
 
