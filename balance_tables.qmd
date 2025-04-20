@@ -65,6 +65,8 @@ source("code/table_functions.R")
 <font size = 4> `r table_ref()` Benefits, harms, and strength of evidence (GRADE) for expanded versus standard preoperative evaluation. </font>
 
 ```{r exp_preop_balance}
+#| label: exp_preop_balance
+#| 
 kq1_balance_main("exclude") |> 
   text_replace(replace_text, paste0("See Table ", table_n + 1), locations = cells_body()) 
 
@@ -73,6 +75,8 @@ kq1_balance_main("exclude") |>
 <font size = 4> `r table_ref()` Included complications and strength of evidence (GRADE) for expanded versus standard preoperative evaluation. </font>
 
 ```{r exp_preop_complications}
+#| label: exp_preop_complications
+
 kq1_complications()
 ```
 
@@ -107,28 +111,26 @@ kq4_balance_main("exclude") |>
 kq4_complications()
 ```
 
-## Delirium Prophylaxis
+## Delirium Prophylaxis 
 
-### Dexmedetomidine
-
-<font size = 4> `r table_ref()` Benefits, harms, and strength of evidence (GRADE) for dexmedetomidine versus placebo. </font>
+<font size = 4> `r table_ref()` Benefits, harms, and strength of evidence (GRADE) for dexmedetomidine versus placebo or no delirium prophylaxis. </font>
 
 ```{r}
-kq6_balance_dex_main() |> 
-  text_replace(replace_text, paste0("see Table ", table_n + 1), locations = cells_body())
+kq6_balance_dex_main("include") |> 
+  text_replace(replace_text, paste0("see Table ", table_n + 1), locations = cells_body()) 
 ```
 
-<font size = 4> `r table_ref()` Included complications and strength of evidence (GRADE) for dexmedetomidine versus placebo. </font>
+<font size = 4> `r table_ref()` Other complications and strength of evidence (GRADE) for dexmedetomidine versus placebo or no delirium prophylaxis. </font>
 
 ```{r dex_plac_preop_complications}
-#| eval: false
+#| label: dex_plac_preop_complications
 
 kq6_dex_complications()
 ```
 
-### Ketamine
+<!-- ### Ketamine -->
 
-<font size = 4> `r table_ref()` Benefits, harms, and strength of evidence (GRADE) for ketamine versus placebo. </font>
+<!-- <font size = 4> `r table_ref()` Benefits, harms, and strength of evidence (GRADE) for ketamine versus placebo. </font> -->
 
 ```{r}
 #| eval: false
@@ -137,9 +139,9 @@ kq6_ketamine()  |>
   text_replace(replace_text, paste0("see Table ", table_n + 1), locations = cells_body())
 ```
 
-### Melatonin or Ramelteon
+<!-- ### Melatonin or Ramelteon -->
 
-<font size = 4> `r table_ref()` Benefits, harms, and strength of evidence (GRADE) for melatonin or ramelteon versus placebo. </font>
+<!-- <font size = 4> `r table_ref()` Benefits, harms, and strength of evidence (GRADE) for melatonin or ramelteon versus placebo. </font> -->
 
 ```{r mel_ram_main}
 #| eval: false
@@ -148,11 +150,30 @@ kq6_balance_mel_ram_main() |>
   text_replace(replace_text, paste0("see Table ", table_n + 1), locations = cells_body())
 ```
 
-<font size = 4> `r table_ref()` Included complications and strength of evidence (GRADE) for melatonin or ramelteon versus placebo. </font>
+<!-- <font size = 4> `r table_ref()` Included complications and strength of evidence (GRADE) for melatonin or ramelteon versus placebo. </font> -->
 
 ```{r mel_ram_plaaled_preop_complications}
 #| eval: false
 
 kq6_balance_mel_ram_complications()
 ```
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+
+
+
+
+
+
+
 
