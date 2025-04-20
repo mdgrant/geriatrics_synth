@@ -151,8 +151,8 @@ evidence_tables |>
   cols_width(
     study ~ "80px",
     n_enroll ~ "60px",
-    incl_excl ~ "300px",
-    results ~ "300px",
+    incl_excl ~ "260px",
+    results ~ "260px",
     comment ~ "160px"
   ) |> 
   cols_align(align = "left", columns = study) |>
