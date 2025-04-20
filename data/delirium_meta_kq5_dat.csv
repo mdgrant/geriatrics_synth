@@ -1,0 +1,150 @@
+refid,study,arm_id,arm_id_pim,arm_up,drug_up,year,design_f_lab,surg_f,delitotal_n,arm_n
+1505,Hongyu 2019,1,1,placebo,Placebo,2019,Randomized Clinical Trial,Thoracic,5,30
+1505,Hongyu 2019,2,2,antichol,Penehyclidine,2019,Randomized Clinical Trial,Thoracic,16,30
+1625,Wang 2020a,2,1,dexmedetomidine,Dexmedetomidine,2020,Randomized Clinical Trial,Oralmax,1,20
+1625,Wang 2020a,1,2,benzo_short,Midazolam,2020,Randomized Clinical Trial,Oralmax,9,20
+1937,Hollinger 2021,1,1,placebo,Placebo,2021,Randomized Clinical Trial,Various,4,44
+1937,Hollinger 2021,2,3,antipsych,Haloperidol,2021,Randomized Clinical Trial,Various,5,45
+1937,Hollinger 2021,3,2,ketamine,Ketamine,2021,Randomized Clinical Trial,Various,3,47
+2730,Leung 2017,1,1,placebo,Placebo,2017,Randomized Clinical Trial,Various,72,347
+2730,Leung 2017,2,2,gabapentin,Gabapentin,2017,Randomized Clinical Trial,Various,84,350
+4824,Hakim 2012,1,1,placebo,Placebo,2012,Randomized Clinical Trial,Cardiac,17,50
+4824,Hakim 2012,2,2,antipsych,Risperidone,2012,Randomized Clinical Trial,Cardiac,7,51
+5164,Sultan 2010,1,1,none,None,2010,Randomized Clinical Trial,Ortho,16,49
+5164,Sultan 2010,3,2,melatonin,Melatonin,2010,Randomized Clinical Trial,Ortho,5,53
+5164,Sultan 2010,2,3,benzo_short,Midazolam,2010,Randomized Clinical Trial,Ortho,22,50
+7098,Larsen 2010,1,1,placebo,Placebo,2010,Randomized Clinical Trial,Ortho,82,204
+7098,Larsen 2010,2,2,antipsych,Olanzapine,2010,Randomized Clinical Trial,Ortho,28,196
+7309,Fukata 2017,1,1,none,None,2017,Randomized Clinical Trial,Various,32,100
+7309,Fukata 2017,2,2,antipsych,Haloperidol,2017,Randomized Clinical Trial,Various,18,99
+7686,Xiang 2022,1,1,placebo,Placebo,2022,Randomized Clinical Trial,GI/Abd,7,84
+7686,Xiang 2022,2,2,cort_methylpred,Methylprednisolone,2022,Randomized Clinical Trial,GI/Abd,3,84
+8574,Kalisvaart 2005,1,1,placebo,Placebo,2005,Randomized Clinical Trial,Ortho,36,218
+8574,Kalisvaart 2005,2,2,antipsych,Haloperidol,2005,Randomized Clinical Trial,Ortho,32,212
+8864,Fukata 2014,1,1,none,None,2014,Randomized Clinical Trial,Various,20,60
+8864,Fukata 2014,2,2,antipsych,Haloperidol,2014,Randomized Clinical Trial,Various,25,59
+9196,Wang 2012,1,1,placebo,Placebo,2012,Randomized Clinical Trial,Various,53,228
+9196,Wang 2012,2,2,antipsych,Haloperidol,2012,Randomized Clinical Trial,Various,35,229
+9620,Aizawa 2002,1,1,none,None,2002,Randomized Clinical Trial,GI/Abd,7,20
+9620,Aizawa 2002,2,2,benzo_long,Flunitrazepam,2002,Randomized Clinical Trial,GI/Abd,1,20
+10036,Sauer 2014,1,1,placebo,Placebo,2014,Randomized Clinical Trial,Cardiac,55,370
+10036,Sauer 2014,2,2,cort_dex,Dexamethasone,2014,Randomized Clinical Trial,Cardiac,52,367
+10515,Whitlock 2015,1,1,placebo,Placebo,2015,Randomized Clinical Trial,Cardiac,289,3752
+10515,Whitlock 2015,2,2,cort_methylpred,Methylprednisolone,2015,Randomized Clinical Trial,Cardiac,295,3755
+13568,He 2018,1,1,placebo,Placebo,2018,Randomized Clinical Trial,Thoracic,15,30
+13568,He 2018,2,3,benzo_short,Midazolam,2018,Randomized Clinical Trial,Thoracic,17,30
+13568,He 2018,3,2,dexmedetomidine,Dexmedetomidine,2018,Randomized Clinical Trial,Thoracic,7,30
+13579,Azeem 2018,1,2,benzo_short,Midazolam,2018,Randomized Clinical Trial,Cardiac,2,30
+13579,Azeem 2018,2,1,dexmedetomidine,Dexmedetomidine,2018,Randomized Clinical Trial,Cardiac,1,30
+13731,Yu 2017,2,1,dexmedetomidine,Dexmedetomidine,2017,Randomized Clinical Trial,Thoracic,3,46
+13731,Yu 2017,1,2,benzo_short,Midazolam,2017,Randomized Clinical Trial,Thoracic,10,46
+14006,Mardani 2013,1,1,placebo,Placebo,2013,Randomized Clinical Trial,Cardiac,13,50
+14006,Mardani 2013,2,2,cort_dex,Dexamethasone,2013,Randomized Clinical Trial,Cardiac,4,43
+16533,Dieleman 2012,1,1,placebo,Placebo,2012,Randomized Clinical Trial,Cardiac,262,2247
+16533,Dieleman 2012,2,2,cort_dex,Dexamethasone,2012,Randomized Clinical Trial,Cardiac,205,2235
+16607,Prakanrattana 2007,1,1,placebo,Placebo,2007,Randomized Clinical Trial,Cardiac,20,63
+16607,Prakanrattana 2007,2,2,antipsych,Risperidone,2007,Randomized Clinical Trial,Cardiac,7,63
+17055,Dianatkhah 2015,2,1,melatonin,Melatonin,2015,Randomized Clinical Trial,Cardiac,4,66
+17055,Dianatkhah 2015,1,2,benzo_long,Oxazepam,2015,Randomized Clinical Trial,Cardiac,9,71
+17987,Shen 2022,1,1,placebo,Placebo,2022,Randomized Clinical Trial,Thoracic,15,60
+17987,Shen 2022,2,2,nsaid,Flurbiprofen,2022,Randomized Clinical Trial,Thoracic,7,60
+18474,Huang 2023a,1,1,placebo,Placebo,2023,Randomized Clinical Trial,Ortho,21,80
+18474,Huang 2023a,2,2,cort_dex,Dexamethasone,2023,Randomized Clinical Trial,Ortho,9,80
+18927,Yang 2023,1,1,placebo,Placebo,2023,Randomized Clinical Trial,Ortho,19,153
+18927,Yang 2023,2,2,benzo_short,Remimazolam,2023,Randomized Clinical Trial,Ortho,23,147
+20898,Kowark 2024,1,1,placebo,Placebo,2024,Randomized Clinical Trial,Various,3,303
+20898,Kowark 2024,2,2,benzo_short,Midazolam,2024,Randomized Clinical Trial,Various,4,304
+5365,Spence 2020,2,1,benzo_short,Midazolam (liberal),2020,Randomized Cluster Crossover Trial,Cardiac,55,389
+5365,Spence 2020,1,2,benzo_short,Midazolam (restricted),2020,Randomized Cluster Crossover Trial,Cardiac,72,411
+9464,Ushida 2009,2,1,cort_methylpred,Methylprednisolone,2009,Before-After/Time Series,Ortho,23,81
+9464,Ushida 2009,1,2,cort_methylpred,Methylprednisolone,2009,Before-After/Time Series,Ortho,3,41
+10090,Yamasaki 2019,1,1,omeprazole,Omeprazole,2019,Before-After/Time Series,GI/Abd,3,11
+10090,Yamasaki 2019,2,2,h2antag,Famotidine,2019,Before-After/Time Series,GI/Abd,9,10
+1332,Wang 2021,1,1,none,None,2021,Prospective Cohort,Various,89,357
+1332,Wang 2021,2,2,benzo_short,Midazolam,2021,Prospective Cohort,Various,83,357
+2985,Pipanmekaporn 2021,2,2,benzo_ns,Benzodiazepine (ns sa/la),2021,Prospective Cohort,Various,11,256
+2985,Pipanmekaporn 2021,1,1,none,None,2021,Prospective Cohort,Various,12,173
+6840,Ke 2022a,1,1,none,None,2022,Prospective Cohort,Other,10,91
+6840,Ke 2022a,2,2,benzo_short,Midazolam,2022,Prospective Cohort,Other,1,7
+7522,Leigheb 2022,1,1,none,None,2022,Prospective Cohort,Ortho,5,36
+7522,Leigheb 2022,2,2,benzo_short,Midazolam,2022,Prospective Cohort,Ortho,12,47
+7722,Duprey 2022,5,1,antipsych,Antipsychotic (any),2022,Prospective Cohort,Various,NA,NA
+7722,Duprey 2022,6,2,benzo_ns,Benzodiazepine (ns sa/la),2022,Prospective Cohort,Various,NA,NA
+16970,Aoki 2023,1,1,none,None,2023,Prospective Cohort,Cardiac,33,124
+16970,Aoki 2023,2,2,benzo_short,Remimazolam,2023,Prospective Cohort,Cardiac,23,76
+118,Mueller 2020a,2,2,benzo_short,Midazolam,2020,Retrospective Cohort,Various,51,529
+118,Mueller 2020a,1,1,none,None,2020,Retrospective Cohort,Various,11,82
+3727,Mangusan 2015a,1,1,none,None,2015,Retrospective Cohort,Cardiac,90,424
+3727,Mangusan 2015a,2,2,benzo_ns,Benzodiazepine (ns sa/la),2015,Retrospective Cohort,Cardiac,71,232
+4888,Weinstein 2018a,1,1,none,None,2018,Retrospective Cohort,Ortho,161,2643
+4888,Weinstein 2018a,2,2,benzo_ns,Benzodiazepine (ns sa/la),2018,Retrospective Cohort,Ortho,636,33223
+5163,Memtsoudis 2019 THA,1,1,none,None,2019,Retrospective Cohort,Ortho,2844,107736
+5163,Memtsoudis 2019 THA,2,2,benzo_short,Benzodiazepine (any sa),2019,Retrospective Cohort,Ortho,7068,373219
+5163,Memtsoudis 2019 THA,3,3,benzo_long,Benzodiazepine (any la),2019,Retrospective Cohort,Ortho,1075,15329
+5163,Memtsoudis 2019 THA,4,4,benzo_any,Benzodiazepine (any sa/la),2019,Retrospective Cohort,Ortho,3798,67942
+8003,Fuchita 2019a,1,1,none,None,2019,Retrospective Cohort,Thoracic,1,3
+8003,Fuchita 2019a,2,2,benzo_ns,Benzo_ns,2019,Retrospective Cohort,Thoracic,26,81
+16714,Park 2022,1,1,none,None,2022,Retrospective Cohort,Various,3148,118936
+16714,Park 2022,2,2,gabapentin,Gabapentin,2022,Retrospective Cohort,Various,4040,118936
+16961,Koch 2023,1,1,none,None,2023,Retrospective Cohort,Various,184,1001
+16961,Koch 2023,2,2,benzo_short,Midazolam,2023,Retrospective Cohort,Various,14,57
+17038,Liu 2023a,1,1,none,None,2023,Retrospective Cohort,Urol,5,50
+17038,Liu 2023a,2,2,benzo_short,Midazolam,2023,Retrospective Cohort,Urol,14,145
+17131,Memtsoudis 2019 THA,2,2,cort_any,Corticosteroid (any),2019,Retrospective Cohort,Ortho,639,21690
+17131,Memtsoudis 2019 THA,1,1,none,None,2019,Retrospective Cohort,Ortho,14146,542536
+17132,Memtsoudis 2019 THA,2,2,nsaid,NSAID (any),2019,Retrospective Cohort,Ortho,5469,254305
+17132,Memtsoudis 2019 THA,1,1,none,None,2019,Retrospective Cohort,Ortho,9316,309921
+17133,Memtsoudis 2019 THA,2,2,nsaid,COX-2 inhibitor,2019,Retrospective Cohort,Ortho,4733,219759
+17133,Memtsoudis 2019 THA,1,1,none,None,2019,Retrospective Cohort,Ortho,10052,344467
+17134,Memtsoudis 2019 TKA,4,4,benzo_any,Benzodiazepine (any sa/la),2019,Retrospective Cohort,Ortho,9070,150658
+17134,Memtsoudis 2019 TKA,3,3,benzo_long,Benzodiazepine (any la),2019,Retrospective Cohort,Ortho,1928,25667
+17134,Memtsoudis 2019 TKA,2,2,benzo_short,Benzodiazepine (any sa),2019,Retrospective Cohort,Ortho,16603,778956
+17134,Memtsoudis 2019 TKA,1,1,none,None,2019,Retrospective Cohort,Ortho,4783,175288
+17137,Memtsoudis 2019 TKA,1,1,none,None,2019,Retrospective Cohort,Ortho,31013,1082854
+17137,Memtsoudis 2019 TKA,2,2,cort_any,Corticosteroid (any),2019,Retrospective Cohort,Ortho,1371,47715
+17138,Memtsoudis 2019 TKA,1,1,none,None,2019,Retrospective Cohort,Ortho,18812,569339
+17138,Memtsoudis 2019 TKA,2,2,nsaid,NSAID (any),2019,Retrospective Cohort,Ortho,13572,561230
+17139,Memtsoudis 2019 TKA,1,1,none,None,2019,Retrospective Cohort,Ortho,21502,710381
+17139,Memtsoudis 2019 TKA,2,2,nsaid,COX-2 inhibitor,2019,Retrospective Cohort,Ortho,10882,420188
+17140,Slor 2011a,1,1,none,None,2011,Retrospective Cohort,Ortho,24,96
+17140,Slor 2011a,2,2,benzo_ns,Benzodiazepine (ns sa/la),2011,Retrospective Cohort,Ortho,36,430
+17141,Slor 2011b,1,1,none,None,2011,Retrospective Cohort,Ortho,52,480
+17141,Slor 2011b,2,2,antichol,Anticholinergic (any),2011,Retrospective Cohort,Ortho,8,46
+17142,Mueller 2020b,1,1,none,None,2020,Retrospective Cohort,Various,51,558
+17142,Mueller 2020b,2,2,antipsych,Haloperidol,2020,Retrospective Cohort,Various,14,92
+17143,Weinstein 2018b,1,1,none,None,2018,Retrospective Cohort,Ortho,620,33500
+17143,Weinstein 2018b,2,2,benzo_ns,Benzodiazepine (ns sa/la),2018,Retrospective Cohort,Ortho,164,3451
+17148,Fuchita 2019b,1,1,none,None,2019,Retrospective Cohort,Thoracic,27,77
+17148,Fuchita 2019b,2,2,cort_dex,Dexamethasone,2019,Retrospective Cohort,Thoracic,0,7
+17228,Poeran 2020a,1,1,none,None,2020,Retrospective Cohort,Ortho,60462,338015
+17228,Poeran 2020a,2,2,benzo_short,Midazolam,2020,Retrospective Cohort,Ortho,19085,167137
+18509,Kaneko 2023,1,1,placebo,Placebo,2023,Retrospective Cohort,Cardiac,15,58
+18509,Kaneko 2023,2,2,benzo_short,Remimazolam,2023,Retrospective Cohort,Cardiac,3,40
+18945,Zarour 2023,2,2,benzo_short,Midazolam,2023,Retrospective Cohort,Various,115,782
+18945,Zarour 2023,1,1,none,None,2023,Retrospective Cohort,Various,187,1191
+18976,Poeran 2020b,1,1,none,None,2020,Retrospective Cohort,Ortho,75409,480056
+18976,Poeran 2020b,2,2,cort_methylpred,Methylprednisolone,2020,Retrospective Cohort,Ortho,4138,25096
+18977,Poeran 2020c,1,1,none,None,2020,Retrospective Cohort,Ortho,70339,436131
+18977,Poeran 2020c,2,2,nsaid,NSAID (any),2020,Retrospective Cohort,Ortho,9208,69021
+18983,Poeran 2020f,1,1,none,None,2020,Retrospective Cohort,Ortho,65351,450479
+18983,Poeran 2020f,2,2,benzo_long,Benzo_long,2020,Retrospective Cohort,Ortho,14196,54673
+18984,Poeran 2020g,1,1,none,None,2020,Retrospective Cohort,Ortho,68846,455116
+18984,Poeran 2020g,2,2,benzo_any,Benzodiazepine (any sa/la),2020,Retrospective Cohort,Ortho,10701,50036
+18985,Poeran 2020h,1,1,none,None,2020,Retrospective Cohort,Ortho,76772,484190
+18985,Poeran 2020h,2,2,nonbenzo,Zolpidem,2020,Retrospective Cohort,Ortho,2775,20962
+20892,Memtsoudis 2019k,2,2,benzo_any,Benzodiazepine (any sa/la),2019,Retrospective Cohort,Ortho,3989,135683
+20892,Memtsoudis 2019k,1,1,none,None,2019,Retrospective Cohort,Ortho,10796,428543
+20893,Memtsoudis 2019l,1,1,none,None,2019,Retrospective Cohort,Ortho,23096,861439
+20893,Memtsoudis 2019l,2,2,benzo_any,Benzodiazepine (any sa/la),2019,Retrospective Cohort,Ortho,9288,269130
+20894,Mangusan 2015b,1,1,none,None,2015,Retrospective Cohort,Cardiac,104,369
+20894,Mangusan 2015b,2,2,nsaid,Ketoprofen,2015,Retrospective Cohort,Cardiac,57,287
+20895,Mangusan 2015c,2,2,nonbenzo,Zolpidem,2015,Retrospective Cohort,Cardiac,15,36
+20895,Mangusan 2015c,1,1,none,None,2015,Retrospective Cohort,Cardiac,146,620
+20896,Ishibashi-Kanno 2020b,2,2,benzo_ns,Benzo_ns,2020,Retrospective Cohort,Headneck,13,36
+20896,Ishibashi-Kanno 2020b,1,1,none,None,2020,Retrospective Cohort,Headneck,10,33
+20897,Ishibashi-Kanno 2020c,1,1,none,None,2020,Retrospective Cohort,Headneck,16,37
+20897,Ishibashi-Kanno 2020c,2,2,h2antag,H2antag,2020,Retrospective Cohort,Headneck,7,32
+9279,Nandi 2014,1,1,none,None,2014,Case-Control,Ortho,57,376
+9279,Nandi 2014,2,2,benzo_ns,Benzodiazepine (ns sa/la),2014,Case-Control,Ortho,41,87
+9977,Choi 2019,1,1,cort_methylpred,Methylprednisolone,2019,Case-Control,Thoracic,10,16
+9977,Choi 2019,2,2,cort_methylpred,Methylprednisolone,2019,Case-Control,Thoracic,10,42

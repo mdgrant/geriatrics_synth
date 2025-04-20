@@ -1,0 +1,48 @@
+Name, Description
+,
+From Distiller,
+*  References,
+studyRefs_DATE* TIME.csv,raw reference data *FROM DISTILLER*
+distillersr* Geriatrics_DATE* TIME.csv,distiller refs used only to pull DOIs for study* level evidence tables
+,
+*  Descriptive,
+studyArm_DATE* TIME.csv,raw study arm data *FROM DISTILLER*
+studyChar_DATE* TIME.csv,raw study characteristics data *FROM DISTILLER*
+,
+*  Outcome,
+contOutcomes_DATE* TIME.csv,raw continuous outcome data *FROM DISTILLER*
+dichotOutcomes_DATE* TIME.csv,raw dichotomous outcome data *FROM DISTILLER*
+likertOutcomes_DATE* TIME.csv,raw likert outcome data *FROM DISTILLER*
+,
+*  Risk of Bias,
+nrsi_DATE* TIME.csv,raw Robins* I *FROM DISTILLER*
+rob_2_DATE* TIME.csv,raw ROB* 2 *FROM DISTILLER*
+,
+*  Cleaned data from read_files.R,
+geri_data_YYYY* MM* DD.Rdata,cleaned/munged data set from running readfiles_YYYY* MM* DD.R file; note that data files used are listed in used_files_dates.txt (because readfiles.R allowed having multiple outcome data files but used most recent)
+,
+*  Created,
+complications_defs_DATE.xlsx,specific cardiac renal and pulmonary complication definitions edited to allow consistent descriptions; recorded in DistillerSR as free text
+,
+*  Balance and GRADEing (manual),
+soe_DATE_local.xlsx,"GRADE data; ""local"" to distinguish from SharePoint"
+balance_tables_DATE.xlsx,"balance table data; appended with ""mac"" to distinguish from SharePoint version"
+,
+*  Other generated files used in analyses for specfic questions,
+delirium_combined.csv,combined delirium data from kq5 and kq6 for exploratory network meta* analysis with a more robust evidece space; not in original evidence synthesis nor in protocol; includes Lee 2018b pregabalin arms; as of 2024* 10* 17 study arm data not yet cleaned for analysis
+delirium_combined_DATE* TIME.csv,same file recreated to verify
+delirium_meta_kq5_dat.csv,delirium data from kq5 for combined
+dementia_subgroup.xlsx,dementia subgroups to add kq3 Li 2022; delirium_meta_data chunk
+dex_meta_dat_sens.csv,data for p* hacking sensitivity analysis
+dex_sens_dat.csv,same only effect and variance (log); not used in final
+drugs_dat.csv,not used except to inspect in kq6 chunk drugs_by_arm
+forester_data.xlsx,data for forest plot summarizing subgroups from meta* analyses for kq6
+kq56_drug_by_arm.csv,arm data to rectify data entry overlap bw kq5 and kq6; used in kq6
+kq5_levels_labels.csv,factor labels and levels for drugs
+,
+*Outcome Importance*,
+OutcomeRankingRawData_DATE.xlsx,ranking data in wide form used to display results by KQ; removed from final (code commented out); only overall shown; accessed with rankings()
+OutcomeRankingRawData_DATE_edit.xlsx,all ranking data in long form
+geri_out_importance_DATE.csv,for outcome importance data for diverging bar chart
+,
+Note *FROM DISTILLER* corresponds to a data entry form except studyRefs from imported refs,
