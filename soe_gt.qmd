@@ -96,7 +96,7 @@ soe_kq1_dat <- readxl::read_xlsx("data/soe_local.xlsx", range = "A1:W24", sheet 
 soe_summary <- soe_kq1_dat |>
   select(n, comparison, outcome, n_s, design, grade, acc, out_import, summary, result_links, compare_group) |>
   mutate(
-    high = paste0("[", vlow, "]", "(soe_gt.html#exp-std-grade)"),
+    high = paste0("[", high, "]", "(soe_gt.html#exp-std-grade)"),
     mod = paste0("[", mod, "]", "(soe_gt.html#exp-std-grade)"),
     low = paste0("[", low, "]", "(soe_gt.html#exp-std-grade)"),
     vlow = paste0("[", vlow, "]", "(soe_gt.html#exp-std-grade)"),
@@ -249,7 +249,7 @@ kq1_domain |>
     prec = "Imprecision", 
     other = "Other"
   ) |>
-  fmt_markdown(columns = c(n_s:other)) |> 
+  fmt_markdown(columns = c(outcome, n_s:other)) |> 
   tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(design, rob:other))) |>
   # tab_style(style = "padding-right:80px",       locations = cells_column_labels(columns = c(design))) |> 
   # tab_style(style = "padding-left:10px",        locations = cells_body(columns = c(design))) |>
@@ -312,7 +312,7 @@ soe_kq3_dat <- readxl::read_xlsx("data/soe_local.xlsx", range = "A1:W20", sheet 
 soe_summary <- soe_kq3_dat |>
   select(n, comparison, outcome, n_s, design, grade, acc, out_import, summary, result_links, compare_group) |>
   mutate(
-    high = paste0("[", vlow, "]", "(soe_gt.html#reg-gen-grade)"), 
+    high = paste0("[", high, "]", "(soe_gt.html#reg-gen-grade)"), 
     mod = paste0("[", mod, "]",   "(soe_gt.html#reg-gen-grade)"),
     low = paste0("[", low, "]",   "(soe_gt.html#reg-gen-grade)"),
     vlow = paste0("[", vlow, "]", "(soe_gt.html#reg-gen-grade)"),
@@ -466,7 +466,7 @@ kq3_domain |>
     prec = "Imprecision", 
     other = "Other"
   ) |>
-  fmt_markdown(columns = c(n_s:other)) |> 
+  fmt_markdown(columns = c(outcome, n_s:other)) |> 
   tab_style(style = cell_text(align = "left"),   locations = cells_body(columns = c(design, rob:other))) |>
   # tab_style(style = "padding-right:80px",       locations = cells_column_labels(columns = c(design))) |> 
   # tab_style(style = "padding-left:10px",        locations = cells_body(columns = c(design))) |>
@@ -518,7 +518,7 @@ soe_kq4_dat <- readxl::read_xlsx("data/soe_local.xlsx", range = "A1:W25", sheet 
 soe_summary <- soe_kq4_dat |>
   select(n, comparison, outcome, n_s, design, grade, acc, out_import, summary, result_links, compare_group) |>
   mutate(
-    high = paste0("[", vlow, "]", "(soe_gt.html#tiva-grade)"), 
+    high = paste0("[", high, "]", "(soe_gt.html#tiva-grade)"), 
     mod = paste0("[", mod, "]",   "(soe_gt.html#tiva-grade)"),
     low = paste0("[", low, "]",   "(soe_gt.html#tiva-grade)"),
     vlow = paste0("[", vlow, "]", "(soe_gt.html#tiva-grade)"),
@@ -677,7 +677,7 @@ kq4_domain |>
     prec = "Imprecision",
     other = "Other"
   ) |>
-  fmt_markdown(columns = c(n_s:other)) |>
+  fmt_markdown(columns = c(outcome, n_s:other)) |>
   tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(design, rob:other))) |>
   tab_spanner(label = "GRADE Domains", columns = c(rob:other)) |>
   gt_theme_mg() |>
@@ -701,11 +701,11 @@ kq4_domain |>
 
 ```{r soe_kq6_data}
 #| include: false
-col_types_soe <- c("numeric", rep("text", 5), "numeric", rep("text", 16))
+col_types_soe <- c("numeric", rep("text", 4), rep("numeric", 2), rep("text", 16))
 soe_kq6_dat <- readxl::read_xlsx("data/soe_local.xlsx", range = "A1:W19", sheet = "soe_kq6", col_types = col_types_soe) |>
 # FIXME: respiratory failure fix
   clean_names() |>
-  # filter(n != 6.13) |> 
+  filter(n %notin% c(6.08, 6.13)) |> # composite cardiac and pulmonary; prior to detailing types
   mutate(
     n_s = paste0(n_studies, " <br/>(", format(n_pts, big.mark = ","), ")"),
     n = paste0(n, outcome),
@@ -729,7 +729,7 @@ soe_kq6_dat <- readxl::read_xlsx("data/soe_local.xlsx", range = "A1:W19", sheet 
 soe_summary <- soe_kq6_dat |>
   select(n, comparison, outcome, n_s, design, grade, acc, out_import, summary, result_links, compare_group) |>
   mutate(
-    high = paste0("[", vlow, "]", "(soe_gt.html#del-prophylaxis-grade)"), 
+    high = paste0("[", high, "]", "(soe_gt.html#del-prophylaxis-grade)"), 
     mod = paste0("[", mod, "]",   "(soe_gt.html#del-prophylaxis-grade)"),
     low = paste0("[", low, "]",   "(soe_gt.html#del-prophylaxis-grade)"),
     vlow = paste0("[", vlow, "]", "(soe_gt.html#del-prophylaxis-grade)"),
@@ -835,7 +835,6 @@ soe_summary |>
 #| echo: false
 
 kq6_domain_summary <- domain_summary |>
-  # filter(comparison == "sug_neo") |>
   select(-summary) |>
   mutate(
     design = str_replace(design, "Rct", "RCT"),
