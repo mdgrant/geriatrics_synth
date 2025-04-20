@@ -21,48 +21,50 @@ nocite: '@*'
 ---
 
 <!-- ::: {.callout-note collapse="true"} -->
-<!-- ## Recent updates -->
-
+<!-- ## Used for communicating recent updates -->
 <!-- | Date       | Modification                                                                                                                                                                    | -->
 <!-- |:-----------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| -->
-<!-- | 2024-06-03 | Updates through complications including additional sensitivity analyses for delirium (eg, see significance funnel plots).           | -->
-
+<!-- |            | 
 <!-- ::: -->
 
 ## Key Question
 
-Among older patients undergoing surgery and anesthesia, does dexmedetomidine, ketamine, ramelteon, or melatonin administered during the perioperative period decrease the risk of postoperative delirium or other adverse cognitive outcomes?
+Among older patients undergoing surgery and anesthesia, does dexmedetomidine administered during the perioperative period decrease the risk of postoperative delirium or other adverse cognitive outcomes?
+
+(The original question included ketamine, ramelteon, and melatonin. These unGRADEd results are included here but not in the advisory.)
 
 ```{r read_data}
+#| label: read_data
 #| include: false
 #| echo: false
 #| warning: false
 source("code/load_data.R")
 settings.meta(CIbracket = "(")
-conflicts_prefer(dplyr::lag)
-kq6_refid <- kq6_refid[!kq6_refid %in% c(18979, 13546, 2598)] # 18979 Poeran gabapentin result; 13546 Zhang 2018 ulinastantin vs. placebo; 2598 Wang 2017 ulinastatin vs. placebo
-# kq6_refid <- kq6_refid[!kq6_refid %in% c(13734, 13630, 2314, 17151, 16753, 13171, 18900, 18493, 2396, 17556)] # Fan 2017b rhythim, Gao 2021 5269 overlap with Gao 2020 1819, Xuan 2016 "Eligible patients were more than 60 years old with joint replacement surgery in ICU."; Sun 2019 2314 retracted; Ding 2015 16753 retracted; Xu 2022 17151 case control study no informative data; 13171 Mahrose 2021 nrc melatonin+dexmedetomidine vs dexmedetomidine; Wittwer 2023 ketamine+dexmedetomidine vs dexmedetomidine; 18493 Javaherforooshzadeh 2023 dex vs dex-melatonin; 2396 Shehabi dex vs MS; 17556 He 2022 in chinese; 2024-04-23 all excluded: kq6_refid[kq6_refid %in% c(13734, 13630, 2314, 17151, 16753, 13171, 18900, 18493, 2396, 17556)]
 
 study_char_dat <- data_kq(study_char_dat, kq6_refid)
-study_arm_dat <- data_kq(study_arm_dat, kq6_refid) 
-contin_dat <- data_kq(contin_dat, kq6_refid) 
-likert_dat <- data_kq(likert_dat, kq6_refid) 
-# delirium_inc_prop <lgl> neurocog_inc_prop <lgl> [dichot_dat] reported incidence proportion
-# delirium_day_max <num>  neurocog_day_max <num>  [dichot_dat] max of daily 
+study_arm_dat <- data_kq(study_arm_dat, kq6_refid)
+contin_dat <- data_kq(contin_dat, kq6_refid)
+likert_dat <- data_kq(likert_dat, kq6_refid)
 
 dichot_dat <- data_kq(dichot_dat, kq6_refid) |>
   mutate(
-    delirium_inc_prop = !is.na(delitotal_n), 
-    delirium_day_max = pmax(delirium_n1, delirium_n2, delirium_n3, delilast_n, na.rm = TRUE),
+    delirium_inc_prop = !is.na(delitotal_n), # reported incidence proportion <lgl>
+    delirium_day_max = pmax(
+      delirium_n1,
+      delirium_n2,
+      delirium_n3,
+      delilast_n,
+      na.rm = TRUE
+    ), # max of daily
     delitotal_n = ifelse(is.na(delitotal_n), delirium_day_max, delitotal_n),
-  ) |> 
+  ) |>
   relocate(delirium_day_max, .after = delitotal_n) 
 
 ```
 
 ```{r drugs_by_arm}
-
-# drugs & recode drugs/comparators so that usable; "other" category recode to comparator 
+#| label: drugs_by_arm
+# recode drugs/comparators so that usable; "other" category initially recode to comparator & below identified from text field
 # drugs_dat <- study_arm_dat include drug arm data; adds kq5/6 arms
 
 ## drug levels and abbreviations ---------------------- (2024-04-14 08:45) @----
@@ -118,15 +120,30 @@ drug_recode_abbr <- c(
 
 ## drugs; from kq6, add kq5 arm drugs ----------------- (2023-01-16 13:46) @----
 # drugs for kq5 studies; needed to fill in "missings" for kq6 arms coded as kq5 arms with detail there
-kq5_drug_by_arm <- read_csv("data/kq56_drug_by_arm.csv", col_types = c("n", "n", "c", "c")) |>
+kq5_drug_by_arm <- read_csv(
+  "data/kq56_drug_by_arm.csv",
+  col_types = c("n", "n", "c", "c")
+) |>
   rename(drug = drug_f) |> # arm drug
-  mutate(drug = as.character(drug)) |> 
-  select(refid, arm_id, drug, control_desc) |> 
+  mutate(drug = as.character(drug)) |>
+  select(refid, arm_id, drug, control_desc) |>
   rename(control_desc_kq5 = control_desc, drug_kq5 = drug)
 
 ## combine data from kq5 and kq6 ---------------------- (2024-04-14 08:45) @----
-drugs_dat_prelim <- study_arm_dat |> 
-  select(refid, design_f_lab, study, study_l, study_l_w_linked, study_id, arm_id, arm_n, arm_kq6_proph_meds, kq6_control_desc:kq6_notes, multiple_kq) |>
+drugs_dat_prelim <- study_arm_dat |>
+  select(
+    refid,
+    design_f_lab,
+    study,
+    study_l,
+    study_l_w_linked,
+    study_id,
+    arm_id,
+    arm_n,
+    arm_kq6_proph_meds,
+    kq6_control_desc:kq6_notes,
+    multiple_kq
+  ) |>
   rename_with(~ str_replace(., "kq6_", ""), everything()) |>
   rename_with(~ str_replace(., "dex_", "dexmed_"), everything()) |> # dexmed to avoid confusion w/dexamethasone
   mutate(
@@ -143,25 +160,44 @@ drugs_dat_prelim <- study_arm_dat |>
     drug = firstup(drug)
   ) |>
   relocate(drug, .after = arm_n) |>
-  left_join(kq5_drug_by_arm, by = c("refid", "arm_id")) |>  # select(refid, study, arm_id, drug, drug_kq5, control_desc, control_desc_kq5)
+  left_join(kq5_drug_by_arm, by = c("refid", "arm_id")) |> # select(refid, study, arm_id, drug, drug_kq5, control_desc, control_desc_kq5)
   # populate drug and control description when recorded only in kq6 arms
-  mutate( 
-    drug = coalesce(drug, drug_kq5), 
+  mutate(
+    drug = coalesce(drug, drug_kq5),
     control_desc = coalesce(control_desc, control_desc_kq5),
     control_desc = firstup(control_desc),
     arm_proph_meds = ifelse(is.na(arm_proph_meds), "kq5_arm", arm_proph_meds), # for origin of data; bookeeping
-  ) 
+  )
 
-## convert to factors with clean labels for analysis -- (2024-04-14 08:45) @----
-# only drug_study dex ket mel ranm
+## convert to factors w/clean labels for analysis ----- (2024-04-14 08:45) @----
+# only drug_study dex ket mel ram
 drugs_dat <- drugs_dat_prelim |>
   mutate(
-    drug_f = fct(drug, levels = c("Dexmedetomidine", "Ketamine", "Melatonin", "Ramelteon", "Ulinastatin", "Midazolam", "Oxazepam", "Haloperidol", "Gabapentin", "Pregabablin", "Remimazolam", "None", "Placebo", "Other")),
+    drug_f = fct(
+      drug,
+      levels = c(
+        "Dexmedetomidine",
+        "Ketamine",
+        "Melatonin",
+        "Ramelteon",
+        "Ulinastatin",
+        "Midazolam",
+        "Oxazepam",
+        "Haloperidol",
+        "Gabapentin",
+        "Pregabablin",
+        "Remimazolam",
+        "None",
+        "Placebo",
+        "Other"
+      )
+    ),
     drug_f = fct_collapse(drug_f, "Control" = c("None", "Placebo", "Other"))
   ) |>
   group_by(refid) |>
   mutate(
-    drug_study = case_when( # study drug
+    drug_study = case_when(
+      # study drug
       if_any(drug_f, ~ . == "Dexmedetomidine") ~ "Dexmedetomidine",
       if_any(drug_f, ~ . == "Ketamine") ~ "Ketamine",
       if_any(drug_f, ~ . == "Melatonin") ~ "Melatonin",
@@ -169,50 +205,75 @@ drugs_dat <- drugs_dat_prelim |>
     ),
     drug_study = if_else(study == "Liao 2023", "Dexmedetomidine", drug_study),
     drug_study = if_else(study == "Zhou 2019b", "Dexmedetomidine", drug_study),
-    drug_study = fct(drug_study, levels = c("Dexmedetomidine", "Ketamine", "Melatonin", "Ramelteon")),
+    drug_study = fct(
+      drug_study,
+      levels = c("Dexmedetomidine", "Ketamine", "Melatonin", "Ramelteon")
+    ),
     drug_recode = case_when(
       str_detect(other_spec, "Midazolam and propofol") ~ "Midazolam/propofol",
-      str_detect(other_spec, "Midazolam and sevoflurane") ~ "Midazolam/sevoflurane",
+      str_detect(other_spec, "Midazolam and sevoflurane") ~
+        "Midazolam/sevoflurane",
       str_detect(other_spec, "[Mm]idazolam") ~ "Midazolam",
       str_detect(other_spec, "[Ss]ufentanil") ~ "Sufentanil",
       str_detect(other_spec, "[Pp]ropofol") ~ "Propofol",
       str_detect(other_spec, "[Pp]regabalin") ~ "Pregabalin",
       .default = drug
     ),
-    drug_recode = ifelse(refid == 2748 & arm_id == 3, "Dexmedetomidine/Pregabalin", drug_recode),
-    drug_recode = ifelse(refid == 2748 & arm_id == 2, "Pregabalin", drug_recode),
+    drug_recode = ifelse(
+      refid == 2748 & arm_id == 3,
+      "Dexmedetomidine/Pregabalin",
+      drug_recode
+    ),
+    drug_recode = ifelse(
+      refid == 2748 & arm_id == 2,
+      "Pregabalin",
+      drug_recode
+    ),
     drug = if_else(refid == 2748 & arm_id == 2, "Pregabalin", drug),
     # drug_f = ifelse(refid == 2748 & arm_id == 2, "Pregabalin", drug_f),
-    drug_recode = ifelse(refid == 13406 & arm_id == 3, "Dexmedetomidine/Ulinastatin", drug_recode),
-    drug_recode = ifelse(refid == 13393 & arm_id == 1, "Dexmedetomidine/Ulinastatin", drug_recode),
+    drug_recode = ifelse(
+      refid == 13406 & arm_id == 3,
+      "Dexmedetomidine/Ulinastatin",
+      drug_recode
+    ),
+    drug_recode = ifelse(
+      refid == 13393 & arm_id == 1,
+      "Dexmedetomidine/Ulinastatin",
+      drug_recode
+    ),
     drug_recode = fct(drug_recode, levels = drug_recode_levels),
     drug_recode_abbr = fct_recode(drug_recode, !!!drug_recode_abbr),
   ) |>
   ungroup() |>
-  relocate(c(drug, drug_f, drug_recode, drug_recode_abbr, drug_study), .after = arm_id) |>
+  relocate(
+    c(drug, drug_f, drug_recode, drug_recode_abbr, drug_study),
+    .after = arm_id
+  ) |>
   relocate(c(other_spec, interv_desc, control_desc), .after = last_col()) |>
   arrange(refid, drug_study) |>
   fill(drug_study) |>
   arrange(refid, arm_id)
 
 # check if studies include > 1 included prophylactic drug
-# drugs_dat |> #filter(study == "Oriby 2023") |> 
+# drugs_dat |> #filter(study == "Oriby 2023") |>
 #   group_by(refid) |>
 #   mutate(
 #     drug_dex_study = if_else(if_any(drug_f, ~ . == "Dexmedetomidine"), "dex", ""),
 #     drug_ket_study = if_else(if_any(drug_f, ~ . == "Ketamine"), "ket", ""),
 #     drug_mel_ram_study = if_else(if_any(drug_f, ~ . %in% c("Melatonin", "Ramelteon")), "mel_ram", "")
 #   ) |>
-#   unite(drug_all, drug_dex_study, drug_ket_study, drug_mel_ram_study, sep = "", remove = TRUE) |> 
-#   select(refid, study, drug_all) |> 
+#   unite(drug_all, drug_dex_study, drug_ket_study, drug_mel_ram_study, sep = "", remove = TRUE) |>
+#   select(refid, study, drug_all) |>
 #   filter(drug_all != "") |>
-#   distinct() |> 
-#   group_by(refid) |> 
+#   distinct() |>
+#   group_by(refid) |>
 #   slice(2)
   
 ```
 
-```{r unique_refid }
+```{r unique_refid}
+#| label: unique_refid
+
 linked_refid <- study_char_dat |>
   filter(refid %in% kq6_refid) |>
   arrange(year) |> 
@@ -238,10 +299,11 @@ ket_refid <- drugs_dat |>
 ```
 
 ```{r delirium_refids_check}
-#| eval = FALSE
+#| label: delirium_refids_check
+#| eval: false
 
-kq6_refid %in% delirium_refid
-kq6_refid %in% cogfunc_refid
+# kq6_refid %in% delirium_refid
+# kq6_refid %in% cogfunc_refid
 kq6_refid[!kq6_refid %in% c(delirium_refid, cogfunc_refid)]
 ```
 
@@ -249,7 +311,7 @@ kq6_refid[!kq6_refid %in% c(delirium_refid, cogfunc_refid)]
 
 ### Dexmedetomidine
 
-<caption_mg> Benefits, harms, and strength of evidence (GRADE) for dexmedetomidine versus placebo or no intervention. </caption_mg>
+<caption_mg> Benefits, harms, and strength of evidence (GRADE) for dexmedetomidine versus placebo or no delirium prophylaxis. </caption_mg>
 
 ```{r dex_balance}
 kq6_balance_dex_main("include") |> 
@@ -257,11 +319,10 @@ kq6_balance_dex_main("include") |>
   # text_replace("see Appendix", "see Appendix", locations = cells_body())
 ```
 
-<!-- <caption_mg> Included complications and strength of evidence (GRADE) for dexmedetomidine versus placebo or no intervention. </caption_mg> -->
+<font size = 4> Other complications and strength of evidence (GRADE) for dexmedetomidine versus placebo or no delirium prophylaxis. </font>
 
-
-```{r dex_complications}
-#| eval: false
+```{r dex_plac_preop_complications}
+#| label: dex_plac_preop_complications
 
 kq6_dex_complications()
 ```
@@ -318,7 +379,7 @@ kq6_balance_mel_ram_complications()
 <caption_mg> `r table_ref()` Publications reporting dichotomous or count outcomes  in dexmedetomidine studies (not necessarily unique studies).</caption_mg>
 
 ```{r dichot_outcome_freq_dex}
-dichot_freq_fun(dichot_dat |> filter(refid %in% dex_refid), "ADL: activities of daily living; NCR: neurocognitive recovery; POCD: postoperative neurocognitive disorder; QoR: quality of recovery; ")
+dichot_freq_fun(dichot_dat |> filter(refid %in% dex_refid), "ADL: activities of daily living; DNCR: [delayed neurocognitive recovery](https://pubmed.ncbi.nlm.nih.gov/30325806/) (neurocognitive disorder < 30 days); POCD: [postoperative neurocognitive disorder](https://pubmed.ncbi.nlm.nih.gov/30325806/) (neurocognitive disorder 30 days to 1 year); QoR: quality of recovery; ")
 ```
 
 <caption_mg> `r table_ref()` Publications reporting continuous outcomes in dexmedetomidine studies (not necessarily unique studies). </caption_mg>
@@ -382,6 +443,8 @@ likert_freq_fun(likert_dat |> filter(refid %in% mel_ram_refid), "ADL: activities
 :::
 
 ## **Included Studies**
+
+See [Appendix](summary_kq6.html) for detailed summary study and patient characteristics including primary outcomes.
 
 <caption_mg> `r table_ref()` Number of studies by design. </caption_mg>
 
@@ -781,6 +844,7 @@ dex_by_arm |>
   tab_style(style = cell_text(size = px(8)), locations = cells_column_labels(columns = c(tiva_tab))) |>
   tab_style(style = list(cell_text(color = "#A93226")), locations = cells_body(columns = c(arm_n, drug_recode_abbr:timing_all), rows = str_detect(drug_recode_abbr, "Dex"))) |>
   tab_style(style = cell_text(align = "right"), locations = cells_body(columns = c(arm_n))) |>
+  tab_style(style = list(cell_text(color = "#104E8B")), locations = cells_body(columns = c(arm_n:timing_all), rows = str_detect(drug_recode_abbr, "Prop|Mid|Preg|Dex/Preg|Ket|Rem"))) |> 
   tab_footnote("GI: gastrointestinal; Abd: abdominal (includes hepatic); Ortho: orthopedic; Various: more that one procedure category; Oralmax: oral and maxillofacial; Ophtho; ophthalmologic; Urol: urologic; Dex: dexmedetomidine; Ulin: ulinastatin; Mid: midazolam; Mid/Prop: midazolam/propofol; Mid/Seve: midazolam/sevoflurane; Preg: pregabalin; Prop: propofol; Plac; placebo; PS: physical status; Vol: volatile; TIVA: total intravenous anesthesia; Reg: regional; Sed: sedation; MMSE: Mini-Mental State Exam.") |>
   tab_footnote("No studies reported including cognitively impaired patients except Liu 2016 as indicated.", locations = cells_column_labels(columns = pre_mmse)) |>
   tab_footnote("Maintenance range if reported in parentheses.", locations = cells_column_labels(columns = maintain_range)) |> 
@@ -1079,7 +1143,6 @@ mel_ram_by_arm |>
   tab_footnote("No studies reported including cognitively impaired patients.", locations = cells_column_labels(columns = pre_mmse)) |>  
   tab_footnote(md("ASA Physical Status of patients included (proportions can be found here[link to table add])."), locations = cells_column_labels(columns = c(asa_ps_incl))) |> 
   tab_footnote("Bars indicate adminstration times: preoperative left and postoperative right.", locations = cells_column_labels(columns = c(timing_all))) 
-  
 
 ```
 
@@ -1256,7 +1319,7 @@ delirium_meta_dat |>
 
 ```
 
-<foot_mg>Dex: dexmedetomidine; Ket: ketamine; Mel: melatonin; Ram: ramelteon; Oxaz: oxazepam; MS: morphine sulfate; Prop: propofol; Plac: placebo or no active comparator. <br/> The "Any" and "Plac" box plots are not mutually exclusive. <br/> Outliers not designated. </foot_mg>
+<foot_mg>Dex: dexmedetomidine; Ket: ketamine; Mel: melatonin; Ram: ramelteon; Oxaz: oxazepam; MS: morphine sulfate; Prop: propofol; Plac: placebo or no delirium prophylaxis. <br/> The "Any" and "Plac" box plots are not mutually exclusive. <br/> Outliers not designated. </foot_mg>
 :::
 
 ### Dexmedetomidine
@@ -1577,8 +1640,6 @@ dex_plac_refid <- pairwise_dat |>
   filter(str_detect(to_select, "Plac") & str_detect(to_select, "Dex")) |> 
   pull(refid)
 
-rob2_meta_dat <- rob2_meta_dat |> mutate(across(D1:Overall, ~ str_pad(.x, 2, "left")))
-
 dex_meta_dat <- pairwise_dat |>
   left_join(rob2_meta_dat, by = "refid") |>
   filter(refid %in% dex_plac_refid) |>
@@ -1591,9 +1652,9 @@ dex_meta_dat <- pairwise_dat |>
     size = n1 + n2,
     # total_samp = n1 + n2,
     rob = case_when(
-      Overall == "+" ~ "Low",
-      Overall == "?" ~ "Some Concerns",
-      Overall == "–" ~ "High"
+      Overall == " +" ~ "Low", 
+      Overall == " ?" ~ "Some Concerns",
+      Overall == " –" ~ "High"
     )
   ) |> 
   arrange(year, study)
@@ -1783,39 +1844,23 @@ dex_sens_dat <- dex_meta_dat |>
 #| include: false
 
 png("assets/kq6_dex_delirium_all.png", width = 12, height = 10, units = "in", res = 300)
-dex_meta_forest(dex_plac_meta, text.addline2 = risk_diff_meta_rr(dex_plac_meta, scale = 100))
+dex_meta_forest(dex_plac_meta, text.addline2 = rd_ci_from_meta(dex_plac_meta, pscale = 100, digits = 1))
 dev.off() 
 
 trim_image("kq6_dex_delirium_all.png")
 
 # sort by size
-# forest(dex_plac_meta,
-#   allstudies = TRUE,
-#   common = TRUE,
-#   label.e = "Dex     ",
-#   label.c = "Plac/None  ",
-#   rightcols = c("effect", "ci", "D1", "D2", "D3", "D4", "D5", "Overall"),
-#   rightlabs = c("RR ", "(95% CI)  ", "D1", "D2", "D3", "D4", "D5", "All"),
-#   just.addcols.right = "left",
-#   digits = 2,
-#   digits.tau2 = 1,
-#   overall.hetstat = TRUE,
-#   print.I2.ci = TRUE,
-#   prediction = TRUE,
-#   fs.xlab = 11,
-#   pooled.events = TRUE,
-#   print.pval.Q = FALSE,
-#   xlim = c(0.1, 3),
-#   xlab = "Favors: Dexmedetomidine               Placebo/None",
-#   addrows.below.overall = 4,
-#   sortvar = size
-# )
+# dex_meta_forest(dex_plac_meta, sortvar = dex_plac_meta$data$size)
+
+# for soe/grade summary 6.01 excel file
+# rd_ci_from_meta_soe(dex_plac_meta, digits = 1)
+# soe_meta_result_rr_or(dex_plac_meta)
 
 ```
 
 ![](assets/kq6_dex_delirium_all.png){fig.align="left" width="79%"}
 
-<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <a id="figure-4"></a><br/> `r paste0("Harbord test for small study effects P = ", formatC(temp_metabias$pval, digits = 5, format = "f"), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, dex_plac_refid), "; a secondary outcome in ", prim_sec_out_fun(sec_delirium, dex_plac_refid), ".")`<br/> Excluding Turan 2020: RR 0.56 (95% CI, 0.49-0.64; *I*<sup> 2</sup> = 21%, $\tau$<sup>2</sup>. <br/>\*Trials conducted in China.</foot_mg>
+<foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio; D1: bias arising from the randomization process; D2: bias due to deviations from intended interventions; D3: bias due to missing outcome data; D4: bias in measurement of the outcome; D5: bias in selection of the reported result: All: overall risk of bias.<br/> Risk of bias ratings: low +, some concerns ?, high -- . <a id="figure-4"></a><br/> `r paste0("Harbord test for small study effects P = ", formatC(temp_metabias$pval, digits = 5, format = "f"), ".")`<br/> `r paste0("Delirium a designated primary outcome in ", prim_sec_out_fun(prim_delirium, dex_plac_refid), "; a secondary outcome in ", prim_sec_out_fun(sec_delirium, dex_plac_refid), ".")`<br/> Excluding Turan 2020: RR 0.56 (95% CI, 0.49-0.64; *I*<sup> 2</sup> = 13%, $\tau$<sup>2</sup> = 0.04. <br/>\*Trials conducted in China.</foot_mg>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### Meta-analysis methods detail.
@@ -2221,7 +2266,7 @@ rob_summary_meta_weighted_fun(dex_plac_meta)
 ```
 :::
 
-####    Subgroup Summary
+####    **Subgroups**
 
 <caption_mg> `r figure_ref()` Summary of subgroup results. </caption_mg>
 
@@ -2271,7 +2316,7 @@ with(subgroup_dat,
 
 ```
 
-![](assets/subgroup_summary.png){#subgroup_summary width="75%"}
+![](assets/subgroup_summary.png){#subgroup_summary width="95%"}
 
 <foot_mg> Dex: dexmedetomidine; Plac: placebo; RR: risk ratio. </foot_mg>
 
@@ -2332,12 +2377,12 @@ forest(ket_plac_meta,
   xlab = "Favors: Ketamine               Placebo",
   addrows.below.overall = 4,
   addrows.below = 1,
-  text.addline2 = risk_diff_meta_rr(ket_plac_meta, scale = 100)
+  text.addline2 = rd_ci_from_meta(ket_plac_meta, pscale = 100, digits = 1) 
 )
 dev.off()
 
 # soe_meta_result_rr_or(ket_plac_meta, "RR")
-# soe_meta_rd_rr(ket_plac_meta)
+# rd_ci_from_meta_soe(ket_plac_meta, digits = 1)
 ```
 ![](assets/kq6_ket_plac_meta.png){fig.align="left" width="72%"}
 
@@ -2538,7 +2583,7 @@ forest(mel_ram_plac_meta,
   xlim = c(0.1, 3),
   xlab = "Favors: Ram/Mel                   Placebo",
   addrows.below.overall = 4,
-  text.addline2 = risk_diff_meta_rr(mel_ram_plac_meta, scale = 100)
+  text.addline2 = rd_ci_from_meta(mel_ram_plac_meta, pscale = 100)
   # text.addline1 = paste0("Harbord test for small study effects P = ", digit2(temp_metabias$pval))
 )
 dev.off()
@@ -2914,7 +2959,7 @@ dev.off()
 
 <br/>
 
-## **Neurocognitive Disorder <30 days**
+## **Neurocognitive Disorder <br/>  <30 days**
 
 ```{r dncr_ncd_dat}
 
@@ -3004,6 +3049,7 @@ dncr_dat <- dncr_dat |>
   select(refid, year, design_f_lab, surg_f, surgs_design, study, study_l, arm_id, arm_n, arm, pre_mmse, scale_mmse:scale_other_tf, neuro_threshold, dncr_time, neurocog_nper, bar, rr_ci)
 
 rm(dncr_rr_ref)
+
 ```
 
 ### Dexmedetomidine
@@ -3030,6 +3076,7 @@ dncr_mel_ram_refid <- dncr_dat |>
   distinct() |> 
   pull(refid)
 
+# list other scales used
 # dncr_dat |>
 #   filter(refid %in% dncr_ket_refid, !is.na(scale_other)) |>
 #   filter(refid %in% dncr_dex_refid, !is.na(scale_other)) |>
@@ -3325,7 +3372,7 @@ netmeta_dncr_nma <- netmeta(
 
 #### Dexmedetomidine
 
-<caption_mg> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention (randomized clinical trials, delayed neurocognitive recovery assessed postoperative day 5 or later). </caption_mg>
+<caption_mg> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention (randomized clinical trials, neurocognitive disorder <30 days assessed on postoperative day 5 or later). </caption_mg>
 
 ```{r dncr_dex_plac_meta} 
 #| echo: false
@@ -3338,9 +3385,9 @@ dncr_dex_meta_dat <- pairs_dat |>
   select(refid, study, year, event2, n2, event1, n1, D1:Overall, country, surgs_single_f) |>
   mutate(
     rob = case_when(
-      Overall == "+" ~ "Low",
-      Overall == "?" ~ "Some Concerns",
-      Overall == "–" ~ "High"
+      Overall == " +" ~ "Low",
+      Overall == " ?" ~ "Some Concerns",
+      Overall == " –" ~ "High"
     ),
     study = ifelse(country == "China", paste0(study, "*"), study),
   ) |> 
@@ -3366,7 +3413,7 @@ temp_meta <- update(temp_meta, subgroup = NULL, sm = "OR")
 # temp_metabias <- metabias(temp_meta, method.bias = "Harbord", k.min = 10)
 # trimfill(temp_meta)
 
-png("assets/kq6_dncr_dex_plac_meta.png", width = 11.61, height = 4.4, units = "in", res = 300)
+png("assets/kq6_dncr_dex_plac_meta.png", width = 12, height = 8, units = "in", res = 300)
 forest(dncr_dex_plac_meta,
   allstudies = TRUE,
   common = TRUE,
@@ -3390,9 +3437,11 @@ forest(dncr_dex_plac_meta,
   xlim = c(0.1, 3),
   xlab = "Favors: Dexmedetomidine               Placebo/None",
   addrows.below.overall = 4,
-  text.addline2 = risk_diff_meta_rr(dex_plac_meta, scale = 100)
+  text.addline2 = rd_ci_from_meta(dncr_dex_plac_meta, pscale = 100)
 )  
 dev.off()
+
+trim_image("kq6_dncr_dex_plac_meta.png")
 
 ```
 ![](assets/kq6_dncr_dex_plac_meta.png){fig.align="left" width="85%"}
@@ -3401,7 +3450,7 @@ dev.off()
 `r paste0("Neurocognitive recovery a designated primary outcome in ", prim_sec_out_fun(prim_pocd, dex_meta_dat$refid), "; a secondary outcome in ", prim_sec_out_fun(sec_pocd, dex_meta_dat$refid), ".")`<br/> \*Trials conducted in China.</foot_mg><br/>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <caption_mg> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention according to risk of bias appraisals (randomized clinical trials; delayed neurocognitive recovery). </caption_mg>
+#### <caption_mg> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention according to risk of bias appraisals (randomized clinical trials; neurocognitive disorder <30 days). </caption_mg>
 
 ```{r dncr_rob_meta}
 #| echo: false
@@ -3409,7 +3458,7 @@ dev.off()
 
 rob_meta <- update(dncr_dex_plac_meta, subgroup = rob)
 
-png("assets/kq6_dncr_dex_rob_meta.png", width = 9.78, height = 6.45, units = "in", res = 300)
+png("assets/kq6_dncr_dex_rob_meta.png", width = 12, height = 8, units = "in", res = 300)
 forest(rob_meta,
   allstudies = TRUE,
   random = TRUE,
@@ -3436,6 +3485,8 @@ forest(rob_meta,
 )  
 dev.off()
 
+trim_image("kq6_dncr_dex_rob_meta.png")
+
 ```
 ![](assets/kq6_dncr_dex_rob_meta.png){fig.align="left" width="73%"}
 
@@ -3443,7 +3494,7 @@ dev.off()
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <caption_mg> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention small study effects --- funnel plot (delayed neurocognitive recovery). </caption_mg>
+#### <caption_mg> `r figure_ref()` Dexmedetomidine compared with placebo or no intervention small study effects --- funnel plot (neurocognitive disorder <30 days). </caption_mg>
 
 ```{r dex_plac_dncr_meta_funnel}
 #| echo: false
@@ -3461,7 +3512,7 @@ dev.off()
 :::
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <caption_mg> `r figure_ref()` Summary risk of bias from randomized clinical trials of dexmedetomidine compared with placebo or no intervention (delayed neurocognitive recovery, weighted). </caption_mg>
+#### <caption_mg> `r figure_ref()` Summary risk of bias from randomized clinical trials of dexmedetomidine compared with placebo or no intervention (neurocognitive disorder <30 days, weighted). </caption_mg>
 
 ```{r rob2_summary_dncr_dex_plac, fig.height = 3, out.width = "60%"}
 rob_summary_meta_weighted_fun(dncr_dex_plac_meta)
@@ -3484,9 +3535,9 @@ dncr_ket_meta_dat <- pairs_dat |>
   select(refid, study, year, event2, n2, event1, n1, D1:Overall, country, surgs_single_f) |>
   mutate(
     rob = case_when(
-      Overall == "+" ~ "Low",
-      Overall == "?" ~ "Some Concerns",
-      Overall == "–" ~ "High"
+      Overall == " +" ~ "Low",
+      Overall == " ?" ~ "Some Concerns",
+      Overall == " –" ~ "High"
     )
   ) |>
   arrange(study)
@@ -3551,11 +3602,11 @@ dev.off()
 #| echo: false
 #| warning: false
 #| layout: [[40, 60]]
-delirium_nma_dncr_bugsnet_dat <- BUGSnet::data.prep(
+delirium_nma_dncr_bugsnet_dat <- suppressWarnings(BUGSnet::data.prep(
   arm.data = nma_dncr_dat,
   varname.t = "arm",
   varname.s = "study"
-)
+))
 
 delirium_nma_char <- BUGSnet::net.tab(
   data = delirium_nma_dncr_bugsnet_dat,
@@ -3746,11 +3797,11 @@ dev.off()
 <foot_mg> Dex: Dexmedetomidine; Ket: Ketamine; Mel/Ram: Melatonin/Ramelteon; Mid: Midazolam; MS: Morphine; Prop: Propofol; Plac/None: Placebo or no comparator. </foot_mg>
 :::
 
-## **Neurocognitive Disorder 30 days to 1 year**
+## **Neurocognitive Disorder <br/>  30 days to 1 year**
 
 ### Dexmedetomidine, Ketamine, and Melatonin
 
-<caption_mg> `r table_ref()` Neurocognitive disorder ≥30 days and ascertainment. </caption_mg>
+<caption_mg> `r table_ref()` Neurocognitive disorder 30 days to 1 year and ascertainment. </caption_mg>
 
 ```{r ncd_dat}
 
@@ -3830,6 +3881,7 @@ ncd_dat <- ncd_dat |>
 ```
 
 ```{r ncd_gt}
+#| label: ncd_gt
 
 ncd_dat |>
   arrange(year, study) |>
@@ -3865,7 +3917,7 @@ ncd_dat |>
   fmt_number(ncd_time, decimals = 0) |>
   sub_missing(columns = everything(), missing_text = "") |>
   tab_spanner(label = "Instrument", columns = c(scale_mmse:scale_other_tf), level = 1) |>
-  tab_spanner(label = "Neurocognitive Disorder ≥30 days", columns = c(neurocog_nper:rr_ci), level = 1) |>
+  tab_spanner(label = "Neurocognitive Disorder 30 days to 1 yr", columns = c(neurocog_nper:rr_ci), level = 1) |>
   tab_spanner(label = "Preop", columns = c(pre_mmse), level = 1) |>
   cols_width(
     study_l ~ px(165),
@@ -3906,7 +3958,7 @@ ncd_dat |>
 
 #### Dexmedetomidine
 
-<caption_mg> `r figure_ref()` Neurocognitive disorder ≥30 days comparing dexmedetomidine with placebo. </caption_mg>  
+<caption_mg> `r figure_ref()` Neurocognitive disorder 30 days to 1 year comparing dexmedetomidine with placebo. </caption_mg>  
 
 ```{r fig_pooled_dex}
 #| echo: false
@@ -3968,7 +4020,7 @@ trim_image("kq6_ncd_dex_meta.png")
 
 #### Ketamine
 
-<caption_mg> `r figure_ref()` Neurocognitive disorder ≥30 days comparing ketamine with placebo. </caption_mg>  
+<caption_mg> `r figure_ref()` Neurocognitive disorder 30 days to 1 year comparing ketamine with placebo. </caption_mg>  
   
 ```{r ncd_pooled_ket}
 #| echo: false
@@ -4389,6 +4441,7 @@ adverse_events_dat <- map_df(complication_incl, complications_kq6_fun) |>
 
 adverse_meta_dat <- adverse_events_dat |>
   left_join(cardiac_compl, by = c("refid", "complication")) |>
+  left_join(pulmonary_compl, by = c("refid", "complication")) |> 
   mutate(
     study_compl = paste0(study, complication),
     complication = as.character(complication),
@@ -4396,16 +4449,18 @@ adverse_meta_dat <- adverse_events_dat |>
       detail_cardiac == "bradycardia" ~ "bradycardia",
       detail_cardiac %in% c("arrhythmia", "atrial fibrillation", "tachycardia", "ventricular fibrillation") ~ "other arrhythmia",
       detail_cardiac %in% c("heart failure", "cardiac failure") ~ "pulcongest",
+      detail_pulmonary %in% c("respiratory depression") ~ "respfail",
       .default = complication
     ),
-    complication = factor(complication, levels = c("bradycardia", "other arrhythmia", "myoinfarct", "cardarr", "kidneyinj", "stroke", "pulm", "pneum", "pulcongest", "pe", "respfail", "intub"), labels = c("Bradycardia", "Other arrhythmia", "MI", "Cardiac Arrest", "Renal", "Stroke", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "Reintubation"))
+    complication = factor(complication, levels = c("bradycardia", "other arrhythmia", "myoinfarct", "cardarr", "kidneyinj", "stroke", "pulm", "pneum", "pulcongest", "pe", "respfail", "intub"), labels = c("Bradycardia", "Other arrhythmia", "Myocardial Infarction", "Cardiac Arrest", "Acute Kidney Injury", "Stroke", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "Pulmonary Embolism", "Respiratory Failure", "Reintubation"))
   ) |>
-  select(refid, year, study, arm_id, arm, arm_n, n, complication, study_compl, detail_cardiac)
+  select(refid, year, study, arm_id, arm, arm_n, n, complication, study_compl, detail_cardiac, detail_pulmonary)
 
 adverse_events_dat <- adverse_events_dat |>
   left_join(study_char_dat |> select(refid, study_l, surgs_single, design_f_lab), by = "refid") |>
   left_join(table_age_mn_med, by = c("refid", "arm_id")) |>
   left_join(cardiac_compl, by = c("refid", "complication")) |>
+  left_join(pulmonary_compl, by = c("refid", "complication")) |> 
   mutate(
     study_compl = paste0(study, complication),
     complication = as.character(complication),
@@ -4413,9 +4468,10 @@ adverse_events_dat <- adverse_events_dat |>
       detail_cardiac == "bradycardia" ~ "bradycardia",
       detail_cardiac %in% c("arrhythmia", "atrial fibrillation", "tachycardia", "ventricular fibrillation") ~ "other arrhythmia",
       detail_cardiac %in% c("heart failure", "cardiac failure") ~ "pulcongest",
+      detail_pulmonary %in% c("respiratory depression") ~ "respfail",
       .default = complication
     ),
-    complication = factor(complication, levels = c("bradycardia", "other arrhythmia", "myoinfarct", "cardarr", "kidneyinj", "stroke", "pulm", "pneum", "pulcongest", "pe", "respfail", "intub"), labels = c("Bradycardia", "Other arrhythmia", "MI", "Cardiac Arrest", "Renal", "Stroke", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "Reintubation"))
+    complication = factor(complication, levels = c("bradycardia", "other arrhythmia", "myoinfarct", "cardarr", "kidneyinj", "stroke", "pulm", "pneum", "pulcongest", "pe", "respfail", "intub"), labels = c("Bradycardia", "Other arrhythmia", "Myocardial Infarction", "Cardiac Arrest", "Acute Kidney Injury", "Stroke", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "Pulmonary Embolism", "Respiratory Failure", "Reintubation"))
   ) |> 
 arrange(complication, surgs_single, year, study, arm_id) |>
   mutate(
@@ -4651,6 +4707,8 @@ adverse_dex_meta_wide_dat <- adverse_dex_meta_dat |>
 
 ```
 
+####    *Pooled*
+
 <caption_mg> `r figure_ref()` **Risk ratio** for bradycardia (dexmedetomidine versus placebo or no interventions; randomized clinical trials). </caption_mg>
 
 ```{r dex_brady_meta}
@@ -4866,6 +4924,9 @@ adverse_events_dat |>
   tab_footnote("RD: risk difference; MAP: mean arterial blood pressure; Dex: Dexmedetomidine; Dex/Preg: Dexmedetomidine/Pregabalin; Mid: Midazolam; Prop: Propofol; Rem: remimazolam; Plac: placebo; None: no active or placebo comparator; GI/Abd: gastrointestinal/abdominal; Ortho: orthopedic;  Urol: urologic; Oralmax: oral or maxilofacial; NS: not specified.")
 
 ```
+<a id="hypotension-pooled"></a>
+
+####    *Pooled*
 
 <caption_mg> `r figure_ref()` **Risk ratio** for hypotension (dexmedetomidine versus placebo or no interventions; randomized clinical trials). </caption_mg>
 
@@ -4897,7 +4958,7 @@ hypo_meta <- metabin(
   method.tau = "REML",
   # subset = !grepl("\\*", study),
   subset = complication == "Hypotension", # & !study  %in% c("Li 2021b", "Zhao 2020"),
-  allstudies = TRUE
+  allstudies = FALSE
 )  
 
 # metaprop(n_Dex, arm_n_Dex, data = brady_meta_dat, subset = complication == "Hypotension")
@@ -5007,28 +5068,28 @@ trim_image("kq6_hypo_dex_meta_rd.png")
 
 #### Other
 
-<caption_mg> `r table_ref()` Other complications reported in dexmedetomidine studies --- cardiac, MI, stroke, renal, and respiratory (randomized clinical trials unless noted). </caption_mg>
+<caption_mg> `r table_ref()` Other complications reported in dexmedetomidine studies --- cardiac, myocardial infarction, stroke, renal, and respiratory (randomized clinical trials unless noted). </caption_mg>
 
 ```{r other_compl_dex_gt}
 adverse_events_dat |> 
   # bind_rows(hypotension_dat) |>
   # filter(!refid %in% mel_ram_refid) |> tabyl(complication) |> arrange(n)
   filter(complication != "Bradycardia") |> 
-  filter(any(arm %in% "Dex"), .by = study) |> 
+  filter(any(arm %in% "Dex"), .by = study) |> # filter(!any(arm %in% "Plac"), .by = study) |> -> temp  # NOTE: Cheng 2016, Djainai 2016, Wang 2020a, Zhao 2020 no placebo
   mutate(
     complication = factor(complication,
-      levels = c("Other arrhythmia", "MI", "Cardiac Arrest", "Renal", "Stroke", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "Reintubation"),
-      labels = c("Other Arrhythmia", "MI", "Cardiac Arrest", "Renal", "Stroke", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure", "Reintubation")
+      levels = c("Myocardial Infarction", "Cardiac Arrest", "Other arrhythmia", "Stroke", "Acute Kidney Injury", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "Pulmonary Embolism", "Respiratory Failure"),
+      labels = c("Myocardial Infarction", "Cardiac Arrest", "Other Arrhythmia", "Stroke", "Acute Kidney Injury", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "Pulmonary Embolism", "Respiratory Depression/Failure")
     ),
-    complication = fct_drop(complication)
-  ) |> # tabyl(complication) |> arrange(n)
+    complication = fct_drop(complication)) |> 
+  # ) |> # tabyl(complication) |> arrange(n)
   mutate(
     study_l = ifelse(row_number() > 1, "", study_l),
     surgs_single = ifelse(row_number() > 1, "", surgs_single), .by = study_compl
   ) |>
   group_by(complication) |>
   gt(id = "one") |>
-  row_group_order(groups = c("MI", "Cardiac Arrest", "Other Arrhythmia", "Stroke", "Renal", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "PE", "Respiratory Failure")) |>
+  row_group_order(groups = c("Myocardial Infarction", "Cardiac Arrest", "Other Arrhythmia", "Stroke", "Acute Kidney Injury", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "Pulmonary Embolism", "Respiratory Depression/Failure")) |>
   cols_hide(c(refid, year, study, arm_id, n, study, study_compl, design_f_lab)) |>
   cols_label(
     study_l          = "Study",
@@ -5064,35 +5125,57 @@ adverse_events_dat |>
   tab_footnote(md("Before-After/Time Series"), locations = cells_body(columns = study_l, rows = study_l != "" & design_f_lab == "Before-After/Time Series")) |>
   tab_footnote(md("Nonrandomized Trial"), locations = cells_body(columns = study_l, rows = study_l != "" & design_f_lab == "Nonrandomized Trial")) |>
   tab_footnote(md("Retrospective Cohort"), locations = cells_body(columns = study_l, rows = study_l != "" & design_f_lab == "Retrospective Cohort")) |>
-  tab_footnote("RD: risk difference; MI: myocardial infarction.") |>
-  tab_footnote("Pulmonary congestion includes heart failure diagnosis.", locations = cells_row_groups(groups = "Pulmonary Congestion")) 
+  tab_footnote("RD: risk difference.") |>
+  tab_footnote("Pulmonary congestion includes heart failure diagnosis.", locations = cells_row_groups(groups = "Pulmonary Congestion")) |> 
+  tab_footnote("Includes unspecified, composite, respiratory depression, pleural effusion.", locations = cells_row_groups(groups = "Pulmonary Congestion")) |> 
+  tab_footnote("Pulmonary infection, pneumothorax, or pleural effusion needing intervention.", locations = cells_body(columns = study_l, rows = age_table == "67.5 (5.3)" )) |> 
+  tab_footnote("Unspecified", locations = cells_body(columns = study_l, rows = age_table == "71.4 (4.5)" & arm == "Plac"))
 
 ```
 
-<caption_mg> `r figure_ref()` **Risk ratios** for other complications --- myocardial infarction, other arrhythmia (excludes bradycardia), stroke, pulmonary, and renal (dexmedetomidine versus placebo or no interventions; randomized clinical trials). </caption_mg>
+####   *Pooled*
+
+<caption_mg> `r figure_ref()` **Risk ratios** for other complications --- cardiac arrest, myocardial infarction, other arrhythmia (excludes bradycardia), stroke, pulmonary, and renal (dexmedetomidine versus placebo or no interventions). </caption_mg>
 
 ```{r complication_rr_meta}
+#| label: complication_rr_meta
 #| echo: false
 #| include: false
 
-adverse_other_dat <- adverse_dex_meta_wide_dat |> 
-  filter(refid %in% rct_refid)
+adverse_other_dat <- adverse_dex_meta_wide_dat |>
+  filter(!complication %in% c("Bradycardia", "Hypotension", "Other arrhythmia")) |> # 3 studies arrhythmia other than bradycardia (a fib, tachycardia, unspecified)
+  mutate(
+    complication = ifelse(complication == "Respiratory Failure", "Respiratory Depression/Failure", complication),
+    complication = ordered(complication, c("Myocardial Infarction", "Cardiac Arrest", "Stroke", "Acute Kidney Injury", "Pulmonary", "Pneumonia", "Pulmonary Congestion", "Pulmonary Embolism", "Respiratory Depression/Failure")),
+    study = ifelse(study == "Cheng 2016", "Cheng 2016*", study)
+  )
+
+adverse_other_dat$complication
 
 adverse_meta <- metabin(
   n_Dex, arm_n_Dex, n_Plac, arm_n_Plac,
   data = adverse_other_dat,
   studlab = study,
   sm = "RR",
-  hakn = FALSE,
+  method.random.ci = "classic",
+  prediction = TRUE,
+  prediction.subgroup = TRUE,
   subgroup = complication,
-  subset = !complication %in%  c("Bradycardia", "Hypotension") & !grepl("\\*", study),
   allstudies = FALSE
 )  
 
-png("assets/kq6_adverse_dex_other_rr_meta.png", width = 10, height = 15, units = "in", res = 300)
+# set prediction interval for MI [1] and pneumonia [6] and Respiratory Depression/Failure to missing; implausibly large; matrix(adverse_meta$lower.predict.w)
+adverse_meta$lower.predict.w[1] <- NA
+adverse_meta$upper.predict.w[1] <- NA
+adverse_meta$lower.predict.w[6] <- NA
+adverse_meta$upper.predict.w[6] <- NA
+adverse_meta$lower.predict.w[9] <- NA
+adverse_meta$upper.predict.w[9] <- NA
+
+png("assets/kq6_adverse_dex_other_rr_meta.png", width = 10, height = 18, units = "in", res = 300)
 forest(adverse_meta,
   allstudies = TRUE,
-  random = FALSE,
+  random = TRUE,
   label.e = "Dex",
   label.c = "Placebo",
   just.addcols.right = "left",
@@ -5106,49 +5189,58 @@ forest(adverse_meta,
   print.subgroup.name = FALSE,
   overall = FALSE,
   print.I2.ci = TRUE,
-  prediction = FALSE,
+  prediction = TRUE,
+  prediction.subgroup = TRUE,
   fs.xlab = 11,
   pooled.events = TRUE,
-  digits = 1, 
+  digits = 2, 
   print.pval.Q = FALSE,
   # xlim = c(-20, 20),
   xlab = "Favors: Dexmedetomidine                            Plac/None            ",
-  addrows.below.overall = 4
+  addrows.below.overall = 5,
+  text.addline1 = "Prediction intervals not shown when data insufficient to estimate a valid result.",
+  text.addline2 = "* Retrospective cohort."
 )
 dev.off()
 
 trim_image("kq6_adverse_dex_other_rr_meta.png")
 
 ```
-![](assets/kq6_adverse_dex_other_rr_meta.png){fig.align="left" width="62%"}
+![](assets/kq6_adverse_dex_other_rr_meta.png){fig.align="left" width="60%"}
 
 <foot_mg> Similar arms combined for Zhao 2020. </foot_mg>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
-#### <caption_mg> `r figure_ref()` **Risk differences** for other complications --- myocardial infarction, other arrhythmia (excludes bradycardia), stroke, pulmonary, and renal (dexmedetomidine versus placebo or no interventions; randomized clinical trials). </caption_mg>
+#### <caption_mg> `r figure_ref()` **Risk differences** for other complications --- cardiac arrest, myocardial infarction, other arrhythmia (excludes bradycardia), stroke, pulmonary, and acute kidney injury (dexmedetomidine versus placebo or no interventions). </caption_mg>
+
+<br/>
 
 ```{r complication_rd_meta}
 #| echo: false
 #| include: false
-
-adverse_other_dat <- adverse_dex_meta_wide_dat |> 
-  filter(refid %in% rct_refid)
 
 adverse_meta <- metabin(
   n_Dex, arm_n_Dex, n_Plac, arm_n_Plac,
   data = adverse_other_dat,
   studlab = study,
   sm = "RD",
+  prediction = TRUE,
   hakn = FALSE,
   subgroup = complication,
-  subset = !complication %in%  c("Bradycardia", "Hypotension") & !grepl("\\*", study),
+  subset = !complication %in%  c("Bradycardia", "Hypotension"),
   allstudies = FALSE
 )  
 
-png("assets/kq6_adverse_dex_other_rd_meta.png", width = 10, height = 15, units = "in", res = 300)
+# set prediction interval for pneumonia and pulmonary to missing; implausible large
+adverse_meta$lower.predict.w[6] <- NA
+adverse_meta$upper.predict.w[6] <- NA
+adverse_meta$lower.predict.w[9] <- NA
+adverse_meta$upper.predict.w[9] <- NA
+
+png("assets/kq6_adverse_dex_other_rd_meta.png", width = 10, height = 18, units = "in", res = 300)
 forest(adverse_meta,
   allstudies = TRUE,
-  random = FALSE,
+  random = TRUE,
   label.e = "Dex",
   label.c = "Placebo",
   just.addcols.right = "left",
@@ -5162,22 +5254,25 @@ forest(adverse_meta,
   print.subgroup.name = FALSE,
   overall = FALSE,
   print.I2.ci = TRUE,
-  prediction = FALSE,
+  prediction = TRUE,
+  prediction.subgroup = TRUE,
   fs.xlab = 11,
-  pscale = 100,
+  pscale = 1000,
   pooled.events = TRUE,
   digits = 1, 
   print.pval.Q = FALSE,
-  xlim = c(-20, 20),
+  xlim = c(-150, 150),
   xlab = "Favors: Dexmedetomidine                            Plac/None            ",
-  addrows.below.overall = 4
+  addrows.below.overall = 5,
+  text.addline1 = "Prediction intervals not shown when data insufficient to estimate a valid result.",
+  text.addline2 = "* Retrospective cohort."
 )
 dev.off()
 
 trim_image("kq6_adverse_dex_other_rd_meta.png")
 
 ```
-![](assets/kq6_adverse_dex_other_rd_meta.png){fig.align="left" width="62%"}
+![](assets/kq6_adverse_dex_other_rd_meta.png){fig.align="left" width="70%"}
 
 <foot_mg> Similar arms combined for Zhao 2020. </foot_mg>
 :::
@@ -5208,7 +5303,7 @@ adverse_events_dat |>
   ) |>
   group_by(complication) |>
   gt(id = "one") |>
-  row_group_order(groups = c("Bradycardia", "Hypotension", "Renal")) |>
+  row_group_order(groups = c("Bradycardia", "Hypotension", "Acute Kidney Injury")) |>
   cols_hide(c(refid, year, study, arm_id, n, study, study_compl, design_f_lab)) |>
   cols_label(
     study_l          = "Study",
@@ -5245,7 +5340,7 @@ adverse_events_dat |>
 
 ### Ramelteon
 
-<caption_mg> `r table_ref()` Complications reported in ramelteon studies --- cardiac, MI, stroke, pulmonary, pneumonia, and renal (all before-after designs). </caption_mg>
+<caption_mg> `r table_ref()` Complications reported in ramelteon studies --- cardiac, myocardial infarction, stroke, pulmonary, pneumonia, and renal (all before-after designs). </caption_mg>
 
 ```{r complications_mel_ram_gt}
 adverse_events_dat |>
@@ -5300,8 +5395,6 @@ adverse_events_dat |>
   tab_footnote("Not otherwise specified.", locations = cells_row_groups(groups = "Arrhythmia"))
   
 ```
-
-#### *Pooled*
 
 ```{r complications_ram_meta}
 #| echo: false
@@ -5664,7 +5757,8 @@ forest(los_dex_meta,
   rightlabs = c("MD ", "(95% CI)  ", "Procedure"),
   xlab = "Favors: Dex                                      Plac           ",
   smlab = "Mean Difference (days)",
-  addrows.below.overall = 4
+  addrows.below.overall = 4,
+  text.addline1 = "With Hartung-Knapp adjustment overall 95% CI -1.5 to -0.08"
 )
 dev.off()
 
@@ -5673,7 +5767,7 @@ trim_image("kq6_los_dex.png")
 ```
 ![](assets/kq6_los_dex.png){fig.align="left" width="70%"}
 
-<foot_mg> MD: mean difference; Dex: Dexmedetomidine.<br/> When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range. </foot_mg>
+<foot_mg> MD: mean difference; Dex: Dexmedetomidine.<br/> When the mean or standard deviation were not reported, they were imputed from from the median, interquartile range, and/or range. Hartung-Knapp adjustment not applied owing to interest in subgroups.</foot_mg>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <caption_mg> `r figure_ref()`  Dexmedetomidine compared with placebo or no intervention small study effects — funnel plot (length of stay).   </caption_mg>
@@ -5835,9 +5929,11 @@ mel_ram_mort_refid <- refid_detect_select_fun(mortality_dat, drug_recode_abbr, "
 
 ```{r mortality_dex_gt}
 #| eval: true
+
 mortality_dat |>
   arrange(mort_period, surgs_single_f, year, study, arm_id) |>
   filter(refid %in% dex_mort_refid) |> 
+  filter(refid %in% dex_refid_rct) |>
   group_by(mort_period, study_l) |>
   mutate(
     surgs_single_f = as.character(surgs_single_f),
@@ -5916,6 +6012,7 @@ mortality_dat |>
 ```{r mortality_dex_hosp_30d_meta}
 #| eval: true
 mortality_dex_dat <- mortality_dat |>
+  filter(refid %in% dex_refid_rct) |>
   filter(refid %in% dex_mort_refid, mort_period %in% c("Hospital", "30-day")) |>
   rename(arm = drug_recode_abbr) |>
   filter(!str_detect(arm, "Ulin")) |>
@@ -6118,9 +6215,12 @@ dex_plac_mort_meta <- metabin(event2, n2, event1, n1,
   method = "MH",
   method.tau = "REML",
   hakn = TRUE,
+  method.random.ci = "HK",
+  method.predict = "HK",
   prediction = TRUE,
   allstudies = FALSE,
   subgroup = mort_period
+  # subgroup = country
 )
 
 # small study effects; here to have result of Harbord test
@@ -6168,7 +6268,7 @@ trim_image("kq6_dex_plac_mort_rr_meta.png")
 ```
 ![](assets/kq6_dex_plac_mort_rr_meta.png){fig.align="left" width="60%"}
 
-<foot_mg> Dex: dexmedetomidine; Plac: placebo.<br/><foot_mg> \*Trials conducted in China with RR 0.69 (95% CI, 0.41–1.15); others RR 0.49 (95% CI, 0.14–1.75). </foot_mg>
+<foot_mg> Dex: dexmedetomidine; Plac: placebo.<br/><foot_mg> \*Trials conducted in China with RR 0.69 (95% CI, 0.41–1.15); others RR 0.59 (95% CI, 0.10–3.37). </foot_mg>
 
 ::: {.callout-note collapse="true" appearance="minimal" icon="false"}
 #### <caption_mg> `r figure_ref()` Risk difference for hospital and 30-day mortality -- dexmedetomidine compared with placebo or no intervention. </caption_mg>
@@ -6230,8 +6330,8 @@ harbord <- metabias(dex_plac_mort_meta, method.bias = "Harbord")$pval
 
 png("assets/kq6_dex_plac_meta_funnel_limit_mort.png", width = 10.5, height = 7.5, units = "in", res = 300)
 par(bty = "n", xaxt = "s", yaxt = "s", mar = c(4, 4, 2, 1))
-funnel(dex_plac_mort_meta,
-  ylim = c(2.0, 0.0), xlim = c(0.05, 10), 
+funnel(dex_plac_mort_meta ,
+  ylim = c(2.0, 0.0), xlim = c(0.05, 10),
   pch = 20, 
   contour = c(0.9, 0.95, 0.99), 
   col.contour = limit_colors, 
@@ -6251,7 +6351,7 @@ trim_image("kq6_dex_plac_meta_funnel_limit_mort.png")
 
 #### Melatonin/Ramelteon
 
-<caption_mg> `r figure_ref()` Risk difference for hospital and 30-day mortality -- — melatonin or ramelteon compared with placebo or no intervention. </caption_mg>
+<caption_mg> `r figure_ref()` Risk difference for hospital and 30-day mortality -- melatonin or ramelteon compared with placebo or no intervention. </caption_mg>
 
 ```{r mel_ram_mort_meta}
 #| echo: false
